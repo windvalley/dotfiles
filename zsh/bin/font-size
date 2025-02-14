@@ -1,0 +1,29 @@
+#!/usr/bin/env zsh
+# font-size
+#
+# Change font size of Alacritty.
+
+
+script_dir=$(cd "$(dirname $0)" && pwd)
+
+source $script_dir/../env.zsh
+
+to_font_size=$1
+
+[[ "$#" -ne 1 ]] && {
+    echo Usage example: font-size 12
+    exit 1
+}
+
+if [[ "$to_font_size" -lt 1 ]] || [[ "$to_font_size" -gt 200 ]]; then
+    echo font size must between 1 and 200
+    exit 1
+fi
+
+change_alacritty_font_size() {
+  gsed -i "/^size/s/^.*$/size = $to_font_size/" $alacritty_conf
+}
+
+change_alacritty_font_size
+
+exit 0

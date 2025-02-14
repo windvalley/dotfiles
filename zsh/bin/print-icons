@@ -1,0 +1,14 @@
+#!/usr/bin/env zsh
+# print-icons
+
+script_dir="$(cd "$(dirname "$0")" && pwd)"
+
+cd "$script_dir/../../icons" || exit 1
+
+for file in *.md; do
+    echo "$file: \n" | sed 's/-/ /g;s/.md//'
+
+    grep '\u' "$file" | awk '{printf"%s  ",$6}'
+
+    echo -e "\n"
+done

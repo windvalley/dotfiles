@@ -1,0 +1,38 @@
+#!/usr/bin/env zsh
+# colorscheme
+#
+# Switch colorscheme for Neovim and Alacritty.
+
+script_dir=$(cd "$(dirname $0)" && pwd)
+
+source $script_dir/../env.zsh
+
+colorscheme=$1
+
+colorschemes=$(grep require $nvim_cs_conf | awk -F'"' '{print $2}' | xargs | sed 's/ /|/g')
+
+[[ -z $colorscheme ]] && {
+  echo "Usage $0 <tokyonight|$colorschemes>"
+  exit 1
+}
+
+nvim_cs_change() {
+  nvim_current_cs=$(awk -F'"' '/colorscheme = /{print $2}' $nvim_cs_conf)
+  gsed -i "/colorscheme/s|$nvim_current_cs|$colorscheme|" $nvim_cs_conf
+}
+
+alacritty_cs_change() {
+  ala_colorscheme="tokyo_night_enhanced"
+  if [[ $colorscheme = "dracula" ]]; then
+    ala_colorscheme="dracula"
+  elif [[ $colorscheme = "gruvbox" ]]; then
+    ala_colorscheme="gruvbox_material"
+  fi
+
+  gsed -i "/alacritty\/themes\/themes/s|^.*$|\"~/.config/alacritty/themes/themes/$ala_colorscheme.toml\",|" $alacritty_conf
+}
+
+nvim_cs_change
+alacritty_cs_change
+
+exit 0

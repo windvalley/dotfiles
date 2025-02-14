@@ -1,0 +1,230 @@
+# doc: https://alacritty.org/config-alacritty.html
+
+[general]
+
+# Import additional configuration files.
+# Imports are loaded in order, skipping all missing files, with the importing file being loaded last. If a field is already present in a previous import, it will be replaced.
+# All imports must either be absolute paths starting with /, paths relative to the user's home directory starting with ~/, or paths relative from the current config file.
+import = [
+"~/.config/alacritty/themes/themes/tokyo_night_enhanced.toml",
+  "~/.alacritty_private.toml",
+]
+
+# Directory the shell is started in. When this is unset, or "None", the working directory of the parent process will be used.
+# Default: "None"
+working_directory = "None"
+
+# Live config reload (changes require restart)
+# Default: true
+live_config_reload = true
+
+# Offer IPC using alacritty msg (unix only)
+# Default: true
+ipc_socket = true
+
+# All key-value pairs in the [env] section will be added as environment variables for any process spawned by Alacritty,
+# including its shell. Some entries may override variables set by alacritty itself.
+[env]
+
+# This value is used to set the `$TERM` environment variable for
+# each instance of Alacritty. 
+TERM = "screen-256color"
+# 解决找不到 tmux 等部分命令的问题,
+# 比如直接运行alacritty命令可以打开终端，但通过hammerspool就打开alacritty就闪退的问题.
+PATH = "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+
+
+[window]
+
+# Window title.
+# Default: "Alacritty"
+title = "Alacritty"
+
+# Allow terminal applications to change Alacritty's window title.
+# Default: true
+dynamic_title = true
+
+# Blank space added around the window in pixels. 
+# This padding is scaled by DPI and the specified value is always added at both opposing sides.
+# Default: { x = 0, y = 0 }
+padding = { x = 15, y = 5 }
+
+# Spread additional padding evenly around the terminal content.
+# Default: false
+dynamic_padding = false
+
+# Window decorations.
+# Full: Borders and title bar.
+# None: Neither borders nor title bar.
+# Transparent (macOS only): Title bar, transparent background and title bar buttons.
+# Buttonless (macOS only): Title bar, transparent background and no title bar buttons.
+# Default: "Full"
+decorations = "None"
+
+# Background opacity as a floating point number from 0.0 to 1.0. 
+# The value 0.0 is completely transparent and 1.0 is opaque.
+# Default: 1.0
+opacity = 0.85
+
+# Request compositor to blur content behind transparent windows. (works on macOS/KDE Wayland)
+# 控制是否对透明窗口后面的内容应用模糊效果.
+# Default: false
+blur = false
+
+# Startup mode (changes require restart)
+# Windowed: Regular window.
+# Maximized: The window will be maximized on startup.
+# Fullscreen: The window will be fullscreened on startup.
+# SimpleFullscreen (macOS only): Same as Fullscreen, but you can stack windows on top.
+# Default: "Windowed"
+startup_mode = "Maximized"
+
+
+[scrolling]
+
+# Maximum number of lines in the scrollback buffer.
+# Specifying 0 will disable scrolling.
+# Limited to 100000.
+# Default: 10000
+history = 50000
+
+# Number of line scrolled for every input scroll increment.
+# Default: 3
+multiplier = 5
+
+
+[font]
+
+# Default:
+#   Linux/BSD: { family = "monospace", style = "Regular" }
+#   Windows: { family = "Consolas", style = "Regular" }
+#   macOS: { family = "Menlo", style = "Regular" }
+#
+# https://github.com/ryanoasis/nerd-fonts
+# https://www.nerdfonts.com/font-downloads(brew install --cask font-<FONT NAME>-nerd-font)
+#
+# brew install font-hack-nerd-font
+# brew install font-Inconsolata-Nerd-Font 
+# brew install font-iosevka-nerd-font
+# brew install font-iosevka-term-slab-nerd-font
+# brew install font-tinos-nerd-font
+# brew install font-profont-nerd-font
+# brew install font-m+-nerd-font
+# brew install font-go-mono-nerd-font
+# brew install font-Anonymice-nerd-font
+#
+# Fonts: Hack|Inconsolata|Iosevka|ProFontIIx|ProFontWindows|M+1Code|M+CodeLat50|GoMono|AnonymicePro
+normal = { family = "Iosevka Nerd Font", style = "Regular" }
+
+# If the family is not specified, it will fall back to the value specified for the normal font.
+# Default: { style = "Bold" }
+bold = { style = "Bold" }
+
+# If the family is not specified, it will fall back to the value specified for the normal font.
+# Default: { style = "Italic" }
+italic = { style = "Italic" }
+
+# If the family is not specified, it will fall back to the value specified for the normal font.
+# Default: { style = "Bold Italic" }
+bold_italic = { style = "Bold Italic" }
+
+# Font size in points.
+# Default: 11.25
+size = 14
+
+# Offset is the extra space around each character. 
+# y can be thought of as modifying the line spacing, and x as modifying the letter spacing.
+# Default: { x = 0, y = 0 }
+offset = { x = 0, y = 0 }
+
+
+[colors]
+
+
+[selection]
+
+# This string contains all characters that are used as separators for "semantic words" in Alacritty.
+# Default: ",│`|:\"' ()[]{}<>\t"
+semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
+
+# When set to true, selected text will be copied to the primary clipboard.
+# Default: false
+save_to_clipboard = true
+
+
+[cursor]
+
+# shape = "Block" | "Underline" | "Beam", Default: "Block"
+# blinking = "Never" | "Off" | "On" | "Always", Default: "Off"
+style = { shape = "Block", blinking = "Always" }
+
+# Cursor blinking interval in milliseconds.
+# Default: 750
+blink_interval = 500
+
+# Time after which cursor stops blinking, in seconds.
+# Specifying 0 will disable timeout for blinking.
+# Default: 5
+blink_timeout = 0
+
+# When this is true, the cursor will be rendered as a hollow box when the window is not focused.
+# Default: true
+unfocused_hollow = true
+
+# Thickness of the cursor relative to the cell width as floating point number from 0.0 to 1.0.
+# Default: 0.15
+thickness = 0.15
+
+[terminal]
+
+# Controls the ability to write to the system clipboard with the OSC 52 escape sequence. 
+# While this escape sequence is useful to copy contents from the remote server,
+# allowing any application to read from the clipboard can be easily abused while 
+# not providing significant benefits over explicitly pasting text.
+# Default: "OnlyCopy"
+osc52 = "OnlyCopy"
+
+# You can set shell.program to the path of your favorite shell, e.g. /bin/zsh.
+# Entries in shell.args are passed as arguments to the shell.
+# Default:
+#  Linux/BSD/macOS: $SHELL or the user's login shell, if $SHELL is unset
+#  Windows: "powershell"
+[terminal.shell]
+program = "/bin/zsh"
+args = [
+  "-c",
+  # NOTE: 每次打开 alacritty, 都进入到名为 dotfiles 的 session,
+  # 如果该 session 不存在则自动创建(并自动新建3个window), 如果存在则直接复用,
+  # 避免每次重新启动 alacritty 都创建新的 tmux session 导致 session 过多.
+  "tmux attach -t dotfiles || tmux new -s dotfiles -n 'nvim' ';' splitw -h ';' neww -n 'tmux' ';' splitw -h ';' neww -n 'alacritty' ';' splitw -h",
+]
+
+
+[mouse]
+
+# When this is true, the cursor is temporarily hidden when typing.
+# Default: false
+hide_when_typing = true
+
+
+[keyboard]
+
+# Some default bindings:
+#   Command + Q: Close all windows
+#   Command + W: Close current window
+#   Command + N: New window 
+#   Command + H: Hide all windows
+#   Command + M: Minimize current window to Dock(The window cannot be in full-screen mode)
+#   Command + F: Search forward
+#   Command + B: Search backward
+#   Command + Option + H: Hide all other app windows behind the current alacritty window
+#
+#   Command + =: IncreaseFontSize
+#   Command + -: DecreaseFontSize
+#   Command + 0: ResetFontSize
+bindings = [
+  # 光标向左移动
+  # { key = "B", mods = "Control", chars = "\u001b[D" },
+  # # 光标向右移动
+  # { key = "F", mods = "Control", chars = "\u001b[C" },
+]

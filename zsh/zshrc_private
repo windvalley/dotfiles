@@ -1,0 +1,7 @@
+# 终端使用代理服务器, 命令行执行termproxy, 然后通过 curl ident.me 验证.
+alias termproxy='export http_proxy=http://127.0.0.1:1087;export https_proxy=http://127.0.0.1:1087;export ALL_PROXY=socks5://127.0.0.1:1080'
+alias untermproxy='unset http_proxy https_proxy ALL_PROXY'
+
+# avante.nvim 使用
+export DEEPSEEK_API_KEY=""
+export SILICONFLOW_API_KEY=""

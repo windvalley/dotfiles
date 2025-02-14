@@ -1,0 +1,9 @@
+# NOTE:
+#   1. 此配置文件中的选项如果与 ~/.config/alacritty/alacritty.toml 或 ~/.alacritty.toml 存在重叠,
+#      则这里的相关配置不会生效, 应避免和主配置文件中的配置选项重叠.
+
+[keyboard]
+
+bindings = [
+{ key = "Back", mods = "Control", chars = "private_string" },
+]

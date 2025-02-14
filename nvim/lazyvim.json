@@ -1,0 +1,21 @@
+{
+  "extras": [
+    "lazyvim.plugins.extras.lang.clangd",
+    "lazyvim.plugins.extras.lang.toml"
+  ],
+  "install_version": 7,
+  "lualine": {
+    "sections": {
+      "lualine_c": {
+        "codeium_status": {
+          "icon": "",
+          "update": "update_codeium_status"
+        }
+      }
+    }
+  },
+  "news": {
+    "NEWS.md": "10960"
+  },
+  "version": 8
+}
