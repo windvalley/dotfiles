@@ -54,7 +54,6 @@
   brew install switchaudio-osx
   ```
 
-
 ### Zsh
 
 - [Zsh](https://github.com/ohmyzsh/ohmyzsh)
@@ -89,28 +88,29 @@
   brew install neovim
   ```
 
-## Install Dotfiles
+## Install dotfiles
 
 ```sh
-git clone https://git@github.com:windvalley/dotfiles.git ~/dotfiles
+# Clone windvalley/dotfiles
+git clone https://git@github.com:windvalley/dotfiles.git ~/.dotfiles
 
 # Tmux
-ln -s ~/dotfiles/tmux/tmux.conf ~/.tmux.conf
+ln -sf ~/.dotfiles/tmux/tmux.conf ~/.tmux.conf
 
 # Alacritty
-ln -s ~/dotfiles/alacritty/alacritty.toml ~/.alacritty.toml
-cp ~/dotfiles/alacritty/alacritty_private.toml ~/.config/alacritty/alacritty_private.toml
+ln -sf ~/.dotfiles/alacritty/alacritty.toml ~/.alacritty.toml
+cp ~/.dotfiles/alacritty/alacritty_private.toml ~/.config/alacritty/alacritty_private.toml
 
 # Zsh
-ln -s ~/dotfiles/zsh/zshrc ~/.zshrc
-ln -s ~/dotfiles/zsh/p10k.zsh ~/.p10k.zsh
-cp ~/dotfiles/zsh/zshrc_private ~/.zshrc_private
+ln -sf ~/.dotfiles/zsh/zshrc ~/.zshrc
+ln -sf ~/.dotfiles/zsh/p10k.zsh ~/.p10k.zsh
+cp ~/.dotfiles/zsh/zshrc_private ~/.zshrc_private
 exec zsh
 
 # Neovim(LazyVim)
 mv ~/.config/nvim ~/.config/nvim.bak
-ln -s ~/dotfiles/nvim ~/.config/nvim
-cat > ~/dotfiles/nvim/lua/plugins/switch_colorscheme.lua <<EOF
+ln -sf ~/.dotfiles/nvim ~/.config/nvim
+cat > ~/.dotfiles/nvim/lua/plugins/switch_colorscheme.lua <<EOF
 return {
   {
     "LazyVim/LazyVim",

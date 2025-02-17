@@ -9,15 +9,15 @@ source $script_dir/../env.zsh
 
 to_font=$1
 
-fonts=$(awk -F: '/Fonts:/{print $2}' $alacritty_conf | awk '{$1=$1}1')
+fonts=$(awk -F: '/Fonts:/{print $2}' $alacritty_private_conf | awk '{$1=$1}1')
 
 [[ $# -ne 1 ]] && {
-  echo "Usage $0 <$fonts>"
-  exit 1
+    echo "Usage $0 <$fonts>"
+    exit 1
 }
 
 change_alacritty_font() {
-  gsed -i '/^normal =/s/^.*$/normal = { family = '"\"$to_font Nerd Font\""', style = "Regular" }/' $alacritty_conf
+    gsed -i '/^normal =/s/^.*$/normal = { family = '"\"$to_font Nerd Font\""', style = "Regular" }/' $alacritty_private_conf
 }
 
 change_alacritty_font

@@ -21,7 +21,7 @@ if [[ "$to_font_size" -lt 1 ]] || [[ "$to_font_size" -gt 200 ]]; then
 fi
 
 change_alacritty_font_size() {
-  gsed -i "/^size/s/^.*$/size = $to_font_size/" $alacritty_conf
+    gsed -i "/^size/s/^.*$/size = $to_font_size/" $alacritty_private_conf
 }
 
 change_alacritty_font_size

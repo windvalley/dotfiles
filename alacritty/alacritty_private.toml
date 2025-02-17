@@ -6,5 +6,34 @@
 [general]
 import = ["~/.config/alacritty/themes/themes/tokyo_night.toml"]
 
+[window]
+opacity = 0.9
+
+[font]
+# Default:
+#   Linux/BSD: { family = "monospace", style = "Regular" }
+#   Windows: { family = "Consolas", style = "Regular" }
+#   macOS: { family = "Menlo", style = "Regular" }
+#
+# https://github.com/ryanoasis/nerd-fonts
+# https://www.nerdfonts.com/font-downloads(brew install --cask font-<FONT NAME>-nerd-font)
+#
+# brew install font-hack-nerd-font
+# brew install font-Inconsolata-Nerd-Font 
+# brew install font-iosevka-nerd-font
+# brew install font-iosevka-term-slab-nerd-font
+# brew install font-tinos-nerd-font
+# brew install font-profont-nerd-font
+# brew install font-m+-nerd-font
+# brew install font-go-mono-nerd-font
+# brew install font-Anonymice-nerd-font
+#
+# Fonts: Hack|Inconsolata|Iosevka|ProFontIIx|ProFontWindows|M+1Code|M+CodeLat50|GoMono|AnonymicePro
+normal = { family = "Iosevka Nerd Font", style = "Regular" }
+# Font size in points.
+# Default: 11.25
+size = 13
+
+
 [keyboard]
 bindings = [{ key = "Back", mods = "Control", chars = "your private string" }]
