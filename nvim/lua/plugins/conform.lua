@@ -17,6 +17,7 @@ return {
           sh = { "shfmt" },
           zsh = { "beautysh" },
           markdown = { "markdownlint-cli2" },
+          go = { "gofumpt", "goimports-reviser" },
         },
         -- The options you set here will be merged with the builtin formatters.
         -- You can also define any custom formatters here.

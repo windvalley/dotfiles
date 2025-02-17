@@ -14,6 +14,7 @@ return {
         "goimports",
         "goimports-reviser",
         "golines",
+        "impl", -- for go
         "gomodifytags",
         "markdownlint-cli2",
         "sql-formatter",
