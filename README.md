@@ -108,6 +108,9 @@ exec zsh
 
 # Neovim(LazyVim)
 mv ~/.config/nvim ~/.config/nvim.bak
+rm -rf ~/.local/share/nvim
+rm -rf ~/.local/state/nvim
+rm -rf ~/.cache/nvim
 ln -sf ~/.dotfiles/nvim ~/.config/nvim
 cat > ~/.dotfiles/nvim/lua/plugins/switch_colorscheme.lua <<EOF
 return {
