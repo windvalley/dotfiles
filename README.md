@@ -8,7 +8,7 @@
   brew install alacritty
   ```
 
-- [Alacritty Themes](https://github.com/alacritty/alacritty-theme)
+- [Themes](https://github.com/alacritty/alacritty-theme)
 
   ```sh
   mkdir -p ~/.config/alacritty/themes
@@ -30,7 +30,6 @@
   ```
 
   > NOTE: All Nerd fonts can be previewed on this page. Install as needed: <https://www.nerdfonts.com/font-downloads>
-
 
 ### Tmux
 
@@ -98,7 +97,7 @@ git clone https://git@github.com:windvalley/dotfiles.git ~/.dotfiles
 ln -sf ~/.dotfiles/tmux/tmux.conf ~/.tmux.conf
 
 # Alacritty
-ln -sf ~/.dotfiles/alacritty/alacritty.toml ~/.alacritty.toml
+ln -sf ~/.dotfiles/alacritty/alacritty.toml ~/.config/alacritty/alacritty.toml
 cp ~/.dotfiles/alacritty/alacritty_private.toml ~/.config/alacritty/alacritty_private.toml
 
 # Zsh

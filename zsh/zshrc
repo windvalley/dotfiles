@@ -288,7 +288,7 @@ alias ll="exa -l -g --icons --git"
 # *** dotfiles 项目可执行文件
 
 # 将 bin 目录加入到 PATH.
-export PATH="$HOME/dotfiles/zsh/bin:$PATH"
+export PATH="$HOME/.dotfiles/zsh/bin:$PATH"
 
 # Vim/Neovim & Alacritty 主题相关命令
 alias cs=colorscheme
@@ -307,9 +307,9 @@ alias s=ssh-sessions
 
 # *** 快速打开 dotfiles 的几种主要配置文件
 
-alias zrc='nvim ~/dotfiles/zsh/zshrc'
-alias tconf='nvim ~/dotfiles/tmux/tmux.conf'
-alias aconf='nvim ~/dotfiles/alacritty/alacritty.toml'
+alias zrc='nvim ~/.dotfiles/zsh/zshrc'
+alias tconf='nvim ~/.dotfiles/tmux/tmux.conf'
+alias aconf='nvim ~/.dotfiles/alacritty/alacritty.toml'
 
 # *** 快速切换到常用的目录
 
