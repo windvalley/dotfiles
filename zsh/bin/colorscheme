@@ -12,24 +12,25 @@ colorscheme=$1
 colorschemes=$(grep require $nvim_cs_conf | awk -F'"' '{print $2}' | xargs | sed 's/ /|/g')
 
 [[ -z $colorscheme ]] && {
-  echo "Usage $0 <tokyonight|$colorschemes>"
-  exit 1
+    echo "Usage $0 <tokyonight|$colorschemes>"
+    exit 1
 }
 
 nvim_cs_change() {
-  nvim_current_cs=$(awk -F'"' '/colorscheme = /{print $2}' $nvim_cs_conf)
-  gsed -i "/colorscheme/s|$nvim_current_cs|$colorscheme|" $nvim_cs_conf
+    local nvim_cs_switch_conf=~/dotfiles/nvim/lua/plugins/switch_colorscheme.lua
+    gsed -i "s|colorscheme = .*|colorscheme = \"$colorscheme\"|" $nvim_cs_switch_conf
 }
 
 alacritty_cs_change() {
-  ala_colorscheme="tokyo_night_enhanced"
-  if [[ $colorscheme = "dracula" ]]; then
-    ala_colorscheme="dracula"
-  elif [[ $colorscheme = "gruvbox" ]]; then
-    ala_colorscheme="gruvbox_material"
-  fi
+    local ala_private_conf=~/.config/alacritty/alacritty_private.toml
+    ala_colorscheme="tokyo_night"
+    if [[ $colorscheme = "dracula" ]]; then
+        ala_colorscheme="dracula"
+    elif [[ $colorscheme = "gruvbox" ]]; then
+        ala_colorscheme="gruvbox_material"
+    fi
 
-  gsed -i "/alacritty\/themes\/themes/s|^.*$|\"~/.config/alacritty/themes/themes/$ala_colorscheme.toml\",|" $alacritty_conf
+    gsed -i "s|~/.config/alacritty/themes/themes/.*.toml|~/.config/alacritty/themes/themes/$ala_colorscheme.toml|" $ala_private_conf
 }
 
 nvim_cs_change

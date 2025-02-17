@@ -288,7 +288,7 @@ alias ll="exa -l -g --icons --git"
 # *** dotfiles 项目可执行文件
 
 # 将 bin 目录加入到 PATH.
-export PATH="$HOME/dot-neovim/zsh/bin:$PATH"
+export PATH="$HOME/dotfiles/zsh/bin:$PATH"
 
 # Vim/Neovim & Alacritty 主题相关命令
 alias cs=colorscheme

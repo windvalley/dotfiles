@@ -5,10 +5,7 @@
 # Import additional configuration files.
 # Imports are loaded in order, skipping all missing files, with the importing file being loaded last. If a field is already present in a previous import, it will be replaced.
 # All imports must either be absolute paths starting with /, paths relative to the user's home directory starting with ~/, or paths relative from the current config file.
-import = [
-"~/.config/alacritty/themes/themes/tokyo_night_enhanced.toml",
-  "~/.alacritty_private.toml",
-]
+import = ["~/.config/alacritty/alacritty_private.toml"]
 
 # Directory the shell is started in. When this is unset, or "None", the working directory of the parent process will be used.
 # Default: "None"

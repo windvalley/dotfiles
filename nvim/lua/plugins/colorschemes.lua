@@ -1,11 +1,17 @@
 return {
   {
-    "LazyVim/LazyVim",
-    opts = {
-      -- Switch colorscheme here.
-      -- Default: tokyonight
-      colorscheme = "tokyonight",
-    },
+    "folke/tokyonight.nvim",
+    lazy = false,
+    priority = 1000,
+    opt = {},
+    config = function()
+      require("tokyonight").setup({
+        style = "moon",
+        transparent = true,
+        terminal_colors = true,
+        lualine_bold = true, -- When `true`, section headers in the lualine theme will be bold
+      })
+    end,
   },
 
   {
@@ -35,7 +41,7 @@ return {
         palette_overrides = {},
         overrides = {},
         dim_inactive = false,
-        transparent_mode = false,
+        transparent_mode = true,
       })
     end,
   },
@@ -43,6 +49,7 @@ return {
   {
     "Mofiqul/dracula.nvim",
     lazy = false,
+    opt = {},
     config = function()
       require("dracula").setup({
         -- customize dracula color palette

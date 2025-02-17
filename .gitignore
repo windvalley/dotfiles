@@ -39,3 +39,6 @@ luac.out
 *.x86_64
 *.hex
 
+# Nvim: used for switch colorscheme, may be frequently updated
+nvim/lua/plugins/switch_colorscheme.lua
+

@@ -89,7 +89,7 @@
   brew install neovim
   ```
 
-## Link Dotfiles
+## Install Dotfiles
 
 ```sh
 git clone https://git@github.com:windvalley/dotfiles.git ~/dotfiles
@@ -99,7 +99,7 @@ ln -s ~/dotfiles/tmux/tmux.conf ~/.tmux.conf
 
 # Alacritty
 ln -s ~/dotfiles/alacritty/alacritty.toml ~/.alacritty.toml
-cp ~/dotfiles/alacritty/alacritty_private.toml ~/.alacritty_private.toml
+cp ~/dotfiles/alacritty/alacritty_private.toml ~/.config/alacritty/alacritty_private.toml
 
 # Zsh
 ln -s ~/dotfiles/zsh/zshrc ~/.zshrc
@@ -107,7 +107,19 @@ ln -s ~/dotfiles/zsh/p10k.zsh ~/.p10k.zsh
 cp ~/dotfiles/zsh/zshrc_private ~/.zshrc_private
 exec zsh
 
-# Neovim
+# Neovim(LazyVim)
 mv ~/.config/nvim ~/.config/nvim.bak
-ln -sf ~/dotfiles/nvim ~/.config/nvim
+ln -s ~/dotfiles/nvim ~/.config/nvim
+cat > ~/dotfiles/nvim/lua/plugins/switch_colorscheme.lua <<EOF
+return {
+  {
+    "LazyVim/LazyVim",
+    opts = {
+      colorscheme = "tokyonight"
+    },
+  },
+}
+EOF
 ```
+
+## Usage
