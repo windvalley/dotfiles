@@ -21,9 +21,9 @@ nvim_cs_change() {
 }
 
 alacritty_cs_change() {
-    ala_colorscheme="tokyo_night"
-    if [[ $colorscheme = "dracula" ]]; then
-        ala_colorscheme="dracula"
+    ala_colorscheme=$colorscheme
+    if [[ $colorscheme = "tokyonight" ]];then
+        ala_colorscheme="tokyo_night"
     elif [[ $colorscheme = "gruvbox" ]]; then
         ala_colorscheme="gruvbox_material"
     fi
