@@ -16,16 +16,13 @@
     "workbench.colorTheme": "Dracula Theme",
     "workbench.editor.highlightModifiedTabs": true,
     "workbench.colorCustomizations": {
-        "statusBar.background": "#005f5f",
-        "statusBar.noFolderBackground": "#005f5f",
-        "statusBar.debuggingBackground": "#005f5f",
+        "statusBar.background": "#005f87",
+        "statusBar.noFolderBackground": "#005f87",
+        "statusBar.debuggingBackground": "#005f87",
         "statusBar.foreground": "#ffffff",
         "statusBar.debuggingForeground": "#ffffff"
     },
     "vim.leader": ",",
-    "vim.enableNeovim": true,
-    "vim.neovimConfigPath": "~/.config/nvim/init.lua",
-    "vim.neovimPath": "/usr/local/bin/nvim",
     "vim.autoSwitchInputMethod.enable": true,
     "vim.autoSwitchInputMethod.obtainIMCmd": "/usr/local/bin/im-select",
     "vim.autoSwitchInputMethod.switchIMCmd": "/usr/local/bin/im-select {im}",
@@ -56,13 +53,51 @@
             "after": [
                 "<Down>"
             ]
+        },
+        // 在插入模式下使用 Ctrl+h 映射为向左箭头键(默认Ctrl+b也可以向左移动)
+        {
+            "before": [
+                "<C-h>"
+            ],
+            "after": [
+                "<Left>"
+            ]
+        },
+        // 在插入模式下使用 Ctrl+l 映射为向右箭头键(默认Ctrl+f也可以向右移动)
+        {
+            "before": [
+                "<C-l>"
+            ],
+            "after": [
+                "<Right>"
+            ]
+        },
+        // 在插入模式下使用 Ctrl+a 映射为跳转到行首
+        {
+            "before": [
+                "<C-a>"
+            ],
+            "after": [
+                "<C-o>",
+                "^"
+            ]
+        },
+        // 在插入模式下使用 Ctrl+e 映射为跳转到行尾
+        {
+            "before": [
+                "<C-e>"
+            ],
+            "after": [
+                "<C-o>",
+                "$"
+            ]
         }
     ],
     "vim.normalModeKeyBindingsNonRecursive": [
         // 以悬浮窗口预览光标所在对象的定义
         {
             "before": [
-                "K"
+                "K" // shift+k
             ],
             "commands": [
                 "editor.action.showDefinitionPreviewHover"
@@ -96,6 +131,16 @@
             ],
             "commands": [
                 "editor.action.goToReferences"
+            ]
+        },
+        // 跳转到光标所在对象的声明处
+        {
+            "before": [
+                "g",
+                "t"
+            ],
+            "commands": [
+                "editor.action.revealDeclaration"
             ]
         },
         // 跳转到下一个错误、警告、信息处
