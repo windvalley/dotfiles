@@ -39,13 +39,6 @@
   brew install tmux
   ```
 
-- iStats
-
-  ```sh
-  # For showing cpu temperature and fan speed in the tmux status bar.
-  sudo gem install iStats
-  ```
-
 - switchaudio-osx
 
   ```sh
@@ -79,6 +72,13 @@
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.powerlevel10k
   ```
 
+- [eza](https://github.com/eza-community/eza)
+
+  ```sh
+  # A modern replacement for ls.
+  brew install eza
+  ```
+
 ### Neovim
 
 - [Neovim](https://github.com/neovim/neovim)
@@ -94,6 +94,9 @@
 git clone https://git@github.com:windvalley/dotfiles.git ~/.dotfiles
 
 # Tmux
+mv ~/.tmux ~/.tmux.bak
+killall tmux
+rm -rf /tmp/tmux*
 ln -sf ~/.dotfiles/tmux/tmux.conf ~/.tmux.conf
 
 # Alacritty
