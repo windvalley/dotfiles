@@ -1,3 +1,6 @@
+# alacritty.toml by @windvalley
+# https://raw.githubusercontent.com/windvalley/dotfiles/master/alacritty/alacritty.toml
+#
 # doc: https://alacritty.org/config-alacritty.html
 
 [general]
@@ -220,8 +223,12 @@ hide_when_typing = true
 #   Command + -: DecreaseFontSize
 #   Command + 0: ResetFontSize
 bindings = [
+  # NOTE: ctrl b/f 快捷键默认被Neovim的hover悬浮窗内容滚动快捷键占用,
+  # 如果要使Neovim该快捷键生效，需要注释这里的相关配置. 如果不使用Neovim编程，
+  # 建议取消这里的注释.
+  #
   # 光标向左移动
   # { key = "B", mods = "Control", chars = "\u001b[D" },
-  # # 光标向右移动
+  # 光标向右移动
   # { key = "F", mods = "Control", chars = "\u001b[C" },
 ]
