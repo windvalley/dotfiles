@@ -1,5 +1,5 @@
 # zshrc by @windvalley
-# https://raw.githubusercontent.com/dot-neovim/master/zsh/zshrc
+# https://raw.githubusercontent.com/windvalley/dotfiles/master/zsh/zshrc
 
 
 # vim: set foldmarker={{,}} foldlevel=0 foldmethod=marker:
@@ -29,7 +29,7 @@
 #         git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
 #
 #   3. 使用本 zshrc 文件
-#      curl -sfLo ~/.zshrc https://raw.githubusercontent.com/vimhack/dotfiles/master/zsh/zshrc
+#      curl -sfLo ~/.zshrc https://raw.githubusercontent.com/dot-neovim/master/zsh/zshrc
 
 # }}
 
@@ -167,57 +167,36 @@ export HOMEBREW_BOTTLE_DOMAIN=
 # --- 编程语言 {{
 
 # ****** Go ******
-# 安装 Go:
-#   brew install go
-# 更新 Go:
-#   brew upgrade go
+# 通过goenv管理Go版本:
+#
+# 首先卸载掉已经安装的Go版本（如果有）：brew uninstall --force go
+# 安装goenv：brew install goenv
+# 查看goenv可安装的Go版本列表：goenv install -l
+# 使用goenv安装Go1.21版本：goenv install 1.21
+# 使用goenv安装Go1.23版本：goenv install 1.23
+# 查看通过goenv安装的Go版本有哪些：goenv versions
+# 将系统全局Go版本设置为1.21: goenv global 1.21
+# 将当前项目的Go版本设置为1.23, 在项目根目录下执行: goenv local 1.23
+eval "$(goenv init -)"
+
 # 安装 protobuf 的编译器 protoc:
 #   brew install protobuf
 # 安装 protoc 需要的 Go 语言代码转换工具 protoc-gen-go:
 #   brew install protoc-gen-go
 
-GOROOT="/usr/local/opt/go" # /usr/local/opt/go or /opt/homebrew/opt/go
+# ****** Python ******
+#
+# 使用pyenv管理Python版本
+# brew install pyenv
+# 安装python3.13版本：pyenv install 3.13
+# 查看当前已经安装的python版本有哪些：pyenv versions
+# 设置系统全局的python版本为3.13: pyenv global 3.13
+# 设置当前目录环境的python版本为3.9: pyenv local 3.9
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init - zsh)"
 
-GOPATH=$HOME/go
-
-GOBIN=$GOPATH/bin
-
-# 可选值:
-#     on  开启 Go Modules 特性, 使 Go 编译器忽略 $GOPATH 和 vender 文件夹, 只根据 go.mod 下载依赖;
-#    off  关闭 Go Modules 特性, 使 Go 编译器依旧在 $GOPATH 和 vender 文件夹来查找依赖;
-#   auto  当源码在 $GOPATH/src 目录下, 并且项目目录下没有 go.mod 文件时,
-#         关闭 Go Modules 特性, 其他情况下均开启.
-# NOTE: Go 1.14+ 版本后 auto 为默认值.
-GO111MODULE=auto
-
-# 下载 Go 包的代理服务器, direct 的作用是当代理服务器上没有要下载的包, 则直接从原始地址下载.
-GOPROXY=https://goproxy.cn,direct
-
-# 下载 Go 包时, 如果包地址是这里配置的地址, 则不走设置的代理服务器, 直接从这里配置的地址下载;
-# 一般这里配置公司内部配置的私有 Go 包仓库;
-# Go 1.13+ 开始支持.
-GOPRIVATE=
-
-# 默认值: sum.golang.org, 是一个 Web 服务器, 用来查询依赖包指定版本的哈希值,
-# 确保拉取到的 Go 包未经过篡改, 如果不需要校验, 则设置为 off.
-GOSUMDB=sum.golang.org
-
-
-PATH="$GOROOT/bin:$GOBIN:$PATH"
-
-export GOPATH GOBIN GOPROXY GOPRIVATE GOSUMDB PATH
-
-# ****** Python3 ******
-
-# python3
-# brew install python3
-# NOTE:
-#   cd /usr/local/opt/python3/bin
-#   ln -sf python3.11 python3
-#   ln -sf python3.11 python
-export PATH="/usr/local/opt/python3/bin:$PATH"
-
-# poetry
+# 使用poetry管理python虚拟环境
 # 1) Install:
 #    curl -sSL https://install.python-poetry.org | python3 -
 # 2) Uninstall:
@@ -228,8 +207,6 @@ export PATH="/usr/local/opt/python3/bin:$PATH"
 #    poetry completions zsh > $(brew --prefix)/share/zsh/site-functions/_poetry
 #    poetry help completions
 #    exec zsh
-# NOTE:
-#   1) Do not use 'deactivate' to exit from 'poetry shell', use 'exit'.
 export PATH="/Users/xg/.local/bin:$PATH"
 
 # ****** Lua ******
@@ -283,7 +260,8 @@ alias vi="nvim"
 alias cp='cp -i'
 alias mv='mv -i'
 
-alias ll="exa -l -g --icons --git"
+# brew install eza
+alias ll="eza -l -g --icons --git"
 
 # *** dotfiles 项目可执行文件
 
@@ -440,14 +418,9 @@ setopt no_nomatch
 #
 # *** 自定义命令
 #         colorscheme/cs  切换 vim 和 alacritty 的颜色方案.
-#                     rc  随机切换 vim 和 alacritty 的颜色方案.
 #                font/ft  切换 alacritty 终端的字体.
-#                     rf  随机切换 alacritty 终端的字体.
 #              opacity/o  调整 alacritty 终端的透明度.
-#                ino/deo  微调 alacritty 终端的透明度.
 #           font-size/fs  设置 alacritty 终端的字体大小.
-#                     tv  打开或关闭 Vim 背景透明色.
-#                     to  打开或关闭 Alacritty 背景透明色.
 #         colors-print/c  打印 256 色的前景色模式和背景色模式.
 #                    hex  打印 256 色的 16 进制表示方式.
 #                    vol  调整系统音量大小.
