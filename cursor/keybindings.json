@@ -1,82 +1,83 @@
+// Cursor/VSCode keybindings.json by @windvalley
+// https://raw.githubusercontent.com/windvalley/dotfiles/master/cursor/keybindings.json
+//
 // ln -sf ~/.dotfiles/cursor/keybindings.json ~/Library/Application\ Support/Cursor/User/keybindings.json
-// 将键绑定放在此文件中以覆盖默认值.
 [
-    // ****** 通过如下快捷键浏览hover窗口的内容 ******
-    {
-        // 在hover窗口中向上翻页
-        "key": "ctrl+u",
-        "command": "editor.action.pageUpHover",
-        "when": "editorHoverFocused"
-    },
-    {
-        // 在hover窗口中向下翻页
-        "key": "ctrl+d",
-        "command": "editor.action.pageDownHover",
-        "when": "editorHoverFocused"
-    },
-    {
-        // 在hover窗口中向左滚动
-        "key": "h",
-        "command": "editor.action.scrollLeftHover",
-        "when": "editorHoverFocused"
-    },
-    {
-        // 在hover窗口中向下滚动
-        "key": "j",
-        "command": "editor.action.scrollDownHover",
-        "when": "editorHoverFocused"
-    },
-    {
-        // 在hover窗口中向上滚动
-        "key": "k",
-        "command": "editor.action.scrollUpHover",
-        "when": "editorHoverFocused"
-    },
-    {
-        // 在hover窗口中向右滚动
-        "key": "l",
-        "command": "editor.action.scrollRightHover",
-        "when": "editorHoverFocused"
-    },
-    {
-        // 在hover窗口中跳转到顶部
-        "key": "g",
-        "command": "editor.action.goToTopHover",
-        "when": "editorHoverFocused"
-    },
-    {
-        // 在hover窗口中跳转到底部
-        "key": "shift+g",
-        "command": "editor.action.goToBottomHover",
-        "when": "editorHoverFocused"
-    },
-    // normal模式下通过gp或gi或gr等快捷键弹出窗口，通过tab键将焦点切换到窗口，
-    // 然后就可以通过jklh/ctrl+d/u快捷键来浏览窗口内容了
-    {
-        "key": "tab",
-        "command": "togglePeekWidgetFocus",
-        "when": "inReferenceSearchEditor || referenceSearchVisible"
-    },
-    // 显示 chat 历史记录
-    {
-        "key": "alt+cmd+h",
-        "command": "composer.showComposerChatHistory"
-    },
-    // 显示 Composer 历史记录
-    {
-        "key": "alt+cmd+l",
-        "command": "composer.showComposerHistory",
-    },
-    // 打开主侧栏源代码管理视图(Source Control Management)
-    {
-        "key": "shift+cmd+g",
-        "command": "workbench.view.scm",
-        "when": "workbench.scm.active"
-    },
-    // 在编辑markdown文件时，使用cmd+shift+v快捷键在右侧打开预览窗口
-    {
-        "key": "shift+cmd+v",
-        "command": "markdown.showPreviewToSide",
-        "when": "!notebookEditorFocused && editorLangId == 'markdown'"
-    },
+  {
+    // 在hover窗口中向上翻页
+    "key": "ctrl+u",
+    "command": "editor.action.pageUpHover",
+    "when": "editorHoverFocused"
+  },
+  {
+    // 在hover窗口中向下翻页
+    "key": "ctrl+d",
+    "command": "editor.action.pageDownHover",
+    "when": "editorHoverFocused"
+  },
+  {
+    // 在hover窗口中向左滚动
+    "key": "h",
+    "command": "editor.action.scrollLeftHover",
+    "when": "editorHoverFocused"
+  },
+  {
+    // 在hover窗口中向下滚动
+    "key": "j",
+    "command": "editor.action.scrollDownHover",
+    "when": "editorHoverFocused"
+  },
+  {
+    // 在hover窗口中向上滚动
+    "key": "k",
+    "command": "editor.action.scrollUpHover",
+    "when": "editorHoverFocused"
+  },
+  {
+    // 在hover窗口中向右滚动
+    "key": "l",
+    "command": "editor.action.scrollRightHover",
+    "when": "editorHoverFocused"
+  },
+  {
+    // 在hover窗口中跳转到顶部
+    "key": "g",
+    "command": "editor.action.goToTopHover",
+    "when": "editorHoverFocused"
+  },
+  {
+    // 在hover窗口中跳转到底部
+    "key": "shift+g",
+    "command": "editor.action.goToBottomHover",
+    "when": "editorHoverFocused"
+  },
+  // normal模式下通过gp或gi或gr等快捷键弹出窗口，通过tab键将焦点切换到窗口，
+  // 然后就可以通过jklh/ctrl+d/u快捷键来浏览窗口内容了
+  {
+    "key": "tab",
+    "command": "togglePeekWidgetFocus",
+    "when": "inReferenceSearchEditor || referenceSearchVisible"
+  },
+  // 显示 chat 历史记录
+  {
+    "key": "alt+cmd+h",
+    "command": "composer.showComposerChatHistory"
+  },
+  // 显示 Composer 历史记录
+  {
+    "key": "alt+cmd+l",
+    "command": "composer.showComposerHistory"
+  },
+  // 打开主侧栏源代码管理视图(Source Control Management)
+  {
+    "key": "shift+cmd+g",
+    "command": "workbench.view.scm",
+    "when": "workbench.scm.active"
+  },
+  // 在编辑markdown文件时，使用cmd+shift+v快捷键在右侧打开预览窗口
+  {
+    "key": "shift+cmd+v",
+    "command": "markdown.showPreviewToSide",
+    "when": "!notebookEditorFocused && editorLangId == 'markdown'"
+  }
 ]

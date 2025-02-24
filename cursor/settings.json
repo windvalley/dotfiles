@@ -1,205 +1,208 @@
+// Cursor/VSCode settings.json by @windvalley
+// https://raw.githubusercontent.com/windvalley/dotfiles/master/cursor/settings.json
+//
 // ln -sf ~/.dotfiles/cursor/settings.json ~/Library/Application\ Support/Cursor/User/settings.json
 {
-    "cursor.aipreview.enabled": true,
-    "editor.wordWrap": "on",
-    "editor.fontFamily": "Hack Nerd Font",
-    "editor.lineNumbers": "relative",
-    "editor.lightbulb.enabled": "onCode",
-    "editor.fontSize": 13,
-    "editor.formatOnSave": true,
-    "editor.accessibilitySupport": "off",
-    "diffEditor.codeLens": true,
-    "diffEditor.experimental.useTrueInlineView": true,
-    // 是否使用2个文件来diff变更，默认为true
-    "diffEditor.renderSideBySide": false,
-    "makefile.configureOnOpen": false,
-    "workbench.colorTheme": "Dracula Theme",
-    "workbench.editor.highlightModifiedTabs": true,
-    "workbench.colorCustomizations": {
-        "statusBar.background": "#005f87",
-        "statusBar.noFolderBackground": "#005f87",
-        "statusBar.debuggingBackground": "#005f87",
-        "statusBar.foreground": "#ffffff",
-        "statusBar.debuggingForeground": "#ffffff"
+  "cursor.aipreview.enabled": true,
+  "editor.wordWrap": "on",
+  "editor.fontFamily": "Hack Nerd Font",
+  "editor.lineNumbers": "relative",
+  "editor.lightbulb.enabled": "onCode",
+  "editor.fontSize": 13,
+  "editor.formatOnSave": true,
+  "editor.accessibilitySupport": "off",
+  "diffEditor.codeLens": true,
+  "diffEditor.experimental.useTrueInlineView": true,
+  // 是否使用2个文件来diff变更，默认为true
+  "diffEditor.renderSideBySide": false,
+  "makefile.configureOnOpen": false,
+  "workbench.colorTheme": "Dracula Theme",
+  "workbench.editor.highlightModifiedTabs": true,
+  "workbench.colorCustomizations": {
+    "statusBar.background": "#005f5f",
+    "statusBar.noFolderBackground": "#005f5f",
+    "statusBar.debuggingBackground": "#005f5f",
+    "statusBar.foreground": "#ffffff",
+    "statusBar.debuggingForeground": "#ffffff"
+  },
+  "vim.leader": ",",
+  "vim.autoSwitchInputMethod.enable": true,
+  "vim.autoSwitchInputMethod.obtainIMCmd": "/usr/local/bin/im-select",
+  "vim.autoSwitchInputMethod.switchIMCmd": "/usr/local/bin/im-select {im}",
+  "vim.autoSwitchInputMethod.defaultIM": "com.apple.keylayout.ABC",
+  "vim.easymotion": true,
+  "vim.highlightedyank.enable": true,
+  "vim.statusBarColorControl": true,
+  "vim.useSystemClipboard": true,
+  "vim.smartRelativeLine": true,
+  "vim.showMarksInGutter": true,
+  "vim.sneak": true,
+  "vim.sneakUseIgnorecaseAndSmartcase": true,
+  "vim.insertModeKeyBindings": [
+    // 在插入模式下使用 Ctrl+k 映射为向上箭头键
+    {
+      "before": [
+        "<C-k>"
+      ],
+      "after": [
+        "<Up>"
+      ]
     },
-    "vim.leader": ",",
-    "vim.autoSwitchInputMethod.enable": true,
-    "vim.autoSwitchInputMethod.obtainIMCmd": "/usr/local/bin/im-select",
-    "vim.autoSwitchInputMethod.switchIMCmd": "/usr/local/bin/im-select {im}",
-    "vim.autoSwitchInputMethod.defaultIM": "com.apple.keylayout.ABC",
-    "vim.easymotion": true,
-    "vim.highlightedyank.enable": true,
-    "vim.statusBarColorControl": true,
-    "vim.useSystemClipboard": true,
-    "vim.smartRelativeLine": true,
-    "vim.showMarksInGutter": true,
-    "vim.sneak": true,
-    "vim.sneakUseIgnorecaseAndSmartcase": true,
-    "vim.insertModeKeyBindings": [
-        // 在插入模式下使用 Ctrl+k 映射为向上箭头键
-        {
-            "before": [
-                "<C-k>"
-            ],
-            "after": [
-                "<Up>"
-            ]
-        },
-        // 在插入模式下使用 Ctrl+j 映射为向下箭头键
-        {
-            "before": [
-                "<C-j>"
-            ],
-            "after": [
-                "<Down>"
-            ]
-        },
-        // 在插入模式下使用 Ctrl+h 映射为向左箭头键(默认Ctrl+b也可以向左移动)
-        {
-            "before": [
-                "<C-h>"
-            ],
-            "after": [
-                "<Left>"
-            ]
-        },
-        // 在插入模式下使用 Ctrl+l 映射为向右箭头键(默认Ctrl+f也可以向右移动)
-        {
-            "before": [
-                "<C-l>"
-            ],
-            "after": [
-                "<Right>"
-            ]
-        },
-        // 在插入模式下使用 Ctrl+a 映射为跳转到行首
-        {
-            "before": [
-                "<C-a>"
-            ],
-            "after": [
-                "<C-o>",
-                "^"
-            ]
-        },
-        // 在插入模式下使用 Ctrl+e 映射为跳转到行尾
-        {
-            "before": [
-                "<C-e>"
-            ],
-            "after": [
-                "<C-o>",
-                "$"
-            ]
-        }
-    ],
-    "vim.normalModeKeyBindingsNonRecursive": [
-        // 以悬浮窗口预览光标所在对象的定义
-        {
-            "before": [
-                "K" // shift+k
-            ],
-            "commands": [
-                "editor.action.showDefinitionPreviewHover"
-            ]
-        },
-        // 弹出窗口预览定义光标所在对象的文件内容
-        {
-            "before": [
-                "g",
-                "p"
-            ],
-            "commands": [
-                "editor.action.peekDefinition",
-            ]
-        },
-        // 跳转到光标所在interface的实现处, 或跳转到光标所在结构体（或其他类型）所实现的interface处
-        {
-            "before": [
-                "g",
-                "i"
-            ],
-            "commands": [
-                "editor.action.goToImplementation"
-            ]
-        },
-        // 跳转到光标所在对象的引用处，如果有多个地方引用了这个对象，会弹出窗口供选择 
-        {
-            "before": [
-                "g",
-                "r"
-            ],
-            "commands": [
-                "editor.action.goToReferences"
-            ]
-        },
-        // 跳转到光标所在对象的声明处
-        {
-            "before": [
-                "g",
-                "t"
-            ],
-            "commands": [
-                "editor.action.revealDeclaration"
-            ]
-        },
-        // 跳转到下一个错误、警告、信息处
-        {
-            "before": [
-                "<leader>",
-                "j"
-            ],
-            "commands": [
-                "editor.action.marker.nextInFiles"
-            ]
-        },
-        // 跳转到上一个错误、警告、信息处
-        {
-            "before": [
-                "<leader>",
-                "k"
-            ],
-            "commands": [
-                "editor.action.marker.prevInFiles"
-            ]
-        },
-        // 跳转到下一个修改点
-        {
-            "before": [
-                "]"
-            ],
-            "commands": [
-                "workbench.action.editor.nextChange"
-            ]
-        },
-        // 跳转到上一个修改点 
-        {
-            "before": [
-                "["
-            ],
-            "commands": [
-                "workbench.action.editor.previousChange"
-            ]
-        },
-        // 重命名变量、函数等
-        {
-            "before": [
-                "<leader>",
-                "r"
-            ],
-            "commands": [
-                "editor.action.rename"
-            ]
-        },
-        // 切换显示/隐藏 git blame 信息(需提前安装GitLens插件)
-        {
-            "before": [
-                "<leader>",
-                "b"
-            ],
-            "commands": [
-                "gitlens.toggleFileBlame"
-            ]
-        }
-    ],
+    // 在插入模式下使用 Ctrl+j 映射为向下箭头键
+    {
+      "before": [
+        "<C-j>"
+      ],
+      "after": [
+        "<Down>"
+      ]
+    },
+    // 在插入模式下使用 Ctrl+h 映射为向左箭头键(默认Ctrl+b也可以向左移动)
+    {
+      "before": [
+        "<C-h>"
+      ],
+      "after": [
+        "<Left>"
+      ]
+    },
+    // 在插入模式下使用 Ctrl+l 映射为向右箭头键(默认Ctrl+f也可以向右移动)
+    {
+      "before": [
+        "<C-l>"
+      ],
+      "after": [
+        "<Right>"
+      ]
+    },
+    // 在插入模式下使用 Ctrl+a 映射为跳转到行首
+    {
+      "before": [
+        "<C-a>"
+      ],
+      "after": [
+        "<C-o>",
+        "^"
+      ]
+    },
+    // 在插入模式下使用 Ctrl+e 映射为跳转到行尾
+    {
+      "before": [
+        "<C-e>"
+      ],
+      "after": [
+        "<C-o>",
+        "$"
+      ]
+    }
+  ],
+  "vim.normalModeKeyBindingsNonRecursive": [
+    // 以悬浮窗口预览光标所在对象的定义
+    {
+      "before": [
+        "K" // shift+k
+      ],
+      "commands": [
+        "editor.action.showDefinitionPreviewHover"
+      ]
+    },
+    // 弹出窗口预览定义光标所在对象的文件内容
+    {
+      "before": [
+        "g",
+        "p"
+      ],
+      "commands": [
+        "editor.action.peekDefinition"
+      ]
+    },
+    // 跳转到光标所在interface的实现处, 或跳转到光标所在结构体（或其他类型）所实现的interface处
+    {
+      "before": [
+        "g",
+        "i"
+      ],
+      "commands": [
+        "editor.action.goToImplementation"
+      ]
+    },
+    // 跳转到光标所在对象的引用处，如果有多个地方引用了这个对象，会弹出窗口供选择 
+    {
+      "before": [
+        "g",
+        "r"
+      ],
+      "commands": [
+        "editor.action.goToReferences"
+      ]
+    },
+    // 跳转到光标所在对象的声明处
+    {
+      "before": [
+        "g",
+        "t"
+      ],
+      "commands": [
+        "editor.action.revealDeclaration"
+      ]
+    },
+    // 跳转到下一个错误、警告、信息处
+    {
+      "before": [
+        "<leader>",
+        "j"
+      ],
+      "commands": [
+        "editor.action.marker.nextInFiles"
+      ]
+    },
+    // 跳转到上一个错误、警告、信息处
+    {
+      "before": [
+        "<leader>",
+        "k"
+      ],
+      "commands": [
+        "editor.action.marker.prevInFiles"
+      ]
+    },
+    // 跳转到下一个修改点
+    {
+      "before": [
+        "]"
+      ],
+      "commands": [
+        "workbench.action.editor.nextChange"
+      ]
+    },
+    // 跳转到上一个修改点 
+    {
+      "before": [
+        "["
+      ],
+      "commands": [
+        "workbench.action.editor.previousChange"
+      ]
+    },
+    // 重命名变量、函数等
+    {
+      "before": [
+        "<leader>",
+        "r"
+      ],
+      "commands": [
+        "editor.action.rename"
+      ]
+    },
+    // 切换显示/隐藏 git blame 信息(需提前安装GitLens插件)
+    {
+      "before": [
+        "<leader>",
+        "b"
+      ],
+      "commands": [
+        "gitlens.toggleFileBlame"
+      ]
+    }
+  ]
 }
