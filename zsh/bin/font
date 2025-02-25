@@ -12,7 +12,7 @@ to_font=$1
 fonts=$(awk -F: '/Fonts:/{print $2}' $ALACRITTY_PRIVATE_CONF | awk '{$1=$1}1')
 
 [[ $# -ne 1 ]] && {
-    echo "Usage $0 <$fonts>"
+    echo "Usage: font <$fonts>"
     exit 1
 }
 

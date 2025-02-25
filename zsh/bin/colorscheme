@@ -12,7 +12,7 @@ colorscheme=$1
 colorschemes=$(grep require $NVIM_CS_CONF | awk -F'"' '{print $2}' | xargs | sed 's/ /|/g')
 
 [[ -z $colorscheme ]] && {
-    echo "Usage $0 <tokyonight|$colorschemes>"
+    echo "Usage: colorscheme <tokyonight|$colorschemes>"
     exit 1
 }
 

@@ -11,7 +11,7 @@ source $script_dir/../env.zsh
 to_opacity=$1
 
 [[ "$#" -ne 1 ]] && {
-    echo Usage example: opacity 0.6
+    echo "Usage: opacity <0.0-1.0>"
     exit 1
 }
 

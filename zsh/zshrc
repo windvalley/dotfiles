@@ -325,7 +325,7 @@ export GPG_TTY=$(tty)
 # brew install fzf
 # $(brew --prefix)/opt/fzf/install
 export FZF_DEFAULT_OPTS='--height 60% --layout=reverse --border'
-alias ff="vim \$(fzf)"
+alias ff="nvim \$(fzf)"
 # Useful key bindings and fuzzy completion.
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
