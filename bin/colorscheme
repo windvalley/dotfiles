@@ -1,0 +1,69 @@
+#!/usr/bin/env zsh
+# colorscheme
+#
+# Switch colorscheme for Neovim and Ghostty.
+
+set -euo pipefail
+
+colorscheme=${1:-}
+
+config_home=${XDG_CONFIG_HOME:-"$HOME/.config"}
+
+nvim_cs_conf="$config_home/nvim/lua/plugins/colorschemes.lua"
+nvim_cs_switch_conf="$config_home/nvim/lua/plugins/switch_colorscheme.lua"
+
+ghostty_config="$config_home/ghostty/config"
+
+colorschemes=""
+if [[ -f "$nvim_cs_conf" ]]; then
+    colorschemes=$(grep -E 'require\("' "$nvim_cs_conf" | awk -F'"' '{print $2}' | xargs | sed 's/ /|/g')
+fi
+
+[[ -z "$colorscheme" ]] && {
+    if [[ -n "$colorschemes" ]]; then
+        echo "Usage: colorscheme <tokyonight|$colorschemes>"
+    else
+        echo "Usage: colorscheme <colorscheme>"
+    fi
+    exit 1
+}
+
+nvim_cs_change() {
+    [[ -f "$nvim_cs_switch_conf" ]] || return 0
+    gsed -i -E "s/(colorscheme\s*=\s*)\"[^\"]*\"/\1\"$colorscheme\"/" "$nvim_cs_switch_conf"
+}
+
+ghostty_theme_for() {
+    case "$1" in
+        tokyonight)
+            echo "TokyoNight Moon"
+            ;;
+        gruvbox)
+            echo "Gruvbox Material Dark"
+            ;;
+        dracula)
+            echo "Dracula"
+            ;;
+        catppuccin)
+            echo "Catppuccin Mocha"
+            ;;
+        *)
+            echo "$1"
+            ;;
+    esac
+}
+
+ghostty_cs_change() {
+    [[ -f "$ghostty_config" ]] || {
+        echo "ghostty config not found: $ghostty_config" >&2
+        return 1
+    }
+
+    ghostty_theme=$(ghostty_theme_for "$colorscheme")
+    gsed -i -E "s/^theme\s*=.*/theme = \"$ghostty_theme\"/" "$ghostty_config"
+}
+
+nvim_cs_change
+ghostty_cs_change
+
+exit 0

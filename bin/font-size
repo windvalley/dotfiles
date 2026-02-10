@@ -1,0 +1,38 @@
+#!/usr/bin/env zsh
+# font-size
+#
+# Change font size of Ghostty.
+
+set -euo pipefail
+
+to_font_size=${1:-}
+
+config_home=${XDG_CONFIG_HOME:-"$HOME/.config"}
+ghostty_config="$config_home/ghostty/config"
+
+[[ "$#" -ne 1 ]] && {
+    echo "Usage: font-size <1-200>"
+    exit 1
+}
+
+if [[ "$to_font_size" -lt 1 ]] || [[ "$to_font_size" -gt 200 ]]; then
+    echo font size must between 1 and 200
+    exit 1
+fi
+
+change_ghostty_font_size() {
+    [[ -f "$ghostty_config" ]] || {
+        echo "ghostty config not found: $ghostty_config" >&2
+        return 1
+    }
+
+    if grep -qE '^font-size\s*=' "$ghostty_config"; then
+        gsed -i -E "s/^font-size\s*=\s*.*/font-size = $to_font_size/" "$ghostty_config"
+    else
+        printf '\nfont-size = %s\n' "$to_font_size" >> "$ghostty_config"
+    fi
+}
+
+change_ghostty_font_size
+
+exit 0

@@ -1,0 +1,43 @@
+#!/usr/bin/env zsh
+# opacity
+#
+# Ghostty terminal background transparency adjustment.
+
+set -euo pipefail
+
+to_opacity=${1:-}
+
+config_home=${XDG_CONFIG_HOME:-"$HOME/.config"}
+ghostty_config="$config_home/ghostty/config"
+
+[[ "$#" -ne 1 ]] && {
+    echo "Usage: opacity <0.0-1.0>"
+    exit 1
+}
+
+echo $to_opacity | grep -qE '^[0-1]?\.[0-9]+$|^1$|^0$' || {
+    echo "opacity must between 0 and 1"
+    exit 1
+}
+
+if [[ "$to_opacity" -lt 0 ]] || [[ "$to_opacity" -gt 1 ]]; then
+    echo "opacity must between 0 and 1"
+    exit 1
+fi
+
+change_ghostty_opacity() {
+    [[ -f "$ghostty_config" ]] || {
+        echo "ghostty config not found: $ghostty_config" >&2
+        return 1
+    }
+
+    if grep -qE '^background-opacity\s*=' "$ghostty_config"; then
+        gsed -i -E "s/^background-opacity\s*=\s*.*/background-opacity = $to_opacity/" "$ghostty_config"
+    else
+        printf '\nbackground-opacity = %s\n' "$to_opacity" >> "$ghostty_config"
+    fi
+}
+
+change_ghostty_opacity
+
+exit 0

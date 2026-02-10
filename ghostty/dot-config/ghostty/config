@@ -1,0 +1,2419 @@
+# Ghostty 配置文件 (中文版)
+# 
+# 这是 Ghostty 终端模拟器的完整配置文件中文注释版本
+# 每个配置项都包含了：
+#   - 中文说明
+#   - 所有可选值及其含义
+#   - 默认值
+#   - 针对难理解配置项的配置示例
+#
+# 可用命令：
+#   ghostty +list-fonts      - 列出所有可用字体
+#   ghostty +list-themes     - 列出所有可用主题
+#   ghostty +list-actions    - 列出所有可用动作
+
+# ============================================
+# 字体配置 (Font Configuration)
+# ============================================
+
+# font-family
+# 设置主字体。可以多次指定以实现字体回退。
+# 
+# 可选值:
+#   - 任意系统已安装的字体名称（使用 ghostty +list-fonts 查看）
+#   - 空字符串 "" 表示重置字体列表
+# 
+# 默认值: 空（系统默认）
+# 
+# 配置示例:
+#   font-family = "JetBrains Mono"
+#   font-family = "Symbols Nerd Font"  # 作为回退字体显示图标
+font-family = 
+
+# font-family-bold
+# 粗体字体设置
+# 可选值: 任意字体名称
+# 默认值: 空（使用主字体的粗体变体）
+font-family-bold = 
+
+# font-family-italic
+# 斜体字体设置
+# 可选值: 任意字体名称
+# 默认值: 空（使用主字体的斜体变体）
+font-family-italic = 
+
+# font-family-bold-italic
+# 粗斜体字体设置
+# 可选值: 任意字体名称
+# 默认值: 空（使用主字体的粗斜体变体）
+font-family-bold-italic = 
+
+# font-style
+# 指定字体的具体样式名称（用于具有多种样式的字体，如 Iosevka Heavy）
+# 
+# 可选值:
+#   - default                    - 使用默认样式
+#   - false                      - 完全禁用该样式
+#   - 任意字体定义的样式名称（如 "Heavy", "Light" 等）
+# 
+# 默认值: default
+# 
+# 配置示例:
+#   font-style-bold = "Heavy"    # 使用 Iosevka Heavy 作为粗体
+font-style = default
+font-style-bold = default
+font-style-italic = default
+font-style-bold-italic = default
+
+# font-synthetic-style
+# 控制是否合成缺失的字体样式
+# 
+# 可选值（可用逗号分隔多个）:
+#   - bold                       - 允许合成粗体
+#   - italic                     - 允许合成斜体
+#   - bold-italic                - 允许合成粗斜体
+#   - no-bold                    - 禁止合成粗体
+#   - no-italic                  - 禁止合成斜体
+#   - no-bold-italic             - 禁止合成粗斜体
+#   - true                       - 允许合成所有样式
+#   - false                      - 禁止合成所有样式
+# 
+# 默认值: bold,italic,bold-italic（允许合成所有样式）
+font-synthetic-style = bold,italic,bold-italic
+
+# font-feature
+# 启用或禁用 OpenType 字体特性
+# 
+# 语法:
+#   - +feat 或 feat on          - 启用特性
+#   - -feat 或 feat off         - 禁用特性
+#   - feat=数字                  - 设置特性值
+# 
+# 常用特性:
+#   - calt                       - 上下文替换（编程连字）
+#   - liga                       - 标准连字
+#   - dlig                       -  discretionary 连字
+# 
+# 默认值: 空
+# 
+# 配置示例:
+#   # 禁用编程连字（如果你不喜欢代码中的连字效果）
+#   font-feature = -calt
+#   
+#   # 禁用大部分连字
+#   font-feature = -calt, -liga, -dlig
+font-feature = 
+
+# font-size
+# 字体大小（磅）
+# 可以使用小数（如 13.5），在高分屏上会转换为奇数像素
+# 
+# 可选值: 任意正数
+# 默认值: 13
+font-size = 16
+
+# font-variation
+# 可变字体轴设置（仅适用于可变字体，如 -VF.ttf/.otf）
+# 
+# 格式: id=value
+# 常见轴:
+#   - wght                       - 字重
+#   - slnt                       - 倾斜
+#   - ital                       - 斜体
+#   - opsz                       - 光学尺寸
+#   - wdth                       - 宽度
+#   - GRAD                       - 渐变
+# 
+# 默认值: 空
+# 
+# 配置示例:
+#   # 设置可变字体的字重为 450
+#   font-variation = wght=450
+font-variation = 
+font-variation-bold = 
+font-variation-italic = 
+font-variation-bold-italic = 
+
+# font-codepoint-map
+# 将特定 Unicode 码点映射到指定字体
+# 
+# 格式: codepoint=fontname
+# 码点格式: U+ABCD（单码点）或 U+ABCD-U+DEFG（范围）
+# 
+# 默认值: 空
+# 
+# 配置示例:
+#   # 将数学符号使用特定字体
+#   font-codepoint-map = U+2200-U+22FF=JuliaMono
+font-codepoint-map = 
+
+# clipboard-codepoint-map
+# 复制到剪贴板时将特定 Unicode 码点替换为其他值
+# 
+# 这允许你在复制终端内容到剪贴板时将特定 Unicode 字符替换为其他字符或字符串。
+# 适用于将特殊终端符号转换为在其他应用程序中更兼容的字符。
+# 
+# 语法类似于 `font-codepoint-map`：
+# - 单码点: `U+1234=U+ABCD` 或 `U+1234=替换文本`
+# - 码点范围: `U+1234-U+5678=U+ABCD`
+# 
+# 示例：
+# - `clipboard-codepoint-map = U+2500=U+002D` (制表符横线 → 连字符)
+# - `clipboard-codepoint-map = U+2502=U+007C` (制表符竖线 → 管道符)
+# - `clipboard-codepoint-map = U+03A3=SUM` (希腊字母 sigma → "SUM")
+# 
+# 可以重复多次指定多个映射。后面的条目优先于前面的条目。
+# 
+# 注意: 仅适用于文本复制操作，不适用于 URL 复制。
+clipboard-codepoint-map = 
+
+# font-thicken
+# 加粗字体描边（仅 macOS）
+# 
+# 可选值: true | false
+# 默认值: false
+font-thicken = false
+
+# font-thicken-strength
+# 字体加粗强度（仅 macOS）
+# 
+# 可选值: 0-255 的整数（0 为最轻）
+# 默认值: 255
+font-thicken-strength = 255
+
+# font-shaping-break
+# 字体塑形中断位置
+# 
+# 可选值（可用逗号分隔）:
+#   - cursor                     - 在光标位置中断（允许编辑时看到连字的各个字符）
+#   - no-cursor                  - 禁用光标处中断
+# 
+# 默认值: cursor
+font-shaping-break = cursor
+
+# ============================================
+# 颜色和主题 (Colors & Theme)
+# ============================================
+
+# theme
+# 设置主题
+# 
+# 可选值:
+#   - 内置主题名称（使用 ghostty +list-themes 查看）
+#   - 绝对路径到主题文件
+#   - light:主题名,dark:主题名  - 根据系统主题自动切换
+# 
+# 默认值: 空
+# 
+# 配置示例:
+#   theme = "Catppuccin Macchiato"
+#   theme = "light:Catppuccin Latte,dark:Catppuccin Macchiato"
+theme = "Dracula"
+
+# background
+# 背景颜色
+# 
+# 可选值:
+#   - #RRGGBB 或 RRGGBB         - 十六进制颜色
+#   - X11 颜色名称（如 red, blue, lightblue 等）
+# 
+# 默认值: #282c34
+#background = #282c34
+
+# foreground
+# 前景（文字）颜色
+# 
+# 可选值: 同上
+# 默认值: #ffffff
+#foreground = #ffffff
+
+# background-image
+# 背景图片（PNG 或 JPEG）
+# 
+# 可选值: 图片文件的绝对路径
+# 默认值: 空
+# 
+# 配置示例:
+#   background-image = /Users/username/Pictures/background.png
+background-image = 
+
+# background-image-opacity
+# 背景图片不透明度
+# 
+# 可选值: 0.0 - 任意正数
+#   - 1.0                        - 正常显示
+#   - < 1.0                      - 与背景颜色混合
+#   - > 1.0                      - 比背景更不透明
+# 
+# 默认值: 1
+background-image-opacity = 1
+
+# background-image-position
+# 背景图片位置
+# 
+# 可选值:
+#   - top-left, top-center, top-right
+#   - center-left, center, center-right
+#   - bottom-left, bottom-center, bottom-right
+# 
+# 默认值: center
+background-image-position = center
+
+# background-image-fit
+# 背景图片适配方式
+# 
+# 可选值:
+#   - contain                    - 保持比例，完整显示（可能有空白）
+#   - cover                      - 保持比例，填满终端（可能裁剪）
+#   - stretch                    - 拉伸填满（不保持比例）
+#   - none                       - 不缩放
+# 
+# 默认值: contain
+background-image-fit = contain
+
+# background-image-repeat
+# 背景图片是否重复
+# 
+# 可选值: true | false
+# 默认值: false
+background-image-repeat = false
+
+# selection-foreground
+# selection-background
+# 选中文本的前景色和背景色
+# 
+# 可选值:
+#   - #RRGGBB 或 X11 颜色名称
+#   - cell-foreground            - 匹配单元格前景色
+#   - cell-background            - 匹配单元格背景色
+# 
+# 默认值: 空（使用窗口前景/背景色的反转）
+selection-foreground = 
+selection-background = 
+
+# selection-clear-on-typing
+# 打字时是否清除选择
+# 
+# 可选值: true | false
+# 默认值: true
+selection-clear-on-typing = true
+
+# selection-clear-on-copy
+# 复制后是否清除选择
+# 
+# 可选值: true | false
+# 默认值: false
+selection-clear-on-copy = true
+
+# selection-word-chars
+# 文本选择操作（如双击）时标记单词边界的字符
+# 
+# 选择单词时，选择会在这些字符处停止。
+# 这类似于 zsh 中的 `WORDCHARS` 环境变量，但这里指定的是边界字符而非单词字符。
+# 默认包含代码和散文中通常分隔单词的常见分隔符和标点符号。
+# 
+# 此字符串中的每个字符都成为一个单词边界。支持多字节 UTF-8 字符，但只能指定单码点。
+# 不支持多码点序列（如 emoji）。
+# 
+# 空字符 (U+0000) 始终被视为边界，无需包含在此配置中。
+# 
+# 默认值: ` \t'"│`|:;,()[]{}<>$`
+selection-word-chars = 	'"│`|:;,()[]{}<>$
+
+# minimum-contrast
+# 前景色和背景色之间的最小对比度
+# 
+# 可选值: 1-21 之间的数值（WCAG 2.0 标准）
+#   - 1                          - 无对比度要求
+#   - 1.1                        - 避免完全看不见
+#   - 3                          - 易读的最小值
+#   - 21                         - 最大对比度
+# 
+# 默认值: 1
+minimum-contrast = 1
+
+# search-foreground
+# search-background
+# 搜索匹配项的前景色和背景色（仅适用于非聚焦的候选匹配）
+# 
+# 可选值:
+#   - Hex (`#RRGGBB` 或 `RRGGBB`)
+#   - X11 颜色名称
+#   - "cell-foreground" - 匹配单元格前景色
+#   - "cell-background" - 匹配单元格背景色
+# 
+# 默认值: 黑色文字，金黄色背景 (#ffe082)
+search-foreground = #000000
+search-background = #ffe082
+
+# search-selected-foreground
+# search-selected-background
+# 当前选中的搜索匹配项的前景色和背景色
+# 这是使用下一项/上一项搜索导航时会跳转到的聚焦匹配项。
+# 
+# 可选值: 同上
+# 
+# 默认值: 黑色文字，桃色背景 (#f2a57e)
+search-selected-foreground = #000000
+search-selected-background = #f2a57e
+
+# palette
+# 256 色终端调色板
+# 
+# 格式: N=COLOR，其中 N 是 0-255，COLOR 是 RGB 颜色代码（如 `#AABBCC` 或 `AABBCC`）
+# 或 X11 颜色名称。例如，`palette = 5=#BB78D9` 将设置"紫色"。
+# 
+# 调色板索引可以是十进制、二进制、八进制或十六进制。
+# 
+# 配置示例:
+#   palette = 0=#000000          # 黑色
+#   palette = 1=#cc0000          # 红色
+#   palette = 2=#4cc400          # 绿色
+#   # ... 等等
+#palette = 0=#1d1f21
+#palette = 1=#cc6666
+#palette = 2=#b5bd68
+#palette = 3=#f0c674
+#palette = 4=#81a2be
+#palette = 5=#b294bb
+#palette = 6=#8abeb7
+#palette = 7=#c5c8c6
+#palette = 8=#666666
+#palette = 9=#d54e53
+#palette = 10=#b9ca4a
+#palette = 11=#e7c547
+#palette = 12=#7aa6da
+#palette = 13=#c397d8
+#palette = 14=#70c0b1
+#palette = 15=#eaeaea
+# (16-255 省略，如有需要请参考原始配置)
+
+# cursor-color
+# 光标颜色
+# 
+# 可选值:
+#   - #RRGGBB 或 X11 颜色名称
+#   - cell-foreground            - 匹配单元格前景色
+#   - cell-background            - 匹配单元格背景色
+# 
+# 默认值: 空（自动选择）
+cursor-color = 
+
+# cursor-opacity
+# 光标不透明度
+# 
+# 可选值: 0.0 - 1.0（超出范围会被限制）
+# 默认值: 1
+# 
+# 警告: 过低的值（如 0.3）可能导致光标几乎看不见
+cursor-opacity = 1
+
+# cursor-style
+# 光标样式
+# 
+# 可选值:
+#   - block                      - 方块（█）
+#   - bar                        - 竖线（|）
+#   - underline                  - 下划线（_）
+#   - block_hollow               - 空心方块（□）
+# 
+# 默认值: block
+cursor-style = block
+
+# cursor-style-blink
+# 光标是否闪烁
+# 
+# 可选值:
+#   - 空（未设置）               - 使用 DEC Mode 12 控制
+#   - true                       - 始终闪烁
+#   - false                      - 始终不闪烁
+# 
+# 默认值: 空
+cursor-style-blink = 
+
+# cursor-text
+# 光标下文字的颜色
+# 
+# 可选值:
+#   - #RRGGBB 或 X11 颜色名称
+#   - cell-foreground            - 匹配单元格前景色
+#   - cell-background            - 匹配单元格背景色
+# 
+# 默认值: 空（自动选择）
+cursor-text = 
+
+# cursor-click-to-move
+# 允许使用 Alt+点击（Linux）或 Option+点击（macOS）移动光标位置
+# 
+# 可选值: true | false
+# 默认值: true
+cursor-click-to-move = true
+
+# ============================================
+# 窗口配置 (Window Configuration)
+# ============================================
+
+# maximize
+# 启动时最大化窗口
+# 
+# 可选值: true | false
+# 默认值: false
+maximize = true
+
+# fullscreen
+# 启动时全屏显示
+# 
+# 可选值: true | false
+# 默认值: false
+fullscreen = false
+
+# title
+# 强制设置窗口标题（会忽略程序设置的标题）
+# 
+# 可选值: 任意字符串，使用 " " 设置空白标题
+# 默认值: 空（使用程序设置的标题）
+title = 
+
+# class
+# 应用程序类名（仅 GTK）
+# 
+# 默认值: com.mitchellh.ghostty
+class = 
+
+# x11-instance-name
+# X11 WM_CLASS 实例名称（仅 Linux X11）
+# 
+# 默认值: ghostty
+x11-instance-name = 
+
+# working-directory
+# 启动时的初始工作目录
+# 
+# 可选值:
+#   - home                       - 用户主目录
+#   - inherit                    - 继承启动进程的工作目录
+#   - 绝对路径
+# 
+# 默认值: inherit
+working-directory = 
+
+# window-padding-x
+# 水平窗口内边距（点）
+# 
+# 可选值: 数字或 "left,right" 格式
+# 默认值: 2
+window-padding-x = 2
+
+# window-padding-y
+# 垂直窗口内边距（点）
+# 
+# 可选值: 数字或 "top,bottom" 格式
+# 默认值: 2
+window-padding-y = 2
+
+# window-padding-balance
+# 自动平衡窗口四边的额外内边距
+# 
+# 可选值: true | false
+# 默认值: false
+window-padding-balance = false
+
+# window-padding-color
+# 窗口内边距区域的颜色
+# 
+# 可选值:
+#   - background                 - 使用背景色
+#   - extend                     - 延伸最近的网格单元格颜色
+#   - extend-always              - 始终延伸单元格颜色
+# 
+# 默认值: background
+window-padding-color = background
+
+# window-vsync
+# 与屏幕刷新率同步渲染（仅 macOS）
+# 
+# 可选值: true | false
+#   - true                       - 减少撕裂，可能增加输入延迟
+#   - false                      - 最大化重绘频率，可能产生撕裂
+# 
+# 默认值: true
+window-vsync = true
+
+# window-inherit-working-directory
+# 新窗口/标签页继承之前窗口的工作目录
+# 
+# 可选值: true | false
+# 默认值: true
+window-inherit-working-directory = true
+
+# tab-inherit-working-directory
+# 新标签页是否继承之前聚焦标签页的工作目录
+# 
+# 可选值: true | false
+# 默认值: true
+tab-inherit-working-directory = true
+
+# split-inherit-working-directory
+# 新分割窗口是否继承之前聚焦分割的工作目录
+# 
+# 可选值: true | false
+# 默认值: true
+split-inherit-working-directory = true
+
+# window-inherit-font-size
+# 新窗口/标签页继承之前窗口的字体大小
+# 
+# 可选值: true | false
+# 默认值: true
+window-inherit-font-size = true
+
+# window-decoration
+# 窗口装饰样式
+# 
+# 可选值:
+#   - none                       - 无边框、无标题栏
+#   - auto                       - 根据系统自动选择
+#   - client                     - 客户端装饰
+#   - server                     - 服务端装饰（仅 Linux GTK）
+#   - true（等价于 auto）
+#   - false（等价于 none）
+# 
+# 默认值: auto
+# 
+# 注意: 在 macOS 上，如果 window-decoration 设置为 `none`，
+# 则 fullscreen 设置将无法工作，因为 macOS 的原生全屏需要窗口装饰。
+window-decoration = none
+
+# window-title-font-family
+# 窗口标题字体（仅 GTK）
+# 
+# 可选值: 任意系统字体
+# 默认值: 空（系统默认）
+# 
+# 可用版本: 1.0.0 在 macOS 上，1.1.0 在 GTK 上
+window-title-font-family = 
+
+# window-subtitle
+# 窗口副标题（仅 GTK）
+# 
+# 可选值:
+#   - false                      - 禁用副标题
+#   - working-directory          - 显示工作目录
+# 
+# 默认值: false
+window-subtitle = false
+
+# window-theme
+# 窗口主题
+# 
+# 可选值:
+#   - auto                       - 根据背景色自动判断
+#   - system                     - 使用系统主题
+#   - light                      - 强制使用浅色主题
+#   - dark                       - 强制使用深色主题
+#   - ghostty                    - 使用 Ghostty 配置的颜色（仅 Linux）
+# 
+# 默认值: auto
+window-theme = auto
+
+# window-colorspace
+# 颜色空间（仅 macOS）
+# 
+# 可选值:
+#   - srgb                       - sRGB 颜色空间
+#   - display-p3                 - Display P3 颜色空间
+# 
+# 默认值: srgb
+window-colorspace = srgb
+
+# window-height
+# window-width
+# 初始窗口大小（单元格数，不是像素）
+# 
+# 可选值: 正整数
+#   - 0                          - 使用系统默认
+# 
+# 默认值: 0
+# 
+# 配置示例:
+#   window-width = 120
+#   window-height = 30
+window-height = 0
+window-width = 0
+
+# window-position-x
+# window-position-y
+# 初始窗口位置（相对于主显示器左上角的像素）
+# 
+# 可选值: 整数坐标
+# 默认值: 空（系统决定）
+# 
+# 注意: 仅 macOS 支持，GTK 不支持设置窗口位置
+window-position-x = 
+window-position-y = 
+
+# window-save-state
+# 是否保存和恢复窗口状态（位置、大小、标签页等）
+# 
+# 可选值:
+#   - default                    - 使用系统默认行为
+#   - never                      - 从不保存状态
+#   - always                     - 始终保存状态
+# 
+# 默认值: default
+# 
+# 注意: 仅 macOS 支持
+# NOTE: 如果启用 initial-command 来默认启动 tmux，必须设置为 never，否则会导致 tmux 偶尔无法启动
+window-save-state = never
+
+# window-step-resize
+# 以单元格大小为增量调整窗口大小（仅 macOS）
+# 
+# 可选值: true | false
+# 默认值: false
+window-step-resize = false
+
+# window-new-tab-position
+# 新标签页的位置
+# 
+# 可选值:
+#   - current                    - 在当前标签页后插入
+#   - end                        - 在标签列表末尾插入
+# 
+# 默认值: current
+window-new-tab-position = current
+
+# window-show-tab-bar
+# 标签栏显示方式（仅 Linux GTK）
+# 
+# 可选值:
+#   - always                     - 始终显示
+#   - auto                       - 两个及以上标签时显示
+#   - never                      - 从不显示
+# 
+# 默认值: auto
+window-show-tab-bar = auto
+
+# window-titlebar-background
+# window-titlebar-foreground
+# 标题栏背景/前景色（仅 GTK，需 window-theme = ghostty）
+# 
+# 可选值: #RRGGBB 或 X11 颜色名称
+# 默认值: 空
+window-titlebar-background = 
+window-titlebar-foreground = 
+
+# ============================================
+# 滚动和鼠标 (Scrolling & Mouse)
+# ============================================
+
+# mouse-hide-while-typing
+# 打字时隐藏鼠标
+# 
+# 可选值: true | false
+# 默认值: false
+mouse-hide-while-typing = false
+
+# scroll-to-bottom
+# 何时滚动到底部
+# 
+# 可选值（逗号分隔）:
+#   - keystroke                  - 按键时
+#   - output                     - 有新输出时（未实现）
+#   - no-keystroke               - 禁用按键滚动
+#   - no-output                  - 禁用输出滚动
+# 
+# 默认值: keystroke,no-output
+scroll-to-bottom = keystroke,no-output
+
+# mouse-shift-capture
+# Shift 键与鼠标点击的交互方式
+# 
+# 可选值:
+#   - true                       - Shift 发送给鼠标协议，但程序可覆盖
+#   - false                      - Shift 用于扩展选择，但程序可覆盖
+#   - always                     - 同 true，但程序不能覆盖
+#   - never                      - 同 false，但程序不能覆盖
+# 
+# 默认值: false
+mouse-shift-capture = false
+
+# mouse-reporting
+# 启用或禁用鼠标报告。设置为 `false` 时，即使终端应用程序请求，
+# 鼠标事件也不会被报告。这允许你始终使用鼠标进行选择和其他终端 UI 交互，
+# 而不被应用程序捕获鼠标输入。
+# 
+# 设置为 `true`（默认）时，终端应用程序可以请求鼠标报告并按请求的模式接收事件。
+# 
+# 可以使用 `toggle_mouse_reporting` 键绑动作在运行时切换。
+# 
+# 默认值: true
+mouse-reporting = true
+
+# mouse-scroll-multiplier
+# 鼠标滚轮滚动距离倍数
+# 
+# 格式:
+#   - 纯数字                     - 应用于所有设备
+#   - precision:值,discrete:值  - 分别设置
+# 
+# 范围: 0.01 - 10000
+# 默认值: precision:1,discrete:3
+mouse-scroll-multiplier = precision:1,discrete:3
+
+# click-repeat-interval
+# 双击/多击的时间间隔（毫秒）
+# 
+# 可选值:
+#   - 0                          - 使用平台默认值（macOS 使用系统设置，其他平台 500ms）
+#   - 正整数
+# 
+# 默认值: 0
+click-repeat-interval = 0
+
+# focus-follows-mouse
+# 鼠标悬停时自动聚焦分割窗口
+# 
+# 可选值: true | false
+# 默认值: false
+focus-follows-mouse = false
+
+# right-click-action
+# 右键点击行为
+# 
+# 可选值:
+#   - context-menu               - 显示上下文菜单
+#   - paste                      - 粘贴
+#   - copy                       - 复制
+#   - copy-or-paste              - 有选择则复制，否则粘贴
+#   - ignore                     - 忽略
+# 
+# 默认值: context-menu
+right-click-action = context-menu
+
+# ============================================
+# 背景和透明度 (Background & Opacity)
+# ============================================
+
+# background-opacity
+# 背景不透明度
+# 
+# 可选值: 0.0 - 1.0（超出范围会被限制）
+#   - 1                          - 完全不透明
+#   - < 1                        - 半透明（配合 background-blur 可产生毛玻璃效果）
+# 
+# 默认值: 1
+# 
+# 注意: 在 macOS 上需要重启才能生效
+background-opacity = 0.9
+
+# background-opacity-cells
+# 是否将透明度应用于显式设置了背景色的单元格
+# 
+# 可选值: true | false
+#   - false                      - 仅窗口背景透明，单元格背景不透明
+#   - true                       - 所有单元格都应用透明度
+# 
+# 默认值: false
+background-opacity-cells = false
+
+# background-blur
+# 背景模糊（需要 background-opacity < 1）
+# 
+# 可选值:
+#   - false                      - 禁用模糊
+#   - true                       - 启用默认模糊（强度 20）
+#   - 非负整数                    - 指定模糊强度（0-任意）
+# 
+# 在 macOS 26.0 及更高版本上，还可以使用以下特殊值来使用原生 macOS 玻璃效果：
+# 
+#   - `macos-glass-regular`       - 标准玻璃效果，有一定不透明度
+#   - `macos-glass-clear`         - 高透明度玻璃效果
+# 
+# 如果设置了 macOS 值，则在非 macOS 平台上会隐式启用 `background-blur = true`。
+# 
+# 默认值: false
+# 
+# 配置示例:
+#   # 半透明毛玻璃效果
+#   background-opacity = 0.85
+#   background-blur = true
+#   
+#   # 或指定具体强度
+#   background-blur = 30
+background-blur = 25
+
+# unfocused-split-opacity
+# 未聚焦分割窗口的不透明度
+# 
+# 可选值: 0.15 - 1.0
+#   - 1                          - 完全不透明（禁用淡化）
+#   - < 1                        - 淡化未聚焦窗口
+# 
+# 默认值: 0.7
+unfocused-split-opacity = 0.3
+
+# unfocused-split-fill
+# 未聚焦分割窗口的淡化颜色
+# 
+# 可选值: #RRGGBB 或 X11 颜色名称
+# 默认值: 空（使用背景色）
+unfocused-split-fill = 
+
+# split-divider-color
+# 分割窗口分隔线颜色
+# 
+# 可选值: #RRGGBB 或 X11 颜色名称
+# 默认值: 空（自动选择）
+split-divider-color = 
+
+# split-preserve-zoom
+# 控制 Ghostty 何时保留缩放的分割窗口。正常情况下，任何改变窗口中
+# 分割树焦点或布局的操作都会取消缩放。此配置允许你控制此行为。
+# 
+# 可以设置为 `navigation` 以在导航到另一个分割时保留缩放状态
+#（例如通过 `goto_split`）。这会将缩放状态切换到新聚焦的分割，而不是取消缩放。
+# 
+# 任何选项都可以加上 `no-` 前缀来禁用该选项。
+# 
+# 示例: `split-preserve-zoom = navigation`
+# 
+# 可用版本: 1.3.0
+split-preserve-zoom = no-navigation
+
+# ============================================
+# 键盘绑定 (Keybindings)
+# ============================================
+
+# keybind
+# 键盘快捷键绑定
+# 
+# 格式: trigger=action 或 trigger=action:param
+# 
+# Trigger 格式:
+#   - 修饰符+键                  - 如 ctrl+a, super+shift+t
+#   - 物理键代码                 - 如 KeyA, key_a, f1
+#   - 序列                       - 如 ctrl+a>n（先按 ctrl+a，再按 n）
+# 
+# 修饰符: shift, ctrl/control, alt/opt/option, super/cmd/command
+# 
+# 前缀:
+#   - all:                       - 应用到所有终端表面
+#   - global:                    - 全局快捷键（即使 Ghostty 不在焦点）
+#   - unconsumed:                - 不消费输入（同时发送给程序）
+#   - performable:               - 仅在动作可执行时消费输入
+# 
+# 特殊键 `catch_all` 可用于匹配任何未绑定的键。可以与修饰符组合，
+# 例如 `ctrl+catch_all` 将匹配任何带有 `ctrl` 且未另行绑定的键。
+# 查找绑定时，Ghostty 首先尝试匹配带修饰符的 `catch_all`，
+# 如果没有找到匹配且事件有修饰符，则回退到不带修饰符的 `catch_all`。
+# 
+# 特殊 action:
+#   - ignore                     - 忽略按键
+#   - unbind                     - 移除绑定
+#   - csi:text                   - 发送 CSI 序列
+#   - esc:text                   - 发送 Escape 序列
+#   - text:text                  - 发送文本
+# 
+# ## 链式动作 (Chained Actions)
+# 
+# 键绑定可以通过使用 `chain` 关键字来执行多个动作。激活时，
+# 所有链式动作按顺序执行。语法如下：
+# 
+# ```ini
+# keybind = ctrl+a=new_window
+# keybind = chain=goto_split:left
+# ```
+# 
+# 这将 `ctrl+a` 绑定为先打开新窗口，然后移动焦点到左分割。
+# 每个 `chain` 条目都会追加一个动作到最近定义的键绑定。
+# 
+# 链式动作不能有 `global:` 或 `unconsumed:` 等前缀。
+# 原始键绑定的标志适用于整个链。
+# 
+# 链式动作也支持键序列。例如：
+# 
+# ```ini
+# keybind = ctrl+a>n=new_window
+# keybind = chain=goto_split:left
+# ```
+# 
+# 带键序列的链应用于序列中最近的绑定。
+# 
+# 链式键绑定自 Ghostty 1.3.0 起可用。
+# 
+# ## 键表 (Key Tables)
+# 
+# 你可以创建命名的键绑定集合，称为"键表"。
+# 必须显式激活键表才能使绑定可用。这可用于实现
+# "复制模式"、"vim 模式"等功能。通常，这可以实现模态键盘输入。
+# 
+# 键表使用语法 `<table>/<binding>` 定义。`<binding>` 是上面记录的
+# 所有键绑定内容。`<table>` 是键表名称。表名可以包含除 `/`、`=`、`+`
+# 和 `>` 之外的任何字符。`+` 和 `>` 保留用于键绑定语法（修饰符组合和键序列）。
+# 例如 `foo/ctrl+a=new_window` 在名为 `foo` 的表中定义绑定。
+# 
+# 键表使用绑定动作 `activate_key_table:<name>` 和 `deactivate_key_table`
+# 激活和停用。还有其他与表相关的绑定动作；请参阅文档获取完整列表。
+# 这些是与键表交互的主要方式。
+# 
+# 绑定查找从最内层的表向外进行，因此默认表中的键绑定
+# 保持可用，除非在内层表中显式取消绑定。
+# 
+# 键表有特殊语法和处理：
+# 
+#   * `<name>/`（无绑定）定义并清空一个表，重置其所有键绑定和设置。
+# 
+#   * 不能激活已经是内层表的表；此类尝试会被忽略。
+#     但是，同一表可以在堆栈中出现多次，只要不是最内层
+#     （例如 `A -> B -> A -> B` 是有效的，但 `A -> B -> B` 不是）。
+# 
+#   * 可以使用 `activate_key_table_once:<name>` 以一次性模式激活表。
+#     一次性表在任何非 catch-all 绑定被调用时自动停用。
+# 
+#   * 键序列在表中有效: `foo/ctrl+a>ctrl+b=new_window`。
+#     如果按下无效键，序列结束但表保持活动。
+# 
+#   * 前缀如 `global:` 在表中有效: `foo/global:ctrl+a=new_window`。
+# 
+# 键表自 Ghostty 1.3.0 起可用。
+# 
+# 默认值: 内置大量快捷键（见下方）
+# 
+# 配置示例:
+#   # 自定义打开配置文件的快捷键
+#   keybind = ctrl+shift+comma=open_config
+#   
+#   # 全局快捷键显示/隐藏快捷终端
+#   keybind = global:ctrl+grave=toggle_quick_terminal
+#   
+#   # 使用 leader key 序列
+#   keybind = ctrl+a>n=new_tab
+#   keybind = ctrl+a>v=new_split:right
+#   
+#   # 取消某个默认绑定
+#   keybind = super+shift+d=unbind
+keybind = global:cmd+;=toggle_quick_terminal
+
+# 复制动作现在支持格式参数: plain, html, vt, mixed
+#   - copy_to_clipboard:plain    - 纯文本
+#   - copy_to_clipboard:html     - HTML 格式
+#   - copy_to_clipboard:vt       - ANSI 转义序列
+#   - copy_to_clipboard:mixed    - 纯文本和样式格式（默认）
+
+keybind = super+shift+d=new_split:down
+keybind = super+enter=toggle_fullscreen
+keybind = super+2=goto_tab:2
+keybind = super+digit_6=goto_tab:6
+keybind = super+k=clear_screen
+keybind = super+page_down=scroll_page_down
+keybind = super+4=goto_tab:4
+keybind = super+shift+z=redo
+keybind = super+shift+v=paste_from_selection
+keybind = super+w=close_surface
+keybind = shift+page_down=adjust_selection:page_down
+keybind = super+7=goto_tab:7
+keybind = shift+arrow_down=adjust_selection:down
+keybind = super+bracket_left=goto_split:previous
+keybind = super+5=goto_tab:5
+keybind = super+3=goto_tab:3
+keybind = super+a=select_all
+keybind = super+arrow_left=text:\x01
+keybind = shift+page_up=adjust_selection:page_up
+keybind = super+0=reset_font_size
+keybind = super+digit_2=goto_tab:2
+keybind = super+shift+,=reload_config
+keybind = super+,=open_config
+keybind = super+ctrl+shift+j=write_screen_file:copy,plain
+keybind = super+shift+j=write_screen_file:paste,plain
+keybind = super+alt+shift+j=write_screen_file:open,plain
+keybind = paste=paste_from_clipboard
+keybind = copy=copy_to_clipboard:mixed
+keybind = super+bracket_right=goto_split:next
+keybind = super+alt+arrow_up=goto_split:up
+keybind = super+ctrl+arrow_right=resize_split:right,10
+keybind = alt+arrow_left=esc:b
+keybind = super+equal=increase_font_size:1
+keybind = ctrl+tab=next_tab
+keybind = super+digit_4=goto_tab:4
+keybind = super+q=quit
+keybind = super+shift+arrow_up=jump_to_prompt:-1
+keybind = super+alt+arrow_right=goto_split:right
+keybind = super+ctrl+equal=equalize_splits
+keybind = super+digit_7=goto_tab:7
+keybind = super+ctrl+f=toggle_fullscreen
+keybind = super+backspace=text:\x15
+keybind = super+6=goto_tab:6
+keybind = super+page_up=scroll_page_up
+keybind = super+1=goto_tab:1
+keybind = super+alt+w=close_tab:this
+keybind = super+end=scroll_to_bottom
+keybind = super+-=decrease_font_size:1
+keybind = super+arrow_up=jump_to_prompt:-1
+keybind = super+shift+t=undo
+keybind = super+alt+arrow_left=goto_split:left
+keybind = super+z=undo
+keybind = super+digit_8=goto_tab:8
+keybind = super+9=last_tab
+keybind = shift+arrow_up=adjust_selection:up
+keybind = super+home=scroll_to_top
+keybind = super+digit_1=goto_tab:1
+keybind = super+shift+w=close_window
+keybind = super+alt+shift+w=close_all_windows
+keybind = super+ctrl+arrow_down=resize_split:down,10
+keybind = super+t=new_tab
+keybind = shift+end=adjust_selection:end
+keybind = super+v=paste_from_clipboard
+keybind = shift+arrow_right=adjust_selection:right
+keybind = super+c=copy_to_clipboard:mixed
+keybind = super+ctrl+arrow_left=resize_split:left,10
+keybind = super+shift+enter=toggle_split_zoom
+keybind = super+arrow_right=text:\x05
+keybind = super++=increase_font_size:1
+keybind = super+shift+p=toggle_command_palette
+keybind = super+8=goto_tab:8
+keybind = shift+arrow_left=adjust_selection:left
+keybind = super+shift+arrow_down=jump_to_prompt:1
+keybind = super+alt+arrow_down=goto_split:down
+keybind = super+shift+[=previous_tab
+keybind = super+shift+]=next_tab
+
+# 搜索相关键绑定
+keybind = super+f=start_search
+keybind = super+e=search_selection
+keybind = super+shift+f=end_search
+keybind = super+g=navigate_search:next
+keybind = super+shift+g=navigate_search:previous
+
+# 鼠标报告切换
+keybind = super+shift+m=toggle_mouse_reporting
+keybind = super+arrow_down=jump_to_prompt:1
+keybind = ctrl+shift+tab=previous_tab
+keybind = alt+arrow_right=esc:f
+keybind = super+n=new_window
+keybind = shift+home=adjust_selection:home
+keybind = super+alt+i=inspector:toggle
+keybind = super+digit_5=goto_tab:5
+keybind = super+digit_3=goto_tab:3
+keybind = super+ctrl+arrow_up=resize_split:up,10
+keybind = super+d=new_split:right
+
+# key-remap
+# 在 Ghostty 内重新映射修饰键。这允许你在应用级别交换或重新分配
+# 修饰键，而不会影响系统范围的设置。
+# 
+# 格式: `from=to`，其中 `from` 和 `to` 都是修饰键名称。
+# 可以使用通用名称如 `ctrl`、`alt`、`shift`、`super`（macOS: `cmd`/`command`）
+# 或带侧的名称如 `left_ctrl`、`right_alt` 等。
+# 
+# 这不会更改 Ghostty 外部的键盘布局或键编码。
+# 例如，在 macOS 上，即使将 `option` 重新映射到 `ctrl`，`option+a` 仍可能产生 `å`。
+# 桌面环境通常在 Ghostty 接收键事件之前处理键布局。
+# 
+# 示例:
+#     key-remap = ctrl=super
+#     key-remap = left_control=right_alt
+# 
+# 重要说明:
+# 
+# * 这是单向重新映射。如果将 `ctrl=super` 重新映射，则物理 Ctrl 键充当 Super，
+#   但 Super 键仍保持为 Super。
+# 
+# * 重新映射不具有传递性。如果重新映射 `ctrl=super` 和 `alt=ctrl`，
+#   按 Alt 将产生 Ctrl，而不是 Super。
+# 
+# * 这会影响键绑定匹配和终端输入编码。
+#   这不会影响键盘布局或 Ghostty 接收前的键解释。
+# 
+# * 通用修饰符（例如 `ctrl`）匹配左右物理键。
+#   使用带侧的名称（例如 `left_ctrl`）仅重新映射一侧。
+key-remap = 
+
+# ============================================
+# 命令和进程 (Commands & Processes)
+# ============================================
+
+# command
+# 启动时运行的命令（通常是 shell）
+# 
+# 可选值:
+#   - 空                         - 自动检测（使用 $SHELL 或 passwd 条目）
+#   - 命令路径                   - 如 /bin/zsh, /path/to/fish
+#   - direct:命令                - 直接执行，不经过 shell
+#   - shell:命令                 - 强制使用 shell 执行
+# 
+# 默认值: 空
+# 
+# 配置示例:
+#   # Homebrew 安装的 fish 路径请用 `brew --prefix` 查询后填入
+#   #   brew --prefix
+#   #   brew --prefix fish
+#   command = /path/from-brew-prefix/bin/fish
+#   command = direct:nvim        # 直接启动 nvim
+command = 
+
+# initial-command
+# 仅在 Ghostty 启动时运行的第一个命令
+# 
+# 可选值: 同 command
+# 默认值: 空
+# 
+# 注意: 命令行也可以使用 -e 参数，如 ghostty -e fish -c "tmux attach"
+# NOTE: fish 没有使用绝对路径是为了同时适配 intel mac 和 silicon mac
+initial-command = /bin/sh -l -c "exec fish -c \"tmux attach -t dotfiles || tmux new -s dotfiles -n 'nvim' ';' splitw -h ';' neww -n 'tmux' ';' splitw -h ';' neww -n 'ghostty' ';' splitw -h\""
+
+# notify-on-command-finish
+# 控制何时发送命令完成通知。有三个选项：
+# 
+# * `never` - 从不发送通知（默认）
+# * `unfocused` - 仅当命令运行的表面未聚焦时发送通知
+# * `always` - 始终发送通知
+# 
+# 命令完成通知需要启用 shell 集成，或你的 shell 发送 OSC 133 转义序列
+# 来标记命令的开始和结束。
+# 
+# 在 GTK 上，有一个上下文菜单项可以为单个命令启用命令完成通知，
+# 覆盖 `never` 和 `unfocused` 选项。
+# 
+# 仅 GTK。
+# 可用版本: 1.3.0
+notify-on-command-finish = never
+
+# notify-on-command-finish-action
+# 如果启用了命令完成通知，此配置控制如何通知用户。
+# 
+# 可用选项:
+# * `bell` - 默认启用
+# * `notify` - 默认禁用
+# 
+# 选项可以通过逗号分隔的列表组合。选项可以通过前缀 `no-` 来否定。
+# 例如 `no-bell,notify`。
+# 
+# 仅 GTK。
+# 可用版本: 1.3.0
+notify-on-command-finish-action = bell,no-notify
+
+# notify-on-command-finish-after
+# 如果启用了命令完成通知，此配置控制命令必须运行多长时间
+# 才会发送通知。默认是五秒。
+# 
+# 格式与 resize-overlay-duration 相同。
+# 
+# 仅 GTK。
+# 可用版本: 1.3.0
+notify-on-command-finish-after = 5s
+
+# env
+# 传递给命令的额外环境变量
+# 
+# 格式: KEY=VALUE
+# 
+# 默认值: 空
+# 
+# 配置示例:
+#   env = MY_VAR=my_value
+#   env = PATH=/opt/local/bin:$PATH
+env = 
+
+# input
+# 启动时发送给命令的输入数据
+# 
+# 格式:
+#   - raw:字符串                  - 发送原始文本
+#   - path:文件路径               - 发送文件内容
+#   - 无前缀默认为 raw
+# 
+# 默认值: 空
+# 
+# 配置示例:
+#   input = raw:echo "Hello World"
+#   input = path:/path/to/script.sh
+input = 
+
+# wait-after-command
+# 命令结束后保持终端窗口打开
+# 
+# 可选值: true | false
+# 默认值: false
+wait-after-command = false
+
+# abnormal-command-exit-runtime
+# 认为进程异常退出的最短运行时间（毫秒）
+# 
+# 可选值: 正整数
+# 默认值: 250
+abnormal-command-exit-runtime = 250
+
+# scrollback-limit
+# 滚动缓冲区大小（字节）
+# 
+# 可选值: 正整数
+# 默认值: 10000000（约 10MB）
+scrollback-limit = 10000000
+
+# scrollbar
+# 控制何时显示滚动条以滚动回滚缓冲区。
+# 
+# 默认值: `system`
+# 
+# 可选值:
+#   * `system` - 尊重系统设置何时显示滚动条。
+#     例如，在 macOS 上，这将尊重"滚动条行为"系统设置，
+#     默认情况下通常仅在主动滚动或悬停在槽上时显示滚动条。
+# 
+#   * `never` - 从不显示滚动条。你仍然可以使用鼠标、键绑定动作等滚动，
+#     但你不会有显示滚动条的可视 UI 部件。
+# 
+# 目前仅适用于 macOS。GTK 尚不支持滚动条。
+scrollbar = system
+
+# ============================================
+# 剪贴板 (Clipboard)
+# ============================================
+
+# clipboard-read
+# 允许程序读取剪贴板（OSC 52）
+# 
+# 可选值:
+#   - ask                        - 询问用户
+#   - allow                      - 允许
+#   - deny                       - 拒绝
+# 
+# 默认值: ask
+clipboard-read = ask
+
+# clipboard-write
+# 允许程序写入剪贴板（OSC 52）
+# 
+# 可选值:
+#   - ask                        - 询问用户
+#   - allow                      - 允许
+#   - deny                       - 拒绝
+# 
+# 默认值: allow
+clipboard-write = allow
+
+# clipboard-trim-trailing-spaces
+# 复制时修剪行尾空白字符
+# 
+# 可选值: true | false
+# 默认值: true
+clipboard-trim-trailing-spaces = true
+
+# clipboard-paste-protection
+# 粘贴不安全文本时要求确认（防止粘贴攻击）
+# 
+# 可选值: true | false
+# 默认值: true
+clipboard-paste-protection = true
+
+# clipboard-paste-bracketed-safe
+# 将 bracketed paste 视为安全
+# 
+# 可选值: true | false
+# 默认值: true
+clipboard-paste-bracketed-safe = true
+
+# copy-on-select
+# 选中文本时自动复制到剪贴板
+# 
+# 可选值:
+#   - true                       - 复制到主选区（Linux）或剪贴板（macOS）
+#   - false                      - 不自动复制
+#   - clipboard                  - 同时复制到主选区和剪贴板
+# 
+# 默认值: true（Linux/macOS）
+copy-on-select = clipboard
+
+# ============================================
+# 高级渲染 (Advanced Rendering)
+# ============================================
+
+# alpha-blending
+# 透明度混合时使用的颜色空间
+# 
+# 可选值:
+#   - native                     - 使用系统原生颜色空间
+#   - linear                     - 在线性颜色空间中混合
+#   - linear-corrected           - 线性空间混合并校正（默认，非 macOS）
+# 
+# 默认值: native（macOS），linear-corrected（其他平台）
+alpha-blending = native
+
+# grapheme-width-method
+# 计算字素（grapheme）宽度的方法
+# 
+# 可选值:
+#   - unicode                    - 使用 Unicode 标准（更准确，支持肤色修饰符等）
+#   - legacy                     - 使用传统方法（如 wcswidth，与旧程序更兼容）
+# 
+# 默认值: unicode
+# 
+# 注意: 如果程序启用 mode 2027，强制使用 unicode 模式
+grapheme-width-method = unicode
+
+# freetype-load-flags
+# FreeType 加载标志（仅 Linux）
+# 
+# 可选值（逗号分隔）:
+#   - hinting                    - 启用字体微调（默认启用）
+#   - no-hinting                 - 禁用字体微调
+#   - autohint                   - 使用 FreeType 自动微调（默认启用）
+#   - no-autohint                - 禁用自动微调
+#   - force-autohint             - 始终使用自动微调而非字体自带微调
+#   - no-force-autohint          - 不强制自动微调
+#   - monochrome                 - 1位单色渲染（无抗锯齿）
+#   - no-monochrome              - 禁用单色渲染
+#   - light                      - 使用轻量微调风格，更好地保留字形形状
+#                                  这是 GTK 应用中最常见的设置，也是 Ghostty 的默认值
+#                                  启用 `monochrome` 时此选项无效
+#   - true                       - 启用所有标志
+#   - false                      - 禁用所有标志
+# 
+# 默认值: hinting,no-force-autohint,no-monochrome,autohint,light
+freetype-load-flags = hinting,no-force-autohint,no-monochrome,autohint,light
+
+# adjust-cell-width
+# adjust-cell-height
+# 调整单元格宽度和高度
+# 
+# 可选值:
+#   - 整数                       - 增减的像素数（如 1 或 -1）
+#   - 百分比                     - 增减的百分比（如 20% 或 -15%）
+# 
+# 默认值: 空
+# 
+# 警告: 过大或过小的值可能导致终端无法使用
+adjust-cell-width = 
+adjust-cell-height = 
+
+# adjust-font-baseline
+# 调整文字基线位置（相对于单元格底部）
+# 
+# 可选值: 整数（像素）或百分比
+# 正数向上移动，负数向下移动
+# 默认值: 空
+adjust-font-baseline = 
+
+# adjust-underline-position
+# 调整下划线位置
+# 
+# 可选值: 整数（像素）或百分比
+# 正数向下移动，负数向上移动
+# 默认值: 空
+adjust-underline-position = 
+
+# adjust-underline-thickness
+# 调整下划线粗细
+# 
+# 可选值: 整数（像素）或百分比
+# 默认值: 空
+adjust-underline-thickness = 
+
+# adjust-strikethrough-position
+# 调整删除线位置
+# 
+# 可选值: 整数（像素）或百分比
+# 默认值: 空
+adjust-strikethrough-position = 
+
+# adjust-strikethrough-thickness
+# 调整删除线粗细
+# 
+# 可选值: 整数（像素）或百分比
+# 默认值: 空
+adjust-strikethrough-thickness = 
+
+# adjust-overline-position
+# 调整上划线位置
+# 
+# 可选值: 整数（像素）或百分比
+# 默认值: 空
+adjust-overline-position = 
+
+# adjust-overline-thickness
+# 调整上划线粗细
+# 
+# 可选值: 整数（像素）或百分比
+# 默认值: 空
+adjust-overline-thickness = 
+
+# adjust-cursor-thickness
+# 调整光标粗细（条形和轮廓光标）
+# 
+# 可选值: 整数（像素）或百分比
+# 默认值: 空
+adjust-cursor-thickness = 
+
+# adjust-cursor-height
+# 调整光标高度
+# 
+# 可选值: 整数（像素）或百分比
+# 默认值: 空
+adjust-cursor-height = 
+
+# adjust-box-thickness
+# 调整框线字符粗细
+# 
+# 可选值: 整数（像素）或百分比
+# 默认值: 空
+adjust-box-thickness = 
+
+# adjust-icon-height
+# 调整 Nerd Font 图标最大高度
+# 
+# 可选值: 整数（像素）或百分比
+# 正数增加高度，负数减小高度
+# 默认值: 空
+adjust-icon-height = 
+
+# ============================================
+# 链接和 URL (Links & URLs)
+# ============================================
+
+# link-url
+# 启用 URL 匹配和点击打开
+# 
+# 可选值: true | false
+# 默认值: true
+link-url = true
+
+# link-previews
+# 显示链接预览
+# 
+# 可选值:
+#   - true                       - 始终显示
+#   - false                      - 从不显示
+#   - osc8                       - 仅对 OSC 8 超链接显示
+# 
+# 默认值: true
+link-previews = true
+
+# ============================================
+# 覆盖层配置 (Overlays)
+# ============================================
+
+# resize-overlay
+# 调整大小覆盖层的显示时机
+# 
+# 可选值:
+#   - always                     - 始终显示
+#   - never                      - 从不显示
+#   - after-first                - 首次创建不显示，后续调整显示
+# 
+# 默认值: after-first
+resize-overlay = after-first
+
+# resize-overlay-position
+# 调整大小覆盖层位置
+# 
+# 可选值:
+#   - center                     - 中心
+#   - top-left                   - 左上
+#   - top-center                 - 上中
+#   - top-right                  - 右上
+#   - bottom-left                - 左下
+#   - bottom-center              - 下中
+#   - bottom-right               - 右下
+# 
+# 默认值: center
+resize-overlay-position = center
+
+# resize-overlay-duration
+# 调整大小覆盖层显示时长
+# 
+# 格式: 数字+单位（可用空格分隔）
+# 单位: y（年）、d（天）、h（小时）、m（分钟）、s（秒）、ms（毫秒）、us（微秒）、ns（纳秒）
+# 
+# 默认值: 750ms
+# 
+# 配置示例:
+#   resize-overlay-duration = 1s
+#   resize-overlay-duration = 1h30m
+resize-overlay-duration = 750ms
+
+# ============================================
+# 快速终端 (Quick Terminal)
+# ============================================
+
+# quick-terminal-position
+# 快速终端位置
+# 
+# 可选值:
+#   - top                        - 顶部
+#   - bottom                     - 底部
+#   - left                       - 左侧
+#   - right                      - 右侧
+#   - center                     - 中央
+# 
+# 默认值: top
+# 
+# 注意: 更改后需要重启 Ghostty（macOS）
+quick-terminal-position = top
+
+# quick-terminal-size
+# 快速终端大小
+# 
+# 格式:
+#   - 百分比                     - 如 20%（屏幕高度/宽度的百分比）
+#   - 像素值                     - 如 300px（绝对像素值）
+#   - 混合                       - 如 50%,500px（主轴线,次轴线）
+# 
+# 说明:
+#   如果只指定一个值，它会影响快速终端的"主轴线"大小：
+#   - 顶部/底部位置：影响高度
+#   - 左侧/右侧位置：影响宽度
+#   - 中央位置：取决于显示器方向（横屏影响高度，竖屏影响宽度）
+# 
+#   次轴线默认为最大化，除非指定第二个值（用逗号分隔）
+# 
+# 可选值:
+#   - 数字+%                     - 百分比（如 20%）
+#   - 数字+px                    - 像素（如 300px）
+#   - 主轴,次轴                   - 混合设置（如 50%,500px）
+# 
+# 默认值: 空（系统自动决定）
+# 
+# 配置示例:
+#   # 顶部/底部位置：高度为屏幕的 20%，宽度最大化
+#   quick-terminal-size = 20%
+#   
+#   # 左侧/右侧位置：宽度为 300px，高度最大化
+#   quick-terminal-size = 300px
+#   
+#   # 混合：高度 50% 屏幕高度，宽度 500px
+#   quick-terminal-size = 50%,500px
+#   
+#   # 中央位置（横屏）：高度 60%，宽度 80%
+#   quick-terminal-size = 60%,80%
+quick-terminal-size = 40%,45%
+
+# quick-terminal-screen
+# 快速终端显示的屏幕（仅 macOS）
+# 
+# 可选值:
+#   - main                       - 主屏幕（操作系统推荐的）
+#   - mouse                      - 鼠标当前所在的屏幕
+#   - macos-menu-bar             - 包含 macOS 菜单栏的屏幕
+# 
+# 默认值: main
+quick-terminal-screen = main
+
+# quick-terminal-animation-duration
+# 快速终端动画时长（秒）
+# 
+# 可选值: 0 或正数（0 禁用动画）
+# 默认值: 0.2
+quick-terminal-animation-duration = 0.2
+
+# quick-terminal-autohide
+# 快速终端失去焦点时自动隐藏
+# 
+# 可选值: true | false
+# 默认值: true（macOS），false（Linux）
+quick-terminal-autohide = true
+
+# quick-terminal-space-behavior
+# 快速终端在 macOS Spaces 间的行为
+# 
+# 可选值:
+#   - move                       - 跟随切换到其他 Space
+#   - remain                     - 留在原 Space
+# 
+# 默认值: move
+quick-terminal-space-behavior = move
+
+# quick-terminal-keyboard-interactivity
+# 快速终端键盘交互模式（仅 Linux Wayland）
+# 
+# 可选值:
+#   - none                       - 不接收键盘输入
+#   - on-demand                  - 仅在聚焦时接收
+#   - exclusive                  - 始终接收键盘输入
+# 
+# 默认值: on-demand
+quick-terminal-keyboard-interactivity = on-demand
+
+# gtk-quick-terminal-layer
+# 快速终端窗口层级（仅 GTK Wayland）
+# 
+# 可选值:
+#   - overlay                    - 在所有窗口前面
+#   - top                        - 在普通窗口前面，但在锁屏后面（默认）
+#   - bottom                     - 在普通窗口后面
+#   - background                 - 在所有窗口后面
+# 
+# 默认值: top
+gtk-quick-terminal-layer = top
+
+# gtk-quick-terminal-namespace
+# 快速终端窗口命名空间（仅 GTK Wayland）
+# 
+# 默认值: ghostty-quick-terminal
+gtk-quick-terminal-namespace = ghostty-quick-terminal
+
+# ============================================
+# Shell 集成 (Shell Integration)
+# ============================================
+
+# shell-integration
+# 自动注入 Shell 集成
+# 
+# 可选值:
+#   - none                       - 不自动注入
+#   - detect                     - 根据文件名自动检测（默认）
+#   - bash                       - 明确使用 bash 集成
+#   - zsh                        - 明确使用 zsh 集成
+#   - fish                       - 明确使用 fish 集成
+#   - elvish                     - 明确使用 elvish 集成
+#   - nushell                    - 明确使用 nushell 集成
+# 
+# 默认值: detect
+# 
+# Shell 集成提供以下功能:
+#   - 工作目录报告（新标签/分割继承目录）
+#   - 提示标记（支持 jump_to_prompt 快捷键）
+#   - 在提示符处关闭不询问确认
+#   - 调整窗口大小时更好的提示重绘
+shell-integration = detect
+
+# shell-integration-features
+# 启用的 Shell 集成特性
+# 
+# 可选值（逗号分隔）:
+#   - cursor                     - 在提示符处显示闪烁的光标
+#   - no-cursor                  - 禁用光标特性
+#   - sudo                       - 设置 sudo 包装器以保留 terminfo
+#   - no-sudo                    - 禁用 sudo 包装器
+#   - title                      - 通过 Shell 集成设置窗口标题
+#   - no-title                   - 禁用标题设置
+#   - ssh-env                    - SSH 环境变量兼容性
+#   - no-ssh-env                 - 禁用 SSH 环境变量
+#   - ssh-terminfo               - 自动在远程主机安装 terminfo
+#   - no-ssh-terminfo            - 禁用 terminfo 自动安装
+#   - path                       - 将 Ghostty 二进制目录添加到 PATH
+#   - no-path                    - 禁用 PATH 修改
+#   - true                       - 启用所有特性
+#   - false                      - 禁用所有特性
+# 
+# 默认值: cursor,no-sudo,title,no-ssh-env,no-ssh-terminfo,path
+shell-integration-features = cursor,no-sudo,title,no-ssh-env,no-ssh-terminfo,path
+
+# ============================================
+# 命令面板 (Command Palette)
+# ============================================
+
+# command-palette-entry
+# 自定义命令面板条目
+# 
+# 格式: title:标题, action:动作, description:描述（可选）
+# 值可以用双引号包围以包含特殊字符
+# 
+# 配置示例:
+#   command-palette-entry = title:"重启终端", action:reset
+# 
+# 默认值: 内置大量常用动作（见下方）
+command-palette-entry = title:"Change Tab Title...",description:"Prompt for a new title for the current tab.",action:"prompt_tab_title"
+command-palette-entry = title:"Change Terminal Title...",description:"Prompt for a new title for the current terminal.",action:"prompt_surface_title"
+command-palette-entry = title:"Check for Updates",description:"Check for updates to the application.",action:"check_for_updates"
+command-palette-entry = title:"Clear Screen",description:"Clear the screen and scrollback.",action:"clear_screen"
+command-palette-entry = title:"Close All Windows",description:"Close all windows.",action:"close_all_windows"
+command-palette-entry = title:"Close Other Tabs",description:"Close all tabs in this window except the current one.",action:"close_tab:other"
+command-palette-entry = title:"Close Tab",description:"Close the current tab.",action:"close_tab:this"
+command-palette-entry = title:"Close Terminal",description:"Close the current terminal.",action:"close_surface"
+command-palette-entry = title:"Close Window",description:"Close the current window.",action:"close_window"
+command-palette-entry = title:"Copy Terminal Title to Clipboard",description:"Copy the terminal title to the clipboard. If the terminal title is not set this has no effect.",action:"copy_title_to_clipboard"
+command-palette-entry = title:"Copy URL to Clipboard",description:"Copy the URL under the cursor to the clipboard.",action:"copy_url_to_clipboard"
+command-palette-entry = title:"Decrease Font Size",description:"Decrease the font size by 1 point.",action:"decrease_font_size:1"
+command-palette-entry = title:"End Search",description:"End the current search if any and hide any GUI elements.",action:"end_search"
+command-palette-entry = title:"Equalize Splits",description:"Equalize the size of all splits.",action:"equalize_splits"
+command-palette-entry = title:"Focus Split: Down",description:"Focus the split below, if it exists.",action:"goto_split:down"
+command-palette-entry = title:"Focus Split: Left",description:"Focus the split to the left, if it exists.",action:"goto_split:left"
+command-palette-entry = title:"Focus Split: Next",description:"Focus the next split, if any.",action:"goto_split:next"
+command-palette-entry = title:"Focus Split: Previous",description:"Focus the previous split, if any.",action:"goto_split:previous"
+command-palette-entry = title:"Focus Split: Right",description:"Focus the split to the right, if it exists.",action:"goto_split:right"
+command-palette-entry = title:"Focus Split: Up",description:"Focus the split above, if it exists.",action:"goto_split:up"
+command-palette-entry = title:"Focus Window: Next",description:"Focus the next window, if any.",action:"goto_window:next"
+command-palette-entry = title:"Focus Window: Previous",description:"Focus the previous window, if any.",action:"goto_window:previous"
+command-palette-entry = title:"Ghostty",description:"Put a little Ghostty in your terminal.",action:"text:\xf0\x9f\x91\xbb"
+command-palette-entry = title:"Increase Font Size",description:"Increase the font size by 1 point.",action:"increase_font_size:1"
+command-palette-entry = title:"Move Tab Left",description:"Move the current tab to the left.",action:"move_tab:-1"
+command-palette-entry = title:"Move Tab Right",description:"Move the current tab to the right.",action:"move_tab:1"
+command-palette-entry = title:"New Tab",description:"Open a new tab.",action:"new_tab"
+command-palette-entry = title:"New Window",description:"Open a new window.",action:"new_window"
+command-palette-entry = title:"Next Search Result",description:"Navigate to the next search result, if any.",action:"navigate_search:next"
+command-palette-entry = title:"Open Config",description:"Open the config file.",action:"open_config"
+command-palette-entry = title:"Previous Search Result",description:"Navigate to the previous search result, if any.",action:"navigate_search:previous"
+command-palette-entry = title:"Paste from Clipboard",description:"Paste the contents of the main clipboard.",action:"paste_from_clipboard"
+command-palette-entry = title:"Paste from Selection",description:"Paste the contents of the selection clipboard.",action:"paste_from_selection"
+command-palette-entry = title:"Quit",description:"Quit the application.",action:"quit"
+command-palette-entry = title:"Redo",description:"Redo the last undone action.",action:"redo"
+command-palette-entry = title:"Reload Config",description:"Reload the config file.",action:"reload_config"
+command-palette-entry = title:"Reset Font Size",description:"Reset the font size to the default.",action:"reset_font_size"
+command-palette-entry = title:"Reset Terminal",description:"Reset the terminal to a clean state.",action:"reset"
+command-palette-entry = title:"Reset Window Size",description:"Reset the window size to the default.",action:"reset_window_size"
+command-palette-entry = title:"Scroll Page Down",description:"Scroll the screen down by a page.",action:"scroll_page_down"
+command-palette-entry = title:"Scroll Page Up",description:"Scroll the screen up by a page.",action:"scroll_page_up"
+command-palette-entry = title:"Scroll to Bottom",description:"Scroll to the bottom of the screen.",action:"scroll_to_bottom"
+command-palette-entry = title:"Scroll to Selection",description:"Scroll to the selected text.",action:"scroll_to_selection"
+command-palette-entry = title:"Scroll to Top",description:"Scroll to the top of the screen.",action:"scroll_to_top"
+command-palette-entry = title:"Search Selection",description:"Start a search for the current text selection.",action:"search_selection"
+command-palette-entry = title:"Select All",description:"Select all text on the screen.",action:"select_all"
+command-palette-entry = title:"Show On-Screen Keyboard",description:"Show the on-screen keyboard if present.",action:"show_on_screen_keyboard"
+command-palette-entry = title:"Show the GTK Inspector",description:"Show the GTK inspector.",action:"show_gtk_inspector"
+command-palette-entry = title:"Split Down",description:"Split the terminal down.",action:"new_split:down"
+command-palette-entry = title:"Split Left",description:"Split the terminal to the left.",action:"new_split:left"
+command-palette-entry = title:"Split Right",description:"Split the terminal to the right.",action:"new_split:right"
+command-palette-entry = title:"Split Up",description:"Split the terminal up.",action:"new_split:up"
+command-palette-entry = title:"Start Search",description:"Start a search if one isn't already active.",action:"start_search"
+command-palette-entry = title:"Toggle Background Opacity",description:"Toggle the background opacity of a window that started transparent.",action:"toggle_background_opacity"
+command-palette-entry = title:"Toggle Float on Top",description:"Toggle the float on top state of the current window.",action:"toggle_window_float_on_top"
+command-palette-entry = title:"Toggle Fullscreen",description:"Toggle the fullscreen state of the current window.",action:"toggle_fullscreen"
+command-palette-entry = title:"Toggle Inspector",description:"Toggle the inspector.",action:"inspector:toggle"
+command-palette-entry = title:"Toggle Maximize",description:"Toggle the maximized state of the current window.",action:"toggle_maximize"
+command-palette-entry = title:"Toggle Secure Input",description:"Toggle secure input mode.",action:"toggle_secure_input"
+command-palette-entry = title:"Toggle Split Zoom",description:"Toggle the zoom state of the current split.",action:"toggle_split_zoom"
+command-palette-entry = title:"Toggle Tab Overview",description:"Toggle the tab overview.",action:"toggle_tab_overview"
+command-palette-entry = title:"Toggle Mouse Reporting",description:"Toggle whether mouse events are reported to terminal applications.",action:"toggle_mouse_reporting"
+command-palette-entry = title:"Toggle Read-Only Mode",description:"Toggle read-only mode for the current surface.",action:"toggle_readonly"
+command-palette-entry = title:"Toggle Window Decorations",description:"Toggle the window decorations.",action:"toggle_window_decorations"
+command-palette-entry = title:"Undo",description:"Undo the last action.",action:"undo"
+
+# ============================================
+# 自定义着色器 (Custom Shaders)
+# ============================================
+
+# custom-shader
+# 自定义 GLSL 着色器文件路径
+# 
+# 支持 Shadertoy 风格的 mainImage 函数
+# 可用 uniform:
+#   - sampler2D iChannel0        - 输入纹理（终端屏幕）
+#   - vec3 iResolution           - 输出尺寸
+#   - float iTime                - 时间（秒）
+#   - float iTimeDelta           - 帧间隔时间
+#   - int iFrame                 - 帧数
+#   - vec4 iCurrentCursor        - 当前光标信息 (x, y, visible, style)
+#   - vec4 iPreviousCursor       - 上一帧光标信息
+#   - vec4 iCurrentCursorColor   - 光标颜色
+#   - float iTimeCursorChange    - 光标变化时间戳
+#   - float iTimeFocus           - 表面最后获得焦点的时间戳
+#   - int iFocus                 - 当前焦点状态 (1.0=聚焦, 0.0=未聚焦)
+#   - vec3 iPalette[256]         - 256色终端调色板 (RGB [0.0, 1.0])
+#   - vec3 iBackgroundColor      - 终端背景色 (RGB)
+#   - vec3 iForegroundColor      - 终端前景色 (RGB)
+#   - vec3 iCursorColor          - 终端光标色 (RGB)
+#   - vec3 iCursorText           - 终端光标文字色 (RGB)
+#   - vec3 iSelectionBackgroundColor - 选择背景色 (RGB)
+#   - vec3 iSelectionForegroundColor - 选择前景色 (RGB)
+# 
+# 默认值: 空
+# 
+# 警告: 无效着色器可能导致窗口黑屏
+# 
+# 配置示例:
+#   custom-shader = /path/to/shader.glsl
+#   # 可指定多个，按顺序执行
+#   custom-shader = /path/to/shader1.glsl
+#   custom-shader = /path/to/shader2.glsl
+custom-shader = 
+
+# custom-shader-animation
+# 自定义着色器动画模式
+# 
+# 可选值:
+#   - true                       - 聚焦时运行动画循环
+#   - false                      - 仅在终端更新时渲染
+#   - always                     - 始终运行动画循环（CPU 占用更高）
+# 
+# 默认值: true
+custom-shader-animation = true
+
+# ============================================
+# 铃声 (Bell)
+# ============================================
+
+# bell-features
+# 铃声特性
+# 
+# 可选值（逗号分隔）:
+#   - system                     - 使用系统通知（仅 GTK）
+#   - no-system                  - 禁用系统通知
+#   - audio                      - 播放自定义声音（仅 GTK）
+#   - no-audio                   - 禁用自定义声音
+#   - attention                  - 请求用户注意（默认启用）
+#   - no-attention               - 禁用注意力请求
+#   - title                      - 在标题前添加铃铛 emoji（默认启用）
+#   - no-title                   - 禁用标题铃铛
+#   - border                     - 显示边框（仅 GTK）
+#   - no-border                  - 禁用边框
+# 
+# 默认值: no-system,no-audio,attention,title,no-border
+bell-features = no-system,no-audio,attention,title,no-border
+
+# bell-audio-path
+# 自定义铃声音频文件路径（仅 GTK）
+# 
+# 支持格式取决于系统
+# 路径可以是相对配置文件的
+# 
+# 默认值: 空
+bell-audio-path = 
+
+# bell-audio-volume
+# 铃声音量（仅 GTK）
+# 
+# 可选值: 0.0 - 1.0
+# 默认值: 0.5
+bell-audio-volume = 0.5
+
+# ============================================
+# 应用配置 (Application Configuration)
+# ============================================
+
+# config-file
+# 包含额外的配置文件
+# 
+# 可选值: 文件路径
+#   - ?前缀                      - 文件不存在时不报错
+#   - "路径"                     - 如果路径以 ? 开头需要用引号
+# 
+# 默认值: 空
+# 
+# 配置示例:
+#   config-file = ~/.config/ghostty/themes/my-theme.conf
+#   config-file = ?optional.conf  # 不存在也不报错
+config-file = 
+
+# config-default-files
+# 加载默认配置文件路径
+# 
+# 可选值: true | false
+#   - true                       - 加载 $XDG_CONFIG_HOME/ghostty/config
+#   - false                      - 不加载默认配置
+# 
+# 默认值: true
+# 
+# 注意: 仅在命令行参数中设置有效
+config-default-files = true
+
+# confirm-close-surface
+# 关闭表面前是否确认
+# 
+# 可选值:
+#   - true                       - 如果 shell 集成报告有进程运行则确认
+#   - false                      - 不确认直接关闭
+#   - always                     - 始终确认（即使有 shell 集成）
+# 
+# 默认值: true
+confirm-close-surface = false
+
+# quit-after-last-window-closed
+# 最后一个窗口关闭后退出应用
+# 
+# 可选值: true | false
+#   - true                       - 最后一个窗口关闭后退出（Linux 默认）
+#   - false                      - 保持运行（macOS 默认）
+# 
+# 默认值: false（macOS），true（Linux）
+# NOTE: 如果不设置为 true，会导致偶尔重新启动 ghostty 时不自动执行 initial-command 命令,
+#       从而导致 tmux 无法启动,  特别是通过 tmux kill-server 命令退出终端时。
+quit-after-last-window-closed = true
+
+# quit-after-last-window-closed-delay
+# 最后一个窗口关闭后延迟退出
+# 
+# 格式: 数字+单位（同 resize-overlay-duration）
+# 最小值: 1s
+# 默认值: 空（立即退出）
+# 
+# 配置示例:
+#   quit-after-last-window-closed-delay = 30s
+quit-after-last-window-closed-delay = 
+
+# initial-window
+# 启动时是否创建初始窗口
+# 
+# 可选值: true | false
+# 默认值: true
+initial-window = true
+
+# undo-timeout
+# 撤销操作的超时时间（仅 macOS）
+# 
+# 格式: 数字+单位（同 resize-overlay-duration）
+# 0 表示禁用撤销
+# 
+# 默认值: 5s
+undo-timeout = 5s
+
+# ============================================
+# 图像存储 (Image Storage)
+# ============================================
+
+# image-storage-limit
+# 每个终端屏幕的图像存储限制（字节）
+# 
+# 可选值: 0 - 4294967295（4GiB）
+#   - 0                          - 禁用所有图像协议
+# 
+# 默认值: 320000000（约 320MB）
+image-storage-limit = 320000000
+
+# ============================================
+# 颜色报告 (Color Reporting)
+# ============================================
+
+# osc-color-report-format
+# OSC 颜色查询报告格式
+# 
+# 可选值:
+#   - none                       - 不回复查询
+#   - 8-bit                      - 返回 8 位颜色值（rr/gg/bb）
+#   - 16-bit                     - 返回 16 位颜色值（rrrr/gggg/bbbb）
+# 
+# 默认值: 16-bit
+osc-color-report-format = 16-bit
+
+# ============================================
+# 标题报告 (Title Reporting)
+# ============================================
+
+# title-report
+# 启用标题报告（CSI 21 t）
+# 
+# 可选值: true | false
+#   - true                       - 允许程序查询标题
+#   - false                      - 禁用（默认，安全原因）
+# 
+# 警告: 这可能暴露敏感信息或被用于代码执行攻击
+# 默认值: false
+title-report = false
+
+# ============================================
+# VT 模式 (VT Modes)
+# ============================================
+
+# vt-kam-allowed
+# 允许 KAM 模式（键盘锁定模式）
+# 
+# 可选值: true | false
+# 默认值: false
+# 
+# 警告: 除非你明确知道需要 KAM，否则不要启用
+vt-kam-allowed = false
+
+# ============================================
+# 终端特性 (Terminal Features)
+# ============================================
+
+# term
+# 设置 TERM 环境变量
+# 
+# 可选值: 任意 terminfo 名称
+# 默认值: xterm-ghostty
+term = xterm-ghostty
+
+# enquiry-response
+# ENQ (0x05) 查询的响应字符串
+# 
+# 默认值: 空
+enquiry-response = 
+
+# bold-color
+# 粗体文字颜色
+# 
+# 可选值:
+#   - #RRGGBB 或 X11 颜色名称   - 固定颜色
+#   - bright                     - 使用调色板中的亮色
+# 
+# 默认值: 空
+bold-color = 
+
+# faint-opacity
+#  faint（暗淡）文字的不透明度
+# 
+# 可选值: 0.0 - 1.0
+# 默认值: 0.5
+faint-opacity = 0.5
+
+# ============================================
+# 异步后端 (Async Backend)
+# ============================================
+
+# async-backend
+# 异步 I/O 后端（仅 Linux）
+# 
+# 可选值:
+#   - auto                       - 自动选择
+#   - epoll                      - 使用 epoll API
+#   - io_uring                   - 使用 io_uring API
+# 
+# 默认值: auto
+# 
+# 注意: 更改后需要完全重启应用
+async-backend = auto
+
+# ============================================
+# 自动更新 (Auto Update)
+# ============================================
+
+# auto-update
+# 自动更新设置（仅 macOS）
+# 
+# 可选值:
+#   - off                        - 禁用自动更新
+#   - check                      - 检查并通知，但不自动下载
+#   - download                   - 自动下载但不安装
+#   - 空                         - 使用 Sparkle 默认设置
+# 
+# 默认值: 空
+auto-update = download
+
+# auto-update-channel
+# 自动更新频道
+# 
+# 可选值:
+#   - stable                     - 稳定版
+#   - tip                        - 预发布版（每日构建）
+#   - 空                         - 匹配当前版本类型
+# 
+# 默认值: 空
+# 
+# 注意: 更改后需要完全重启应用
+auto-update-channel = 
+
+# ============================================
+# 应用通知 (App Notifications)
+# ============================================
+
+# app-notifications
+# 应用内通知设置（仅 GTK）
+# 
+# 可选值（逗号分隔）:
+#   - clipboard-copy             - 复制到剪贴板时通知
+#   - no-clipboard-copy          - 禁用复制通知
+#   - config-reload              - 配置重载时通知
+#   - no-config-reload           - 禁用重载通知
+#   - true                       - 启用所有通知
+#   - false                      - 禁用所有通知
+# 
+# 默认值: clipboard-copy,config-reload
+app-notifications = clipboard-copy,config-reload
+
+# ============================================
+# macOS 特定配置 (macOS-specific)
+# ============================================
+
+# macos-non-native-fullscreen
+# 非原生全屏模式
+# 
+# 可选值:
+#   - true                       - 快速全屏，无动画，不使用新 Space
+#   - false                      - 原生 macOS 全屏（默认）
+#   - visible-menu               - 非原生全屏但显示菜单栏
+#   - padded-notch               - 非原生全屏但避开刘海区域
+# 
+# 默认值: false
+# 
+# 警告: 此模式下标签页不工作！
+# 
+# 配置示例:
+#   # 如果你不使用标签页，想要更快的全屏体验
+#   macos-non-native-fullscreen = true
+macos-non-native-fullscreen = false
+
+# macos-window-buttons
+# 窗口按钮可见性
+# 
+# 可选值:
+#   - visible                    - 显示关闭/最小化/最大化按钮
+#   - hidden                     - 隐藏
+# 
+# 默认值: visible
+macos-window-buttons = hidden
+
+# macos-titlebar-style
+# 标题栏样式
+# 
+# 可选值:
+#   - native                     - 原生 macOS 标题栏
+#   - transparent                - 透明标题栏（默认）
+#   - tabs                       - 集成标签页到标题栏
+#   - hidden                     - 完全隐藏标题栏
+# 
+# 默认值: transparent
+macos-titlebar-style = transparent
+
+# macos-titlebar-proxy-icon
+# 代理图标可见性（仅原生标题栏）
+# 
+# 可选值:
+#   - visible                    - 显示工作目录图标
+#   - hidden                     - 隐藏
+# 
+# 默认值: visible
+macos-titlebar-proxy-icon = visible
+
+# macos-dock-drop-behavior
+# 拖放文件到 Dock 图标的行为
+# 
+# 可选值:
+#   - new-tab                    - 在新标签页打开
+#   - window                     - 在新窗口打开
+# 
+# 默认值: new-tab
+macos-dock-drop-behavior = new-tab
+
+# macos-option-as-alt
+# 将 Option 键视为 Alt 键
+# 
+# 可选值:
+#   - true                       - Option 作为 Alt
+#   - false                      - 保持 Option 的 Unicode 输入功能
+#   - left                       - 仅左 Option 作为 Alt
+#   - right                      - 仅右 Option 作为 Alt
+#   - 空                         - 根据键盘布局自动（US 布局默认为 true）
+# 
+# 默认值: 空
+# 
+# 配置示例:
+#   # 如果你需要 Alt 键组合在 Vim/Tmux 中工作
+#   macos-option-as-alt = true
+macos-option-as-alt = 
+
+# macos-window-shadow
+# 窗口阴影
+# 
+# 可选值: true | false
+# 默认值: true
+macos-window-shadow = true
+
+# macos-hidden
+# 隐藏 Dock 和应用切换器中的图标
+# 
+# 可选值:
+#   - never                      - 从不隐藏（默认）
+#   - always                     - 始终隐藏
+# 
+# 默认值: never
+# 
+# 警告: 隐藏后键盘布局切换将不再自动
+macos-hidden = never
+
+# macos-auto-secure-input
+# 检测到密码提示时自动启用安全输入
+# 
+# 可选值: true | false
+# 默认值: true
+macos-auto-secure-input = true
+
+# macos-secure-input-indication
+# 显示安全输入状态的视觉指示
+# 
+# 可选值: true | false
+# 默认值: true
+macos-secure-input-indication = true
+
+# macos-icon
+# Dock 图标样式
+# 
+# 可选值:
+#   - official                   - 官方图标
+#   - blueprint                  - 蓝图风格
+#   - chalkboard                 - 黑板风格
+#   - microchip                  - 微芯片风格
+#   - glass                      - 玻璃风格
+#   - holographic                - 全息风格
+#   - paper                      - 纸张风格
+#   - retro                      - 复古风格
+#   - xray                       - X 光风格
+#   - custom                     - 自定义图标（需设置 macos-custom-icon）
+#   - custom-style               - 自定义样式（需设置 macos-icon-*）
+# 
+# 默认值: official
+macos-icon = official
+
+# macos-custom-icon
+# 自定义图标路径（当 macos-icon = custom 时）
+# 
+# 可选值: PNG/JPEG/ICNS 文件的绝对路径
+# 默认值: ~/.config/ghostty/Ghostty.icns
+macos-custom-icon = 
+
+# macos-icon-frame
+# 图标边框材质（当 macos-icon = custom-style 时）
+# 
+# 可选值:
+#   - aluminum                   - 拉丝铝（默认）
+#   - beige                      - 90年代米色
+#   - plastic                    - 光泽塑料
+#   - chrome                     - 镀铬
+# 
+# 默认值: aluminum
+macos-icon-frame = aluminum
+
+# macos-icon-ghost-color
+# 图标中幽灵的颜色（当 macos-icon = custom-style 时）
+# 
+# 可选值: #RRGGBB 或 X11 颜色名称
+# 默认值: 空
+macos-icon-ghost-color = 
+
+# macos-icon-screen-color
+# 图标中屏幕的颜色（渐变，支持最多64种颜色）
+# 
+# 格式: color1,color2,color3,...（从下到上）
+# 可选值: #RRGGBB 或 X11 颜色名称
+# 默认值: 空
+macos-icon-screen-color = 
+
+# macos-shortcuts
+# 允许 macOS Shortcuts 控制 Ghostty
+# 
+# 可选值:
+#   - ask                        - 询问用户权限（默认）
+#   - allow                      - 允许
+#   - deny                       - 拒绝
+# 
+# 默认值: ask
+macos-shortcuts = ask
+
+# ============================================
+# Linux/GTK 特定配置 (Linux/GTK-specific)
+# ============================================
+
+# linux-cgroup
+# Linux cgroup 隔离
+# 
+# 可选值:
+#   - never                      - 从不使用 cgroup（默认）
+#   - always                     - 始终使用
+#   - single-instance            - 仅在单实例模式下使用
+# 
+# 默认值: never
+# 
+# 注意: 需要 systemd
+linux-cgroup = never
+
+# linux-cgroup-memory-limit
+# 单个终端进程的内存限制（字节）
+# 
+# 可选值: 字节数
+# 默认值: 空（无限制）
+linux-cgroup-memory-limit = 
+
+# linux-cgroup-processes-limit
+# 单个终端进程的进程数限制
+# 
+# 可选值: 进程数
+# 默认值: 空（无限制）
+linux-cgroup-processes-limit = 
+
+# linux-cgroup-hard-fail
+# cgroup 初始化失败时是否报错
+# 
+# 可选值: true | false
+#   - true                       - 失败时退出
+#   - false                      - 失败时忽略（默认）
+# 
+# 默认值: false
+linux-cgroup-hard-fail = false
+
+# gtk-opengl-debug
+# 启用 GTK OpenGL 调试日志
+# 
+# 可选值: true | false
+# 默认值: false（发布版）/ true（调试版）
+gtk-opengl-debug = false
+
+# gtk-single-instance
+# GTK 单实例模式
+# 
+# 可选值:
+#   - true                       - 单实例，新进程打开新窗口
+#   - false                      - 每个进程独立
+#   - detect                     - 自动检测（默认）
+# 
+# 默认值: detect
+# 
+# 自动检测逻辑:
+#   - 如果 TERM_PROGRAM 设置，禁用单实例
+#   - 如果有 CLI 参数，禁用单实例
+gtk-single-instance = detect
+
+# gtk-titlebar
+# 显示 GTK 标题栏
+# 
+# 可选值: true | false
+# 默认值: true
+gtk-titlebar = true
+
+# gtk-tabs-location
+# 标签页位置
+# 
+# 可选值:
+#   - top                        - 顶部（默认）
+#   - bottom                     - 底部
+#   - hidden                     - 隐藏（显示标签概览按钮）
+# 
+# 默认值: top
+gtk-tabs-location = top
+
+# gtk-titlebar-hide-when-maximized
+# 最大化时隐藏标题栏
+# 
+# 可选值: true | false
+# 默认值: false
+gtk-titlebar-hide-when-maximized = false
+
+# gtk-toolbar-style
+# 工具栏样式
+# 
+# 可选值:
+#   - flat                       - 扁平
+#   - raised                     - 凸起带阴影（默认）
+#   - raised-border              - 凸起带边框
+# 
+# 默认值: raised
+gtk-toolbar-style = raised
+
+# gtk-titlebar-style
+# 标题栏样式
+# 
+# 可选值:
+#   - native                     - 传统标题栏（默认）
+#   - tabs                       - 标题栏和标签栏合并
+# 
+# 默认值: native
+# 
+# 注意: 当 `window-decoration` 为 `none` 或在 macOS 上运行时此选项无效。
+gtk-titlebar-style = native
+
+# gtk-wide-tabs
+# 宽标签页（填充可用空间）
+# 
+# 可选值: true | false
+# 默认值: true
+gtk-wide-tabs = true
+
+# gtk-custom-css
+# 自定义 GTK CSS 文件
+# 
+# 可选值: CSS 文件路径（可用 ? 前缀忽略错误）
+# 文件大小限制: 5MiB
+# 默认值: 空
+# 
+# 配置示例:
+#   gtk-custom-css = ~/.config/ghostty/custom.css
+#   
+#   # custom.css 示例:
+#   # .terminal-window { border-radius: 8px; }
+gtk-custom-css = 
+
+# desktop-notifications
+# 允许终端应用显示桌面通知（OSC 9 / OSC 777）
+# 
+# 可选值: true | false
+# 默认值: true
+desktop-notifications = true
