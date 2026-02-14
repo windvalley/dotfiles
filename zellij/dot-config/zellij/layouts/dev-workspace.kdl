@@ -1,0 +1,64 @@
+// Dev Workspace 布局
+//
+// 最佳实践:
+//   1. 全局 cwd 避免重复指定路径
+//   2. focus 标记启动后的默认聚焦 tab/pane
+//   3. pane name 提高可读性
+//   4. compact-bar 节省 1 行屏幕空间
+//   5. new_tab_template 保证运行时新建的 tab 也有状态栏
+//   6. Tab 按用途命名，而非按布局命名
+
+layout {
+    // 全局工作目录，所有 pane 继承（除非用绝对路径覆盖）
+    cwd "~"
+
+    // 所有预定义 tab 的默认模板：顶部 compact-bar + 底部 status-bar
+    default_tab_template {
+        // compact-bar: 标签栏，显示所有 tab 和当前激活的 tab
+        // size=1 表示固定占 1 行高度（不带引号 = 固定行数，带引号如 "70%" = 百分比）
+        pane size=1 borderless=true {
+            plugin location="zellij:compact-bar"
+        }
+        // 你的工作区域，自动占满剩余空间
+        children
+        // status-bar: 状态栏，显示当前模式 + 该模式下可用的快捷键提示
+        // size=2 表示固定占 2 行高度（第 1 行: 模式指示，第 2 行: 快捷键）
+        // 熟悉快捷键后可去掉此栏以节省屏幕空间
+        pane size=2 borderless=true {
+            plugin location="zellij:status-bar"
+        }
+    }
+
+    // 运行时按 Ctrl+t n 新建 tab 时使用此模板
+    new_tab_template {
+        pane size=1 borderless=true {
+            plugin location="zellij:compact-bar"
+        }
+        pane // 新 tab 的默认单窗格
+        pane size=2 borderless=true {
+            plugin location="zellij:status-bar"
+        }
+    }
+
+    // ── Tab 1: 编码 ──
+    // 经典 IDE 布局：主编辑区 + 底部终端
+    tab name="code" focus=true cwd="dotfiles" {
+        pane name="editor" size="70%" focus=true
+        pane name="terminal" size="30%"
+    }
+
+    // ── Tab 2: Shell ──
+    // 左右双窗格，适合对比、并行操作
+    tab name="shell" cwd="dotfiles" {
+        pane split_direction="vertical" {
+            pane name="left"
+            pane name="right"
+        }
+    }
+
+    // ── Tab 3: 通用 ──
+    // 单窗格，临时任务 / 日志 / 文档查阅
+    tab name="misc" {
+        pane
+    }
+}

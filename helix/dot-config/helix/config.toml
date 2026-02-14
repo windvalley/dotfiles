@@ -1,0 +1,458 @@
+# Helix 编辑器配置文件
+# ============================================================
+# 配置文件位置:
+#   Linux/Mac: ~/.config/helix/config.toml
+#   Windows: %AppData%\helix\config.toml
+#
+# 可通过以下命令快速打开配置文件:
+#   :config-open  (在 Helix 正常模式下输入)
+#
+# 配置文件修改后可重载:
+#   :config-reload
+#   或在终端执行: pkill -USR1 hx (Unix 系统)
+# ============================================================
+
+# ============================================================
+# 主题设置
+# ============================================================
+# 可用主题: "default", "dark", "light", "onedark", "monokai", "dracula" 等
+# 查看所有主题: :theme 命令
+theme = "dracula"
+
+# ============================================================
+# 编辑器核心设置 [editor]
+# ============================================================
+
+[editor]
+
+# ----- 光标与滚动 -----
+# 滚动时屏幕边缘保留的空白行数
+scrolloff = 5
+
+# 启用鼠标支持 (可点击光标位置、选择文本、滚动)
+mouse = true
+
+# 每次鼠标滚轮滚动行数
+scroll-lines = 3
+
+# ----- 行号显示 -----
+# 可选值:
+#   "absolute" - 显示绝对行号
+#   "relative" - 显示相对于当前光标的行号
+# 注意: 在插入模式下或失去焦点时,relative 仍会显示绝对行号
+line-number = "relative"
+
+# 高亮光标所在的整行
+cursorline = false
+
+# 高亮光标所在的整列
+cursorcolumn = false
+
+# ----- 搜索 -----
+# (搜索设置在下方独立 section)
+
+# ----- 自动功能 -----
+# 启用自动完成弹出
+auto-completion = true
+
+# 启用路径自动补全 (显示当前文档所在目录或工作目录下的文件)
+path-completion = true
+
+# 启用保存时自动格式化 (需要 LSP 支持)
+auto-format = true
+
+# 启用自动添加注释: 当在注释内换行时,自动添加注释符号
+continue-comments = true
+
+# ----- 显示信息 -----
+# 显示信息框 (如函数签名提示等)
+auto-info = true
+
+# ----- 颜色支持 -----
+# 强制启用真彩色 (终端不支持时)
+true-color = false
+
+# 强制启用下划线样式光标 (终端不支持时)
+undercurl = false
+
+# ----- 文件显示 -----
+# 标尺线位置 (显示垂直参考线)
+# 可在 languages.toml 中针对特定语言覆盖此设置
+rulers = []
+
+# 顶部缓冲区标签栏显示模式
+# 可选值:
+#   "always"  - 始终显示
+#   "never"   - 从不显示
+#   "multiple" - 仅当打开多个缓冲区时显示
+bufferline = "never"
+
+# 模式指示器是否根据模式显示不同颜色
+color-modes = false
+
+# ----- 文本宽度 -----
+# 最大行长度,用于 :reflow 命令和软换行
+text-width = 80
+
+# ----- 行尾设置 -----
+# 新文档使用的行尾符
+# 可选值:
+#   "native"  - 平台原生 (Windows 为 CRLF, 其他为 LF)
+#   "lf"      - Unix 换行符 (LF)
+#   "crlf"    - Windows 换行符 (CRLF)
+#   "ff"      - 换页符 (FF)
+#   "cr"      - 回车符 (CR)
+#   "nel"     - 下一行 (NEL)
+default-line-ending = "native"
+
+# 保存时自动在文件末尾添加换行符
+insert-final-newline = true
+
+# 保存时删除末尾多余空行
+trim-final-newlines = false
+
+# 保存时删除行尾空格
+trim-trailing-whitespace = false
+
+# ----- 自动保存 -----
+[editor.auto-save]
+# 失去焦点时自动保存
+focus-lost = false
+# 延迟后自动保存
+after-delay.enable = false
+# 距最后一次编辑多少毫秒后触发自动保存
+after-delay.timeout = 3000
+
+# ----- 缩进 -----
+# 缩进启发式算法
+# 可选值:
+#   "simple"      - 简单复制上一行缩进
+#   "tree-sitter" - 基于语法树计算缩进
+#   "hybrid"      - 结合两者 (默认,优先 tree-sitter,不可用则用 simple)
+indent-heuristic = "hybrid"
+
+# ----- 跳转标签 -----
+# 两字符跳转标签使用的字母 (优先使用字母表开头的字符)
+jump-label-alphabet = "abcdefghijklmnopqrstuvwxyz"
+
+# ----- 诊断信息 -----
+# 行尾显示的诊断信息最低严重级别
+# 可选值: "error", "warning", "info", "hint", "disable"
+end-of-line-diagnostics = "disable"
+
+# ----- 编辑器配置 -----
+# 是否读取 .editorconfig 文件设置
+editor-config = true
+
+# ----- 其他 -----
+# 默认寄存器用于 yank/粘贴操作
+default-yank-register = "\""
+
+# 中键粘贴支持
+middle-click-paste = true
+
+# 剪贴板提供者 (可选: "pasteboard", "wayland", "x-clip", "x-sel", "win-32-yank", "termux", "tmux", "none")
+clipboard-provider = "pasteboard"
+
+# 弹出窗口边框样式 (可选: "popup", "menu", "all", "none")
+popup-border = "none"
+
+# 空闲超时时间 (毫秒),空闲定时器在此时间后触发
+idle-timeout = 250
+
+# 自动完成显示延迟 (毫秒),设置为 5 可即时显示
+completion-timeout = 250
+
+# 选中自动完成项时是否立即插入
+preview-completion-insert = true
+
+# 触发自动补全的最小单词长度
+completion-trigger-len = 2
+
+# 自动完成替换模式: true 为替换整个单词,false 为只替换光标前的部分
+completion-replace = false
+
+# 自动括号配对 (输入左括号自动添加右括号)
+auto-pairs = true
+
+# 软换行
+[editor.soft-wrap]
+enable = false
+# 软换行时行尾保留的最大空格数
+max-wrap = 20
+# 软换行时保留的最大缩进
+max-indent-retain = 40
+# 软换行指示符 (显示在换行行首)
+wrap-indicator = "↪"
+# 按 text-width 软换行而非视口宽度
+wrap-at-text-width = false
+
+# 智能 Tab 键
+[editor.smart-tab]
+enable = true
+# 菜单显示时是否优先使用 smart-tab 功能
+supersede-menu = false
+
+# ============================================================
+# 行号 gutter 设置
+# ============================================================
+[editor.gutters.line-numbers]
+# 行号最小宽度 (字符数)
+min-width = 3
+
+# ============================================================
+# 诊断信息内联显示
+# ============================================================
+[editor.inline-diagnostics]
+# 光标所在行显示的诊断信息最低级别
+# 可选值: "error", "warning", "info", "hint", "disable"
+cursor-line = "disable"
+
+# 其他行显示的诊断信息最低级别
+other-lines = "disable"
+
+# 诊断信息前的横线数量
+prefix-len = 1
+
+# 诊断信息软换行最大宽度
+max-wrap = 20
+
+# 每行最多显示的诊断数量
+max-diagnostics = 10
+
+# ============================================================
+# 空白字符显示
+# ============================================================
+# 渲染模式: "all"(全部显示), "none"(不显示)
+# 或者使用子表形式分别设置每种空白字符的显示
+[editor.whitespace]
+render = "none"
+
+# 分别设置每种空白字符的显示 (可选)
+# [editor.whitespace.render]
+# space = "all"
+# tab = "all"
+# nbsp = "none"
+# nnbsp = "none"
+# newline = "none"
+
+# 显示时使用的字符 (可选)
+# [editor.whitespace.characters]
+# space = "·"
+# nbsp = "⍽"
+# tab = "→"
+# newline = "⏎"
+
+# ============================================================
+# 缩进指南
+# ============================================================
+[editor.indent-guides]
+# 是否显示缩进指南
+render = false
+
+# 缩进指南使用的字符
+character = "│"
+
+# 跳过的缩进级别数
+skip-levels = 0
+
+# ============================================================
+# 状态栏设置 [editor.statusline]
+# ============================================================
+# 状态栏分为三部分: left | center | right
+
+[editor.statusline]
+# 左侧元素
+left = ["mode", "spinner", "file-name", "read-only-indicator", "file-modification-indicator"]
+# 中间元素
+center = []
+# 右侧元素
+right = ["diagnostics", "selections", "register", "position", "file-encoding"]
+# 元素分隔符
+separator = "│"
+# 显示的诊断类型
+diagnostics = ["warning", "error"]
+# 工作区诊断类型
+workspace-diagnostics = ["warning", "error"]
+
+# 各模式显示文本
+[editor.statusline.mode]
+normal = "NOR"
+insert = "INS"
+select = "SEL"
+
+# 可用的状态栏元素:
+#   mode           - 当前编辑器模式
+#   spinner        - LSP 活动时的加载动画
+#   file-name      - 打开文件的路径/名称
+#   file-absolute-path - 文件绝对路径
+#   file-base-name - 文件名(不含路径)
+#   file-modification-indicator - 文件修改指示 ([+] 表示未保存)
+#   file-encoding  - 文件编码 (非 UTF-8 时显示)
+#   file-line-ending - 行尾符 (CRLF 或 LF)
+#   file-indent-style - 文件缩进风格
+#   read-only-indicator - 只读指示 ([readonly])
+#   total-line-numbers - 总行数
+#   file-type      - 文件类型
+#   diagnostics    - 当前缓冲区诊断数
+#   workspace-diagnostics - 工作区诊断数
+#   selections     - 当前选区索引/总数
+#   primary-selection-length - 主选区字符数
+#   position       - 光标位置
+#   position-percentage - 光标位置百分比
+#   separator      - 分隔符
+#   spacer         - 空格
+#   version-control - 当前分支名
+#   register       - 当前寄存器
+
+# ============================================================
+# 光标形状设置 [editor.cursor-shape]
+# ============================================================
+# 可选值: "block" (块), "bar" (竖线), "underline" (下划线), "hidden" (隐藏)
+
+[editor.cursor-shape]
+# 正常模式光标形状
+normal = "block"
+
+# 插入模式光标形状
+insert = "block"
+
+# 选择模式光标形状
+select = "block"
+
+# ============================================================
+# 文件选择器设置 [editor.file-picker]
+# ============================================================
+
+[editor.file-picker]
+
+# 是否显示隐藏文件
+hidden = true
+
+# 是否跟随符号链接
+follow-symlinks = true
+
+# 是否忽略指向已显示文件的符号链接
+deduplicate-links = true
+
+# 是否读取父目录的忽略文件
+parents = true
+
+# 是否读取 .ignore 文件
+ignore = true
+
+# 是否读取 .gitignore 文件
+git-ignore = true
+
+# 是否读取全局 .gitignore (在 git 配置中指定)
+git-global = true
+
+# 是否读取 .git/info/exclude
+git-exclude = true
+
+# 最大递归目录深度 (不设置则无限制)
+# max-depth = 5
+
+# ============================================================
+# LSP 语言服务器设置 [editor.lsp]
+# ============================================================
+
+[editor.lsp]
+
+# 启用 LSP 集成 (设为 false 完全禁用语言服务器)
+enable = true
+
+# 显示 LSP window/showMessage 消息
+display-messages = true
+
+# 显示 LSP 进度消息
+display-progress-messages = false
+
+# 自动弹出签名帮助 (参数提示)
+auto-signature-help = true
+
+# 显示内联提示 (inlay hints)
+display-inlay-hints = false
+
+# 内联提示最大显示长度
+# inlay-hints-length-limit = 25
+
+# 显示颜色预览色块
+display-color-swatches = true
+
+# 显示签名帮助文档
+display-signature-help-docs = true
+
+# 启用代码片段补全 (需要重启 LSP)
+snippets = true
+
+# 跳转引用时包含声明
+goto-reference-include-declaration = true
+
+# ============================================================
+# 剪贴板设置 (自定义命令)
+# ============================================================
+# 自定义剪贴板命令 (取消注释并修改)
+# [editor.clipboard-provider.custom]
+# yank = { command = "xclip", args = ["-selection", "clipboard", "-i"] }
+# paste = { command = "xclip", args = ["-selection", "clipboard", "-o"] }
+
+# ============================================================
+# 键盘映射 [keys]
+# ============================================================
+# 键盘映射分为三种模式:
+#   keys.normal  - 正常模式
+#   keys.insert - 插入模式
+#   keys.select - 选择模式
+#
+# 修饰键前缀:
+#   C- = Ctrl
+#   S- = Shift
+#   A- = Alt
+#   Cmd-/Win-/Meta- = Super 键 (需终端支持增强键盘协议)
+#
+# 特殊键名称:
+#   "backspace", "space", "ret", "left", "right", "up", "down"
+#   "home", "end", "pageup", "pagedown", "tab", "del", "ins"
+#   "null", "esc"
+#
+# 可用命令列表: 查看 :Tutor 或官方文档 keymap.html
+
+# [keys.normal]
+# # 示例: Ctrl-s 保存
+# # C-s = ":w"
+#
+# # 示例: jj 退出插入模式 (需要先在 keys.insert 中配置)
+# # j = { k = "normal_mode" }
+#
+# # 示例: 禁用某键
+# # "C-[ = "no_op"
+
+# [keys.insert]
+# # 退出插入模式
+# # j = { k = "normal_mode" }
+
+# [keys.select]
+# # 选择模式键盘映射
+
+# ============================================================
+# 次要模式 (Minor Modes)
+# ============================================================
+# 可创建专属绑定的次要模式
+# 格式: [keys.normal."<键>"]
+# 示例: 创建按 + 进入的次要模式
+# [keys.normal."+"]
+# m = ":run-shell-command make"
+# c = ":run-shell-command cargo build"
+
+# ============================================================
+# 语言特定配置 (在 languages.toml 中配置)
+# ============================================================
+# 可在 languages.toml 中针对不同语言设置:
+#   - 缩进大小 (indent Width)
+#   - Tab 宽度 (tab Width)
+#   - 缩进字符 (使用空格还是 Tab)
+#   - 格式化命令
+#   - LSP 服务器
+#   等等
+# ============================================================

@@ -110,7 +110,7 @@ font-feature =
 # 
 # 可选值: 任意正数
 # 默认值: 13
-font-size = 16
+font-size = 14
 
 # font-variation
 # 可变字体轴设置（仅适用于可变字体，如 -VF.ttf/.otf）
@@ -1098,6 +1098,30 @@ keybind = super+digit_3=goto_tab:3
 keybind = super+ctrl+arrow_up=resize_split:up,10
 keybind = super+d=new_split:right
 
+# 取消 Ghostty 对 super+数字 的绑定，让它们发送给终端内的程序（如 Zellij）
+# 这样 Zellij 就可以使用 Cmd+1/2/3... 来切换标签页
+# 需要同时取消 super+1 和 super+digit_1 两种写法
+keybind = super+1=unbind
+keybind = super+2=unbind
+keybind = super+3=unbind
+keybind = super+4=unbind
+keybind = super+5=unbind
+keybind = super+6=unbind
+keybind = super+7=unbind
+keybind = super+8=unbind
+keybind = super+9=unbind
+keybind = super+0=unbind
+keybind = super+digit_1=unbind
+keybind = super+digit_2=unbind
+keybind = super+digit_3=unbind
+keybind = super+digit_4=unbind
+keybind = super+digit_5=unbind
+keybind = super+digit_6=unbind
+keybind = super+digit_7=unbind
+keybind = super+digit_8=unbind
+keybind = super+digit_9=unbind
+keybind = super+digit_0=unbind
+
 # key-remap
 # 在 Ghostty 内重新映射修饰键。这允许你在应用级别交换或重新分配
 # 修饰键，而不会影响系统范围的设置。
@@ -1158,9 +1182,14 @@ command =
 # 可选值: 同 command
 # 默认值: 空
 # 
-# 注意: 命令行也可以使用 -e 参数，如 ghostty -e fish -c "tmux attach"
+# TMUX自动启动:
 # NOTE: fish 没有使用绝对路径是为了同时适配 intel mac 和 silicon mac
-initial-command = /bin/sh -l -c "exec fish -c \"tmux attach -t dotfiles || tmux new -s dotfiles -n 'nvim' ';' splitw -h ';' neww -n 'tmux' ';' splitw -h ';' neww -n 'ghostty' ';' splitw -h\""
+# initial-command = /bin/sh -l -c "exec fish -c \"tmux attach -t dotfiles || tmux new -s dotfiles -n 'nvim' ';' splitw -h ';' neww -n 'tmux' ';' splitw -h ';' neww -n 'ghostty' ';' splitw -h\""
+#
+# Zellij 启动逻辑移到 fish config.fish，更灵活可控, 因此这里注释掉
+#initial-command = /bin/sh -l -c "exec fish -c \"zellij --layout dev-workspace\""
+initial-command =
+
 
 # notify-on-command-finish
 # 控制何时发送命令完成通知。有三个选项：

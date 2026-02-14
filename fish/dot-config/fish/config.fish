@@ -85,6 +85,11 @@ if status is-interactive
     abbr -a -g ll 'ls -la'
     abbr -a -g mkdir 'mkdir -p'
 
+    # 目录跳转
+    abbr -a -g ... ../..
+    abbr -a -g .... ../../..
+    abbr -a -g ..... ../../../..
+
     # 用 bat 替代 cat（需 brew install bat）
     if type -q bat
         abbr -a -g cat bat
@@ -93,5 +98,23 @@ if status is-interactive
     # 用 eza 替代 ls（需 brew install eza）
     if type -q eza
         abbr -a -g ls eza
+    end
+
+    # 自动启动 Zellij
+    # 跳过: 已在 zellij 中 / SSH / Quick Terminal / 禁用标志 / 未安装
+    if not set -q ZELLIJ_SESSION_NAME; and not set -q SSH_CONNECTION; and not set -q GHOSTTY_QUICK_TERMINAL; and not set -q ZELLIJ_AUTO_DISABLE; and type -q zellij
+        # 防镜像: 记录启动 zellij 的 Ghostty PID，该进程存活期间新窗口跳过
+        # (不用 zellij list-sessions: 无服务端时挂起，且输出含 ANSI 码)
+        set -l pid_file /tmp/zellij-ghostty.pid
+        set -l skip 0
+        if pgrep -x zellij >/dev/null 2>&1; and test -f $pid_file
+            set -l saved (cat $pid_file 2>/dev/null)
+            test -n "$saved"; and kill -0 $saved 2>/dev/null; and set skip 1
+        end
+        if test $skip -eq 0
+            # session_name / attach_to_session / default_layout 均由 config.kdl 管理
+            command ps -o ppid= -p %self | string trim >$pid_file
+            exec zellij
+        end
     end
 end
