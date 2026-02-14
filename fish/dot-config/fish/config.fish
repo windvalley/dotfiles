@@ -18,8 +18,8 @@ set -g fish_greeting ""
 
 # 优先使用可复刻的环境变量（避免依赖 universal state）
 if type -q nvim
-    set -gx EDITOR nvim
-    set -gx VISUAL nvim
+    set -gx EDITOR hx
+    set -gx VISUAL hx
 end
 
 # Homebrew：默认禁止自动更新
@@ -60,6 +60,23 @@ end
 
 if status is-interactive
     alias vi=nvim
+
+    # Vi 模式：键绑定见 functions/fish_user_key_bindings.fish
+    # (Fish autoload 机制要求该函数必须在 functions/ 目录下)
+
+    # Vi 光标形状
+    set fish_cursor_default block
+    set fish_cursor_insert line
+    set fish_cursor_replace_one underscore
+    set fish_cursor_replace underscore
+    set fish_cursor_external line
+
+    # Tide: vi_mode 提示符 (可复刻，覆盖 universal 默认值)
+    set -g tide_left_prompt_items vi_mode os pwd git newline character
+    set -g tide_vi_mode_icon_default N
+    set -g tide_vi_mode_icon_insert I
+    set -g tide_vi_mode_icon_replace R
+    set -g tide_vi_mode_icon_visual V
 
     # ~/dotfiles/bin/ 下的自定义命令
     # ghostty & nvim 主题切换

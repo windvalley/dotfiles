@@ -110,7 +110,7 @@ font-feature =
 # 
 # 可选值: 任意正数
 # 默认值: 13
-font-size = 14
+font-size = 15
 
 # font-variation
 # 可变字体轴设置（仅适用于可变字体，如 -VF.ttf/.otf）
@@ -1912,7 +1912,7 @@ bell-audio-volume = 0.5
 # 配置示例:
 #   config-file = ~/.config/ghostty/themes/my-theme.conf
 #   config-file = ?optional.conf  # 不存在也不报错
-config-file = 
+config-file =
 
 # config-default-files
 # 加载默认配置文件路径

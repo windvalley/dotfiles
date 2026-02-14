@@ -1,20 +1,20 @@
 // Zellij 终端复用器配置文件
 // 官方网站: https://zellij.dev
+//
+// 配置生效说明 (Zellij 0.41+):
+// - 立即生效 (热重载): 修改保存后 Zellij 会自动更新。包含：快捷键 (keybinds)、主题 (theme)、UI 元素 (pane_frames, mouse_mode 等)。
+// - 需重启/新会话生效: 修改后需重启 Zellij 进程。包含：默认 Shell (default_shell)、默认布局 (default_layout)、目录路径 (layout_dir, theme_dir)、会话及序列化行为 (on_force_close, session_serialization)、资源限制 (scroll_buffer_size)。
 // 
 // 快捷键模式说明:
 // - normal: 默认模式，正常输入
-// - locked: 锁定模式，禁止所有快捷键
+// - locked: 锁定模式，禁止所有快捷键, 比如在使用 helix、nvim、fzf 等可能存在快捷键冲突的场景，可以进入该模式。
 // - pane: 面板操作模式 (按 Ctrl+p 进入)
 // - tab: 标签页操作模式 (按 Ctrl+t 进入)
 // - resize: 调整面板大小模式 (按 Ctrl+n 进入)
 // - move: 移动面板位置模式 (按 Ctrl+h 进入)
 // - scroll: 滚动查看模式 (按 Ctrl+s 进入)
-// - search: 搜索模式
-// - entersearch: 输入搜索关键词模式
 // - session: 会话管理模式 (按 Ctrl+o 进入)
 // - tmux: tmux 兼容模式 (按 Ctrl+a 进入)
-// - renametab: 重命名标签页模式
-// - renamepane: 重命名面板模式
 
 // 定义快捷键绑定
 // clear-defaults=true 表示清除所有默认快捷键，完全自定义
@@ -440,8 +440,11 @@ keybinds clear-defaults=true {
         // [: 进入滚动模式 (tmux 习惯)
         bind "[" { SwitchToMode "scroll"; }
         
-        // Ctrl+a: 发送真正的 Ctrl+a 到终端
-        bind "Ctrl a" { Write 2; SwitchToMode "normal"; }
+        // Ctrl+a: 用于取消 tmux 模式，或者将光标移动到行首
+        bind "Ctrl a" { Write 1; SwitchToMode "normal"; }
+        
+        // a: 支持 Ctrl+a  松手后，再按 a 移动到行首
+        bind "a" { Write 1; SwitchToMode "normal"; }
         
         // c: 新建标签页 (tmux 习惯)
         bind "c" { NewTab; SwitchToMode "normal"; }
@@ -510,118 +513,127 @@ web_client {
 // ===== 以下是所有可用的全局配置选项 (已注释) =====
 // 使用方法: 去掉行首的 // 取消注释
 
-// 简化 UI，不使用特殊字体/箭头符号
-// simplified_ui true
+// 简化 UI，不使用特殊字体/箭头符号 (默认值: false)
+//simplified_ui true
 
-// 主题名称 (需要在 themes 目录中定义)
-// theme "dracula"
+// 主题名称 (需要在 themes 目录中定义，或使用内置主题) (默认值: "default")
+// 内置暗色主题:
+//   dracula, nord, gruvbox-dark, onedark, solarized-dark,
+//   catppuccin-frappe, catppuccin-macchiato, catppuccin-mocha,
+//   tokyo-night, tokyo-night-storm, kanagawa, nightfox, ayu_dark, ayu_mirage,
+//   cyber-noir, blade-runner, retro-wave, vesper, iceberg-dark
+// 内置亮色主题:
+//   catppuccin-latte, gruvbox-light, solarized-light, tokyo-night-light,
+//   ayu_light, everforest-light, dayfox
+theme "dracula"
 
-// 启动时的默认模式 (normal/locked 等)
+// 启动时的默认模式 (normal/locked 等) (默认值: "normal")
 // default_mode "locked"
 
-// 新面板使用的默认 shell
+// 新面板使用的默认 shell (默认值: $SHELL)
 // default_shell "fish"
 
-// 新面板的默认工作目录
+// 新面板的默认工作目录 (默认值: 当前工作目录)
 // default_cwd "/tmp"
 
-// 启动时加载的布局
+// 启动时加载的布局 (默认值: "default")
 default_layout "dev-workspace"
 
-// 布局文件搜索目录 (需重启)
+// 布局文件搜索目录 (需重启) (默认值: 配置目录下的 layouts/)
 // layout_dir "/tmp"
 
-// 主题文件搜索目录 (需重启)
+// 主题文件搜索目录 (需重启) (默认值: 配置目录下的 themes/)
 // theme_dir "/tmp"
 
-// 鼠标支持 (可能干扰终端复制)
+// 鼠标支持 (可能干扰终端复制) (默认值: true)
 // mouse_mode false
 
-// 面板边框
+// 面板边框 (默认值: true)
 // pane_frames false
 
-// 多用户连接时是否镜像会话
+// 多用户连接时是否镜像会话 (默认值: false)
 // mirror_session true
 
-// 收到终止信号时的行为 (detach/quit)
+// 收到终止信号时的行为 (detach/quit) (默认值: "detach")
 // detach: 终端关闭时分离到后台（默认，像 tmux 一样保持运行）
 // quit: 终端关闭时退出并序列化（需要复活才能恢复）
-// on_force_close "detach"
+// on_force_close "quit"
 
-// 滚动缓冲区行数
+// 滚动缓冲区行数 (默认值: 10000)
 // scroll_buffer_size 10000
 
-// 自定义复制命令
+// 自定义复制命令 (默认值: 使用 OSC 52 ANSI 控制序列)
 // copy_command "pbcopy"        // macOS
 // copy_command "xclip -selection clipboard"  // X11
 // copy_command "wl-copy"       // Wayland
 
-// 复制目标 (system/primary)
+// 复制目标 (system/primary) (默认值: "system")
 // copy_clipboard "primary"
 
-// 鼠标选中自动复制
+// 鼠标选中自动复制 (默认值: true)
 // copy_on_select true
 
-// 编辑滚动缓冲区的编辑器
+// 编辑滚动缓冲区的编辑器 (默认值: $EDITOR 或 $VISUAL)
 // scrollback_editor "/usr/bin/vim"
 
-// 固定会话名称
+// 固定会话名称 (默认值: 随机生成)
 session_name "main"
 
-// 自动附加到同名会话
+// 自动附加到同名会话 (默认值: false)
 attach_to_session true
 
-// 序列化会话到缓存 (用于恢复)
+// 序列化会话到缓存 (用于恢复) (默认值: true)
 session_serialization true
 
-// 序列化面板视口内容
+// 序列化面板视口内容 (默认值: false)
 serialize_pane_viewport false
 
-// 序列化滚动历史行数
+// 序列化滚动历史行数 (0 表示全部序列化) (默认值: 0)
 // scrollback_lines_to_serialize 10000
 
-// 彩色下划线/波浪线渲染 (需重启)
+// 彩色下划线/波浪线渲染 (需重启) (默认值: true)
 // styled_underlines false
 
-// 序列化间隔 (秒)
+// 序列化间隔 (秒) (默认值: 60)
 // serialization_interval 10000
 
-// 禁止写入会话元数据 (需重启)
+// 禁止写入会话元数据 (需重启) (默认值: false)
 // disable_session_metadata false
 
-// Kitty 键盘协议支持 (需重启)
+// Kitty 键盘协议支持 (需重启) (默认值: false)
 // support_kitty_keyboard_protocol false
 
-// 启动本地 Web 服务器 (需重启)
+// 启动本地 Web 服务器 (需重启) (默认值: false)
 // web_server false
 
-// 允许通过 Web 共享会话 (需重启)
+// 允许通过 Web 共享会话 (需重启) (默认值: "off")
 // web_sharing "off"
 
-// HTTPS 证书和密钥路径
+// HTTPS 证书路径 (默认值: 无)
 // web_server_cert "/path/to/cert.pem"
+// HTTPS 私钥路径 (默认值: 无)
 // web_server_key "/path/to/key.pem"
 
-// localhost 强制 HTTPS (需重启)
+// localhost 强制 HTTPS (需重启) (默认值: false)
 // enforce_https_for_localhost false
 
-// 面板缩小到一定程度时自动堆叠
+// 面板缩小到一定程度时自动堆叠 (默认值: true)
 // stacked_resize false
 
-// 启动时显示提示
+// 启动时显示提示 (默认值: true)
 // show_startup_tips false
 
-// 新版本首次运行时显示更新日志
+// 新版本首次运行时显示更新日志 (默认值: true)
 // show_release_notes false
 
-// 鼠标悬停效果和面板分组
+// 鼠标悬停效果和面板分组 (默认值: true)
 // advanced_mouse_actions false
 
-// Web 服务器监听 IP (需重启)
+// Web 服务器监听 IP (需重启) (默认值: "127.0.0.1")
 // web_server_ip "127.0.0.1"
 
-// Web 服务器端口 (需重启)
+// Web 服务器端口 (需重启) (默认值: 8082)
 // web_server_port 8082
 
-// 恢复会话时处理命令的钩子脚本
+// 恢复会话时处理命令的钩子脚本 (默认值: 无)
 // post_command_discovery_hook "echo $RESURRECT_COMMAND | sed <your_regex_here>"
