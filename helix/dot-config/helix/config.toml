@@ -433,11 +433,14 @@ goto-reference-include-declaration = true
 # 可用命令列表: 查看 :Tutor 或官方文档 keymap.html
 
 [keys.normal]
-# K 键用于显示悬浮文档 (默认 K 是 keep_selections)
-K = "hover"
 
 # Helix 默认不会自动重载被外部修改的文件，使用 Ctrl+r 快速重载当前文件
 C-r = ":reload"
+
+# 重复上次 f/t 跳转动作 (类似 Vim 的 ;)
+# Helix 的 ; 默认绑定 collapse_selection (折叠选区)，在 selection-first 模型中使用频率极高，
+# 因此不覆盖 ; 。
+"C-;" = "repeat_last_motion"
 
 # 示例: Ctrl-s 保存
 # C-s = ":w"

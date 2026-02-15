@@ -18,14 +18,14 @@ cd "$HOME/dotfiles"
 > [!NOTE]
 > `install.sh` 支持多次执行（幂等），你可以放心地运行它来更新依赖或修复配置链接。
 
-该脚本会自动安装 Homebrew（如果缺失）、stow、ghostty、fish、zellij、helix、mise，并完成配置链接以及 Fish Shell 的初始化。
+该脚本会自动安装 Homebrew（如果缺失）、ghostty、fish、zellij、helix、mise、stow, 并完成配置链接以及 Fish Shell 的初始化。
 
 > [!TIP]
 > 如果你想手动精准控制安装过程，请参考下面的详细步骤。
 
 ## 1. 项目结构
 
-本仓库包含以下 8 个配置包：
+本仓库包含以下 7 个配置包：
 
 - `ghostty/`: Ghostty 终端配置
 - `fish/`: Fish shell 配置
@@ -34,6 +34,9 @@ cd "$HOME/dotfiles"
 - `karabiner/`: Karabiner-Elements 键盘映射（交换 Caps Lock 和 Left Control）
 - `mise/`: mise 工具版本管理器配置
 - `bin/`: 自定义命令脚本（自动链接到 `~/.local/bin`）
+
+> [!NOTE]
+> `tmux/` 目录仅作为历史配置存档保留，当前方案已切换至 Zellij，默认不安装 tmux。
 
 ## 2. 依赖项
 
@@ -45,6 +48,7 @@ brew install stow
 
 # 终端
 brew install --cask ghostty@tip
+
 # 多窗口管理(替代 tmux)
 brew install zellij
 
@@ -192,11 +196,10 @@ tide configure
 
 这些命令会在 stow `bin` 后出现在 `~/.local/bin`：
 
-- `colorscheme <name>`: 切换 Neovim 和 Ghostty 主题
+- `colorscheme <name>`: 切换 Ghostty、Helix 和 Zellij 主题
 - `font-size <1-200>`: 设置 Ghostty 字体大小
 - `opacity <0.0-1.0>`: 设置 Ghostty 背景透明度
 - `audio-volume`: 音量控制与输出设备切换（需要 `switchaudio-osx`）
-- `ssh-sessions <hosts-file>`: 批量 SSH 会话管理
 - `colors-print`: 打印终端 256 色板
 - `print-256-hex-colors`: 打印 256 色的十六进制色值
 
@@ -222,17 +225,22 @@ fish 内置了一些缩写（见 `fish/dot-config/fish/config.fish`）：`cs`/`f
 | 快捷键 | 功能 |
 |--------|------|
 | `Cmd + Shift + ,` | 打开配置（保存后生效） |
-| `Cmd + ;` | 打开 Quick Terminal（快捷终端） |
+| `Cmd + ;` | 打开 Quick Terminal（快捷终端，自定义） |
 | `Cmd + d` | 垂直分屏 |
 | `Cmd + Shift + d` | 水平分屏 |
 | `Cmd + [ / ]` | 切换分屏 |
 
 **自定义命令**（需要安装 `gnu-sed`）：
 ```bash
-colorscheme tokyonight    # 切换主题
+colorscheme tokyonight    # 同时切换 Ghostty、Helix、Zellij 主题
 font-size 14              # 设置字体大小
 opacity 0.9              # 设置透明度
 ```
+
+> [!TIP]
+> **变更生效方式：**
+> - `colorscheme`：Zellij 实时生效；Ghostty 需按 `Cmd + Shift + ,` 重载配置；Helix 需执行 `:config-reload` 使已打开的 buffer 生效。
+> - `font-size` / `opacity`：修改的是 Ghostty 配置文件，需按 `Cmd + Shift + ,` 重载配置后生效。
 
 ---
 
@@ -271,12 +279,14 @@ opacity 0.9              # 设置透明度
 | `n` | 新建标签页 |
 | `x` | 关闭当前标签页 |
 | `1-9` | 切换到指定标签页 |
-| `h/j/k/l` | Vim 风格切换标签页 |
+| `h/k` | 前一个标签页 |
+| `l/j` | 后一个标签页 |
 
 **调整大小模式 (Ctrl + n)**：
 | 快捷键 | 功能 |
 |--------|------|
-| `h/j/k/l` | Vim 风格调整大小 |
+| `h/j/k/l` | 增大对应方向的面板大小 |
+| `H/J/K/L` | 缩小对应方向的面板大小 |
 | `+/-` | 等比放大/缩小 |
 
 **全局快捷键（无需进入模式）**：
@@ -297,7 +307,7 @@ opacity 0.9              # 设置透明度
 
 **配置文件**：`~/.config/helix/config.toml`
 
-**新手指南**：[Helix 快速上手指南 (Neovim 用户版)](file:///Users/xg/dotfiles/helix/dot-config/helix/README.md)
+**新手指南**：[Helix 快速上手指南 (Neovim 用户版)](helix/dot-config/helix/README.md)
 
 **模式**：Normal（正常）、Insert（插入）、Select（选择）
 
@@ -311,9 +321,9 @@ opacity 0.9              # 设置透明度
 | `h/j/k/l` | 左/下/上/右 |
 | `w/b` | 下一个/上一个单词 |
 | `gg/ge` | 文件开头/结尾 |
-| `x` | 删除字符 |
+| `x` | 选中当前行 |
 | `y/p` | 复制/粘贴 |
-| `u/Ctrl+r` | 撤销/重做 |
+| `u/U` | 撤销/重做 |
 | `/` | 搜索 |
 | `n/N` | 下一个/上一个匹配 |
 | `:w` | 保存 |
@@ -327,7 +337,7 @@ opacity 0.9              # 设置透明度
 | `gy` | 跳转到类型定义 |
 | `gr` | 查看引用 |
 | `gi` | 跳转到实现 |
-| `K` | 显示悬浮文档 |
+| `Space+k` | 显示悬浮文档 |
 | `Space+a` | 代码操作 |
 | `Space+r` | 重命名符号 |
 | `Space+s` | 文档符号列表 |
@@ -393,8 +403,8 @@ Fish 支持 Vi 风格编辑模式，默认已启用。
 | `y` | 复制 |
 | `p` | 粘贴 |
 | `u` | 撤销 |
-| `k` | 上一条命令历史 |
-| `j` | 下一条命令历史 |
+| `k` | 上一条命令历史（基于当前输入过滤） |
+| `j` | 下一条命令历史（基于当前输入过滤） |
 
 在 Vi 正常模式下可以使用所有 Vim 风格的编辑命令。
 

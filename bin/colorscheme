@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 # colorscheme
 #
-# Switch colorscheme for Neovim and Ghostty.
+# Switch colorscheme for Ghostty, Helix and Zellij simultaneously.
 
 set -euo pipefail
 
@@ -9,30 +9,21 @@ colorscheme=${1:-}
 
 config_home=${XDG_CONFIG_HOME:-"$HOME/.config"}
 
-nvim_cs_conf="$config_home/nvim/lua/plugins/colorschemes.lua"
-nvim_cs_switch_conf="$config_home/nvim/lua/plugins/switch_colorscheme.lua"
-
 ghostty_config="$config_home/ghostty/config"
-
-colorschemes=""
-if [[ -f "$nvim_cs_conf" ]]; then
-    colorschemes=$(grep -E 'require\("' "$nvim_cs_conf" | awk -F'"' '{print $2}' | xargs | sed 's/ /|/g')
-fi
+helix_config="$config_home/helix/config.toml"
+zellij_config="$config_home/zellij/config.kdl"
 
 [[ -z "$colorscheme" ]] && {
-    if [[ -n "$colorschemes" ]]; then
-        echo "Usage: colorscheme <tokyonight|$colorschemes>"
-    else
-        echo "Usage: colorscheme <colorscheme>"
-    fi
+    echo "Usage: colorscheme <colorscheme>"
+    echo ""
+    echo "Examples: colorscheme dracula"
+    echo "          colorscheme tokyonight"
+    echo "          colorscheme gruvbox"
+    echo "          colorscheme catppuccin"
     exit 1
 }
 
-nvim_cs_change() {
-    [[ -f "$nvim_cs_switch_conf" ]] || return 0
-    gsed -i -E "s/(colorscheme\s*=\s*)\"[^\"]*\"/\1\"$colorscheme\"/" "$nvim_cs_switch_conf"
-}
-
+# Map a short colorscheme name to the Ghostty theme name.
 ghostty_theme_for() {
     case "$1" in
         tokyonight)
@@ -53,6 +44,39 @@ ghostty_theme_for() {
     esac
 }
 
+# Map a short colorscheme name to the Helix theme name.
+helix_theme_for() {
+    case "$1" in
+        tokyonight)
+            echo "tokyonight_moon"
+            ;;
+        gruvbox)
+            echo "gruvbox_dark_hard"
+            ;;
+        catppuccin)
+            echo "catppuccin_mocha"
+            ;;
+        *)
+            echo "$1"
+            ;;
+    esac
+}
+
+# Map a short colorscheme name to the Zellij theme name.
+zellij_theme_for() {
+    case "$1" in
+        tokyonight)
+            echo "tokyo-night"
+            ;;
+        catppuccin)
+            echo "catppuccin-mocha"
+            ;;
+        *)
+            echo "$1"
+            ;;
+    esac
+}
+
 ghostty_cs_change() {
     [[ -f "$ghostty_config" ]] || {
         echo "ghostty config not found: $ghostty_config" >&2
@@ -61,9 +85,33 @@ ghostty_cs_change() {
 
     ghostty_theme=$(ghostty_theme_for "$colorscheme")
     gsed -i -E "s/^theme\s*=.*/theme = \"$ghostty_theme\"/" "$ghostty_config"
+    echo "Ghostty theme -> $ghostty_theme"
 }
 
-nvim_cs_change
+helix_cs_change() {
+    [[ -f "$helix_config" ]] || {
+        echo "helix config not found: $helix_config" >&2
+        return 1
+    }
+
+    helix_theme=$(helix_theme_for "$colorscheme")
+    gsed -i -E "s/^theme\s*=.*/theme = \"$helix_theme\"/" "$helix_config"
+    echo "Helix  theme -> $helix_theme"
+}
+
+zellij_cs_change() {
+    [[ -f "$zellij_config" ]] || {
+        echo "zellij config not found: $zellij_config" >&2
+        return 1
+    }
+
+    zellij_theme=$(zellij_theme_for "$colorscheme")
+    gsed -i -E "s/^theme\s+\"[^\"]*\"/theme \"$zellij_theme\"/" "$zellij_config"
+    echo "Zellij theme -> $zellij_theme"
+}
+
 ghostty_cs_change
+helix_cs_change
+zellij_cs_change
 
 exit 0
