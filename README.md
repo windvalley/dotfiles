@@ -1,23 +1,27 @@
 # dotfiles
 
-使用 GNU Stow 管理 dotfiles。仓库按“包”组织：每个目录就是一个可 stow 的单元。
+这是一套精心设计的 **现代 macOS 终端开发环境**。
+
+基于 GNU Stow 进行模块化管理，核心目标是打造一个**极简、高效、开箱即用**的工作流。它集成了高性能终端、现代化编辑器、高效 Shell 和多窗口管理工具，并确保它们在视觉和交互上保持高度一致。
 
 ## 0. TL;DR (快速开始)
 
-如果你已经安装了 [Homebrew](https://brew.sh/)，执行以下命令一键安装核心配置：
+最简单的方法是使用一键安装脚本：
 
 ```sh
-# 克隆仓库
-git clone --depth=1 https://github.com/windvalley/dotfiles.git "$HOME/dotfiles" && cd "$HOME/dotfiles"
-
-# 安装基础依赖
-brew install stow ghostty zellij fish helix mise
-
-# 一键链接所有配置
-stow --restow --target="$HOME" --dotfiles ghostty fish helix zellij mise
-mkdir -p "$HOME/.local/bin" && stow --restow --target="$HOME/.local/bin" bin
-mkdir -p "$HOME/.config/karabiner" && stow --restow --target="$HOME/.config/karabiner" --dotfiles karabiner
+# 克隆仓库并运行安装脚本
+git clone --depth=1 https://github.com/windvalley/dotfiles.git "$HOME/dotfiles"
+cd "$HOME/dotfiles"
+./install.sh
 ```
+
+> [!NOTE]
+> `install.sh` 支持多次执行（幂等），你可以放心地运行它来更新依赖或修复配置链接。
+
+该脚本会自动安装 Homebrew（如果缺失）、stow、ghostty、fish、zellij、helix、mise，并完成配置链接以及 Fish Shell 的初始化。
+
+> [!TIP]
+> 如果你想手动精准控制安装过程，请参考下面的详细步骤。
 
 ## 1. 项目结构
 
@@ -58,7 +62,7 @@ brew install mise
 
 ```sh
 # 常用工具
-brew install bat eza fzf grc gawk gnu-sed grep python@3
+brew install bat eza fzf grc gawk gnu-sed grep
 
 # 音量控制
 brew install switchaudio-osx
@@ -67,13 +71,38 @@ brew install switchaudio-osx
 **说明：**
 - `gnu-sed`: 提供 `gsed`，用于 `colorscheme` / `font-size` / `opacity` 等脚本。
 - `switchaudio-osx`: 提供 `SwitchAudioSource`，用于 `audio-volume`。
-- `grc`: 用于 fish 的 `oh-my-fish/plugin-grc`（缺失不影响基础使用）。
-- `gawk`/`grep`: 用于 tmux-copycat 的搜索增强（缺失不影响 tmux 基础使用）。
-- `python@3`: 用于 `print-256-hex-colors`（缺失不影响基础使用）。
+- `grc`: 通用彩色输出查看器 (Generic Colouriser)，配合 fish 插件为 `ping` / `ls` / `docker` / `diff` 等命令提供彩色输出增强。
 
 ## 3. 安装步骤
 
-### 3.1 拉取仓库
+### 3.1 一键安装 (推荐)
+
+仓库根目录下提供了一个 `install.sh` 脚本，可以自动化完成绝大部分安装和配置工作。
+
+**该脚本将执行以下操作：**
+1. 检查并安装 **Homebrew**（如果尚未安装）。
+2. 安装所有常用的 **Brew 依赖**（stow, zellij, fish, helix, mise, bat, eza, fzf, grc 等）。
+3. 安装 **Ghostty** 终端（通过 `brew install --cask ghostty@tip`）。
+4. 询问是否安装**可选依赖**（如 `switchaudio-osx`, `python@3`）。
+5. 使用 `stow` 将所有配置软链到正确的位置。
+6. 检查并将 **Fish** 设为默认 Shell。
+7. 安装 **Fisher** 插件管理器并同步插件。
+
+**使用方法：**
+```sh
+cd "$HOME/dotfiles"
+./install.sh
+```
+
+**提示：** 该脚本支持多次执行（幂等），可随时运行以确保环境处于最新状态。
+
+---
+
+### 3.2 手动安装步骤 (可选)
+
+如果你更倾向于手动操作，请按以下顺序执行：
+
+#### 3.2.1 拉取仓库
 
 ```sh
 git clone --depth=1 https://github.com/windvalley/dotfiles.git "$HOME/dotfiles"
@@ -83,7 +112,7 @@ cd "$HOME/dotfiles"
 git pull --rebase
 ```
 
-### 3.2 链接配置（stow）
+#### 3.2.2 链接配置（stow）
 
 链接核心配置到 `$HOME`：
 
@@ -268,6 +297,8 @@ opacity 0.9              # 设置透明度
 
 **配置文件**：`~/.config/helix/config.toml`
 
+**新手指南**：[Helix 快速上手指南 (Neovim 用户版)](file:///Users/xg/dotfiles/helix/dot-config/helix/README.md)
+
 **模式**：Normal（正常）、Insert（插入）、Select（选择）
 
 **核心快捷键**：
@@ -396,14 +427,7 @@ mise ls-remote python  # 查看所有可用的 Python 版本
 
 ---
 
-### 5.8 Homebrew 前缀
-
-- Apple Silicon: `/opt/homebrew`
-- Intel: `/usr/local`
-
-脚本中推荐使用 `brew --prefix` 获取动态路径。
-
-### 5.9 stow 的用法说明
+### 5.8 stow 的用法说明
 
 ```sh
 # 安装或重新安装

@@ -59,8 +59,6 @@ if test -f "$HOME/.docker/init-fish.sh"
 end
 
 if status is-interactive
-    alias vi=nvim
-
     # Vi 模式：键绑定见 functions/fish_user_key_bindings.fish
     # (Fish autoload 机制要求该函数必须在 functions/ 目录下)
 
@@ -87,6 +85,10 @@ if status is-interactive
     abbr -a -g o opacity
     # 电脑音量设置以及渠道选择
     abbr -a -g vol audio-volume
+
+    # 用 hx 替代 vi/vim
+    abbr -a -g vi hx
+    abbr -a -g vim hx
 
     # Git 缩写
     abbr -a -g g git

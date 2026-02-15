@@ -19,7 +19,7 @@ info "Starting dotfiles installation..."
 if ! command -v brew &> /dev/null; then
     info "Homebrew not found. Installing Homebrew..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    
+
     if [[ $(uname -m) == "arm64" ]]; then
         eval "$(/opt/homebrew/bin/brew shellenv)"
     else
@@ -65,7 +65,6 @@ install_optional() {
 }
 
 install_optional "switchaudio-osx (for audio-volume)" "switchaudio-osx"
-install_optional "python@3 (for print-256-hex-colors)" "python@3"
 
 DOTFILES_DIR="$HOME/dotfiles"
 if [ ! -d "$DOTFILES_DIR" ]; then
@@ -80,7 +79,7 @@ info "Linking configuration files with stow..."
 mkdir -p "$HOME/.local/bin"
 mkdir -p "$HOME/.config/karabiner"
 
-STANDARD_PACKAGES=(ghostty fish helix zellij mise)
+STANDARD_PACKAGES=(ghostty fish helix zellij mise karabiner)
 for pkg in "${STANDARD_PACKAGES[@]}"; do
     info "Stowing $pkg..."
     stow --restow --target="$HOME" --dir="$DOTFILES_DIR" --dotfiles "$pkg"
@@ -88,9 +87,6 @@ done
 
 info "Stowing bin..."
 stow --restow --target="$HOME/.local/bin" --dir="$DOTFILES_DIR" --dotfiles bin
-
-info "Stowing karabiner..."
-stow --restow --target="$HOME/.config/karabiner" --dir="$DOTFILES_DIR" --dotfiles karabiner
 
 if [[ "$SHELL" != *"fish"* ]]; then
     read -p "Do you want to set fish as your default shell? (y/n) " -n 1 -r

@@ -150,6 +150,9 @@ editor-config = true
 
 # ----- 其他 -----
 # 默认寄存器用于 yank/粘贴操作 (默认: "\"")
+#   "\"" - 仅使用编辑器内部寄存器，不影响系统剪贴板（推荐，避免冲掉外部复制的内容）
+#   "+"  - 同步系统剪贴板 (macOS 下最常用，即 Cmd+C/V 使用的剪贴板)
+#   "*"  - 同步选区寄存器 (macOS 下与 "+" 基本相同；Linux 下指“鼠标选区”，即选中即复制、中键即粘贴)
 default-yank-register = "\""
 
 # 中键粘贴支持 (默认: true)
@@ -432,6 +435,9 @@ goto-reference-include-declaration = true
 [keys.normal]
 # K 键用于显示悬浮文档 (默认 K 是 keep_selections)
 K = "hover"
+
+# Helix 默认不会自动重载被外部修改的文件，使用 Ctrl+r 快速重载当前文件
+C-r = ":reload"
 
 # 示例: Ctrl-s 保存
 # C-s = ":w"
