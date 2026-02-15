@@ -48,7 +48,11 @@ REQUIRED_FORMULAE=(
 brew install "${REQUIRED_FORMULAE[@]}"
 
 info "Installing Ghostty..."
-brew install --cask ghostty@tip
+if ! brew list --cask ghostty@tip &>/dev/null; then
+    brew install --cask ghostty@tip
+else
+    success "Ghostty is already installed."
+fi
 
 install_optional() {
     local name=$1
@@ -86,7 +90,7 @@ for pkg in "${STANDARD_PACKAGES[@]}"; do
 done
 
 info "Stowing bin..."
-stow --restow --target="$HOME/.local/bin" --dir="$DOTFILES_DIR" --dotfiles bin
+stow --restow --target="$HOME/.local/bin" --dir="$DOTFILES_DIR" bin
 
 if [[ "$SHELL" != *"fish"* ]]; then
     read -p "Do you want to set fish as your default shell? (y/n) " -n 1 -r
@@ -111,11 +115,14 @@ if [ -f "$DOTFILES_DIR/fish/dot-config/fish/fish_plugins" ]; then
         fish -c "fisher update"
     else
         info "Installing fisher..."
-        fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher && fisher install (cat ~/.config/fish/fish_plugins)"
+        fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher && fisher install (cat $DOTFILES_DIR/fish/dot-config/fish/fish_plugins)"
     fi
 else
     warn "fish_plugins not found at $DOTFILES_DIR/fish/dot-config/fish/fish_plugins, skipping fisher update."
 fi
+
+info "Configuring Fish Homebrew PATH..."
+fish -c "fish_add_path (brew --prefix)/bin" 2>/dev/null || true
 
 success "Installation complete!"
 info "Next steps:"

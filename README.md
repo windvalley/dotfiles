@@ -136,9 +136,8 @@ stow --restow --target="$HOME/.local/bin" --dir="$HOME/dotfiles" bin
 链接 Karabiner（`karabiner/` -> `~/.config/karabiner`）：
 
 ```sh
-mkdir -p "$HOME/.config/karabiner"
 cd "$HOME/dotfiles"
-stow --restow --target="$HOME/.config/karabiner" --dir="$HOME/dotfiles" --dotfiles karabiner
+stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles karabiner
 ```
 
 ## 4. 配置指南
