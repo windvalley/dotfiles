@@ -1186,10 +1186,10 @@ command =
 # NOTE: fish 没有使用绝对路径是为了同时适配 intel mac 和 silicon mac
 # initial-command = /bin/sh -l -c "exec fish -c \"tmux attach -t dotfiles || tmux new -s dotfiles -n 'nvim' ';' splitw -h ';' neww -n 'tmux' ';' splitw -h ';' neww -n 'ghostty' ';' splitw -h\""
 #
-# Zellij 启动逻辑移到 fish config.fish，更灵活可控, 因此这里注释掉
-#initial-command = /bin/sh -l -c "exec fish -c \"zellij --layout dev-workspace\""
+# Zellij自动启动:
+# Zellij 启动逻辑已移到 fish config.fish，更灵活可控, 因此这里注释掉
+# initial-command = /bin/sh -l -c "exec fish -c \"zellij --layout dev-workspace\""
 initial-command =
-
 
 # notify-on-command-finish
 # 控制何时发送命令完成通知。有三个选项：

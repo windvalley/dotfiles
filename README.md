@@ -167,7 +167,28 @@ fish_update_completions
 fish_config theme choose dracula
 ```
 
-### 4.2 配置 fisher
+### 4.2 从 zsh 迁移
+
+> [!IMPORTANT]
+> 从 zsh 切换到 fish 后，zsh 配置文件（`~/.zshrc`、`~/.zprofile` 等）中的 PATH 不会自动继承，可能导致已安装软件的命令找不到。
+
+**自动迁移（推荐）**：`install.sh` 会自动检测 zsh 的 PATH 并将缺失的路径添加到 fish，无需手动操作。
+
+**手动迁移**：如需手动添加路径，使用 `fish_add_path`：
+
+```fish
+# 常见需要迁移的路径
+fish_add_path ~/go/bin              # Go
+fish_add_path ~/.cargo/bin           # Rust
+fish_add_path ~/.local/bin           # pip / pipx
+fish_add_path ~/Library/pnpm        # pnpm
+```
+
+> [!TIP]
+> `fish_add_path` 是持久化的（写入 universal 变量），只需执行一次，重启后仍然生效。
+> 可用 `echo $PATH | tr ' ' '\n'` 查看当前所有路径。
+
+### 4.3 配置 fisher
 
 fisher 是 fish 的插件管理器。
 
@@ -181,7 +202,7 @@ fisher install (cat ~/.config/fish/fish_plugins)
 
 更多见：`fish/dot-config/fish/README.md`
 
-### 4.3 配置 tide
+### 4.4 配置 tide
 
 tide 是 fish 的 prompt 插件。
 

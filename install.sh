@@ -124,6 +124,40 @@ fi
 info "Configuring Fish Homebrew PATH..."
 fish -c "fish_add_path (brew --prefix)/bin" 2>/dev/null || true
 
+# Migrate PATH from zsh to fish (for users switching from zsh)
+if command -v zsh &>/dev/null; then
+    info "Migrating PATH from zsh to fish..."
+
+    ZSH_PATHS=$(/bin/zsh -l -c 'echo "$PATH"' 2>/dev/null | tr ':' '\n')
+    FISH_PATHS=$(fish -l -c 'string join \n $PATH' 2>/dev/null)
+
+    MIGRATED=0
+    while IFS= read -r p; do
+        [ -z "$p" ] && continue
+        [ ! -d "$p" ] && continue
+
+        # Skip system/default paths (already handled)
+        case "$p" in
+            /usr/bin|/bin|/usr/sbin|/sbin|/usr/local/bin|/opt/homebrew/bin|/opt/homebrew/sbin) continue ;;
+        esac
+
+        # Check if path is already in fish
+        if ! echo "$FISH_PATHS" | grep -qxF "$p"; then
+            fish -c "fish_add_path --append '$p'" 2>/dev/null
+            info "  Added: $p"
+            MIGRATED=$((MIGRATED + 1))
+        fi
+    done <<< "$ZSH_PATHS"
+
+    if [ "$MIGRATED" -gt 0 ]; then
+        success "Migrated $MIGRATED PATH entries from zsh to fish."
+    else
+        success "No additional PATH entries to migrate from zsh."
+    fi
+else
+    info "zsh not found, skipping PATH migration."
+fi
+
 success "Installation complete!"
 info "Next steps:"
 echo "1. Restart your terminal."
