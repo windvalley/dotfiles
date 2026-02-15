@@ -2,37 +2,78 @@
 
 使用 GNU Stow 管理 dotfiles。仓库按“包”组织：每个目录就是一个可 stow 的单元。
 
-## 1. 依赖
+## 0. TL;DR (快速开始)
+
+如果你已经安装了 [Homebrew](https://brew.sh/)，执行以下命令一键安装核心配置：
+
+```sh
+# 克隆仓库
+git clone --depth=1 https://github.com/windvalley/dotfiles.git "$HOME/dotfiles" && cd "$HOME/dotfiles"
+
+# 安装基础依赖
+brew install stow ghostty zellij fish helix mise
+
+# 一键链接所有配置
+stow --restow --target="$HOME" --dotfiles ghostty fish helix zellij mise
+mkdir -p "$HOME/.local/bin" && stow --restow --target="$HOME/.local/bin" bin
+mkdir -p "$HOME/.config/karabiner" && stow --restow --target="$HOME/.config/karabiner" --dotfiles karabiner
+```
+
+## 1. 项目结构
+
+本仓库包含以下 8 个配置包：
+
+- `ghostty/`: Ghostty 终端配置
+- `fish/`: Fish shell 配置
+- `zellij/`: 现代终端复用器，易于配置
+- `helix/`: 现代模态编辑器，开箱即用
+- `karabiner/`: Karabiner-Elements 键盘映射（交换 Caps Lock 和 Left Control）
+- `mise/`: mise 工具版本管理器配置
+- `bin/`: 自定义命令脚本（自动链接到 `~/.local/bin`）
+
+## 2. 依赖项
+
+### 2.1 必选依赖 (核心功能)
 
 ```sh
 # 软链管理工具
-brew install stow 
+brew install stow
 
-# 终端(推荐安装 tip 版本)
+# 终端
 brew install --cask ghostty@tip
-# 多窗口管理器
-brew install tmux
-brew install zellij 
-# 交互 shell
+# 多窗口管理(替代 tmux)
+brew install zellij
+
+# 交互 Shell
 brew install fish
-# 文本编辑器
-brew install neovim
+
+# 文本编辑器(替代 vim/neovim)
 brew install helix
 
-# 常用工具
-brew install bat eza fzf grc switchaudio-osx gawk gun-sed grep python@3
-
-# 说明：
-# - `gnu-sed` 会提供 `gsed`，用于 `colorscheme` / `font-size` / `opacity` 等脚本。
-# - `switchaudio-osx` 会提供 `SwitchAudioSource`，用于 `audio-volume`。
-# - `grc` 用于 fish 的 `oh-my-fish/plugin-grc`（缺失不影响基础使用）。
-# - `gawk`/`grep` 用于 tmux-copycat 的 / 搜索增强（缺失不影响 tmux 基础使用）。
-# - `python@3` 用于 `print-256-hex-colors`（缺失不影响基础使用）。
+# 软件版本管理工具
+brew install mise
 ```
 
-## 2. 安装
+### 2.2 可选依赖 (增强功能)
 
-### 2.1 拉取仓库
+```sh
+# 常用工具
+brew install bat eza fzf grc gawk gnu-sed grep python@3
+
+# 音量控制
+brew install switchaudio-osx
+```
+
+**说明：**
+- `gnu-sed`: 提供 `gsed`，用于 `colorscheme` / `font-size` / `opacity` 等脚本。
+- `switchaudio-osx`: 提供 `SwitchAudioSource`，用于 `audio-volume`。
+- `grc`: 用于 fish 的 `oh-my-fish/plugin-grc`（缺失不影响基础使用）。
+- `gawk`/`grep`: 用于 tmux-copycat 的搜索增强（缺失不影响 tmux 基础使用）。
+- `python@3`: 用于 `print-256-hex-colors`（缺失不影响基础使用）。
+
+## 3. 安装步骤
+
+### 3.1 拉取仓库
 
 ```sh
 git clone --depth=1 https://github.com/windvalley/dotfiles.git "$HOME/dotfiles"
@@ -42,13 +83,13 @@ cd "$HOME/dotfiles"
 git pull --rebase
 ```
 
-### 2.2 链接配置（stow）
+### 3.2 链接配置（stow）
 
 链接核心配置到 `$HOME`：
 
 ```sh
 cd "$HOME/dotfiles"
-stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles ghostty tmux fish
+stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles ghostty fish helix zellij mise
 ```
 
 链接命令脚本（`bin/` -> `~/.local/bin`）：
@@ -64,12 +105,12 @@ stow --restow --target="$HOME/.local/bin" --dir="$HOME/dotfiles" bin
 ```sh
 mkdir -p "$HOME/.config/karabiner"
 cd "$HOME/dotfiles"
-stow --restow --target="$HOME/.config/karabiner" --dir="$HOME/dotfiles" karabiner
+stow --restow --target="$HOME/.config/karabiner" --dir="$HOME/dotfiles" --dotfiles karabiner
 ```
 
-## 3. 配置
+## 4. 配置指南
 
-### 3.1 配置 fish
+### 4.1 配置 fish
 
 将 fish 设为默认 shell：
 
@@ -81,8 +122,7 @@ chsh -s $(which fish)
 重启终端后（或执行 `exec fish -l`），在 fish 里执行：
 
 ```fish
-# 检查是否已经切换成功, 如果输出结果不是 fish 路径，
-# 可能 tmux 缓存原因，请执行 tmux kill-server
+# 检查是否已经切换成功
 echo $SHELL
 
 # 让 fish 识别 Homebrew 安装的程序
@@ -95,7 +135,7 @@ fish_update_completions
 fish_config theme choose dracula
 ```
 
-### 3.2 配置 fisher
+### 4.2 配置 fisher
 
 fisher 是 fish 的插件管理器。
 
@@ -109,7 +149,7 @@ fisher install (cat ~/.config/fish/fish_plugins)
 
 更多见：`fish/dot-config/fish/README.md`
 
-### 3.3 配置 tide
+### 4.3 配置 tide
 
 tide 是 fish 的 prompt 插件。
 
@@ -117,63 +157,266 @@ tide 是 fish 的 prompt 插件。
 tide configure
 ```
 
-## 4. 使用方法
+## 5. 使用方法
 
-### 4.1 常用命令（bin/）
+### 5.1 常用命令（bin/）
 
 这些命令会在 stow `bin` 后出现在 `~/.local/bin`：
 
-- `colorscheme <name>`: 同时切换 Neovim 和 Ghostty 主题
-- `font-size <1-200>`: 设置 Ghostty `font-size`
-- `opacity <0.0-1.0>`: 设置 Ghostty `background-opacity`
+- `colorscheme <name>`: 切换 Neovim 和 Ghostty 主题
+- `font-size <1-200>`: 设置 Ghostty 字体大小
+- `opacity <0.0-1.0>`: 设置 Ghostty 背景透明度
+- `audio-volume`: 音量控制与输出设备切换（需要 `switchaudio-osx`）
+- `ssh-sessions <hosts-file>`: 批量 SSH 会话管理
+- `colors-print`: 打印终端 256 色板
+- `print-256-hex-colors`: 打印 256 色的十六进制色值
 
-fish 内置了一些缩写（见 `fish/dot-config/fish/config.fish`）：`cs`/`fs`/`o`。
+fish 内置了一些缩写（见 `fish/dot-config/fish/config.fish`）：`cs`/`fs`/`o`/`vol`。
 
-### 4.2 ghostty
+### 5.2 Zellij 自动启动
 
-- 配置文件：`~/.config/ghostty/config`
-- 变更配置后生效：`cmd+shift+,`
-- Toggle 快捷终端（quick terminal）：`cmd+;`
+本配置在 fish 中集成了 Zellij 自动启动逻辑。当你打开一个新的终端窗口时，它会自动启动或挂载到 Zellij 会话中。
 
-更多见：`ghostty/dot-config/ghostty/README.md`
+**自动跳过逻辑：**
+- 已在 Zellij 会话中
+- 通过 SSH 连接
+- 在 Ghostty 的 Quick Terminal 中
+- 设置了环境变量 `ZELLIJ_AUTO_DISABLE`
 
-### 4.3 tmux
+### 5.3 Ghostty 终端
 
-- 配置文件：`~/.tmux.conf`
-- 变更配置后生效：`cmd+a+r`
+**配置文件**：`~/.config/ghostty/config`
 
-### 4.4 Homebrew 前缀（Intel / Apple Silicon）
+**注意**：标签页功能已禁用（由 Zellij 统一管理），多窗口功能仍可用。
 
-- Apple Silicon: 通常是 `/opt/homebrew`
-- Intel: 通常是 `/usr/local`
+**快捷键**：
+| 快捷键 | 功能 |
+|--------|------|
+| `Cmd + Shift + ,` | 打开配置（保存后生效） |
+| `Cmd + ;` | 打开 Quick Terminal（快捷终端） |
+| `Cmd + d` | 垂直分屏 |
+| `Cmd + Shift + d` | 水平分屏 |
+| `Cmd + [ / ]` | 切换分屏 |
 
-写脚本/配置时优先使用：
-
-```fish
-brew --prefix
+**自定义命令**（需要安装 `gnu-sed`）：
+```bash
+colorscheme tokyonight    # 切换主题
+font-size 14              # 设置字体大小
+opacity 0.9              # 设置透明度
 ```
 
-### 4.5 stow 的用法说明
+---
+
+### 5.4 Zellij 终端复用器
+
+**配置文件**：`~/.config/zellij/config.kdl`
+
+**模式系统**：Zellij 有多个模式，按 `Ctrl + p/t/n/h/s/o/a` 直接进入对应模式，按 `Ctrl + g` 进入锁定模式（禁用所有快捷键）。
+
+**常用快捷键**：
+
+| 快捷键 | 功能 |
+|--------|------|
+| `Ctrl + g` | 进入/退出锁定模式（禁用所有快捷键） |
+| `Ctrl + p` | 进入面板模式 |
+| `Ctrl + t` | 进入标签页模式 |
+| `Ctrl + n` | 进入调整大小模式 |
+| `Ctrl + h` | 进入移动模式 |
+| `Ctrl + s` | 进入滚动模式 |
+| `Ctrl + o` | 进入会话管理模式 |
+| `Ctrl + a` | 进入 tmux 兼容模式 |
+
+**面板模式 (Ctrl + p)**：
+| 快捷键 | 功能 |
+|--------|------|
+| `h/j/k/l` | Vim 风格切换面板 |
+| `d` | 向下拆分面板 |
+| `r` | 向右拆分面板 |
+| `n` | 新建面板 |
+| `x` | 关闭当前面板 |
+| `f` | 全屏/退出全屏 |
+
+**标签页模式 (Ctrl + t)**：
+| 快捷键 | 功能 |
+|--------|------|
+| `n` | 新建标签页 |
+| `x` | 关闭当前标签页 |
+| `1-9` | 切换到指定标签页 |
+| `h/j/k/l` | Vim 风格切换标签页 |
+
+**调整大小模式 (Ctrl + n)**：
+| 快捷键 | 功能 |
+|--------|------|
+| `h/j/k/l` | Vim 风格调整大小 |
+| `+/-` | 等比放大/缩小 |
+
+**全局快捷键（无需进入模式）**：
+| 快捷键 | 功能 |
+|--------|------|
+| `Cmd + 1-9` | 切换到指定标签页 |
+
+**布局**：
+- **默认布局**：`dev-workspace`（编辑器 + 终端）
+- **布局定义位置**：`~/.config/zellij/layouts/dev-workspace.kdl`
+- **修改布局**：编辑上述文件，定义自己的分屏和标签页结构
+- **查看更多布局**：`zellij list-layouts`
+- **手动加载布局**：`zellij --layout <布局名>`
+
+---
+
+### 5.5 Helix 编辑器
+
+**配置文件**：`~/.config/helix/config.toml`
+
+**模式**：Normal（正常）、Insert（插入）、Select（选择）
+
+**核心快捷键**：
+
+| 快捷键 | 功能 |
+|--------|------|
+| `i` | 进入插入模式 |
+| `Esc` | 返回正常模式 |
+| `v` | 进入选择模式 |
+| `h/j/k/l` | 左/下/上/右 |
+| `w/b` | 下一个/上一个单词 |
+| `gg/ge` | 文件开头/结尾 |
+| `x` | 删除字符 |
+| `y/p` | 复制/粘贴 |
+| `u/Ctrl+r` | 撤销/重做 |
+| `/` | 搜索 |
+| `n/N` | 下一个/上一个匹配 |
+| `:w` | 保存 |
+| `:q` | 退出 |
+| `:wq` | 保存并退出 |
+
+**LSP 功能**：
+| 快捷键 | 功能 |
+|--------|------|
+| `gd` | 跳转到定义 |
+| `gy` | 跳转到类型定义 |
+| `gr` | 查看引用 |
+| `gi` | 跳转到实现 |
+| `K` | 显示悬浮文档 |
+| `Space+a` | 代码操作 |
+| `Space+r` | 重命名符号 |
+| `Space+s` | 文档符号列表 |
+| `Space+S` | 工作区符号列表 |
+| `Space+d` | 显示诊断信息 |
+| `]d` / `[d` | 跳转到下/上一个诊断 |
+
+**LSP 配置**：
+- **语言配置**：`~/.config/helix/languages.toml`
+- **检查健康状态**：`hx --health` 或 `hx --health go`
+- **安装 LSP**：
+  ```bash
+  # Go
+  go install golang.org/x/tools/gopls@latest
+  go install golang.org/x/tools/cmd/goimports@latest
+
+  # Python
+  pip install python-lsp-server
+
+  # Rust
+  brew install rust-analyzer
+
+  # TypeScript
+  npm i -g typescript-language-server typescript
+  ```
+- **重启 LSP**：`:lsp-restart`
+- **查看文档**：`:config-open` 打开配置，`:config-reload` 重载
+
+---
+
+### 5.6 Fish Shell
+
+**配置文件**：`~/.config/fish/config.fish`
+
+**内置缩写**：
+| 缩写 | 完整命令 |
+|------|----------|
+| `cs` | `colorscheme` |
+| `fs` | `font-size` |
+| `o` | `opacity` |
+| `vol` | `audio-volume` |
+
+**常用命令**：
+| 命令 | 功能 |
+|------|------|
+| `fish_update_completions` | 更新命令补全 |
+| `fish_add_path <path>` | 添加路径 |
+| `fish_config` | 打开交互配置 |
+
+**Tide prompt**：`tide configure`（交互式配置）
+
+**Vi 模式**：
+Fish 支持 Vi 风格编辑模式，默认已启用。
+
+| 快捷键 | 功能 |
+|--------|------|
+| `Esc` | 进入 Vi 正常模式 |
+| `i/a` | 进入插入模式 |
+| `h/j/k/l` | 左/下/上/右 |
+| `w/b` | 下一个/上一个单词 |
+| `0/$` | 行首/行尾 |
+| `d` | 删除 |
+| `y` | 复制 |
+| `p` | 粘贴 |
+| `u` | 撤销 |
+| `k` | 上一条命令历史 |
+| `j` | 下一条命令历史 |
+
+在 Vi 正常模式下可以使用所有 Vim 风格的编辑命令。
+
+---
+
+### 5.7 Mise 工具版本管理
+
+**配置文件**：`~/.config/mise/config.toml`
+
+**常用命令**：
+| 命令 | 功能 |
+|------|------|
+| `mise install` | 安装配置中声明的工具版本 |
+| `mise ls` | 列出已安装的工具 |
+| `mise ls-remote <tool>` | 查看可安装的远程版本 |
+| `mise use <tool>@<version>` | 设置项目本地版本 |
+| `mise use -g <tool>@<version>` | 设置全局默认版本 |
+| `mise current <tool>` | 查看当前激活版本 |
+| `mise prune` | 清理未使用的版本 |
+| `mise doctor` | 诊断配置问题 |
+
+**版本查询示例**：
+```bash
+mise ls-remote go      # 查看所有可用的 Go 版本
+mise ls-remote node    # 查看所有可用的 Node.js 版本
+mise ls-remote python  # 查看所有可用的 Python 版本
+```
+
+**Fish 自动激活**：无需手动配置，Fish 会通过 vendor_conf.d 自动激活 mise。
+
+---
+
+### 5.8 Homebrew 前缀
+
+- Apple Silicon: `/opt/homebrew`
+- Intel: `/usr/local`
+
+脚本中推荐使用 `brew --prefix` 获取动态路径。
+
+### 5.9 stow 的用法说明
 
 ```sh
 # 安装或重新安装
 #
-#  -nv 模拟安装（查看会做什么，但不实际执行）, 去掉该参数即可实际执行;
+#  -nv 模拟安装（查看会做什么，但不实际执行）;
 #  --restow 重新安装（即重新创建符号链接，先删除再创建）;
-#  --target 指定符号链接目标目录(实际工作的目录, 一般都是用户家目录，即 $HOME);
-#  --dir 指定dotfiles源文件目录, dotfiles目录下的文件的路径层级要符合实际工作的目录层级;
-#  --dotfiles 将 dot- 开头的包名转换为 . 开头的隐藏文件, 用于特殊处理
+#  --target 指定符号链接目标目录;
+#  --dir 指定 dotfiles 源文件目录;
+#  --dotfiles 将 dot- 开头的包名转换为 . 开头的隐藏文件
 #
-# 最后的 ghostty 就是 dotfiles 目录下的，路径层级为：
-# ghostty
-# └── dot-config   # 对应实际的 .config
-#    └── ghostty
-#        ├── config
-#        ├── config.example
-#        └── README.md
+# 示例：
 stow -nv --restow --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
-# 卸载, 即删除符号链接;
-# 去掉 -nv 参数即可实际执行
+# 卸载
 stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 ```

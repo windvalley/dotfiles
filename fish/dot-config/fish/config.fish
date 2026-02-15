@@ -1,9 +1,9 @@
-# Dotfiles 约定（尽量少文件，但保持可维护）
-# - dotfiles 仓库只跟踪 `config.fish` + `fish_plugins` 即可（最小可复刻集合）。
+# Dotfiles 管理的 fish 配置约定（尽量少文件，但保持可维护）
+# - dotfiles 仓库只跟踪 `config.fish` + `fish_plugins` + functions目录下自己编写的 fish 文件。
 # - 你当然可以把所有配置都写在 `config.fish`，但它会越变越大且每次启动都会执行。
 # - 更重的逻辑建议放到 `functions/*.fish`（autoload），更早/更独立的初始化放到 `conf.d/*.fish`。
 # - 机器差异/私有值放本地文件且不入库：`~/.config/fish/conf.d/local.fish`。
-# - Fisher 会在 `functions/`、`conf.d/`、`completions/` 生成/更新插件文件，不要把这些产物提交到 git。
+# - Fisher 会在 `functions/`、`conf.d/`、`completions/` 生成/更新插件文件，不要把这些自动生成的产物提交到 git。
 #
 # NOTE: 更新本文件使及时生效的方法：exec fish
 
