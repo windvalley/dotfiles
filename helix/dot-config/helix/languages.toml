@@ -1,0 +1,284 @@
+# Helix 语言服务器 (LSP) 配置文件
+# ============================================================
+#
+# 配置文件位置:
+#   Linux/Mac: ~/.config/helix/languages.toml
+#   Windows: %AppData%\helix\languages.toml
+#
+# ============================================================
+# LSP 安装流程
+# ============================================================
+#
+# 1. 检查当前 LSP 支持状态:
+#      hx --health         # 查看所有语言
+#      hx --health go      # 查看特定语言
+#
+# 2. 安装所需的 LSP 服务器 (Helix 不会自动安装,需手动安装):
+#
+#    # ---- Go ----
+#    go install golang.org/x/tools/gopls@latest
+#    go install golang.org/x/tools/cmd/goimports@latest  # 格式化
+#    go install github.com/go-delve/delve/cmd/dlv@latest  # 调试
+#    go install github.com/nametake/golangci-lint-langserver@latest  # lint LSP 适配器
+#    go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest  # lint 引擎
+#
+#    # ---- Python ----
+#    pip install python-lsp-server    # pylsp
+#    # 或
+#    pip install ruff-lsp             # ruff (更快的 linter)
+#    # 或
+#    pip install pyright              # pyright (类型检查)
+#
+#    # ---- Rust ----
+#    brew install rust-analyzer       # macOS
+#    # 或 rustup component add rust-analyzer
+#
+#    # ---- TypeScript / JavaScript ----
+#    npm i -g typescript-language-server typescript
+#
+#    # ---- HTML / CSS / JSON ----
+#    npm i -g vscode-langservers-extracted
+#
+#    # ---- YAML ----
+#    npm i -g yaml-language-server
+#
+#    # ---- TOML ----
+#    cargo install taplo-cli --locked
+#    # 或 brew install taplo
+#
+#    # ---- Bash / Shell ----
+#    npm i -g bash-language-server
+#
+#    # ---- Lua ----
+#    brew install lua-language-server
+#
+#    # ---- Dockerfile ----
+#    npm i -g dockerfile-language-server-nodejs
+#
+#    # ---- Markdown ----
+#    brew install marksman
+#
+#    # ---- C / C++ ----
+#    brew install llvm   # clangd 包含在其中
+#    # 或 brew install clang-format  # 仅格式化
+#
+#    # ---- SQL ----
+#    npm i -g sql-language-server
+#
+#    # ---- Protobuf ----
+#    go install github.com/bufbuild/buf-language-server/cmd/bufls@latest
+#
+# 3. 安装后重新检查:
+#      hx --health <语言名>
+#    确认 LSP 列显示 ✓ 即可
+#
+# 4. 修改本文件后在 Helix 中执行:
+#      :config-reload
+#    或重启 LSP:
+#      :lsp-restart
+#
+# ============================================================
+# 常用 LSP 快捷键
+# ============================================================
+#
+# gd        - 跳转到定义 (Go to Definition)
+# gy        - 跳转到类型定义 (Go to Type definition)
+# gr        - 查看引用 (Go to References)
+# gi        - 跳转到实现 (Go to Implementation)
+# K         - 显示悬浮文档 (Hover)
+# <space> a - 代码操作 (Code Action)
+# <space> r - 重命名符号 (Rename)
+# <space> s -文档符号列表 (Document Symbols)
+# <space> S - 工作区符号列表 (Workspace Symbols)
+# <space> d - 显示诊断信息 (Diagnostics)
+# ]d / [d   - 跳转到下/上一个诊断
+#
+# ============================================================
+# ============================================================
+
+# ============================================================
+# Go
+# ============================================================
+[[language]]
+name = "go"
+# 保存时自动格式化 (默认: true)
+auto-format = true
+# 使用 goimports 格式化 (自动整理 import)
+formatter = { command = "goimports" }
+
+# gopls 语言服务器设置
+[language-server.gopls]
+command = "gopls"
+
+[language-server.gopls.config]
+# 使用 gofumpt 风格格式化 (比 gofmt 更严格)
+gofumpt = true
+# 启用静态分析
+staticcheck = true
+
+[language-server.gopls.config.hints]
+# 内联提示 (在 config.toml 中 display-inlay-hints = true 时生效)
+assignVariableTypes = true
+compositeLiteralFields = true
+constantValues = true
+functionTypeParameters = true
+parameterNames = true
+rangeVariableTypes = true
+
+# ============================================================
+# Python
+# ============================================================
+[[language]]
+name = "python"
+auto-format = true
+language-servers = ["pylsp"]
+
+[language-server.pylsp]
+command = "pylsp"
+
+# ============================================================
+# Rust
+# ============================================================
+[[language]]
+name = "rust"
+auto-format = true
+
+[language-server.rust-analyzer]
+command = "rust-analyzer"
+
+[language-server.rust-analyzer.config]
+check.command = "clippy"
+
+# ============================================================
+# C / C++
+# ============================================================
+[[language]]
+name = "c"
+auto-format = true
+language-servers = ["clangd"]
+
+[[language]]
+name = "cpp"
+auto-format = true
+language-servers = ["clangd"]
+
+[language-server.clangd]
+command = "clangd"
+args = ["--background-index", "--clang-tidy", "--completion-style=detailed"]
+
+# ============================================================
+# TypeScript / JavaScript
+# ============================================================
+[[language]]
+name = "typescript"
+auto-format = true
+language-servers = ["typescript-language-server"]
+
+[[language]]
+name = "javascript"
+auto-format = true
+language-servers = ["typescript-language-server"]
+
+[language-server.typescript-language-server]
+command = "typescript-language-server"
+args = ["--stdio"]
+
+# ============================================================
+# TOML
+# ============================================================
+[[language]]
+name = "toml"
+auto-format = true
+language-servers = ["taplo"]
+
+[language-server.taplo]
+command = "taplo"
+args = ["lsp", "stdio"]
+
+# ============================================================
+# YAML
+# ============================================================
+[[language]]
+name = "yaml"
+auto-format = true
+language-servers = ["yaml-language-server"]
+
+[language-server.yaml-language-server]
+command = "yaml-language-server"
+args = ["--stdio"]
+
+[language-server.yaml-language-server.config.yaml]
+# 启用 JSON schema 验证
+validate = true
+# Kubernetes schema 支持
+# schemas = { "https://json.schemastore.org/github-workflow.json" = ".github/workflows/*.yml" }
+
+# ============================================================
+# JSON
+# ============================================================
+[[language]]
+name = "json"
+auto-format = true
+language-servers = ["vscode-json-language-server"]
+
+[language-server.vscode-json-language-server]
+command = "vscode-json-language-server"
+args = ["--stdio"]
+
+# ============================================================
+# HTML / CSS
+# ============================================================
+[[language]]
+name = "html"
+auto-format = true
+language-servers = ["vscode-html-language-server"]
+
+[[language]]
+name = "css"
+auto-format = true
+language-servers = ["vscode-css-language-server"]
+
+# ============================================================
+# Bash / Shell
+# ============================================================
+[[language]]
+name = "bash"
+auto-format = true
+language-servers = ["bash-language-server"]
+
+[language-server.bash-language-server]
+command = "bash-language-server"
+args = ["start"]
+
+# ============================================================
+# Markdown
+# ============================================================
+[[language]]
+name = "markdown"
+language-servers = ["marksman"]
+
+[language-server.marksman]
+command = "marksman"
+args = ["server"]
+
+# ============================================================
+# Dockerfile
+# ============================================================
+[[language]]
+name = "dockerfile"
+language-servers = ["docker-langserver"]
+
+[language-server.docker-langserver]
+command = "docker-langserver"
+args = ["--stdio"]
+
+# ============================================================
+# SQL
+# ============================================================
+[[language]]
+name = "sql"
+language-servers = ["sql-language-server"]
+
+[language-server.sql-language-server]
+command = "sql-language-server"
+args = ["up", "--method", "stdio"]

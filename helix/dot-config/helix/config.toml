@@ -26,13 +26,13 @@ theme = "dracula"
 [editor]
 
 # ----- 光标与滚动 -----
-# 滚动时屏幕边缘保留的空白行数
+# 滚动时屏幕边缘保留的空白行数 (默认: 5)
 scrolloff = 5
 
-# 启用鼠标支持 (可点击光标位置、选择文本、滚动)
+# 启用鼠标支持 (可点击光标位置、选择文本、滚动) (默认: true)
 mouse = true
 
-# 每次鼠标滚轮滚动行数
+# 每次鼠标滚轮滚动行数 (默认: 3)
 scroll-lines = 3
 
 # ----- 行号显示 -----
@@ -40,44 +40,45 @@ scroll-lines = 3
 #   "absolute" - 显示绝对行号
 #   "relative" - 显示相对于当前光标的行号
 # 注意: 在插入模式下或失去焦点时,relative 仍会显示绝对行号
+# (默认: "absolute")
 line-number = "relative"
 
-# 高亮光标所在的整行
-cursorline = false
+# 高亮光标所在的整行 (默认: false)
+cursorline = true
 
-# 高亮光标所在的整列
-cursorcolumn = false
+# 高亮光标所在的整列 (默认: false)
+cursorcolumn = true
 
 # ----- 搜索 -----
 # (搜索设置在下方独立 section)
 
 # ----- 自动功能 -----
-# 启用自动完成弹出
+# 启用自动补全弹出 (默认: true)
 auto-completion = true
 
-# 启用路径自动补全 (显示当前文档所在目录或工作目录下的文件)
+# 启用路径自动补全 (显示当前文档所在目录或工作目录下的文件) (默认: true)
 path-completion = true
 
-# 启用保存时自动格式化 (需要 LSP 支持)
+# 启用保存时自动格式化 (需要 LSP 支持) (默认: true)
 auto-format = true
 
-# 启用自动添加注释: 当在注释内换行时,自动添加注释符号
+# 启用自动添加注释: 当在注释内换行时,自动添加注释符号 (默认: true)
 continue-comments = true
 
 # ----- 显示信息 -----
-# 显示信息框 (如函数签名提示等)
+# 显示信息框 (如函数签名提示等) (默认: true)
 auto-info = true
 
 # ----- 颜色支持 -----
-# 强制启用真彩色 (终端不支持时)
+# 强制启用真彩色 (终端不支持时) (默认: false)
 true-color = false
 
-# 强制启用下划线样式光标 (终端不支持时)
+# 强制启用下划线样式光标 (终端不支持时) (默认: false)
 undercurl = false
 
 # ----- 文件显示 -----
 # 标尺线位置 (显示垂直参考线)
-# 可在 languages.toml 中针对特定语言覆盖此设置
+# 可在 languages.toml 中针对特定语言覆盖此设置 (默认: [])
 rulers = []
 
 # 顶部缓冲区标签栏显示模式
@@ -85,13 +86,14 @@ rulers = []
 #   "always"  - 始终显示
 #   "never"   - 从不显示
 #   "multiple" - 仅当打开多个缓冲区时显示
+# (默认: "never")
 bufferline = "never"
 
-# 模式指示器是否根据模式显示不同颜色
-color-modes = false
+# 模式指示器是否根据模式显示不同颜色 (默认: false)
+color-modes = true
 
 # ----- 文本宽度 -----
-# 最大行长度,用于 :reflow 命令和软换行
+# 最大行长度,用于 :reflow 命令和软换行 (默认: 80)
 text-width = 80
 
 # ----- 行尾设置 -----
@@ -103,24 +105,25 @@ text-width = 80
 #   "ff"      - 换页符 (FF)
 #   "cr"      - 回车符 (CR)
 #   "nel"     - 下一行 (NEL)
+# (默认: "native")
 default-line-ending = "native"
 
-# 保存时自动在文件末尾添加换行符
+# 保存时自动在文件末尾添加换行符 (默认: true)
 insert-final-newline = true
 
-# 保存时删除末尾多余空行
-trim-final-newlines = false
+# 保存时删除末尾多余空行 (默认: false)
+trim-final-newlines = true
 
-# 保存时删除行尾空格
-trim-trailing-whitespace = false
+# 保存时删除行尾空格 (默认: false)
+trim-trailing-whitespace = true
 
 # ----- 自动保存 -----
 [editor.auto-save]
-# 失去焦点时自动保存
+# 失去焦点时自动保存 (默认: false)
 focus-lost = false
-# 延迟后自动保存
+# 延迟后自动保存 (默认: false)
 after-delay.enable = false
-# 距最后一次编辑多少毫秒后触发自动保存
+# 距最后一次编辑多少毫秒后触发自动保存 (默认: 3000)
 after-delay.timeout = 3000
 
 # ----- 缩进 -----
@@ -129,75 +132,79 @@ after-delay.timeout = 3000
 #   "simple"      - 简单复制上一行缩进
 #   "tree-sitter" - 基于语法树计算缩进
 #   "hybrid"      - 结合两者 (默认,优先 tree-sitter,不可用则用 simple)
+# (默认: "hybrid")
 indent-heuristic = "hybrid"
 
 # ----- 跳转标签 -----
-# 两字符跳转标签使用的字母 (优先使用字母表开头的字符)
+# 两字符跳转标签使用的字母 (优先使用字母表开头的字符) (默认: "abcdefghijklmnopqrstuvwxyz")
 jump-label-alphabet = "abcdefghijklmnopqrstuvwxyz"
 
 # ----- 诊断信息 -----
 # 行尾显示的诊断信息最低严重级别
-# 可选值: "error", "warning", "info", "hint", "disable"
-end-of-line-diagnostics = "disable"
+# 可选值: "error", "warning", "info", "hint", "disable" (默认: "disable")
+end-of-line-diagnostics = "warning"
 
 # ----- 编辑器配置 -----
-# 是否读取 .editorconfig 文件设置
+# 是否读取 .editorconfig 文件设置 (默认: true)
 editor-config = true
 
 # ----- 其他 -----
-# 默认寄存器用于 yank/粘贴操作
+# 默认寄存器用于 yank/粘贴操作 (默认: "\"")
 default-yank-register = "\""
 
-# 中键粘贴支持
+# 中键粘贴支持 (默认: true)
 middle-click-paste = true
 
 # 剪贴板提供者 (可选: "pasteboard", "wayland", "x-clip", "x-sel", "win-32-yank", "termux", "tmux", "none")
+# (默认: 自动检测)
 clipboard-provider = "pasteboard"
 
-# 弹出窗口边框样式 (可选: "popup", "menu", "all", "none")
+# 弹出窗口边框样式 (可选: "popup", "menu", "all", "none") (默认: "none")
 popup-border = "none"
 
-# 空闲超时时间 (毫秒),空闲定时器在此时间后触发
+# 空闲超时时间 (毫秒),空闲定时器在此时间后触发 (默认: 250)
 idle-timeout = 250
 
-# 自动完成显示延迟 (毫秒),设置为 5 可即时显示
+# 自动完成显示延迟 (毫秒),设置为 5 可即时显示 (默认: 250)
 completion-timeout = 250
 
-# 选中自动完成项时是否立即插入
+# 选中自动完成项时是否立即插入 (默认: true)
 preview-completion-insert = true
 
-# 触发自动补全的最小单词长度
+# 触发自动补全的最小单词长度 (默认: 2)
 completion-trigger-len = 2
 
-# 自动完成替换模式: true 为替换整个单词,false 为只替换光标前的部分
+# 自动完成替换模式: true 为替换整个单词,false 为只替换光标前的部分 (默认: false)
 completion-replace = false
 
-# 自动括号配对 (输入左括号自动添加右括号)
+# 自动括号配对 (输入左括号自动添加右括号) (默认: true)
 auto-pairs = true
 
 # 软换行
 [editor.soft-wrap]
-enable = false
-# 软换行时行尾保留的最大空格数
+# (默认: false)
+enable = true
+# 软换行时行尾保留的最大空格数 (默认: 20)
 max-wrap = 20
-# 软换行时保留的最大缩进
+# 软换行时保留的最大缩进 (默认: 40)
 max-indent-retain = 40
-# 软换行指示符 (显示在换行行首)
+# 软换行指示符 (显示在换行行首) (默认: "↪")
 wrap-indicator = "↪"
-# 按 text-width 软换行而非视口宽度
+# 按 text-width 软换行而非视口宽度 (默认: false)
 wrap-at-text-width = false
 
 # 智能 Tab 键
 [editor.smart-tab]
+# (默认: true)
 enable = true
-# 菜单显示时是否优先使用 smart-tab 功能
+# 菜单显示时是否优先使用 smart-tab 功能 (默认: false)
 supersede-menu = false
 
 # ============================================================
 # 行号 gutter 设置
 # ============================================================
 [editor.gutters.line-numbers]
-# 行号最小宽度 (字符数)
+# 行号最小宽度 (字符数) (默认: 3)
 min-width = 3
 
 # ============================================================
@@ -205,19 +212,19 @@ min-width = 3
 # ============================================================
 [editor.inline-diagnostics]
 # 光标所在行显示的诊断信息最低级别
-# 可选值: "error", "warning", "info", "hint", "disable"
-cursor-line = "disable"
+# 可选值: "error", "warning", "info", "hint", "disable" (默认: "disable")
+cursor-line = "warning"
 
-# 其他行显示的诊断信息最低级别
-other-lines = "disable"
+# 其他行显示的诊断信息最低级别 (默认: "disable")
+other-lines = "warning"
 
-# 诊断信息前的横线数量
+# 诊断信息前的横线数量 (默认: 1)
 prefix-len = 1
 
-# 诊断信息软换行最大宽度
+# 诊断信息软换行最大宽度 (默认: 20)
 max-wrap = 20
 
-# 每行最多显示的诊断数量
+# 每行最多显示的诊断数量 (默认: 10)
 max-diagnostics = 10
 
 # ============================================================
@@ -226,6 +233,7 @@ max-diagnostics = 10
 # 渲染模式: "all"(全部显示), "none"(不显示)
 # 或者使用子表形式分别设置每种空白字符的显示
 [editor.whitespace]
+# (默认: "none")
 render = "none"
 
 # 分别设置每种空白字符的显示 (可选)
@@ -247,13 +255,13 @@ render = "none"
 # 缩进指南
 # ============================================================
 [editor.indent-guides]
-# 是否显示缩进指南
+# 是否显示缩进指南 (默认: false)
 render = false
 
-# 缩进指南使用的字符
+# 缩进指南使用的字符 (默认: "│")
 character = "│"
 
-# 跳过的缩进级别数
+# 跳过的缩进级别数 (默认: 0)
 skip-levels = 0
 
 # ============================================================
@@ -262,23 +270,26 @@ skip-levels = 0
 # 状态栏分为三部分: left | center | right
 
 [editor.statusline]
-# 左侧元素
+# 左侧元素 (默认: ["mode", "spinner", "file-name", "read-only-indicator", "file-modification-indicator"])
 left = ["mode", "spinner", "file-name", "read-only-indicator", "file-modification-indicator"]
-# 中间元素
+# 中间元素 (默认: [])
 center = []
-# 右侧元素
+# 右侧元素 (默认: ["diagnostics", "selections", "register", "position", "file-encoding"])
 right = ["diagnostics", "selections", "register", "position", "file-encoding"]
-# 元素分隔符
+# 元素分隔符 (默认: "│")
 separator = "│"
-# 显示的诊断类型
+# 显示的诊断类型 (默认: ["warning", "error"])
 diagnostics = ["warning", "error"]
-# 工作区诊断类型
+# 工作区诊断类型 (默认: ["warning", "error"])
 workspace-diagnostics = ["warning", "error"]
 
 # 各模式显示文本
 [editor.statusline.mode]
+# (默认: "NOR")
 normal = "NOR"
+# (默认: "INS")
 insert = "INS"
+# (默认: "SEL")
 select = "SEL"
 
 # 可用的状态栏元素:
@@ -311,13 +322,13 @@ select = "SEL"
 # 可选值: "block" (块), "bar" (竖线), "underline" (下划线), "hidden" (隐藏)
 
 [editor.cursor-shape]
-# 正常模式光标形状
+# 正常模式光标形状 (默认: "block")
 normal = "block"
 
-# 插入模式光标形状
+# 插入模式光标形状 (默认: "block")
 insert = "block"
 
-# 选择模式光标形状
+# 选择模式光标形状 (默认: "block")
 select = "block"
 
 # ============================================================
@@ -326,28 +337,28 @@ select = "block"
 
 [editor.file-picker]
 
-# 是否显示隐藏文件
+# 是否显示隐藏文件 (默认: true)
 hidden = true
 
-# 是否跟随符号链接
+# 是否跟随符号链接 (默认: true)
 follow-symlinks = true
 
-# 是否忽略指向已显示文件的符号链接
+# 是否忽略指向已显示文件的符号链接 (默认: true)
 deduplicate-links = true
 
-# 是否读取父目录的忽略文件
+# 是否读取父目录的忽略文件 (默认: true)
 parents = true
 
-# 是否读取 .ignore 文件
+# 是否读取 .ignore 文件 (默认: true)
 ignore = true
 
-# 是否读取 .gitignore 文件
+# 是否读取 .gitignore 文件 (默认: true)
 git-ignore = true
 
-# 是否读取全局 .gitignore (在 git 配置中指定)
+# 是否读取全局 .gitignore (在 git 配置中指定) (默认: true)
 git-global = true
 
-# 是否读取 .git/info/exclude
+# 是否读取 .git/info/exclude (默认: true)
 git-exclude = true
 
 # 最大递归目录深度 (不设置则无限制)
@@ -359,34 +370,34 @@ git-exclude = true
 
 [editor.lsp]
 
-# 启用 LSP 集成 (设为 false 完全禁用语言服务器)
+# 启用 LSP 集成 (设为 false 完全禁用语言服务器) (默认: true)
 enable = true
 
-# 显示 LSP window/showMessage 消息
+# 显示 LSP window/showMessage 消息 (默认: true)
 display-messages = true
 
-# 显示 LSP 进度消息
+# 显示 LSP 进度消息 (默认: false)
 display-progress-messages = false
 
-# 自动弹出签名帮助 (参数提示)
+# 自动弹出签名帮助 (参数提示) (默认: true)
 auto-signature-help = true
 
-# 显示内联提示 (inlay hints)
+# 显示内联提示 (inlay hints) (默认: false)
 display-inlay-hints = false
 
 # 内联提示最大显示长度
 # inlay-hints-length-limit = 25
 
-# 显示颜色预览色块
+# 显示颜色预览色块 (默认: true)
 display-color-swatches = true
 
-# 显示签名帮助文档
+# 显示签名帮助文档 (默认: true)
 display-signature-help-docs = true
 
-# 启用代码片段补全 (需要重启 LSP)
+# 启用代码片段补全 (需要重启 LSP) (默认: true)
 snippets = true
 
-# 跳转引用时包含声明
+# 跳转引用时包含声明 (默认: true)
 goto-reference-include-declaration = true
 
 # ============================================================
@@ -418,9 +429,12 @@ goto-reference-include-declaration = true
 #
 # 可用命令列表: 查看 :Tutor 或官方文档 keymap.html
 
-# [keys.normal]
-# # 示例: Ctrl-s 保存
-# # C-s = ":w"
+[keys.normal]
+# K 键用于显示悬浮文档 (默认 K 是 keep_selections)
+K = "hover"
+
+# 示例: Ctrl-s 保存
+# C-s = ":w"
 #
 # # 示例: jj 退出插入模式 (需要先在 keys.insert 中配置)
 # # j = { k = "normal_mode" }

@@ -1,0 +1,30 @@
+# mise 全局工具版本管理
+# ============================================================
+#
+# mise 是一个开发工具版本管理器 (管理语言运行时、CLI 工具等的版本,类似 asdf 但更快)
+# 官方文档: https://mise.jdx.dev/
+#
+# 常用命令:
+#   mise use -g <tool>@<version>   # 设置全局版本 (修改此文件)
+#   mise use <tool>@<version>      # 设置项目版本 (生成 .mise.toml)
+#   mise install <tool>@<version>  # 安装但不激活
+#   mise ls                        # 查看已安装的工具
+#   mise ls-remote <tool>          # 查看可安装的远程版本
+#   mise prune                     # 清理未使用的版本
+#   mise doctor                    # 诊断配置问题
+#
+# 安装 mise:
+#   brew install mise
+#   (Fish shell 会通过 vendor_conf.d 自动激活，无需手动配置)
+#
+# ============================================================
+
+# 全局工具版本声明
+# 版本格式:
+#   "1.25"    - 模糊匹配,自动选 1.25.x 最新补丁版 (推荐)
+#   "1.25.3"  - 精确锁定版本
+#   "latest"  - 始终使用最新稳定版
+#
+# 修改后执行 `mise install` 安装声明的版本
+[tools]
+go = "1.25"
