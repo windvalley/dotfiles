@@ -87,7 +87,7 @@ rulers = []
 #   "never"   - 从不显示
 #   "multiple" - 仅当打开多个缓冲区时显示
 # (默认: "never")
-bufferline = "never"
+bufferline = "multiple"
 
 # 模式指示器是否根据模式显示不同颜色 (默认: false)
 color-modes = true
@@ -442,21 +442,19 @@ C-r = ":reload"
 # 因此不覆盖 ; 。
 "C-;" = "repeat_last_motion"
 
-# 示例: Ctrl-s 保存
-# C-s = ":w"
-#
-# # 示例: jj 退出插入模式 (需要先在 keys.insert 中配置)
-# # j = { k = "normal_mode" }
-#
-# # 示例: 禁用某键
-# # "C-[ = "no_op"
+# 选中到行首/行尾 (替代 Alt+h/l，因为 Alt 键被其他程序占用)
+C-h = "extend_to_line_start"
+C-l = "extend_to_line_end"
 
 # [keys.insert]
 # # 退出插入模式
 # # j = { k = "normal_mode" }
 
-# [keys.select]
-# # 选择模式键盘映射
+[keys.select]
+
+# 选中到行首/行尾 (与 normal 模式保持一致)
+C-h = "extend_to_line_start"
+C-l = "extend_to_line_end"
 
 # ============================================================
 # 次要模式 (Minor Modes)

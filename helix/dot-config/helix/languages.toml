@@ -85,10 +85,10 @@
 # gy        - 跳转到类型定义 (Go to Type definition)
 # gr        - 查看引用 (Go to References)
 # gi        - 跳转到实现 (Go to Implementation)
-# K         - 显示悬浮文档 (Hover)
+# <space> k - 显示悬浮文档 (Hover)
 # <space> a - 代码操作 (Code Action)
 # <space> r - 重命名符号 (Rename)
-# <space> s -文档符号列表 (Document Symbols)
+# <space> s - 文档符号列表 (Document Symbols)
 # <space> S - 工作区符号列表 (Workspace Symbols)
 # <space> d - 显示诊断信息 (Diagnostics)
 # ]d / [d   - 跳转到下/上一个诊断

@@ -83,6 +83,23 @@ info "Linking configuration files with stow..."
 mkdir -p "$HOME/.local/bin"
 mkdir -p "$HOME/.config/karabiner"
 
+# Handle fish config directory before stow
+FISH_CONFIG_DIR="$HOME/.config/fish"
+
+if [ -L "$FISH_CONFIG_DIR" ]; then
+    warn "$FISH_CONFIG_DIR is a symlink, unlinking..."
+    unlink "$FISH_CONFIG_DIR"
+    mkdir -p "$FISH_CONFIG_DIR"
+fi
+
+# Back up existing fish config files that would conflict with stow
+for f in config.fish fish_plugins; do
+    if [ -f "$FISH_CONFIG_DIR/$f" ] && [ ! -L "$FISH_CONFIG_DIR/$f" ]; then
+        warn "Backing up $FISH_CONFIG_DIR/$f -> $FISH_CONFIG_DIR/${f}.bak"
+        mv "$FISH_CONFIG_DIR/$f" "$FISH_CONFIG_DIR/${f}.bak"
+    fi
+done
+
 STANDARD_PACKAGES=(ghostty fish helix zellij mise karabiner)
 for pkg in "${STANDARD_PACKAGES[@]}"; do
     info "Stowing $pkg..."

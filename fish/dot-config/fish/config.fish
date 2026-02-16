@@ -97,8 +97,10 @@ if status is-interactive
     abbr -a -g gd 'git diff'
     abbr -a -g gds 'git diff --staged'
     abbr -a -g gc 'git commit'
+    abbr -a -g gca 'git commit --amend'
     abbr -a -g gp 'git push'
     abbr -a -g gl 'git pull'
+    abbr -a -g gco 'git checkout'
 
     # 常用命令增强
     abbr -a -g ll 'ls -la'

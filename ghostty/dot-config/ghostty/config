@@ -712,7 +712,7 @@ window-titlebar-foreground =
 #
 # 可选值: true | false
 # 默认值: false
-mouse-hide-while-typing = false
+mouse-hide-while-typing = true
 
 # scroll-to-bottom
 # 何时滚动到底部

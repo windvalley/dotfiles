@@ -27,12 +27,12 @@ cd "$HOME/dotfiles"
 
 本仓库包含以下 7 个配置包：
 
-- `ghostty/`: Ghostty 终端配置
-- `fish/`: Fish shell 配置
-- `zellij/`: 现代终端复用器，易于配置
-- `helix/`: 现代模态编辑器，开箱即用
-- `karabiner/`: Karabiner-Elements 键盘映射（交换 Caps Lock 和 Left Control）
-- `mise/`: mise 工具版本管理器配置
+- `ghostty/`: Ghostty（/ˈɡoʊs.ti/，Ghost + ty）终端配置
+- `fish/`: Fish（/fɪʃ/，**F**riendly **I**nteractive **SH**ell）shell 配置
+- `zellij/`: Zellij（/ˈzɛl.ɪdʒ/，源自阿拉伯语，马赛克瓷砖拼贴艺术）终端复用器，易于配置
+- `helix/`: Helix（/ˈhiː.lɪks/，螺旋）现代模态编辑器，开箱即用
+- `karabiner/`: Karabiner（/ˌkær.əˈbiː.nər/，德语，登山扣）键盘映射（交换 Caps Lock 和 Left Control）
+- `mise/`: Mise（/miːz/，源自法语 mise en place，就位准备）工具版本管理器配置
 - `bin/`: 自定义命令脚本（自动链接到 `~/.local/bin`）
 
 > [!NOTE]
@@ -122,8 +122,31 @@ git pull --rebase
 
 ```sh
 cd "$HOME/dotfiles"
-stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles ghostty fish helix zellij mise
+stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles ghostty helix zellij mise
 ```
+
+链接 Fish 配置（需预处理以避免 stow 冲突）：
+
+```sh
+# 如果 ~/.config/fish 是软链接（如之前手动创建的），需先解除再创建目录。
+# 原因：fish 会在该目录下自动生成大量运行时文件，若整个目录是软链接，
+# 这些文件会进入 dotfiles 仓库，产生不必要的 git 变更。
+ls -ld ~/.config/fish
+unlink ~/.config/fish
+mkdir -p ~/.config/fish
+
+# 如果 config.fish 或 fish_plugins 已存在（如 fish 自动生成的），需先备份
+mv ~/.config/fish/{config.fish,config.fish.bak}
+mv ~/.config/fish/{fish_plugins,fish_plugins.bak}
+
+# 执行 stow
+cd "$HOME/dotfiles"
+stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles fish
+```
+
+> [!TIP]
+> 以上预处理步骤按需执行，如果对应的软链接或文件不存在则跳过即可。
+> `install.sh` 已自动处理这些情况，无需手动操作。
 
 链接命令脚本（`bin/` -> `~/.local/bin`）：
 
@@ -289,10 +312,9 @@ tide configure
 | `Cmd + 1-9` | 切换到指定标签页 |
 
 **布局**：
-- **默认布局**：`dev-workspace`（编辑器 + 终端）
+- **默认布局**：`dev-workspace`
 - **布局定义位置**：`~/.config/zellij/layouts/dev-workspace.kdl`
 - **修改布局**：编辑上述文件，定义自己的分屏和标签页结构
-- **查看更多布局**：`zellij list-layouts`
 - **手动加载布局**：`zellij --layout <布局名>`
 
 ---
