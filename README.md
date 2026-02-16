@@ -223,6 +223,11 @@ tide configure
 - `colors-print`: 打印终端 256 色板
 - `print-256-hex-colors`: 打印 256 色的十六进制色值
 
+> [!TIP]
+> **变更生效方式：**
+> - `colorscheme`：Zellij 实时生效；Ghostty 需按 `Cmd + Shift + ,` 重载配置；Helix 需执行 `:config-reload` 使已打开的 buffer 生效。
+> - `font-size` / `opacity`：修改的是 Ghostty 配置文件，需按 `Cmd + Shift + ,` 重载配置后生效。
+
 fish 内置了一些缩写（见 `fish/dot-config/fish/config.fish`）：`cs`/`fs`/`o`/`vol`。
 
 ### 5.2 Zellij 自动启动
@@ -244,23 +249,14 @@ fish 内置了一些缩写（见 `fish/dot-config/fish/config.fish`）：`cs`/`f
 **快捷键**：
 | 快捷键 | 功能 |
 |--------|------|
-| `Cmd + Shift + ,` | 打开配置（保存后生效） |
-| `Cmd + ;` | 打开 Quick Terminal（快捷终端，自定义） |
+| `Cmd + Shift + ,` | 重载配置（修改配置文件后按此快捷键生效） |
+| `Cmd + ;` | 打开 Quick Terminal（自定义快捷键）|
 | `Cmd + d` | 垂直分屏 |
 | `Cmd + Shift + d` | 水平分屏 |
 | `Cmd + [ / ]` | 切换分屏 |
 
-**自定义命令**（需要安装 `gnu-sed`）：
-```bash
-colorscheme tokyonight    # 同时切换 Ghostty、Helix、Zellij 主题
-font-size 14              # 设置字体大小
-opacity 0.9              # 设置透明度
-```
-
-> [!TIP]
-> **变更生效方式：**
-> - `colorscheme`：Zellij 实时生效；Ghostty 需按 `Cmd + Shift + ,` 重载配置；Helix 需执行 `:config-reload` 使已打开的 buffer 生效。
-> - `font-size` / `opacity`：修改的是 Ghostty 配置文件，需按 `Cmd + Shift + ,` 重载配置后生效。
+> [!NOTE]
+> 建议使用 Zellij 的标签页和面板功能替代 Ghostty 原生标签页和分屏功能，以获得更灵活的布局控制和跨会话保持能力。
 
 ---
 
@@ -337,7 +333,7 @@ opacity 0.9              # 设置透明度
 |--------|------|
 | `i` | 进入插入模式 |
 | `Esc` | 返回正常模式 |
-| `v` | 进入选择模式 |
+| `v` | 进入/退出选择模式 |
 | `h/j/k/l` | 左/下/上/右 |
 | `w/b` | 下一个/上一个单词 |
 | `gg/ge` | 文件开头/结尾 |
