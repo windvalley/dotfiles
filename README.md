@@ -212,35 +212,7 @@ tide configure
 
 ## 5. 使用方法
 
-### 5.1 常用命令（bin/）
-
-这些命令会在 stow `bin` 后出现在 `~/.local/bin`：
-
-- `colorscheme <name>`: 切换 Ghostty、Helix 和 Zellij 主题
-- `font-size <1-200>`: 设置 Ghostty 字体大小
-- `opacity <0.0-1.0>`: 设置 Ghostty 背景透明度
-- `audio-volume`: 音量控制与输出设备切换（需要 `switchaudio-osx`）
-- `colors-print`: 打印终端 256 色板
-- `print-256-hex-colors`: 打印 256 色的十六进制色值
-
-> [!TIP]
-> **变更生效方式：**
-> - `colorscheme`：Zellij 实时生效；Ghostty 需按 `Cmd + Shift + ,` 重载配置；Helix 需执行 `:config-reload` 使已打开的 buffer 生效。
-> - `font-size` / `opacity`：修改的是 Ghostty 配置文件，需按 `Cmd + Shift + ,` 重载配置后生效。
-
-fish 内置了一些缩写（见 `fish/dot-config/fish/config.fish`）：`cs`/`fs`/`o`/`vol`。
-
-### 5.2 Zellij 自动启动
-
-本配置在 fish 中集成了 Zellij 自动启动逻辑。当你打开一个新的终端窗口时，它会自动启动或挂载到 Zellij 会话中。
-
-**自动跳过逻辑：**
-- 已在 Zellij 会话中
-- 通过 SSH 连接
-- 在 Ghostty 的 Quick Terminal 中
-- 设置了环境变量 `ZELLIJ_AUTO_DISABLE`
-
-### 5.3 Ghostty 终端
+### 5.1 Ghostty 终端
 
 **配置文件**：`~/.config/ghostty/config`
 
@@ -260,9 +232,15 @@ fish 内置了一些缩写（见 `fish/dot-config/fish/config.fish`）：`cs`/`f
 
 ---
 
-### 5.4 Zellij 终端复用器
+### 5.2 Zellij 终端复用器
 
 **配置文件**：`~/.config/zellij/config.kdl`
+
+**自动启动**：本配置在 fish 中集成了 Zellij 自动启动逻辑，打开新终端窗口时会自动启动或挂载到 Zellij 会话。以下情况会自动跳过：
+- 已在 Zellij 会话中
+- 通过 SSH 连接
+- 在 Ghostty 的 Quick Terminal 中
+- 设置了环境变量 `ZELLIJ_AUTO_DISABLE`
 
 **模式系统**：Zellij 有多个模式，按 `Ctrl + p/t/n/h/s/o/a` 直接进入对应模式，按 `Ctrl + g` 进入锁定模式（禁用所有快捷键）。
 
@@ -319,7 +297,49 @@ fish 内置了一些缩写（见 `fish/dot-config/fish/config.fish`）：`cs`/`f
 
 ---
 
-### 5.5 Helix 编辑器
+### 5.3 Fish Shell
+
+**配置文件**：`~/.config/fish/config.fish`
+
+**内置缩写**：
+| 缩写 | 完整命令 |
+|------|----------|
+| `cs` | `colorscheme` |
+| `fs` | `font-size` |
+| `o` | `opacity` |
+| `vol` | `audio-volume` |
+
+**常用命令**：
+| 命令 | 功能 |
+|------|------|
+| `fish_update_completions` | 更新命令补全 |
+| `fish_add_path <path>` | 添加路径 |
+| `fish_config` | 打开交互配置 |
+
+**Tide prompt**：`tide configure`（交互式配置）
+
+**Vi 模式**：
+Fish 支持 Vi 风格编辑模式，默认已启用。
+
+| 快捷键 | 功能 |
+|--------|------|
+| `Esc` | 进入 Vi 正常模式 |
+| `i/a` | 进入插入模式 |
+| `h/j/k/l` | 左/下/上/右 |
+| `w/b` | 下一个/上一个单词 |
+| `0/$` | 行首/行尾 |
+| `d` | 删除 |
+| `y` | 复制 |
+| `p` | 粘贴 |
+| `u` | 撤销 |
+| `k` | 上一条命令历史（基于当前输入过滤） |
+| `j` | 下一条命令历史（基于当前输入过滤） |
+
+在 Vi 正常模式下可以使用所有 Vim 风格的编辑命令。
+
+---
+
+### 5.4 Helix 编辑器
 
 **配置文件**：`~/.config/helix/config.toml`
 
@@ -384,49 +404,7 @@ fish 内置了一些缩写（见 `fish/dot-config/fish/config.fish`）：`cs`/`f
 
 ---
 
-### 5.6 Fish Shell
-
-**配置文件**：`~/.config/fish/config.fish`
-
-**内置缩写**：
-| 缩写 | 完整命令 |
-|------|----------|
-| `cs` | `colorscheme` |
-| `fs` | `font-size` |
-| `o` | `opacity` |
-| `vol` | `audio-volume` |
-
-**常用命令**：
-| 命令 | 功能 |
-|------|------|
-| `fish_update_completions` | 更新命令补全 |
-| `fish_add_path <path>` | 添加路径 |
-| `fish_config` | 打开交互配置 |
-
-**Tide prompt**：`tide configure`（交互式配置）
-
-**Vi 模式**：
-Fish 支持 Vi 风格编辑模式，默认已启用。
-
-| 快捷键 | 功能 |
-|--------|------|
-| `Esc` | 进入 Vi 正常模式 |
-| `i/a` | 进入插入模式 |
-| `h/j/k/l` | 左/下/上/右 |
-| `w/b` | 下一个/上一个单词 |
-| `0/$` | 行首/行尾 |
-| `d` | 删除 |
-| `y` | 复制 |
-| `p` | 粘贴 |
-| `u` | 撤销 |
-| `k` | 上一条命令历史（基于当前输入过滤） |
-| `j` | 下一条命令历史（基于当前输入过滤） |
-
-在 Vi 正常模式下可以使用所有 Vim 风格的编辑命令。
-
----
-
-### 5.7 Mise 工具版本管理
+### 5.5 Mise 工具版本管理
 
 **配置文件**：`~/.config/mise/config.toml`
 
@@ -453,7 +431,7 @@ mise ls-remote python  # 查看所有可用的 Python 版本
 
 ---
 
-### 5.8 stow 的用法说明
+### 5.6 stow 的用法说明
 
 ```sh
 # 安装或重新安装
@@ -470,3 +448,23 @@ stow -nv --restow --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 # 卸载
 stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 ```
+
+---
+
+### 5.7 自定义命令（bin/）
+
+这些命令会在 stow `bin` 后出现在 `~/.local/bin`：
+
+- `colorscheme <name>`: 切换 Ghostty、Helix 和 Zellij 主题
+- `font-size <1-200>`: 设置 Ghostty 字体大小
+- `opacity <0.0-1.0>`: 设置 Ghostty 背景透明度
+- `audio-volume`: 音量控制与输出设备切换（需要 `switchaudio-osx`）
+- `colors-print`: 打印终端 256 色板
+- `print-256-hex-colors`: 打印 256 色的十六进制色值
+
+> [!TIP]
+> **变更生效方式：**
+> - `colorscheme`：Zellij 实时生效；Ghostty 需按 `Cmd + Shift + ,` 重载配置；Helix 需执行 `:config-reload` 使已打开的 buffer 生效。
+> - `font-size` / `opacity`：修改的是 Ghostty 配置文件，需按 `Cmd + Shift + ,` 重载配置后生效。
+
+fish 内置了一些缩写（见 `fish/dot-config/fish/config.fish`）：`cs`/`fs`/`o`/`vol`。
