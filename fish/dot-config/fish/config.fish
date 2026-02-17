@@ -16,22 +16,10 @@ set -g fish_greeting ""
 #       不包括 Prompt（提示符）外观
 #fish_config theme choose dracula
 
-# 优先使用可复刻的环境变量（避免依赖 universal state）
-if type -q nvim
-    set -gx EDITOR hx
-    set -gx VISUAL hx
-end
-
 # Homebrew：默认禁止自动更新
 set -gx HOMEBREW_NO_AUTO_UPDATE 1
 
-# macOS 窗口卡顿临时规避
-set -gx CHROME_HEADLESS 1
-if status is-login; and type -q launchctl
-    launchctl setenv CHROME_HEADLESS 1
-end
-
-# PATH：避免在 config.fish 里写 universal 变量；保持会话内确定性
+# PATH：避免在 config.fish 里写 universal 变量, 保持会话内确定性
 if test -d "$HOME/.local/bin"
     fish_add_path --global --prepend "$HOME/.local/bin"
 end
@@ -53,9 +41,30 @@ for p in $PATH
 end
 set -gx PATH $__deduped_path
 
-# Docker Desktop 自动添加（若文件存在则加载）
-if test -f "$HOME/.docker/init-fish.sh"
-    source "$HOME/.docker/init-fish.sh"
+# 优先使用可复刻的环境变量（避免依赖 universal state）
+if type -q hx
+    set -gx EDITOR hx
+    set -gx VISUAL hx
+end
+
+# 常用快捷函数
+# d: 显示日期时间 (格式: 02-17 Tuesday 20:19:24)
+function d
+    date +"%m-%d %A %T"
+end
+
+# nh: 后台运行命令 (nohup + 丢弃输出)
+# 用法: nh <命令> [参数...]
+# 示例: nh scrcpy -w -S
+function nh
+    nohup $argv &>/dev/null &
+end
+
+# ch: 查询 cheat.sh 快速获取命令帮助
+# 用法: ch <命令>
+# 示例: ch tar, ch curl
+function ch
+    curl cheat.sh/$argv[1]
 end
 
 if status is-interactive
@@ -89,6 +98,7 @@ if status is-interactive
     # 用 hx 替代 vi/vim
     abbr -a -g vi hx
     abbr -a -g vim hx
+    abbr -a -g h hx
 
     # Git 缩写
     abbr -a -g g git
@@ -101,6 +111,9 @@ if status is-interactive
     abbr -a -g gp 'git push'
     abbr -a -g gl 'git pull'
     abbr -a -g gco 'git checkout'
+    abbr -a -g gr 'git restore'
+    abbr -a -g grs 'git restore --staged'
+    abbr -a -g gg 'git log'
 
     # 常用命令增强
     abbr -a -g ll 'ls -la'
@@ -120,6 +133,13 @@ if status is-interactive
     if type -q eza
         abbr -a -g ls eza
     end
+
+    # brew install --cask android-platform-tools
+    # brew install scrcpy
+    # sc: 无线投屏到电脑 (电脑作为显示器), 默认参数: 关闭声音 H265编码 1440码率
+    alias sc "nh scrcpy -w -S --no-audio --video-codec=h265 -m1440"
+    # scam: 使用手机摄像头作为视频源 (手机变成电脑摄像头)
+    alias scam "nh scrcpy --video-source=camera --no-audio --video-codec=h265 --camera-size=1080x720"
 
     # 自动启动 Zellij
     # 跳过: 已在 zellij 中 / SSH / Quick Terminal / 禁用标志 / 未安装
