@@ -158,4 +158,12 @@ if status is-interactive
             exec zellij
         end
     end
+
+    # zoxide: 智能目录跳转 (z 替代传统的 z)
+    # 用法: z <目录关键词> - 跳转到匹配的目录
+    #      zi <关键词> - 交互式选择 (需要安装 fzf)
+    #      z foo bar   - 匹配包含 foo 和 bar 的目录
+    if type -q zoxide
+        zoxide init fish | source
+    end
 end

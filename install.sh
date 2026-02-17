@@ -40,9 +40,11 @@ REQUIRED_FORMULAE=(
     eza
     fzf
     grc
+    zoxide
     gawk
     gnu-sed
     grep
+    switchaudio-osx
 )
 
 brew install "${REQUIRED_FORMULAE[@]}"
@@ -68,7 +70,6 @@ install_optional() {
     fi
 }
 
-install_optional "switchaudio-osx (for audio-volume)" "switchaudio-osx"
 
 DOTFILES_DIR="$HOME/dotfiles"
 if [ ! -d "$DOTFILES_DIR" ]; then

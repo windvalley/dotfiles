@@ -66,13 +66,14 @@ brew install mise
 
 ```sh
 # 常用工具
-brew install bat eza fzf grc gawk gnu-sed grep
+brew install bat eza fzf zoxide grc gawk gnu-sed grep
 
 # 音量控制
 brew install switchaudio-osx
 ```
 
 **说明：**
+- `zoxide`: 智能目录跳转工具，替代传统的 `cd`。用法：`z <关键词>` 跳转目录，`zi <关键词>` 交互式选择（需 fzf）。
 - `gnu-sed`: 提供 `gsed`，用于 `colorscheme` / `font-size` / `opacity` 等脚本。
 - `switchaudio-osx`: 提供 `SwitchAudioSource`，用于 `audio-volume`。
 - `grc`: 通用彩色输出查看器 (Generic Colouriser)，配合 fish 插件为 `ping` / `ls` / `docker` / `diff` 等命令提供彩色输出增强。
@@ -85,12 +86,11 @@ brew install switchaudio-osx
 
 **该脚本将执行以下操作：**
 1. 检查并安装 **Homebrew**（如果尚未安装）。
-2. 安装所有常用的 **Brew 依赖**（stow, zellij, fish, helix, mise, bat, eza, fzf, grc 等）。
+2. 安装所有常用的 **Brew 依赖**（stow, zellij, fish, helix, mise, bat, eza, fzf, zoxide, grc, gawk, gnu-sed, grep, switchaudio-osx）。
 3. 安装 **Ghostty** 终端（通过 `brew install --cask ghostty@tip`）。
-4. 询问是否安装**可选依赖**（如 `switchaudio-osx`, `python@3`）。
-5. 使用 `stow` 将所有配置软链到正确的位置。
-6. 检查并将 **Fish** 设为默认 Shell。
-7. 安装 **Fisher** 插件管理器并同步插件。
+4. 使用 `stow` 将所有配置软链到正确的位置。
+5. 检查并将 **Fish** 设为默认 Shell。
+6. 安装 **Fisher** 插件管理器并同步插件。
 
 **使用方法：**
 ```sh
