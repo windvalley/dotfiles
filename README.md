@@ -230,6 +230,18 @@ fisher install (cat ~/.config/fish/fish_plugins)
 tide 是 fish 的 prompt 插件。
 
 ```fish
+# 一键自动化配置
+tide configure --auto \
+--style=Lean \
+--prompt_colors='16 colors' \
+--show_time='24-hour format' \
+--lean_prompt_height='Two lines' \
+--prompt_connection=Disconnected \
+--prompt_spacing=Compact \
+--icons='Many icons' \
+--transient=Yes
+
+# 或者交互式按照个人喜好配置
 tide configure
 ```
 
