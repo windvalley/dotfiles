@@ -60,6 +60,9 @@ brew install helix
 
 # 软件版本管理工具
 brew install mise
+
+# 字体
+brew install --cask font-jetbrains-mono-nerd-font
 ```
 
 ### 2.2 可选依赖 (增强功能)
@@ -88,10 +91,11 @@ brew install switchaudio-osx
 **该脚本将执行以下操作：**
 1. 检查并安装 **Homebrew**（如果尚未安装）。
 2. 安装所有常用的 **Brew 依赖**（stow, zellij, fish, helix, mise, bat, eza, fzf, zoxide, grc, gawk, gnu-sed, grep, switchaudio-osx, glow）。
-3. 安装 **Ghostty** 终端（通过 `brew install --cask ghostty@tip`）。
-4. 使用 `stow` 将所有配置软链到正确的位置。
-5. 检查并将 **Fish** 设为默认 Shell。
-6. 安装 **Fisher** 插件管理器并同步插件。
+3. 安装 **Nerd Fonts**（默认 JetBrains Mono, Maple Mono, Geist Mono）。
+4. 安装 **Ghostty** 终端（通过 `brew install --cask ghostty@tip`）。
+5. 使用 `stow` 将所有配置软链到正确的位置。
+6. 检查并将 **Fish** 设为默认 Shell。
+7. 安装 **Fisher** 插件管理器并同步插件。
 
 **使用方法：**
 ```sh

@@ -17,18 +17,17 @@
 # ============================================
 
 # font-family
-# 设置主字体。可以多次指定以实现字体回退。
+# 设置主字体。
 #
 # 可选值:
 #   - 任意系统已安装的字体名称（使用 ghostty +list-fonts 查看）
-#   - 空字符串 "" 表示重置字体列表
-#
 # 默认值: 空（系统默认）
 #
-# 配置示例:
-#   font-family = "JetBrains Mono"
-#   font-family = "Symbols Nerd Font"  # 作为回退字体显示图标
-font-family =
+# 推荐字体:
+#   1. JetBrainsMono Nerd Font Mono  - 行业标准，清晰专业 (MacOS 推荐 Mono 版以确保兼容)
+#   2. Maple Mono NF                 - 极客风，花体斜体
+#   3. GeistMono Nerd Font Mono      - 现代极简，Vercel 风格
+font-family = "JetBrainsMono Nerd Font Mono"
 
 # font-family-bold
 # 粗体字体设置

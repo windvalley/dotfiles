@@ -50,6 +50,14 @@ REQUIRED_FORMULAE=(
 
 brew install "${REQUIRED_FORMULAE[@]}"
 
+info "Installing Fonts..."
+REQUIRED_CASKS=(
+    font-jetbrains-mono-nerd-font
+    font-maple-mono-nf
+    font-geist-mono-nerd-font
+)
+brew install --cask "${REQUIRED_CASKS[@]}"
+
 info "Installing Ghostty..."
 if ! brew list --cask ghostty@tip &>/dev/null; then
     brew install --cask ghostty@tip
