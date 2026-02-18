@@ -662,7 +662,8 @@ window-position-y =
 # 默认值: default
 #
 # 注意: 仅 macOS 支持
-# NOTE: 如果启用 initial-command 来默认启动 tmux，必须设置为 never，否则会导致 tmux 偶尔无法启动
+# NOTE: 当前使用 Zellij 作为终端复用器，已在 fish config 中实现自动启动。
+#      此处设置为 never 是为了避免状态恢复与 Zellij 产生冲突（如重启后重复启动）。
 window-save-state = never
 
 # window-step-resize
