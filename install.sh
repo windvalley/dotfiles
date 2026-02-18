@@ -81,7 +81,7 @@ install_optional() {
 }
 
 
-DOTFILES_DIR="$HOME/dotfiles"
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [ ! -d "$DOTFILES_DIR" ]; then
     info "Cloning dotfiles repository..."
     git clone https://github.com/windvalley/dotfiles.git "$DOTFILES_DIR"

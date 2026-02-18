@@ -251,6 +251,29 @@ tide configure --auto \
 tide configure
 ```
 
+### 4.5 配置 Git
+
+**1. 配置用户信息**
+
+安装完成后，请务必设置你的 Git 用户名和邮箱：
+
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+```
+
+**2. 自定义全局忽略文件**
+
+仓库中已包含通用的 `~/.gitignore`（通过 `core.excludesfile` 配置）。如果你有特定的文件需要全局忽略（例如 IDE 配置、临时文件等），可以直接编辑该文件：
+
+```bash
+# 添加自定义忽略规则 (例如忽略所有 .log 文件)
+echo "*.log" >> ~/.gitignore
+```
+
+> [!TIP]
+> 上述修改会直接更新 `~/dotfiles/git/dot-gitignore`，建议将这些变更提交到你自己的 dotfiles 仓库中。
+
 ## 5. 使用方法
 
 ### 5.1 Ghostty 终端
@@ -471,7 +494,7 @@ mise ls-remote python  # 查看所有可用的 Python 版本
 
 ---
 
-### 5.6 Git 配置
+### 5.6 Git 配置用法
 
 **配置文件**：
 - `~/.gitconfig`: 核心配置

@@ -144,7 +144,7 @@ if status is-interactive
 
     # 自动启动 Zellij
     # 跳过: 已在 zellij 中 / SSH / Quick Terminal / 禁用标志 / 未安装
-    if not set -q ZELLIJ_SESSION_NAME; and not set -q SSH_CONNECTION; and not set -q GHOSTTY_QUICK_TERMINAL; and not set -q ZELLIJ_AUTO_DISABLE; and type -q zellij
+    if not set -q ZELLIJ_SESSION_NAME; and not set -q SSH_CONNECTION; and not set -q GHOSTTY_QUICK_TERMINAL; and not set -q ZELLIJ_AUTO_DISABLE; and type -q zellij; and test "$TERM_PROGRAM" = "ghostty"
         # 防镜像: 记录启动 zellij 的 Ghostty PID，该进程存活期间新窗口跳过
         # (不用 zellij list-sessions: 无服务端时挂起，且输出含 ANSI 码)
         set -l pid_file /tmp/zellij-ghostty.pid
