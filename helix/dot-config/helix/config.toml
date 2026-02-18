@@ -446,9 +446,14 @@ C-r = ":reload"
 C-h = "extend_to_line_start"
 C-l = "extend_to_line_end"
 
-# [keys.insert]
-# # 退出插入模式
-# # j = { k = "normal_mode" }
+[keys.insert]
+# Emacs 风格的光标移动
+C-f = "move_char_right"
+C-b = "move_char_left"
+C-n = "move_line_down"
+C-p = "move_line_up"
+C-a = "goto_line_start"
+C-e = "goto_line_end"
 
 [keys.select]
 

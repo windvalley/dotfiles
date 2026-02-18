@@ -70,6 +70,7 @@ end
 if status is-interactive
     # Vi 模式：键绑定见 functions/fish_user_key_bindings.fish
     # (Fish autoload 机制要求该函数必须在 functions/ 目录下)
+    set -g fish_key_bindings fish_vi_key_bindings
 
     # Vi 光标形状
     set fish_cursor_default block
