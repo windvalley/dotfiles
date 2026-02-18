@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Preview markdown file using glow in a floating zellij pane
+# Usage: preview-md <filename>
+
+if [ -z "$1" ]; then
+    echo "Usage: preview-md <filename>"
+    exit 1
+fi
+
+zellij run --floating --height 80% --width 60% -x 20% -y 10% --name 'Markdown Preview' -- glow -t "$1"

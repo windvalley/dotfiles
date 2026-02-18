@@ -104,6 +104,8 @@ Helix 的所有移动都会产生选区。掌握选区管理是高效使用的�
 | `Space + r` | 重命名符号 |
 | `Space + a` | 代码动作 |
 | `Space + k` | 悬浮文档 |
+| `Space + p` | 从系统剪贴板粘贴 (Paste from system) |
+| `Space + m` | Markdown 预览 (Glow) |
 
 ## 5. 窗口与缓冲区
 

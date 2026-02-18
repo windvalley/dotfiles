@@ -45,6 +45,7 @@ REQUIRED_FORMULAE=(
     gnu-sed
     grep
     switchaudio-osx
+    glow
 )
 
 brew install "${REQUIRED_FORMULAE[@]}"

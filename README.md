@@ -66,7 +66,7 @@ brew install mise
 
 ```sh
 # 常用工具
-brew install bat eza fzf zoxide grc gawk gnu-sed grep
+brew install bat eza fzf zoxide grc gawk gnu-sed grep glow
 
 # 音量控制
 brew install switchaudio-osx
@@ -77,6 +77,7 @@ brew install switchaudio-osx
 - `gnu-sed`: 提供 `gsed`，用于 `colorscheme` / `font-size` / `opacity` 等脚本。
 - `switchaudio-osx`: 提供 `SwitchAudioSource`，用于 `audio-volume`。
 - `grc`: 通用彩色输出查看器 (Generic Colouriser)，配合 fish 插件为 `ping` / `ls` / `docker` / `diff` 等命令提供彩色输出增强。
+- `glow`: 终端 Markdown 阅读器，用于 Helix 预览功能。
 
 ## 3. 安装步骤
 
@@ -86,7 +87,7 @@ brew install switchaudio-osx
 
 **该脚本将执行以下操作：**
 1. 检查并安装 **Homebrew**（如果尚未安装）。
-2. 安装所有常用的 **Brew 依赖**（stow, zellij, fish, helix, mise, bat, eza, fzf, zoxide, grc, gawk, gnu-sed, grep, switchaudio-osx）。
+2. 安装所有常用的 **Brew 依赖**（stow, zellij, fish, helix, mise, bat, eza, fzf, zoxide, grc, gawk, gnu-sed, grep, switchaudio-osx, glow）。
 3. 安装 **Ghostty** 终端（通过 `brew install --cask ghostty@tip`）。
 4. 使用 `stow` 将所有配置软链到正确的位置。
 5. 检查并将 **Fish** 设为默认 Shell。
@@ -200,11 +201,8 @@ fish_config theme choose dracula
 **手动迁移**：如需手动添加路径，使用 `fish_add_path`：
 
 ```fish
-# 常见需要迁移的路径
-fish_add_path ~/go/bin              # Go
-fish_add_path ~/.cargo/bin           # Rust
-fish_add_path ~/.local/bin           # pip / pipx
-fish_add_path ~/Library/pnpm        # pnpm
+fish_add_path ~/.cargo/bin
+fish_add_path ~/.local/bin
 ```
 
 > [!TIP]
@@ -413,6 +411,7 @@ Fish 支持 Vi 风格编辑模式，本配置已默认启用。
 | `Space+S` | 工作区符号列表 |
 | `Space+d` | 显示诊断信息 |
 | `]d` / `[d` | 跳转到下/上一个诊断 |
+| `Space+m` | Markdown 预览 (Glow) |
 
 **LSP 配置**：
 - **语言配置**：`~/.config/helix/languages.toml`
@@ -492,6 +491,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 - `font-size <1-200>`: 设置 Ghostty 字体大小
 - `opacity <0.0-1.0>`: 设置 Ghostty 背景透明度
 - `audio-volume`: 音量控制与输出设备切换（需要 `switchaudio-osx`）
+- `preview-md <file>`: 在 Zellij 浮动窗口中预览 Markdown 文件（需要 `glow`）
 - `colors-print`: 打印终端 256 色板
 - `print-256-hex-colors`: 打印 256 色的十六进制色值
 

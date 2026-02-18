@@ -442,6 +442,13 @@ C-r = ":reload"
 # 因此不覆盖 ; 。
 "C-;" = "repeat_last_motion"
 
+# Markdown 预览 - 使用 Helix 25.07+ 的 Expansions 功能
+# %{buffer_name} - 当前文件名
+# %{cursor_line} - 当前行号
+#
+# 使用 glow 工具渲染 Markdown
+"space" = { m = ":run-shell-command preview-md %{buffer_name}" }
+
 # 选中到行首/行尾 (替代 Alt+h/l，因为 Alt 键被其他程序占用)
 C-h = "extend_to_line_start"
 C-l = "extend_to_line_end"
