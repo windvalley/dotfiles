@@ -107,6 +107,11 @@ cd "$HOME/dotfiles"
 ./install.sh
 ```
 
+**安装过程说明：**
+- 如果系统未安装 Homebrew，脚本会**询问是否安装**（需要确认后才会执行）
+- 如需手动安装 Homebrew，请访问 https://brew.sh
+- 脚本会自动检测并迁移 zsh 的 PATH 设置到 fish
+
 **提示：** 该脚本支持多次执行（幂等），可随时运行以确保环境处于最新状态。
 
 ---
@@ -554,6 +559,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 - `preview-md <file>`: 在 Zellij 浮动窗口中预览 Markdown 文件（需要 `glow`）
 - `colors-print`: 打印终端 256 色板
 - `print-256-hex-colors`: 打印 256 色的十六进制色值
+- `validate-configs [tool|all]`: 验证配置文件语法和完整性（支持 fish/git/zellij/helix/mise/ghostty）
 
 > [!TIP]
 > **变更生效方式：**

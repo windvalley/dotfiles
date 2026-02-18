@@ -17,13 +17,22 @@ error() { echo -e "${RED}[ERROR]${NC} $1"; }
 info "Starting dotfiles installation..."
 
 if ! command -v brew &> /dev/null; then
-    info "Homebrew not found. Installing Homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    warn "Homebrew not found."
+    read -p "Install Homebrew from official source? (y/n) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        info "Installing Homebrew..."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-    if [[ $(uname -m) == "arm64" ]]; then
-        eval "$(/opt/homebrew/bin/brew shellenv)"
+        if [[ $(uname -m) == "arm64" ]]; then
+            eval "$(/opt/homebrew/bin/brew shellenv)"
+        else
+            eval "$(/usr/local/bin/brew shellenv)"
+        fi
+        success "Homebrew installed successfully."
     else
-        eval "$(/usr/local/bin/brew shellenv)"
+        error "Homebrew is required. Please install it manually from https://brew.sh"
+        exit 1
     fi
 else
     success "Homebrew is already installed."

@@ -19,23 +19,11 @@ set -g fish_greeting ""
 # Homebrew：默认禁止自动更新
 set -gx HOMEBREW_NO_AUTO_UPDATE 1
 
-# PATH：避免在 config.fish 里写 universal 变量, 保持会话内确定性
-if test -d "$HOME/.local/bin"
-    fish_add_path --global --prepend "$HOME/.local/bin"
-end
-
-if test -d "$HOME/.opencode/bin"
-    fish_add_path --global --prepend "$HOME/.opencode/bin"
-end
-
-if test -d "/Applications/Ghostty.app/Contents/MacOS"
-    fish_add_path --global --append "/Applications/Ghostty.app/Contents/MacOS"
-end
-
-# 去重 PATH（不触碰 universal 变量）
-if type -q awk
-    set -gx PATH (printf "%s\n" $PATH | awk '!seen[$0]++')
-end
+# PATH: fish_add_path 自动处理重复，无需手动检查
+# 首次设置后，路径会保存到 fish_variables，后续启动幂等无副作用
+test -d "$HOME/.local/bin"; and fish_add_path "$HOME/.local/bin"
+test -d "$HOME/.opencode/bin"; and fish_add_path "$HOME/.opencode/bin"
+test -d "/Applications/Ghostty.app/Contents/MacOS"; and fish_add_path --append "/Applications/Ghostty.app/Contents/MacOS"
 
 # 优先使用可复刻的环境变量（避免依赖 universal state）
 if type -q hx
@@ -140,7 +128,7 @@ if status is-interactive
 
     # 自动启动 Zellij
     # 跳过: 已在 zellij 中 / SSH / Quick Terminal / 禁用标志 / 未安装
-    if not set -q ZELLIJ_SESSION_NAME; and not set -q SSH_CONNECTION; and not set -q GHOSTTY_QUICK_TERMINAL; and not set -q ZELLIJ_AUTO_DISABLE; and type -q zellij; and test "$TERM_PROGRAM" = "ghostty"
+    if not set -q ZELLIJ_SESSION_NAME; and not set -q SSH_CONNECTION; and not set -q GHOSTTY_QUICK_TERMINAL; and not set -q ZELLIJ_AUTO_DISABLE; and type -q zellij; and test "$TERM_PROGRAM" = ghostty
         # 防镜像: 记录启动 zellij 的 Ghostty PID，该进程存活期间新窗口跳过
         # (不用 zellij list-sessions: 无服务端时挂起，且输出含 ANSI 码)
         set -l pid_file /tmp/zellij-ghostty.pid
