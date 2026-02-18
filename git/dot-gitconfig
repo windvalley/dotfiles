@@ -1,0 +1,65 @@
+[user]
+    # name = Your Name
+    # email = you@example.com
+
+[core]
+    # 设置默认编辑器为 Helix
+    editor = hx
+    # 设置默认分页器为 Delta（语法高亮 Diff）
+    pager = delta
+    # 全局忽略文件路径
+    excludesfile = ~/.gitignore
+    # 强制区分文件名大小写（避免 macOS/Windows 上的重命名问题）
+    ignorecase = false
+    # 提交时转换为 LF，检出时不转换（适合 macOS/Linux）
+    autocrlf = input
+
+[interactive]
+    # 交互式暂存时使用 Delta 渲染 Diff
+    diffFilter = delta --color-only
+
+[delta]
+    # 使用 n/N 在 diff 块之间跳转
+    navigate = true
+    # 适配深色背景终端（如果是浅色终端改为 true）
+    light = false
+    # 显示行号
+    line-numbers = true
+    # 并排对比模式（左右分栏显示变更）
+    side-by-side = false
+
+[merge]
+    # 冲突显示风格：同时显示本地、远程和基准代码（diff3），方便合并
+    conflictstyle = diff3
+
+[diff]
+    # 智能检测代码移动（避免大段的删除+新增显示）
+    colorMoved = default
+
+[init]
+    # 初始化新仓库时默认分支名为 main
+    defaultBranch = main
+
+[pull]
+    # pull 时默认使用 rebase 而非 merge（保持提交历史线性整洁）
+    rebase = true
+
+[push]
+    # 自动关联远程同名分支（无需每次 git push --set-upstream origin ...）
+    autoSetupRemote = true
+
+[credential]
+    # 使用 macOS 钥匙串存储 HTTPS 密码
+    helper = osxkeychain
+
+[alias]
+    # === 增强版日志 ===
+    # lg: 显示漂亮的提交图谱（Hash, 时间, 提交信息, 作者, 分支）
+    lg = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' --all
+    # lga: lg 的增强版，包含详细的提交时间
+    lga = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all
+    # 查看最后一次提交
+    last = log -1 HEAD
+
+    # 清理已合并的本地分支（强迫症福音）
+    cleanup = "!git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"

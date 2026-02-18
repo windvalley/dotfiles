@@ -46,6 +46,7 @@ REQUIRED_FORMULAE=(
     grep
     switchaudio-osx
     glow
+    git-delta
 )
 
 brew install "${REQUIRED_FORMULAE[@]}"
@@ -110,7 +111,7 @@ for f in config.fish fish_plugins; do
     fi
 done
 
-STANDARD_PACKAGES=(ghostty fish helix zellij mise karabiner)
+STANDARD_PACKAGES=(ghostty fish helix zellij mise karabiner git)
 for pkg in "${STANDARD_PACKAGES[@]}"; do
     info "Stowing $pkg..."
     stow --restow --target="$HOME" --dir="$DOTFILES_DIR" --dotfiles "$pkg"

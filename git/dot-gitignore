@@ -1,0 +1,35 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editors (VSCode, JetBrains, Vim)
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.iml
+
+# Node
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv
+venv/
+.env
+
+# System
+.Trash-1000
+.Trashes

@@ -32,6 +32,7 @@ cd "$HOME/dotfiles"
 - `zellij/`: Zellij（/ˈzɛl.ɪdʒ/，源自阿拉伯语，马赛克瓷砖拼贴艺术）终端复用器，易于配置
 - `helix/`: Helix（/ˈhiː.lɪks/，螺旋）现代模态编辑器，开箱即用
 - `karabiner/`: Karabiner（/ˌkær.əˈbiː.nər/，德语，登山扣）键盘映射（交换 Caps Lock 和 Left Control）
+- `git/`: Git 基础配置（别名、Delta 美化、全局忽略等）
 - `mise/`: Mise（/miːz/，源自法语 mise en place，就位准备）工具版本管理器配置
 - `bin/`: 自定义命令脚本（自动链接到 `~/.local/bin`）
 
@@ -60,6 +61,9 @@ brew install helix
 
 # 软件版本管理工具
 brew install mise
+
+# Git 美化工具 (Diff 语法高亮)
+brew install git-delta
 
 # 字体
 brew install --cask font-jetbrains-mono-nerd-font
@@ -127,7 +131,7 @@ git pull --rebase
 
 ```sh
 cd "$HOME/dotfiles"
-stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles ghostty helix zellij mise
+stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles ghostty helix zellij mise git
 ```
 
 链接 Fish 配置（需预处理以避免 stow 冲突）：
@@ -467,7 +471,31 @@ mise ls-remote python  # 查看所有可用的 Python 版本
 
 ---
 
-### 5.6 stow 的用法说明
+### 5.6 Git 配置
+
+**配置文件**：
+- `~/.gitconfig`: 核心配置
+- `~/.gitignore`: 全局忽略文件
+
+**核心特性**：
+- **Delta 集成**：使用 `git-delta` 进行 Diff 语法高亮，支持行号、并排显示和颜色优化。
+- **智能默认值**：
+  - `pull.rebase = true`: 保持提交历史线性整洁。
+  - `push.autoSetupRemote = true`: 自动关联远程分支。
+  - `init.defaultBranch = main`: 默认分支名为 main。
+  - `core.ignorecase = false`: 强制区分大小写（避免跨平台文件名问题）。
+
+**常用别名**：
+| 别名 | 命令 | 说明 |
+|------|------|------|
+| `git lg` | `log --graph ...` | 显示漂亮的提交图谱（精简版） |
+| `git lga` | `log --graph ...` | 显示漂亮的提交图谱（详细版，含时间） |
+| `git last` | `log -1 HEAD` | 查看最后一次提交 |
+| `git cleanup` | `...` | 清理已合并的本地分支 |
+
+---
+
+### 5.7 stow 的用法说明
 
 ```sh
 # 安装或重新安装
@@ -487,7 +515,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
 ---
 
-### 5.7 自定义命令（bin/）
+### 5.8 自定义命令（bin/）
 
 这些命令会在 stow `bin` 后出现在 `~/.local/bin`：
 
