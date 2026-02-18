@@ -508,6 +508,11 @@ mise ls-remote python  # 查看所有可用的 Python 版本
   - `init.defaultBranch = main`: 默认分支名为 main。
   - `core.ignorecase = false`: 强制区分大小写（避免跨平台文件名问题）。
 
+> [!IMPORTANT]
+> **关于 `core.ignorecase = false`**：
+> macOS 默认文件系统不区分大小写（Case-Insensitive），但 git 默认会尝试适配文件系统。强制开启 `ignorecase = false` 可以避免在重命名文件（如 `File.js` -> `file.js`）时 git 无法感知的问题。
+> **副作用**：在终端进入目录时需严格匹配大小写（如 `cd Desktop` 不能写成 `cd desktop`），这有助于养成良好的路径书写习惯。
+
 **常用别名**：
 | 别名 | 命令 | 说明 |
 |------|------|------|

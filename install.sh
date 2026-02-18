@@ -106,8 +106,9 @@ fi
 # Back up existing fish config files that would conflict with stow
 for f in config.fish fish_plugins; do
     if [ -f "$FISH_CONFIG_DIR/$f" ] && [ ! -L "$FISH_CONFIG_DIR/$f" ]; then
-        warn "Backing up $FISH_CONFIG_DIR/$f -> $FISH_CONFIG_DIR/${f}.bak"
-        mv "$FISH_CONFIG_DIR/$f" "$FISH_CONFIG_DIR/${f}.bak"
+        BACKUP_NAME="${f}.$(date +%Y%m%d_%H%M%S).bak"
+        warn "Backing up $FISH_CONFIG_DIR/$f -> $FISH_CONFIG_DIR/$BACKUP_NAME"
+        mv "$FISH_CONFIG_DIR/$f" "$FISH_CONFIG_DIR/$BACKUP_NAME"
     fi
 done
 

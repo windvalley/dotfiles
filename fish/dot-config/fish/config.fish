@@ -33,13 +33,9 @@ if test -d "/Applications/Ghostty.app/Contents/MacOS"
 end
 
 # 去重 PATH（不触碰 universal 变量）
-set -l __deduped_path
-for p in $PATH
-    if not contains -- $p $__deduped_path
-        set -a __deduped_path $p
-    end
+if type -q awk
+    set -gx PATH (printf "%s\n" $PATH | awk '!seen[$0]++')
 end
-set -gx PATH $__deduped_path
 
 # 优先使用可复刻的环境变量（避免依赖 universal state）
 if type -q hx
