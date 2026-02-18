@@ -1,38 +1,51 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 # opacity
 #
 # Ghostty terminal background transparency adjustment.
+#
+# Requirements:
+#   brew install gnu-sed
 
 set -euo pipefail
+
+# Check for gsed (GNU sed)
+if command -v gsed &>/dev/null; then
+    SED=gsed
+elif command -v sed &>/dev/null; then
+    SED=sed
+else
+    echo "Error: sed not found" >&2
+    exit 1
+fi
 
 to_opacity=${1:-}
 
 config_home=${XDG_CONFIG_HOME:-"$HOME/.config"}
 ghostty_config="$config_home/ghostty/config"
 
-[[ "$#" -ne 1 ]] && {
+if [ "$#" -ne 1 ]; then
     echo "Usage: opacity <0.0-1.0>"
     exit 1
-}
+fi
 
-echo $to_opacity | grep -qE '^[0-1]?\.[0-9]+$|^1$|^0$' || {
+if ! echo "$to_opacity" | grep -qE '^[0-1]?\.[0-9]+$|^1$|^0$'; then
     echo "opacity must between 0 and 1"
     exit 1
-}
+fi
 
-if [[ "$to_opacity" -lt 0 ]] || [[ "$to_opacity" -gt 1 ]]; then
+if [ "$to_opacity" -lt 0 ] || [ "$to_opacity" -gt 1 ]; then
     echo "opacity must between 0 and 1"
     exit 1
 fi
 
 change_ghostty_opacity() {
-    [[ -f "$ghostty_config" ]] || {
+    if [ ! -f "$ghostty_config" ]; then
         echo "ghostty config not found: $ghostty_config" >&2
         return 1
-    }
+    fi
 
     if grep -qE '^background-opacity\s*=' "$ghostty_config"; then
-        gsed -i -E "s/^background-opacity\s*=\s*.*/background-opacity = $to_opacity/" "$ghostty_config"
+        $SED -i -E "s/^background-opacity\s*=\s*.*/background-opacity = $to_opacity/" "$ghostty_config"
     else
         printf '\nbackground-opacity = %s\n' "$to_opacity" >> "$ghostty_config"
     fi

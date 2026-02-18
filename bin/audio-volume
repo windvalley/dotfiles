@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 # audio-volume
 #
 # Requirements:
@@ -30,7 +30,7 @@ print_audios() {
 
 switch_audio() {
     local device_id=$1
-    SwitchAudioSource -i $device_id
+    SwitchAudioSource -i "$device_id"
 }
 
 switch_next_audio() {
@@ -43,8 +43,8 @@ main() {
         print_audios
         ;;
     -i)
-        if echo "$flag_value" | grep -Eqw "[0-9]+";then
-            switch_audio $flag_value
+        if echo "$flag_value" | grep -Eqw "[0-9]+"; then
+            switch_audio "$flag_value"
             return
         fi
         usage
@@ -53,11 +53,11 @@ main() {
         switch_next_audio
         ;;
     [0-9]|[0-9][0-9]|[0-9][0-9][0-9])
-        [[ "$value" -lt 0 ]] || [[ "$value" -gt 100 ]] && {
+        if [ "$value" -lt 0 ] || [ "$value" -gt 100 ]; then
             echo -e "volume value must be in 1~100\n"
             usage
-        }
-        set_volume $value
+        fi
+        set_volume "$value"
         ;;
     *)
         usage

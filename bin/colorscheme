@@ -1,9 +1,22 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 # colorscheme
 #
 # Switch colorscheme for Ghostty, Helix and Zellij simultaneously.
+#
+# Requirements:
+#   brew install gnu-sed
 
 set -euo pipefail
+
+# Check for gsed (GNU sed)
+if command -v gsed &>/dev/null; then
+    SED=gsed
+elif command -v sed &>/dev/null; then
+    SED=sed
+else
+    echo "Error: sed not found" >&2
+    exit 1
+fi
 
 colorscheme=${1:-}
 
@@ -13,7 +26,7 @@ ghostty_config="$config_home/ghostty/config"
 helix_config="$config_home/helix/config.toml"
 zellij_config="$config_home/zellij/config.kdl"
 
-[[ -z "$colorscheme" ]] && {
+if [ -z "$colorscheme" ]; then
     echo "Usage: colorscheme <colorscheme>"
     echo ""
     echo "Examples: colorscheme dracula"
@@ -21,7 +34,7 @@ zellij_config="$config_home/zellij/config.kdl"
     echo "          colorscheme gruvbox"
     echo "          colorscheme catppuccin"
     exit 1
-}
+fi
 
 # Map a short colorscheme name to the Ghostty theme name.
 ghostty_theme_for() {
@@ -78,35 +91,35 @@ zellij_theme_for() {
 }
 
 ghostty_cs_change() {
-    [[ -f "$ghostty_config" ]] || {
+    if [ ! -f "$ghostty_config" ]; then
         echo "ghostty config not found: $ghostty_config" >&2
         return 1
-    }
+    fi
 
     ghostty_theme=$(ghostty_theme_for "$colorscheme")
-    gsed -i -E "s/^theme\s*=.*/theme = \"$ghostty_theme\"/" "$ghostty_config"
+    $SED -i -E "s/^theme\s*=.*/theme = \"$ghostty_theme\"/" "$ghostty_config"
     echo "Ghostty theme -> $ghostty_theme"
 }
 
 helix_cs_change() {
-    [[ -f "$helix_config" ]] || {
+    if [ ! -f "$helix_config" ]; then
         echo "helix config not found: $helix_config" >&2
         return 1
-    }
+    fi
 
     helix_theme=$(helix_theme_for "$colorscheme")
-    gsed -i -E "s/^theme\s*=.*/theme = \"$helix_theme\"/" "$helix_config"
+    $SED -i -E "s/^theme\s*=.*/theme = \"$helix_theme\"/" "$helix_config"
     echo "Helix  theme -> $helix_theme"
 }
 
 zellij_cs_change() {
-    [[ -f "$zellij_config" ]] || {
+    if [ ! -f "$zellij_config" ]; then
         echo "zellij config not found: $zellij_config" >&2
         return 1
-    }
+    fi
 
     zellij_theme=$(zellij_theme_for "$colorscheme")
-    gsed -i -E "s/^theme\s+\"[^\"]*\"/theme \"$zellij_theme\"/" "$zellij_config"
+    $SED -i -E "s/^theme\s+\"[^\"]*\"/theme \"$zellij_theme\"/" "$zellij_config"
     echo "Zellij theme -> $zellij_theme"
 }
 

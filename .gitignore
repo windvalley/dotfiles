@@ -1,5 +1,32 @@
+# === System & Editor ===
 .sisyphus
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+*.swp
+*.swo
+*~
+\#*#
 
-# Private & Local files
+# === Private & Local files ===
 *.local.*
 secret.*
+.env
+.env.local
+
+# === Build & Cache ===
+node_modules/
+vendor/
+__pycache__/
+*.pyc
+*.pyo
+.gradle/
+
+# === Temporary ===
+tmp/
+temp/
+*.tmp
+*.log
+*.bak
+*.backup
