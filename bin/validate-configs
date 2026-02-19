@@ -17,8 +17,48 @@ success() { echo -e "${GREEN}[✓]${NC} $1"; }
 warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[✗]${NC} $1"; }
 
-DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# 尝试多种方式获取 dotfiles 目录
+# 1. 环境变量（优先级最高）
+# 2. 从脚本位置推断（bin/validate-configs -> dotfiles/）
+# 3. 从 git 仓库位置推断
+if [ -n "${DOTFILES_DIR:-}" ]; then
+    : # 使用环境变量
+elif [ -d "$(dirname "${BASH_SOURCE[0]}")/../.git" ]; then
+    DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+elif git -C "$(dirname "${BASH_SOURCE[0]}")/.." rev-parse --is-inside-work-tree &>/dev/null; then
+    DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+else
+    # 默认值
+    DOTFILES_DIR="$HOME/dotfiles"
+fi
 ERRORS=0
+
+# Python TOML 验证脚本
+validate_toml_file() {
+    local file="$1"
+    if [ ! -f "$file" ]; then
+        return 0
+    fi
+    
+    python3 -c "
+import sys
+try:
+    import tomllib
+except ImportError:
+    try:
+        import tomli as tomllib
+    except ImportError:
+        sys.exit(0) # Python < 3.11 且无 tomli，静默跳过
+
+try:
+    with open('$file', 'rb') as f:
+        tomllib.load(f)
+except Exception as e:
+    print(f'$file: TOML 语法错误: {e}')
+    sys.exit(1)
+" || return 1
+    return 0
+}
 
 # 验证 Fish 配置
 validate_fish() {
@@ -93,13 +133,23 @@ validate_helix() {
         error "Helix 配置文件不存在: $helix_config"
         ERRORS=$((ERRORS + 1))
     else
-        success "Helix 主配置文件存在"
+        # 静态 TOML 检查
+        if validate_toml_file "$helix_config"; then
+            success "Helix 主配置语法正确 (TOML)"
+        else
+            error "Helix 主配置语法错误"
+            ERRORS=$((ERRORS + 1))
+        fi
     fi
     
-    if [ ! -f "$helix_languages" ]; then
-        warn "Helix 语言配置文件不存在: $helix_languages"
-    else
-        success "Helix 语言配置文件存在"
+    if [ -f "$helix_languages" ]; then
+         # 静态 TOML 检查
+        if validate_toml_file "$helix_languages"; then
+            success "Helix 语言配置语法正确 (TOML)"
+        else
+            error "Helix 语言配置语法错误"
+            ERRORS=$((ERRORS + 1))
+        fi
     fi
     
     # 如果 helix 已安装，运行健康检查
@@ -119,6 +169,14 @@ validate_mise() {
     if [ ! -f "$mise_config" ]; then
         error "Mise 配置文件不存在: $mise_config"
         return 1
+    fi
+
+    # 静态 TOML 检查
+    if validate_toml_file "$mise_config"; then
+        success "Mise 配置语法正确 (TOML)"
+    else
+        error "Mise 配置语法错误"
+        ERRORS=$((ERRORS + 1))
     fi
     
     if command -v mise &>/dev/null; then
@@ -141,12 +199,25 @@ validate_ghostty() {
         error "Ghostty 配置文件不存在: $ghostty_config"
         return 1
     fi
-    
-    # Ghostty 使用自定义格式，检查关键配置项是否存在
-    if grep -q "^font-family" "$ghostty_config" && grep -q "^theme" "$ghostty_config"; then
-        success "Ghostty 配置文件包含必要配置项"
+
+    # 优先使用 ghostty CLI 进行验证
+    if command -v ghostty &>/dev/null; then
+        # 捕获输出，只显示错误信息
+        if output=$(ghostty +validate-config --config-file="$ghostty_config" 2>&1); then
+            success "Ghostty 配置验证通过 (CLI)"
+        else
+            error "Ghostty 配置验证失败:"
+            echo "$output" | sed 's/^/    /' # 缩进输出
+            ERRORS=$((ERRORS + 1))
+        fi
     else
-        warn "Ghostty 配置可能缺少关键配置项"
+        # 降级方案：简单的 grep 检查
+        warn "Ghostty CLI 未找到，使用基础检查..."
+        if grep -q "^font-family" "$ghostty_config" && grep -q "^theme" "$ghostty_config"; then
+            success "Ghostty 配置文件包含必要配置项"
+        else
+            warn "Ghostty 配置可能缺少关键配置项"
+        fi
     fi
 }
 

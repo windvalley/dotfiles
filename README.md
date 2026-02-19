@@ -132,6 +132,9 @@ git pull --rebase
 
 #### 3.2.2 链接配置（stow）
 
+> [!TIP]
+> 如果你的系统已安装 `make`，可以直接运行 `make stow` 一键完成所有链接，无需逐个执行下面的命令。
+
 链接核心配置到 `$HOME`：
 
 ```sh
@@ -567,3 +570,23 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 > - `font-size` / `opacity`：修改的是 Ghostty 配置文件，需按 `Cmd + Shift + ,` 重载配置后生效。
 
 fish 内置了一些缩写（见 `fish/dot-config/fish/config.fish`）：`cs`/`fs`/`o`/`vol`。
+
+---
+
+## 6. 常用维护命令 (Makefile)
+
+本项目引入了 `Makefile` 来标准化日常维护任务，集成了安装、同步、验证和清理等操作。
+
+| 命令 | 说明 |
+|------|------|
+| `make help` | 显示帮助菜单（默认） |
+| `make install` | 运行 `install.sh` 安装脚本 |
+| `make stow` | 建立所有配置文件的软链接 |
+| `make unstow` | 删除所有软链接（卸载配置） |
+| `make restow` | 修复/重建所有软链接 |
+| `make stow-<package>` | 仅同步指定包 (如 `make stow-fish`, `make stow-ghostty`) |
+| `make fish` | 将 Fish 设置为默认 Shell |
+| `make plugins` | 更新 Fisher 插件 |
+| `make validate` | 运行完整的配置验证（包含工具检查） |
+| `make update` | 拉取远程代码并更新 |
+| `make clean` | 清理临时文件 (`.bak`, `.tmp` 等) |
