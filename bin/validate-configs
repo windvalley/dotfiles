@@ -42,13 +42,17 @@ validate_toml_file() {
     
     python3 -c "
 import sys
+import warnings
+warnings.filterwarnings('ignore')
+
 try:
     import tomllib
 except ImportError:
     try:
         import tomli as tomllib
     except ImportError:
-        sys.exit(0) # Python < 3.11 且无 tomli，静默跳过
+        print('TOML 验证跳过: Python < 3.11 且未安装 tomli 库')
+        sys.exit(0)  # Python < 3.11 且无 tomli，跳过验证
 
 try:
     with open('$file', 'rb') as f:
