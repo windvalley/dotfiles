@@ -20,10 +20,10 @@ set -g fish_greeting ""
 set -gx HOMEBREW_NO_AUTO_UPDATE 1
 
 # PATH: fish_add_path 自动处理重复，无需手动检查
-# 首次设置后，路径会保存到 fish_variables，后续启动幂等无副作用
-test -d "$HOME/.local/bin"; and fish_add_path "$HOME/.local/bin"
-test -d "$HOME/.opencode/bin"; and fish_add_path "$HOME/.opencode/bin"
-test -d "/Applications/Ghostty.app/Contents/MacOS"; and fish_add_path --append "/Applications/Ghostty.app/Contents/MacOS"
+# 使用 --path 参数仅修改当前会话的 PATH，避免污染 Universal 变量 (fish_user_paths)
+test -d "$HOME/.local/bin"; and fish_add_path --path "$HOME/.local/bin"
+test -d "$HOME/.opencode/bin"; and fish_add_path --path "$HOME/.opencode/bin"
+test -d "/Applications/Ghostty.app/Contents/MacOS"; and fish_add_path --append --path "/Applications/Ghostty.app/Contents/MacOS"
 
 # 优先使用可复刻的环境变量（避免依赖 universal state）
 if type -q hx

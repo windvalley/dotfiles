@@ -993,6 +993,9 @@ split-preserve-zoom = no-navigation
 #
 #   # 取消某个默认绑定
 #   keybind = super+shift+d=unbind
+#
+# 注意: 在 macOS 上，global 快捷键需要授予 Ghostty "辅助功能 (Accessibility)" 权限
+# 位置: 系统设置 -> 隐私与安全性 -> 辅助功能
 keybind = global:cmd+;=toggle_quick_terminal
 
 # 复制动作现在支持格式参数: plain, html, vt, mixed

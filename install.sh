@@ -58,12 +58,6 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     )
     brew install --cask "${REQUIRED_CASKS[@]}"
 fi
-if [ ! -d "$DOTFILES_DIR" ]; then
-    info "Cloning dotfiles repository..."
-    git clone https://github.com/windvalley/dotfiles.git "$DOTFILES_DIR"
-else
-    success "Dotfiles directory already exists at $DOTFILES_DIR"
-fi
 
 info "Linking configuration files with stow..."
 
@@ -179,4 +173,5 @@ echo "       --icons='Many icons' \\"
 echo "       --transient=Yes"
 echo ""
 echo "3. Run 'mise install' to install language runtimes."
-echo "4. Enjoy your new setup!"
+echo "4. IMPORTANT (macOS): Allow Ghostty in 'System Settings > Privacy & Security > Accessibility' to make the global hotkey (Cmd+;) work."
+echo "5. Enjoy your new setup!"
