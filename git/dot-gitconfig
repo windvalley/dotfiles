@@ -9,8 +9,6 @@
     pager = delta
     # 全局忽略文件路径
     excludesfile = ~/.gitignore
-    # 强制区分文件名大小写（避免 macOS/Windows 上的重命名问题）
-    ignorecase = false
     # 提交时转换为 LF，检出时不转换（适合 macOS/Linux）
     autocrlf = input
 

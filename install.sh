@@ -38,59 +38,26 @@ else
     success "Homebrew is already installed."
 fi
 
-info "Installing required dependencies..."
-REQUIRED_FORMULAE=(
-    stow
-    zellij
-    fish
-    helix
-    mise
-    bat
-    eza
-    fzf
-    grc
-    zoxide
-    gawk
-    gnu-sed
-    grep
-    switchaudio-osx
-    glow
-    git-delta
-)
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-brew install "${REQUIRED_FORMULAE[@]}"
-
-info "Installing Fonts..."
-REQUIRED_CASKS=(
-    font-jetbrains-mono-nerd-font
-    font-maple-mono-nf
-    font-geist-mono-nerd-font
-)
-brew install --cask "${REQUIRED_CASKS[@]}"
-
-info "Installing Ghostty..."
-if ! brew list --cask ghostty@tip &>/dev/null; then
-    brew install --cask ghostty@tip
+info "Installing dependencies from Brewfile..."
+if [ -f "$DOTFILES_DIR/Brewfile" ]; then
+    brew bundle install --file="$DOTFILES_DIR/Brewfile"
 else
-    success "Ghostty is already installed."
+    error "Brewfile not found at $DOTFILES_DIR/Brewfile"
+    exit 1
 fi
 
-install_optional() {
-    local name=$1
-    local formula=$2
-    if brew list "$formula" &>/dev/null; then
-        success "$name already installed."
-        return
-    fi
-    read -p "Do you want to install $name? (y/n) " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        brew install "$formula"
-    fi
-}
-
-
-DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+info "Installing additional Fonts..."
+read -p "Do you want to install additional fonts (Maple Mono, Geist Mono)? (y/n) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    REQUIRED_CASKS=(
+        font-maple-mono-nf
+        font-geist-mono-nerd-font
+    )
+    brew install --cask "${REQUIRED_CASKS[@]}"
+fi
 if [ ! -d "$DOTFILES_DIR" ]; then
     info "Cloning dotfiles repository..."
     git clone https://github.com/windvalley/dotfiles.git "$DOTFILES_DIR"

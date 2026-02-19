@@ -1242,7 +1242,7 @@ notify-on-command-finish-after = 5s
 # 配置示例:
 #   env = MY_VAR=my_value
 #   env = PATH=/opt/local/bin:$PATH
-env =
+env = GHOSTTY_RUNTIME=1
 
 # input
 # 启动时发送给命令的输入数据

@@ -127,21 +127,9 @@ if status is-interactive
     alias scam "nh scrcpy --video-source=camera --no-audio --video-codec=h265 --camera-size=1080x720"
 
     # 自动启动 Zellij
-    # 跳过: 已在 zellij 中 / SSH / Quick Terminal / 禁用标志 / 未安装
-    if not set -q ZELLIJ_SESSION_NAME; and not set -q SSH_CONNECTION; and not set -q GHOSTTY_QUICK_TERMINAL; and not set -q ZELLIJ_AUTO_DISABLE; and type -q zellij; and test "$TERM_PROGRAM" = ghostty
-        # 防镜像: 记录启动 zellij 的 Ghostty PID，该进程存活期间新窗口跳过
-        # (不用 zellij list-sessions: 无服务端时挂起，且输出含 ANSI 码)
-        set -l pid_file /tmp/zellij-ghostty.pid
-        set -l skip 0
-        if pgrep -x zellij >/dev/null 2>&1; and test -f $pid_file
-            set -l saved (cat $pid_file 2>/dev/null)
-            test -n "$saved"; and kill -0 $saved 2>/dev/null; and set skip 1
-        end
-        if test $skip -eq 0
-            # session_name / attach_to_session / default_layout 均由 config.kdl 管理
-            command ps -o ppid= -p %self | string trim >$pid_file
-            exec zellij
-        end
+    # 跳过: 已在 zellij 中 / SSH / Quick Terminal / 禁用标志 / 未安装 / 非 Ghostty 运行时
+    if not set -q ZELLIJ_SESSION_NAME; and not set -q SSH_CONNECTION; and not set -q GHOSTTY_QUICK_TERMINAL; and not set -q ZELLIJ_AUTO_DISABLE; and type -q zellij; and test "$GHOSTTY_RUNTIME" = 1
+        exec zellij
     end
 
     # zoxide: 智能目录跳转 (z 替代传统的 z)
