@@ -105,6 +105,7 @@ brew install switchaudio-osx
 5. 使用 `stow` 将所有配置软链到正确的位置。
 6. 检查并将 **Fish** 设为默认 Shell。
 7. 安装 **Fisher** 插件管理器并同步插件。
+8. 提示是否应用 **macOS 系统偏好设置**（通过 `macos.sh`）。
 
 **使用方法：**
 ```sh
@@ -267,7 +268,27 @@ tide configure --auto \
 tide configure
 ```
 
-### 4.5 配置 Git
+### 4.5 macOS 系统偏好 (macos.sh)
+
+根目录下提供了 `macos.sh` 脚本，利用 `defaults write` 一键配置符合开发者习惯的深层系统偏好：
+
+- **键盘体验**：设置极速的键盘重复率（KeyRepeat），禁用长按显示特殊字符。
+- **访达 (Finder)**：显示所有文件扩展名、状态栏、路径栏，按名称排序时文件夹置顶，禁用 `.DS_Store` 在网络/USB驱动器上的生成。
+- **触控板/鼠标**：开启“轻点来点按”。
+- **程序坞 (Dock)**：开启自动隐藏，不显示最近使用的应用程序。
+- **Safari**：开启“开发”菜单和网页检查器。
+
+你可以随时通过运行以下命令来应用或重新应用这些设置：
+
+```bash
+make macos
+# 或者 ./macos.sh
+```
+
+> [!WARNING]
+> 该脚本在执行前可能会要求输入管理员密码（`sudo -v`）。如果某些设置与你的个人习惯冲突，可以自行查阅并修改 `macos.sh` 中相应的 `defaults write` 命令。
+
+### 4.6 配置 Git
 
 **1. 配置用户信息**
 
@@ -595,6 +616,7 @@ fish 内置了一些缩写（见 `fish/dot-config/fish/config.fish`）：`cs`/`f
 | `make stow-<package>` | 仅同步指定包 (如 `make stow-fish`, `make stow-ghostty`) |
 | `make fish` | 将 Fish 设置为默认 Shell |
 | `make plugins` | 更新 Fisher 插件 |
+| `make macos` | 配置 macOS 系统偏好设置 |
 | `make validate` | 运行完整的配置验证（包含工具检查） |
 | `make update` | 拉取远程代码并更新 |
 | `make clean` | 清理临时文件 (`.bak`, `.tmp` 等) |

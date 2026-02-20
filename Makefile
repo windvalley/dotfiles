@@ -42,6 +42,9 @@ help: ## 显示帮助信息
 	@echo "  $(YELLOW)make fish$(NC)       设置 Fish 为默认 Shell"
 	@echo "  $(YELLOW)make plugins$(NC)    安装/更新 Fisher 插件"
 	@echo ""
+	@echo "$(GREEN)macOS:$(NC)"
+	@echo "  $(YELLOW)make macos$(NC)      配置 macOS 系统偏好设置"
+	@echo ""
 	@echo "$(GREEN)维护:$(NC)"
 	@echo "  $(YELLOW)make validate$(NC)   验证所有配置文件语法"
 	@echo "  $(YELLOW)make update$(NC)     更新 dotfiles 仓库"
@@ -137,6 +140,10 @@ fish: ## 设置 Fish 为默认 Shell
 	chsh -s "$$fish_path"
 	@echo "$(GREEN)✅ Fish 已设置为默认 Shell$(NC)"
 	@echo "  $(YELLOW)提示:$(NC) 重新登录后生效"
+
+macos: ## 配置 macOS 系统偏好设置
+	@echo "$(BLUE)🍎 配置 macOS 系统偏好设置...$(NC)"
+	@./macos.sh
 
 plugins: ## 安装/更新 Fisher 插件
 	@echo "$(BLUE)🔌 安装/更新 Fisher 插件...$(NC)"

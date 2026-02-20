@@ -185,6 +185,15 @@ else
     info "zsh not found, skipping PATH migration."
 fi
 
+if [[ "$(uname)" == "Darwin" ]]; then
+    if [ "$NON_INTERACTIVE" = true ]; then
+        info "Skipping macOS system preferences in non-interactive mode."
+    elif ask_yes_no "Do you want to apply macOS system preferences (macos.sh)? (y/n)"; then
+        info "Applying macOS system preferences..."
+        bash "$DOTFILES_DIR/macos.sh"
+    fi
+fi
+
 success "Installation complete!"
 info "Next steps:"
 echo "1. Restart your terminal."
