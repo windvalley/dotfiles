@@ -35,6 +35,8 @@ cd "$HOME/dotfiles"
 - `git/`: Git 基础配置（别名、Delta 美化、全局忽略等）
 - `mise/`: Mise（/miːz/，源自法语 mise en place，就位准备）工具版本管理器配置
 - `bin/`: 自定义命令脚本（自动链接到 `~/.local/bin`）
+- `Makefile`: 自动化构建与维护脚本
+- `.editorconfig`: 跨编辑器格式化标准。内置了严格的格式控制（例如缩进模式、行尾序列 LF 强制设定、文件末空行保护等），确保项目源码整洁、消除跨平台和跨编辑器带来的格式问题。
 
 > [!NOTE]
 > `tmux/` 目录仅作为历史配置存档保留，当前方案已切换至 Zellij，默认不安装 tmux。

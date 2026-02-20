@@ -1,0 +1,135 @@
+# EditorConfig 统一代码风格
+# https://editorconfig.org
+#
+# 业界最佳实践：
+# - 只定义"基础文件格式"（缩进、换行、编码）
+# - 与语言格式化工具（gofmt/black/prettier）保持一致
+# - 第三方代码/依赖不处理
+
+# 顶级配置，停止向上级目录查找
+root = true
+
+# ============================================
+# 通用规则（适用于所有文件）
+# ============================================
+[*]
+charset = utf-8
+end_of_line = lf
+
+# 文件末尾插入换行符（insert_final_newline）
+# ==================================================
+# 重要说明：这不是"在文件末尾添加一个空行"的意思！
+#
+# 正确理解：
+#   - true:  确保最后一行以换行符（\n）结尾
+#   - false: 文件最后一行不以换行符结尾
+#
+# 示例对比（以 \n 表示换行符）：
+#   "hello\nworld"    → 无最终换行（false）- Git 会警告
+#   "hello\nworld\n"  → 有最终换行（true）- 符合 POSIX 标准 ✅
+#
+# 常见误解澄清：
+#   ❌ 误解：认为会添加一个空白行
+#   ✅ 事实：只是让最后一行"正确结束"，类似句子的句号
+#
+# 为什么重要：
+#   1. POSIX 标准：文本文件的每一行都必须以换行符结尾
+#   2. Unix 工具链：cat/wc/diff 等工具依赖此假设
+#   3. Git 友好：避免 "No newline at end of file" 警告
+#   4. 编译器要求：C/C++ 标准强制要求
+#
+# 验证方法：
+#   wc -l file.txt    # 无换行会少统计一行
+#   xxd file.txt | tail  # 看最后一个字节是否为 0a
+# ==================================================
+insert_final_newline = true
+
+trim_trailing_whitespace = true
+
+# 默认缩进（空格，4字符）
+# 注：具体缩进大小按语言覆盖
+indent_style = space
+indent_size = 4
+
+# ============================================
+# 编程语言特定规则
+# ============================================
+
+# Go：官方强制使用 Tab
+# gofmt 会强制格式化，EditorConfig 匹配以避免编辑器干扰
+[*.go]
+indent_style = tab
+indent_size = unset      # 让编辑器显示用户偏好的 Tab 宽度
+
+# Python：PEP 8 规范（4空格）
+[*.py]
+indent_size = 4
+max_line_length = 88     # 匹配 Black 格式化工具默认
+
+# JavaScript/TypeScript/JSON/YAML：社区主流（2空格）
+# Prettier 默认也是 2 空格
+[*.{js,ts,jsx,tsx,json,yml,yaml}]
+indent_size = 2
+
+# Ruby：社区规范（2空格）
+[*.rb]
+indent_size = 2
+
+# Shell 脚本
+[*.sh,bash,zsh}]
+indent_size = 2
+
+# ============================================
+# 配置文件规则
+# ============================================
+
+# TOML（Helix/Mise 配置）
+[*.toml]
+indent_size = 2
+
+# KDL（Zellij 配置）
+[*.kdl]
+indent_size = 2
+
+# Fish 脚本：官方推荐 2 空格
+[*.fish]
+indent_size = 2
+
+# Makefile：语法强制要求 Tab
+[{Makefile,makefile,GNUmakefile}]
+indent_style = tab
+
+# ============================================
+# 特殊文件处理
+# ============================================
+
+# Markdown：保留行尾空格（用于硬换行）
+# max_line_length = off 表示不限制（某些编辑器支持）
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+
+# Git 提交信息不限制长度
+[COMMIT_EDITMSG]
+max_line_length = off
+
+# ============================================
+# 第三方代码/生成文件（不处理）
+# ============================================
+
+# 依赖目录：完全禁用 EditorConfig
+[{vendor,node_modules,.git,.github}/**]
+charset = unset
+end_of_line = unset
+indent_size = unset
+indent_style = unset
+trim_trailing_whitespace = unset
+insert_final_newline = unset
+
+# 压缩/生成文件：忽略缩进处理
+[**.min.{js,css}]
+indent_style = ignore
+
+# 锁定文件：不处理（由工具生成）
+[{go.sum,package-lock.json,yarn.lock,Cargo.lock}]
+indent_style = ignore
