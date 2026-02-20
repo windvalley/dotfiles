@@ -14,13 +14,45 @@ success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
 warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
+# Parse arguments
+NON_INTERACTIVE=false
+
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        -y|--yes|--unattended) NON_INTERACTIVE=true ;;
+        -h|--help) 
+            echo "Usage: $0 [options]"
+            echo "Options:"
+            echo "  -y, --yes, --unattended    Run in non-interactive mode without prompting"
+            echo "  -h, --help                 Show this help message"
+            exit 0
+            ;;
+        *) error "Unknown parameter: $1"; exit 1 ;;
+    esac
+    shift
+done
+
+ask_yes_no() {
+    local prompt="$1"
+    if [ "$NON_INTERACTIVE" = true ]; then
+        info "${prompt} (auto-yes)"
+        return 0
+    else
+        read -p "$prompt " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            return 0
+        else
+            return 1
+        fi
+    fi
+}
+
 info "Starting dotfiles installation..."
 
 if ! command -v brew &> /dev/null; then
     warn "Homebrew not found."
-    read -p "Install Homebrew from official source? (y/n) " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
+    if ask_yes_no "Install Homebrew from official source? (y/n)"; then
         info "Installing Homebrew..."
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
@@ -49,9 +81,7 @@ else
 fi
 
 info "Installing additional Fonts..."
-read -p "Do you want to install additional fonts (Maple Mono, Geist Mono)? (y/n) " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
+if ask_yes_no "Do you want to install additional fonts (Maple Mono, Geist Mono)? (y/n)"; then
     REQUIRED_CASKS=(
         font-maple-mono-nf
         font-geist-mono-nerd-font
@@ -92,9 +122,7 @@ info "Stowing bin..."
 stow --restow --target="$HOME/.local/bin" --dir="$DOTFILES_DIR" bin
 
 if [[ "$SHELL" != *"fish"* ]]; then
-    read -p "Do you want to set fish as your default shell? (y/n) " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
+    if ask_yes_no "Do you want to set fish as your default shell? (y/n)"; then
         FISH_PATH=$(which fish)
         if ! grep -q "$FISH_PATH" /etc/shells; then
             info "Adding $FISH_PATH to /etc/shells..."

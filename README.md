@@ -112,8 +112,11 @@ cd "$HOME/dotfiles"
 ./install.sh
 ```
 
+> [!TIP]
+> **非交互模式**：如果在自动化环境（如 CI/CD 等）中执行，可追加 `-y` 或 `--unattended` 标志跳过所有确认自动安装：`./install.sh -y`
+
 **安装过程说明：**
-- 如果系统未安装 Homebrew，脚本会**询问是否安装**（需要确认后才会执行）
+- 如果系统未安装 Homebrew，脚本默认会**询问是否安装**
 - 如需手动安装 Homebrew，请访问 https://brew.sh
 - 脚本会自动检测并迁移 zsh 的 PATH 设置到 fish
 
