@@ -65,6 +65,9 @@ brew install mise
 # Git 美化工具 (Diff 语法高亮)
 brew install git-delta
 
+# 现代、跨平台的系统资源监控工具
+brew install btop
+
 # 字体
 brew install --cask font-jetbrains-mono-nerd-font
 ```

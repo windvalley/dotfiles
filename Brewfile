@@ -43,6 +43,8 @@ brew "gnu-sed"
 brew "grep"
 # 命令行音频设备切换工具
 brew "switchaudio-osx"
+# 现代、跨平台的系统资源监控工具
+brew "btop"
 
 # --- GUI Applications (图形界面应用) ---
 # Ghostty 终端 (@tip 表示安装最新开发版)

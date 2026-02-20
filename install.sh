@@ -82,7 +82,7 @@ for f in config.fish fish_plugins; do
     fi
 done
 
-STANDARD_PACKAGES=(ghostty fish helix zellij mise karabiner git)
+STANDARD_PACKAGES=(ghostty fish helix zellij mise karabiner git btop)
 for pkg in "${STANDARD_PACKAGES[@]}"; do
     info "Stowing $pkg..."
     stow --restow --target="$HOME" --dir="$DOTFILES_DIR" --dotfiles "$pkg"
