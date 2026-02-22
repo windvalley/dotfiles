@@ -6,6 +6,11 @@
 #
 # Only for MacOS.
 
+if ! command -v SwitchAudioSource &>/dev/null; then
+    echo "Error: SwitchAudioSource is required. Please install it with 'brew install switchaudio-osx'." >&2
+    exit 1
+fi
+
 value=$1
 flag_value=$2
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set error handling
-set -e
+set -euo pipefail
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -74,7 +74,11 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 info "Installing dependencies from Brewfile..."
 if [ -f "$DOTFILES_DIR/Brewfile" ]; then
-    brew bundle install --file="$DOTFILES_DIR/Brewfile"
+    if ! brew bundle check --file="$DOTFILES_DIR/Brewfile" &>/dev/null; then
+        brew bundle install --file="$DOTFILES_DIR/Brewfile"
+    else
+        success "All Brew dependencies are already satisfied."
+    fi
 else
     error "Brewfile not found at $DOTFILES_DIR/Brewfile"
     exit 1

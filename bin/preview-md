@@ -2,6 +2,16 @@
 # Preview markdown file using glow in a floating zellij pane
 # Usage: preview-md <filename>
 
+if ! command -v glow &>/dev/null; then
+    echo "Error: glow is required. Please install it with 'brew install glow'." >&2
+    exit 1
+fi
+
+if ! command -v zellij &>/dev/null; then
+    echo "Error: zellij is required." >&2
+    exit 1
+fi
+
 if [ -z "$1" ]; then
     echo "Usage: preview-md <filename>"
     exit 1
