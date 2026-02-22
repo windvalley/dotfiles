@@ -121,6 +121,34 @@ done
 info "Stowing bin..."
 stow --restow --target="$HOME/.local/bin" --dir="$DOTFILES_DIR" bin
 
+info "Setting up local configuration overrides..."
+
+# --- 1. Git Local 基础信息模板 ---
+if [ ! -f "$HOME/.gitconfig.local" ]; then
+    cp "$DOTFILES_DIR/local/dot-gitconfig.local.example" "$HOME/.gitconfig.local"
+    info "  -> Created ~/.gitconfig.local (Please update it with your name/email)"
+else
+    success "  -> ~/.gitconfig.local already exists, skipping."
+fi
+
+# --- 2. Git 工作目录信息模板 ---
+if [ ! -f "$HOME/.gitconfig.work" ]; then
+    cp "$DOTFILES_DIR/local/dot-gitconfig.work.example" "$HOME/.gitconfig.work"
+    info "  -> Created ~/.gitconfig.work"
+else
+    success "  -> ~/.gitconfig.work already exists, skipping."
+fi
+
+# --- 3. Fish 私有环境变量模板 ---
+FISH_LOCAL_CONF="$HOME/.config/fish/config.local.fish"
+if [ ! -f "$FISH_LOCAL_CONF" ]; then
+    mkdir -p "$HOME/.config/fish"
+    cp "$DOTFILES_DIR/local/config.local.fish.example" "$FISH_LOCAL_CONF"
+    info "  -> Created $FISH_LOCAL_CONF (For private API keys and aliases)"
+else
+    success "  -> $FISH_LOCAL_CONF already exists, skipping."
+fi
+
 if [[ "$SHELL" != *"fish"* ]]; then
     if ask_yes_no "Do you want to set fish as your default shell? (y/n)"; then
         FISH_PATH=$(which fish)
@@ -196,8 +224,8 @@ fi
 
 success "Installation complete!"
 info "Next steps:"
-echo "1. Restart your terminal."
-echo "2. Run 'tide configure' to set up your prompt (or use auto-config):"
+echo "1. Run 'exec fish -l' or restart your terminal."
+echo "2. Run 'tide configure' to set up your prompt (or use the auto-config as follows):"
 echo ""
 echo "   tide configure --auto \\"
 echo "       --style=Lean \\"
@@ -205,10 +233,13 @@ echo "       --prompt_colors='16 colors' \\"
 echo "       --show_time='24-hour format' \\"
 echo "       --lean_prompt_height='Two lines' \\"
 echo "       --prompt_connection=Disconnected \\"
-echo "       --prompt_spacing=Compact \\"
+echo "       --prompt_spacing=Sparse \\"
 echo "       --icons='Many icons' \\"
 echo "       --transient=Yes"
 echo ""
-echo "3. Run 'mise install' to install language runtimes."
-echo "4. IMPORTANT (macOS): Allow Ghostty in 'System Settings > Privacy & Security > Accessibility' to make the global hotkey (Cmd+;) work."
-echo "5. Enjoy your new setup!"
+echo "3. Edit ~/.config/mise/config.toml to customize your language runtimes if needed, then run 'mise install'."
+echo "4. IMPORTANT: Edit ~/.gitconfig.local (and ~/.gitconfig.work if needed) to set your Git Identity."
+echo "5. IMPORTANT: Edit ~/.config/fish/config.local.fish to set private ENVs like API keys."
+echo "6. IMPORTANT (macOS): Allow Ghostty in 'System Settings > Privacy & Security > Accessibility'."
+echo ""
+success "Enjoy your new setup!"

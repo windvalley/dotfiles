@@ -1,6 +1,14 @@
 [user]
-    # name = Your Name
-    # email = you@example.com
+    # user 信息已移出版本控制，不再公开。
+    # 你的名字和邮箱现在由底部的 ~/.gitconfig.local 管理。
+
+[include]
+    # 引入本地个人身份与凭证，该文件不会被 dotfiles 追踪
+    path = ~/.gitconfig.local
+
+[includeIf "gitdir:~/work/"]
+    # 如果你在 ~/work/ 及其子目录下工作，加载工作专属身份与配置
+    path = ~/.gitconfig.work
 
 [core]
     # 设置默认编辑器为 Helix

@@ -23,6 +23,17 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# === Private & Local files ===
+*.local.*
+!*.example
+secret.*
+.env
+.env.local
+
+# Git local config overrides
+.gitconfig.local
+.gitconfig.work
+
 # Python
 __pycache__/
 *.py[cod]

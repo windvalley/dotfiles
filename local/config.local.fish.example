@@ -1,0 +1,26 @@
+# ============================================================
+# Fish 本地私有环境变量与别名配置示例
+# 
+# 任何包含密码、API密钥、或仅存在于当前电脑上的宿主网络别名，
+# 都不应该写进公开的 config.fish 中，而应该放在这里。
+# 此文件已被 .gitignore 忽略，非常安全。
+#
+# 使用方法：
+# cp config.local.fish.example ~/.config/fish/config.local.fish
+# 重启 fish 即可生效。
+# ============================================================
+
+# --- 敏感环境变量 ---
+# 例如：LLM API 密钥，Homebrew 个人授权 token 等
+# set -gx OPENAI_API_KEY "sk-xxxxxxxxx"
+# set -gx HOMEBREW_GITHUB_API_TOKEN "ghp_xxxxxxxx"
+
+# --- 机器特定别名 (Aliases) ---
+# 例如：某些只存在于这台 Mac 上的启动守护进程命令 / 脚本快捷方式
+# abbr -a -g restart-work-vpn "sudo launchctl restart com.corp.vpn"
+
+# --- 本机路径注入 ---
+# 虽然 install.sh 已经做了通用路径集成，如果你有特定工具仅安装在本机：
+# test -d "$HOME/.opencode/bin"; and fish_add_path --path "$HOME/.opencode/bin"
+# test -d "$HOME/.cargo/bin"; and fish_add_path --path "$HOME/.cargo/bin"
+# fish_add_path /opt/local/bin

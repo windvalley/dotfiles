@@ -11,6 +11,7 @@ Thumbs.db
 
 # === Private & Local files ===
 *.local.*
+!*.example
 secret.*
 .env
 .env.local

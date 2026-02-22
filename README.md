@@ -234,7 +234,27 @@ fish_add_path ~/.local/bin
 > `fish_add_path` 是持久化的（写入 universal 变量），只需执行一次，重启后仍然生效。
 > 可用 `echo $PATH | tr ' ' '\n'` 查看当前所有路径。
 
-### 4.3 配置 fisher
+### 4.3 本地私有配置 (不入库)
+
+在实际使用中，我们经常需要配置一些**仅属于当前机器**或**包含敏感信息**的环境变量（例如 `OPENAI_API_KEY`、公司内网代理、特定机器别名等）。
+
+为了防止这些信息被 Git 追踪并泄露到公开仓库中，本 dotfiles 已预设了本地分离机制：
+
+1. 将本仓库中的示例模板复制到对应目录并去除 `.example` 后缀：
+   ```fish
+   cp ~/dotfiles/local/config.local.fish.example ~/.config/fish/config.local.fish
+   ```
+2. 将你所有的私密配置写入新生成的文件：
+   ```fish
+   # ~/.config/fish/config.local.fish
+   set -gx OPENAI_API_KEY "sk-xxxxxxxxx"
+   abbr -a -g work-vpn "sudo launchctl restart com.corp.vpn"
+   ```
+
+> [!NOTE]
+> `config.local.fish` 以及 `*.local` 均已被 `.gitignore` 忽略，你可以安全地在本地使用它们，不用担心通过 `stow` 软链后被意外 `git push` 给共享出去。
+
+### 4.4 配置 fisher
 
 fisher 是 fish 的插件管理器。
 
@@ -248,7 +268,7 @@ fisher install (cat ~/.config/fish/fish_plugins)
 
 更多见：`fish/dot-config/fish/README.md`
 
-### 4.4 配置 tide
+### 4.5 配置 tide
 
 tide 是 fish 的 prompt 插件。
 
@@ -268,7 +288,7 @@ tide configure --auto \
 tide configure
 ```
 
-### 4.5 macOS 系统偏好 (macos.sh)
+### 4.6 macOS 系统偏好 (macos.sh)
 
 根目录下提供了 `macos.sh` 脚本，利用 `defaults write` 一键配置符合开发者习惯的深层系统偏好：
 
@@ -288,16 +308,26 @@ make macos
 > [!WARNING]
 > 该脚本在执行前可能会要求输入管理员密码（`sudo -v`）。如果某些设置与你的个人习惯冲突，可以自行查阅并修改 `macos.sh` 中相应的 `defaults write` 命令。
 
-### 4.6 配置 Git
+### 4.7 配置 Git
 
-**1. 配置用户信息**
+**1. 配置用户信息及多账号分离 (Local Overrides)**
 
-安装完成后，请务必设置你的 Git 用户名和邮箱：
+为了防止工作邮箱和个人邮箱混用，或意外泄露身份信息，本仓库的 `~/.gitconfig` 中**移除了硬编码的用户信息**，采用基于 `include` 特性的分离机制。
 
+**设置个人全局身份（必须）：**
+在你的 Home 目录创建被 Git 忽略的本地配置文件（可以将模板直接复制过去修改）：
 ```bash
-git config --global user.name "Your Name"
-git config --global user.email "your.email@example.com"
+cp ~/dotfiles/local/dot-gitconfig.local.example ~/.gitconfig.local
+# 然后编辑 ~/.gitconfig.local，填入你的个人信息
 ```
+
+**设置公司工作隔离身份（可选）：**
+如果你在某台电脑上需要同时处理公司代码，假设你的工作目录全在 `~/work/` 及其子目录下，复制模板作为专属的工作配置：
+```bash
+cp ~/dotfiles/local/dot-gitconfig.work.example ~/.gitconfig.work
+# 然后编辑 ~/.gitconfig.work，填入你的公司邮箱
+```
+只要你在这个目录进行 `git commit`，Git 会利用 `dot-gitconfig` 中的 `includeIf "gitdir:~/work/"` 条件自动切换到你的公司邮箱，彻底杜绝身份错误。
 
 **2. 自定义全局忽略文件**
 

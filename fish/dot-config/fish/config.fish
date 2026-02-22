@@ -2,7 +2,7 @@
 # - dotfiles 仓库只跟踪 `config.fish` + `fish_plugins` + functions目录下自己编写的 fish 文件。
 # - 你当然可以把所有配置都写在 `config.fish`，但它会越变越大且每次启动都会执行。
 # - 更重的逻辑建议放到 `functions/*.fish`（autoload），更早/更独立的初始化放到 `conf.d/*.fish`。
-# - 机器差异/私有值放本地文件且不入库：`~/.config/fish/conf.d/local.fish`。
+# - 机器差异/私密环境变量放本地文件且不入库：`~/.config/fish/config.local.fish`。
 # - Fisher 会在 `functions/`、`conf.d/`、`completions/` 生成/更新插件文件，不要把这些自动生成的产物提交到 git。
 #
 # NOTE: 更新本文件使及时生效的方法：exec fish
@@ -22,7 +22,6 @@ set -gx HOMEBREW_NO_AUTO_UPDATE 1
 # PATH: fish_add_path 自动处理重复，无需手动检查
 # 使用 --path 参数仅修改当前会话的 PATH，避免污染 Universal 变量 (fish_user_paths)
 test -d "$HOME/.local/bin"; and fish_add_path --path "$HOME/.local/bin"
-test -d "$HOME/.opencode/bin"; and fish_add_path --path "$HOME/.opencode/bin"
 test -d "/Applications/Ghostty.app/Contents/MacOS"; and fish_add_path --append --path "/Applications/Ghostty.app/Contents/MacOS"
 
 # 优先使用可复刻的环境变量（避免依赖 universal state）
@@ -139,4 +138,14 @@ if status is-interactive
     if type -q zoxide
         zoxide init fish | source
     end
+end
+
+# ============================================================
+# 加载本地忽略的私有配置 (API Keys, 机器特定别名等)
+# 
+# 任何不应被提交到 GitHub 的变量请写在下面这个文件中:
+# touch ~/.config/fish/config.local.fish
+# ============================================================
+if test -f ~/.config/fish/config.local.fish
+    source ~/.config/fish/config.local.fish
 end

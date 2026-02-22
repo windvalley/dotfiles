@@ -1,0 +1,17 @@
+# ============================================================
+# GNU Stow Global Ignore Rules
+#
+# List patterns of files/directories that Stow should NEVER
+# attempt to symlink into the target directory (e.g., $HOME).
+# ============================================================
+
+# Ignore the templates directory used for local overrides
+local
+local/
+
+# Avoid stowing repository metadata
+.git
+.github
+
+# OS generated files
+.DS_Store
