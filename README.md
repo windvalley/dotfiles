@@ -31,7 +31,7 @@ cd "$HOME/dotfiles"
 
 ## 1. 项目结构
 
-本仓库包含以下 7 个配置包：
+本仓库包含以下配置包及核心文件：
 
 - `ghostty/`: Ghostty（/ˈɡoʊs.ti/，Ghost + ty）终端配置
 - `fish/`: Fish（/fɪʃ/，**F**riendly **I**nteractive **SH**ell）shell 配置
@@ -40,66 +40,18 @@ cd "$HOME/dotfiles"
 - `karabiner/`: Karabiner（/ˌkær.əˈbiː.nər/，德语，登山扣）键盘映射（交换 Caps Lock 和 Left Control）
 - `git/`: Git 基础配置（别名、Delta 美化、全局忽略等）
 - `mise/`: Mise（/miːz/，源自法语 mise en place，就位准备）工具版本管理器配置
+- `btop/`: btop 现代系统资源监控工具配置
 - `bin/`: 自定义命令脚本（自动链接到 `~/.local/bin`）
+- `local/`: 本地环境私有配置模板（用于环境变量脱敏及git多账号隔离）
 - `Makefile`: 自动化构建与维护脚本
 - `.editorconfig`: 跨编辑器格式化标准。内置了严格的格式控制（例如缩进模式、行尾序列 LF 强制设定、文件末空行保护等），确保项目源码整洁、消除跨平台和跨编辑器带来的格式问题。
 
 > [!NOTE]
 > `tmux/` 目录仅作为历史配置存档保留，当前方案已切换至 Zellij，默认不安装 tmux。
 
-## 2. 依赖项
+## 2. 安装步骤
 
-### 2.1 必选依赖 (核心功能)
-
-```sh
-# 软链管理工具
-brew install stow
-
-# 终端
-brew install --cask ghostty@tip
-
-# 多窗口管理(替代 tmux)
-brew install zellij
-
-# 交互 Shell
-brew install fish
-
-# 文本编辑器(替代 vim/neovim)
-brew install helix
-
-# 软件版本管理工具
-brew install mise
-
-# Git 美化工具 (Diff 语法高亮)
-brew install git-delta
-
-# 现代、跨平台的系统资源监控工具
-brew install btop
-
-# 字体
-brew install --cask font-jetbrains-mono-nerd-font
-```
-
-### 2.2 可选依赖 (增强功能)
-
-```sh
-# 常用工具
-brew install bat eza fzf zoxide grc gawk gnu-sed grep glow
-
-# 音量控制
-brew install switchaudio-osx
-```
-
-**说明：**
-- `zoxide`: 智能目录跳转工具，替代传统的 `cd`。用法：`z <关键词>` 跳转目录，`zi <关键词>` 交互式选择（需 fzf）。
-- `gnu-sed`: 提供 `gsed`，用于 `colorscheme` / `font-size` / `opacity` 等脚本。
-- `switchaudio-osx`: 提供 `SwitchAudioSource`，用于 `audio-volume`。
-- `grc`: 通用彩色输出查看器 (Generic Colouriser)，配合 fish 插件为 `ping` / `ls` / `docker` / `diff` 等命令提供彩色输出增强。
-- `glow`: 终端 Markdown 阅读器，用于 Helix 预览功能。
-
-## 3. 安装步骤
-
-### 3.1 一键安装 (推荐)
+### 2.1 一键安装 (推荐)
 
 仓库根目录下提供了一个 `install.sh` 脚本，可以自动化完成绝大部分安装和配置工作。
 
@@ -131,11 +83,55 @@ cd "$HOME/dotfiles"
 
 ---
 
-### 3.2 手动安装步骤 (可选)
+### 2.2 手动安装步骤 (可选)
 
 如果你更倾向于手动操作，请按以下顺序执行：
 
-#### 3.2.1 拉取仓库
+#### 2.2.1 安装依赖项
+
+```sh
+# 软链管理工具
+brew install stow
+
+# 终端
+brew install --cask ghostty@tip
+
+# 多窗口管理(替代 tmux)
+brew install zellij
+
+# 交互 Shell
+brew install fish
+
+# 文本编辑器(替代 vim/neovim)
+brew install helix
+
+# 软件版本管理工具
+brew install mise
+
+# Git 美化工具 (Diff 语法高亮)
+brew install git-delta
+
+# 现代、跨平台的系统资源监控工具
+brew install btop
+
+# 字体
+brew install --cask font-jetbrains-mono-nerd-font
+
+# 常用工具
+brew install bat eza fzf zoxide grc gawk gnu-sed grep glow
+
+# 音量控制
+brew install switchaudio-osx
+```
+
+**说明：**
+- `zoxide`: 智能目录跳转工具，替代传统的 `cd`。用法：`z <关键词>` 跳转目录，`zi <关键词>` 交互式选择（需 fzf）。
+- `gnu-sed`: 提供 `gsed`，用于 `colorscheme` / `font-size` / `opacity` 等脚本。
+- `switchaudio-osx`: 提供 `SwitchAudioSource`，用于 `audio-volume`。
+- `grc`: 通用彩色输出查看器 (Generic Colouriser)，配合 fish 插件为 `ping` / `ls` / `docker` / `diff` 等命令提供彩色输出增强。
+- `glow`: 终端 Markdown 阅读器，用于 Helix 预览功能。
+
+#### 2.2.2 拉取仓库
 
 ```sh
 git clone --depth=1 https://github.com/windvalley/dotfiles.git "$HOME/dotfiles"
@@ -145,7 +141,7 @@ cd "$HOME/dotfiles"
 git pull --rebase
 ```
 
-#### 3.2.2 链接配置（stow）
+#### 2.2.3 链接配置（stow）
 
 > [!TIP]
 > 如果你的系统已安装 `make`，可以直接运行 `make stow` 一键完成所有链接，无需逐个执行下面的命令。
@@ -195,9 +191,9 @@ cd "$HOME/dotfiles"
 stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles karabiner
 ```
 
-## 4. 配置指南
+## 3. 配置指南
 
-### 4.1 配置 fish
+### 3.1 配置 fish
 
 将 fish 设为默认 shell：
 
@@ -222,7 +218,7 @@ fish_update_completions
 fish_config theme choose dracula
 ```
 
-### 4.2 从 zsh 迁移
+### 3.2 从 zsh 迁移
 
 > [!IMPORTANT]
 > 从 zsh 切换到 fish 后，zsh 配置文件（`~/.zshrc`、`~/.zprofile` 等）中的 PATH 不会自动继承，可能导致已安装软件的命令找不到。
@@ -240,7 +236,7 @@ fish_add_path ~/.local/bin
 > `fish_add_path` 是持久化的（写入 universal 变量），只需执行一次，重启后仍然生效。
 > 可用 `echo $PATH | tr ' ' '\n'` 查看当前所有路径。
 
-### 4.3 本地私有配置 (不入库)
+### 3.3 本地私有配置 (不入库)
 
 在实际使用中，我们经常需要配置一些**仅属于当前机器**或**包含敏感信息**的环境变量（例如 `OPENAI_API_KEY`、公司内网代理、特定机器别名等）。
 
@@ -260,7 +256,7 @@ fish_add_path ~/.local/bin
 > [!NOTE]
 > `config.local.fish` 以及 `*.local` 均已被 `.gitignore` 忽略，你可以安全地在本地使用它们，不用担心通过 `stow` 软链后被意外 `git push` 给共享出去。
 
-### 4.4 配置 fisher
+### 3.4 配置 fisher
 
 fisher 是 fish 的插件管理器。
 
@@ -274,7 +270,7 @@ fisher install (cat ~/.config/fish/fish_plugins)
 
 更多见：`fish/dot-config/fish/README.md`
 
-### 4.5 配置 tide
+### 3.5 配置 tide
 
 tide 是 fish 的 prompt 插件。
 
@@ -294,7 +290,7 @@ tide configure --auto \
 tide configure
 ```
 
-### 4.6 macOS 系统偏好 (macos.sh)
+### 3.6 macOS 系统偏好 (macos.sh)
 
 根目录下提供了 `macos.sh` 脚本，利用 `defaults write` 一键配置符合开发者习惯的深层系统偏好：
 
@@ -314,7 +310,7 @@ make macos
 > [!WARNING]
 > 该脚本在执行前可能会要求输入管理员密码（`sudo -v`）。如果某些设置与你的个人习惯冲突，可以自行查阅并修改 `macos.sh` 中相应的 `defaults write` 命令。
 
-### 4.7 配置 Git
+### 3.7 配置 Git
 
 **1. 配置用户信息及多账号分离 (Local Overrides)**
 
@@ -347,7 +343,7 @@ echo "*.log" >> ~/.gitignore
 > [!TIP]
 > 上述修改会直接更新 `~/dotfiles/git/dot-gitignore`，建议将这些变更提交到你自己的 dotfiles 仓库中。
 
-## 5. 核心理念与使用哲学 (Core Usage Philosophy)
+## 4. 核心理念与使用哲学 (Core Usage Philosophy)
 
 在深入了解各工具的具体快捷键之前，建议先理解本套环境的设计初衷。基于对终端效率和代码美学的极致追求，本项目的日常工作流遵循以下 4 条核心哲学，它们按照从外围环境基建到沉浸编码心流的逻辑递进：
 
@@ -369,7 +365,7 @@ echo "*.log" >> ~/.gitignore
 
 ---
 
-### 5.1 Ghostty 终端
+### 4.1 Ghostty 终端
 
 **配置文件**：`~/.config/ghostty/config`
 
@@ -380,16 +376,13 @@ echo "*.log" >> ~/.gitignore
 |--------|------|
 | `Cmd + Shift + ,` | 重载配置（修改配置文件后按此快捷键生效） |
 | `Cmd + ;` | 打开 Quick Terminal（自定义快捷键）|
-| `Cmd + d` | 垂直分屏 |
-| `Cmd + Shift + d` | 水平分屏 |
-| `Cmd + [ / ]` | 切换分屏 |
 
 > [!NOTE]
 > 建议使用 Zellij 的标签页和面板功能替代 Ghostty 原生标签页和分屏功能，以获得更灵活的布局控制和跨会话保持能力。
 
 ---
 
-### 5.2 Zellij 终端复用器
+### 4.2 Zellij 终端复用器
 
 **配置文件**：`~/.config/zellij/config.kdl`
 
@@ -453,24 +446,34 @@ echo "*.log" >> ~/.gitignore
 
 ---
 
-### 5.3 Fish Shell
+### 4.3 Fish Shell
 
 **配置文件**：`~/.config/fish/config.fish`
 
-**内置缩写**：
-| 缩写 | 完整命令 |
-|------|----------|
-| `cs` | `colorscheme` |
-| `fs` | `font-size` |
-| `o` | `opacity` |
-| `vol` | `audio-volume` |
-
-**常用命令**：
+**常用命令与函数**：
 | 命令 | 功能 |
 |------|------|
 | `fish_update_completions` | 更新命令补全 |
 | `fish_add_path <path>` | 添加路径 |
 | `fish_config` | 打开交互配置 |
+| `d` | 快速显示当前日期时间 |
+| `nh <cmd>` | 后台运行命令，丢弃输出 (nohup 简写) |
+| `ch <cmd>` | 查询 cheat.sh 快速获取命令帮助 |
+| `sc` | 无线投屏到电脑 (需安装 scrcpy) |
+| `scam` | 使用手机摄像头作为视频源 (需安装 scrcpy) |
+
+**内置常用缩写 (Abbreviations)**：
+- `mkdir` 👉 `mkdir -p`
+- `...` 👉 `../..` (以此类推 `....`, `.....`)
+- `cat` 👉 `bat`
+- `ls` 👉 `eza`
+- `ll` 👉 `eza -l`
+
+> [!TIP]
+> Fish 的缩写会在输入后按空格时**自动展开**为完整命令。本套环境还内置了以下类别的缩写，请在实际使用中体会：
+> - **Git 操作**：`g` (git), `ga` (git add), `gc` (git commit), `gs` (git status), `gd` (git diff), `gp` (git push), `gl` (git pull), `gco` (git checkout) 等。
+> - **编辑器**：`vi`, `vim`, `h` 都会自动展开为你的系统默认现代编辑器 `hx`。
+> - **全局工具**：`cs` (colorscheme), `fs` (font-size), `o` (opacity), `vol` (audio-volume) 等。
 
 **Tide prompt**：`tide configure`（交互式配置）
 
@@ -489,12 +492,13 @@ Fish 支持 Vi 风格编辑模式，本配置已默认启用。
 | `y` | 复制 (配合移动命令，如 yw, yy) |
 | `p` | 粘贴 |
 | `u` | 撤销 |
+| `Ctrl+e` | 在普通模式/插入模式下，使用当前默认编辑器 (hx) 全屏编辑当前命令行 |
 
 在 Vi 正常模式下可以使用所有 Vim 风格的编辑命令。
 
 ---
 
-### 5.4 Helix 编辑器
+### 4.4 Helix 编辑器
 
 **配置文件**：`~/.config/helix/config.toml`
 
@@ -560,7 +564,7 @@ Fish 支持 Vi 风格编辑模式，本配置已默认启用。
 
 ---
 
-### 5.5 Mise 工具版本管理
+### 4.5 Mise 工具版本管理
 
 **配置文件**：`~/.config/mise/config.toml`
 
@@ -587,7 +591,7 @@ mise ls-remote python  # 查看所有可用的 Python 版本
 
 ---
 
-### 5.6 Git 配置用法
+### 4.6 Git 配置用法
 
 **配置文件**：
 - `~/.gitconfig`: 核心配置
@@ -599,12 +603,6 @@ mise ls-remote python  # 查看所有可用的 Python 版本
   - `pull.rebase = true`: 保持提交历史线性整洁。
   - `push.autoSetupRemote = true`: 自动关联远程分支。
   - `init.defaultBranch = main`: 默认分支名为 main。
-  - `core.ignorecase = false`: 强制区分大小写（避免跨平台文件名问题）。
-
-> [!IMPORTANT]
-> **关于 `core.ignorecase = false`**：
-> macOS 默认文件系统不区分大小写（Case-Insensitive），但 git 默认会尝试适配文件系统。强制开启 `ignorecase = false` 可以避免在重命名文件（如 `File.js` -> `file.js`）时 git 无法感知的问题。
-> **副作用**：在终端进入目录时需严格匹配大小写（如 `cd Desktop` 不能写成 `cd desktop`），这有助于养成良好的路径书写习惯。
 
 **常用别名**：
 | 别名 | 命令 | 说明 |
@@ -616,7 +614,7 @@ mise ls-remote python  # 查看所有可用的 Python 版本
 
 ---
 
-### 5.7 stow 的用法说明
+### 4.7 stow 的用法说明
 
 ```sh
 # 安装或重新安装
@@ -636,7 +634,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
 ---
 
-### 5.8 自定义命令（bin/）
+### 4.8 自定义命令（bin/）
 
 这些命令会在 stow `bin` 后出现在 `~/.local/bin`：
 
@@ -658,7 +656,7 @@ fish 内置了一些缩写（见 `fish/dot-config/fish/config.fish`）：`cs`/`f
 
 ---
 
-## 6. 常用维护命令 (Makefile)
+## 5. 常用维护命令 (Makefile)
 
 本项目引入了 `Makefile` 来标准化日常维护任务，集成了安装、同步、验证和清理等操作。
 
@@ -676,3 +674,26 @@ fish 内置了一些缩写（见 `fish/dot-config/fish/config.fish`）：`cs`/`f
 | `make validate` | 运行完整的配置验证（包含工具检查） |
 | `make update` | 拉取远程代码并更新 |
 | `make clean` | 清理临时文件 (`.bak`, `.tmp` 等) |
+
+## 6. 致谢 (Acknowledgments)
+
+本项目的诞生离不开现代开源社区的繁荣生态，特别感谢以下卓越的项目构建了这套工作流的基石：
+
+- [Ghostty](https://ghostty.org/) 
+- [Zellij](https://zellij.dev/)
+- [Fish](https://fishshell.com/) / [Fisher](https://github.com/jorgebucaran/fisher) / [Tide](https://github.com/IlanCosman/tide)
+- [Helix](https://helix-editor.com/)
+- [Mise](https://mise.jdx.dev/)
+- [fzf](https://github.com/junegunn/fzf) / [zoxide](https://github.com/ajeetdsouza/zoxide) / [eza](https://github.com/eza-community/eza) / [bat](https://github.com/sharkdp/bat)
+- [git-delta](https://github.com/dandavison/delta) / [glow](https://github.com/charmbracelet/glow) / [btop](https://github.com/aristocratos/btop)
+- [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono) / [Maple Mono](https://github.com/subframe7536/maple-font) / [Geist Mono](https://github.com/vercel/geist-font) / [Nerd Fonts](https://www.nerdfonts.com/)
+- [Karabiner-Elements](https://karabiner-elements.pqrs.org/)
+- [GNU Stow](https://www.gnu.org/software/stow/)
+
+---
+
+## 7. 开源协议 (License)
+
+本项目采用 [MIT License](LICENSE) 开源协议。
+
+你可以自由地使用、学习、修改和分发本项目的代码，将其作为你打造个人专属工作流的起点。

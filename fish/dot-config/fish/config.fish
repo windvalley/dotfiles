@@ -16,6 +16,9 @@ set -g fish_greeting ""
 #       不包括 Prompt（提示符）外观
 #fish_config theme choose dracula
 
+# 抑制由于 Python 3.12+ 结合 os.fork() 引发的系统级 DeprecationWarning 刷屏问题（如 grc）
+set -gx PYTHONWARNINGS "ignore::DeprecationWarning"
+
 # Homebrew：默认禁止自动更新
 set -gx HOMEBREW_NO_AUTO_UPDATE 1
 
@@ -100,7 +103,6 @@ if status is-interactive
     abbr -a -g gg 'git log'
 
     # 常用命令增强
-    abbr -a -g ll 'ls -la'
     abbr -a -g mkdir 'mkdir -p'
 
     # 目录跳转
@@ -116,6 +118,7 @@ if status is-interactive
     # 用 eza 替代 ls（需 brew install eza）
     if type -q eza
         abbr -a -g ls eza
+        abbr -a -g ll eza -l
     end
 
     # brew install --cask android-platform-tools
