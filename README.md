@@ -73,6 +73,8 @@ cd "$HOME/dotfiles"
 
 > [!TIP]
 > **非交互模式**：如果在自动化环境（如 CI/CD 等）中执行，可追加 `-y` 或 `--unattended` 标志跳过所有确认自动安装：`./install.sh -y`
+>
+> **最小安装模式**：如果只需要核心编辑体验（fish + helix + git），可追加 `-m` 或 `--minimal` 标志跳过 GUI 应用和字体：`./install.sh -m`
 
 **安装过程说明：**
 - 如果系统未安装 Homebrew，脚本默认会**询问是否安装**
@@ -375,6 +377,10 @@ echo "*.log" >> ~/.gitignore
 - 通过 SSH 连接
 - 在 Ghostty 的 Quick Terminal 中
 - 设置了环境变量 `ZELLIJ_AUTO_DISABLE`
+- `zellij setup --check` 配置预检失败时（自动 fallback 到纯 fish 并提示修复方法）
+
+> [!TIP]
+> 如果 Zellij 出现问题导致终端无法正常打开，可在其他终端中执行 `set -Ux ZELLIJ_AUTO_DISABLE 1` 永久禁用自动启动。
 
 **模式系统**：Zellij 有多个模式，按 `Ctrl + p/t/n/h/s/o/a` 直接进入对应模式，按 `Ctrl + g` 进入锁定模式（禁用所有快捷键）。
 
@@ -622,7 +628,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
 这些命令会在 stow `bin` 后出现在 `~/.local/bin`：
 
-- `colorscheme <name>`: 切换 Ghostty、Helix 和 Zellij 主题
+- `colorscheme [name]`: 切换 Ghostty、Helix 和 Zellij 主题。无参数时显示当前主题和可用主题列表，内置 10 个预设（dracula / tokyonight / gruvbox / catppuccin / kanagawa / nord / rose-pine / solarized-dark / one-dark / everforest），也支持直接传入工具原生主题名
 - `font-size <1-200>`: 设置 Ghostty 字体大小
 - `opacity <0.0-1.0>`: 设置 Ghostty 背景透明度
 - `audio-volume`: 音量控制与输出设备切换（需要 `switchaudio-osx`）

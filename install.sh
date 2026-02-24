@@ -16,14 +16,17 @@ error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
 # Parse arguments
 NON_INTERACTIVE=false
+MINIMAL=false
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -y|--yes|--unattended) NON_INTERACTIVE=true ;;
+        -m|--minimal) MINIMAL=true ;;
         -h|--help) 
             echo "Usage: $0 [options]"
             echo "Options:"
             echo "  -y, --yes, --unattended    Run in non-interactive mode without prompting"
+            echo "  -m, --minimal              Minimal install (fish + helix + git only, no GUI apps)"
             echo "  -h, --help                 Show this help message"
             exit 0
             ;;
@@ -48,7 +51,11 @@ ask_yes_no() {
     fi
 }
 
-info "Starting dotfiles installation..."
+if [ "$MINIMAL" = true ]; then
+    info "Starting MINIMAL dotfiles installation (fish + helix + git)..."
+else
+    info "Starting dotfiles installation..."
+fi
 
 if ! command -v brew &> /dev/null; then
     warn "Homebrew not found."
@@ -72,32 +79,49 @@ fi
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-info "Installing dependencies from Brewfile..."
-if [ -f "$DOTFILES_DIR/Brewfile" ]; then
-    if ! brew bundle check --file="$DOTFILES_DIR/Brewfile" &>/dev/null; then
-        brew bundle install --file="$DOTFILES_DIR/Brewfile"
-    else
-        success "All Brew dependencies are already satisfied."
-    fi
+if [ "$MINIMAL" = true ]; then
+    info "Installing minimal dependencies..."
+    MINIMAL_DEPS=(stow fish helix git-delta)
+    for dep in "${MINIMAL_DEPS[@]}"; do
+        if ! brew list "$dep" &>/dev/null; then
+            brew install "$dep"
+        fi
+    done
+    success "Minimal dependencies installed."
 else
-    error "Brewfile not found at $DOTFILES_DIR/Brewfile"
-    exit 1
-fi
+    info "Installing dependencies from Brewfile..."
+    if [ -f "$DOTFILES_DIR/Brewfile" ]; then
+        if ! brew bundle check --file="$DOTFILES_DIR/Brewfile" &>/dev/null; then
+            brew bundle install --file="$DOTFILES_DIR/Brewfile"
+        else
+            success "All Brew dependencies are already satisfied."
+        fi
+    else
+        error "Brewfile not found at $DOTFILES_DIR/Brewfile"
+        exit 1
+    fi
 
-info "Installing additional Fonts..."
-if ask_yes_no "Do you want to install additional fonts (Maple Mono, Geist Mono)? (y/n)"; then
-    REQUIRED_CASKS=(
-        font-maple-mono-nf
-        font-geist-mono-nerd-font
-    )
-    brew install --cask "${REQUIRED_CASKS[@]}"
+    info "Installing additional Fonts..."
+    if ask_yes_no "Do you want to install additional fonts (Maple Mono, Geist Mono)? (y/n)"; then
+        REQUIRED_CASKS=(
+            font-maple-mono-nf
+            font-geist-mono-nerd-font
+        )
+        brew install --cask "${REQUIRED_CASKS[@]}"
+    fi
 fi
 
 info "Linking configuration files with stow..."
 
 mkdir -p "$HOME/.local/bin"
 
-CONFIG_PACKAGES=(ghostty helix zellij mise karabiner btop fish)
+if [ "$MINIMAL" = true ]; then
+    CONFIG_PACKAGES=(helix fish)
+    STANDARD_PACKAGES=(fish helix git)
+else
+    CONFIG_PACKAGES=(ghostty helix zellij mise karabiner btop fish)
+    STANDARD_PACKAGES=(ghostty fish helix zellij mise karabiner git btop)
+fi
 
 # Handle all config directories for stow
 for pkg in "${CONFIG_PACKAGES[@]}"; do
@@ -114,14 +138,15 @@ for pkg in "${CONFIG_PACKAGES[@]}"; do
         mv "$DIR" "$BACKUP_DIR"
     fi
 done
-STANDARD_PACKAGES=(ghostty fish helix zellij mise karabiner git btop)
 for pkg in "${STANDARD_PACKAGES[@]}"; do
     info "Stowing $pkg..."
     stow --restow --target="$HOME" --dir="$DOTFILES_DIR" --dotfiles "$pkg"
 done
 
-info "Stowing bin..."
-stow --restow --target="$HOME/.local/bin" --dir="$DOTFILES_DIR" bin
+if [ "$MINIMAL" != true ]; then
+    info "Stowing bin..."
+    stow --restow --target="$HOME/.local/bin" --dir="$DOTFILES_DIR" bin
+fi
 
 info "Setting up local configuration overrides..."
 
@@ -172,7 +197,16 @@ if [ -f "$DOTFILES_DIR/fish/dot-config/fish/fish_plugins" ]; then
         fish -c "fisher update"
     else
         info "Installing fisher..."
-        fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher && fisher install (cat $DOTFILES_DIR/fish/dot-config/fish/fish_plugins)"
+        FISHER_URL="https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish"
+        FISHER_TMP=$(mktemp)
+        trap "rm -f '$FISHER_TMP'" EXIT
+
+        if curl -fsSL "$FISHER_URL" -o "$FISHER_TMP"; then
+            fish -c "source '$FISHER_TMP' && fisher install jorgebucaran/fisher && fisher install (cat $DOTFILES_DIR/fish/dot-config/fish/fish_plugins)"
+        else
+            error "Failed to download fisher. Check your network connection."
+            exit 1
+        fi
     fi
 else
     warn "fish_plugins not found at $DOTFILES_DIR/fish/dot-config/fish/fish_plugins, skipping fisher update."

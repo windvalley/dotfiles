@@ -5,8 +5,34 @@
 #
 # Requirements:
 #   brew install gnu-sed
+#
+# Adding a new theme:
+#   Just add a line to the THEMES array below. Format:
+#   "shortname|Ghostty Theme Name|helix_theme_name|zellij-theme-name"
 
 set -euo pipefail
+
+# ============================================
+# Theme Registry (single source of truth)
+# Format: "shortname|ghostty|helix|zellij"
+# If a tool's theme name matches the shortname, use '=' as a placeholder.
+#
+# Ghostty theme names: run `ghostty +list-themes` to list all available themes.
+# Helix theme names: run `hx --health` or check ~/.config/helix/runtime/themes/.
+# Zellij theme names: check built-in themes in zellij docs.
+# ============================================
+THEMES=(
+    "dracula|Dracula|=|="
+    "tokyonight|TokyoNight Moon|tokyonight_moon|tokyo-night"
+    "gruvbox|Gruvbox Material Dark|gruvbox_dark_hard|="
+    "catppuccin|Catppuccin Mocha|catppuccin_mocha|catppuccin-mocha"
+    "kanagawa|Kanagawa Wave|kanagawa|="
+    "nord|Nord|nord|nord"
+    "rose-pine|Rose Pine|rose_pine|="
+    "solarized-dark|Solarized Dark Higher Contrast|solarized_dark|="
+    "one-dark|Atom One Dark|one_dark|="
+    "everforest|Everforest Dark Hard|everforest_dark|="
+)
 
 # Check for gsed (GNU sed)
 if command -v gsed &>/dev/null; then
@@ -18,76 +44,73 @@ else
     exit 1
 fi
 
-colorscheme=${1:-}
-
 config_home=${XDG_CONFIG_HOME:-"$HOME/.config"}
 
 ghostty_config="$config_home/ghostty/config"
 helix_config="$config_home/helix/config.toml"
 zellij_config="$config_home/zellij/config.kdl"
 
-if [ -z "$colorscheme" ]; then
-    echo "Usage: colorscheme <colorscheme>"
+# Show current theme from config files
+show_current() {
+    echo "当前主题:"
+    if [ -f "$ghostty_config" ]; then
+        local gt
+        gt=$(grep -E '^theme\s*=' "$ghostty_config" | $SED -E 's/^theme\s*=\s*"?([^"]*)"?\s*$/\1/' | head -1)
+        echo "  Ghostty : ${gt:-未设置}"
+    fi
+    if [ -f "$helix_config" ]; then
+        local ht
+        ht=$(grep -E '^theme\s*=' "$helix_config" | $SED -E 's/^theme\s*=\s*"?([^"]*)"?\s*$/\1/' | head -1)
+        echo "  Helix   : ${ht:-未设置}"
+    fi
+    if [ -f "$zellij_config" ]; then
+        local zt
+        zt=$(grep -E '^theme\s' "$zellij_config" | $SED -E 's/^theme\s+"?([^"]*)"?\s*$/\1/' | head -1)
+        echo "  Zellij  : ${zt:-未设置}"
+    fi
+}
+
+# List available themes
+list_themes() {
     echo ""
-    echo "Examples: colorscheme dracula"
-    echo "          colorscheme tokyonight"
-    echo "          colorscheme gruvbox"
-    echo "          colorscheme catppuccin"
-    exit 1
+    echo "可用主题:"
+    for entry in "${THEMES[@]}"; do
+        IFS='|' read -r name _ _ _ <<< "$entry"
+        echo "  $name"
+    done
+}
+
+colorscheme=${1:-}
+
+if [ -z "$colorscheme" ]; then
+    show_current
+    list_themes
+    echo ""
+    echo "用法: colorscheme <name>"
+    echo "提示: 不在列表中的名称会直接透传给各工具（适用于工具原生主题名）。"
+    exit 0
 fi
 
-# Map a short colorscheme name to the Ghostty theme name.
-ghostty_theme_for() {
-    case "$1" in
-        tokyonight)
-            echo "TokyoNight Moon"
-            ;;
-        gruvbox)
-            echo "Gruvbox Material Dark"
-            ;;
-        dracula)
-            echo "Dracula"
-            ;;
-        catppuccin)
-            echo "Catppuccin Mocha"
-            ;;
-        *)
-            echo "$1"
-            ;;
-    esac
-}
-
-# Map a short colorscheme name to the Helix theme name.
-helix_theme_for() {
-    case "$1" in
-        tokyonight)
-            echo "tokyonight_moon"
-            ;;
-        gruvbox)
-            echo "gruvbox_dark_hard"
-            ;;
-        catppuccin)
-            echo "catppuccin_mocha"
-            ;;
-        *)
-            echo "$1"
-            ;;
-    esac
-}
-
-# Map a short colorscheme name to the Zellij theme name.
-zellij_theme_for() {
-    case "$1" in
-        tokyonight)
-            echo "tokyo-night"
-            ;;
-        catppuccin)
-            echo "catppuccin-mocha"
-            ;;
-        *)
-            echo "$1"
-            ;;
-    esac
+# Lookup theme name for a specific tool.
+# $1 = shortname, $2 = field index (1=ghostty, 2=helix, 3=zellij)
+lookup_theme() {
+    local name="$1" field="$2"
+    for entry in "${THEMES[@]}"; do
+        IFS='|' read -r entry_name ghostty helix zellij <<< "$entry"
+        if [ "$entry_name" = "$name" ]; then
+            local values=("$entry_name" "$ghostty" "$helix" "$zellij")
+            local result="${values[$field]}"
+            # '=' means same as shortname
+            if [ "$result" = "=" ]; then
+                echo "$name"
+            else
+                echo "$result"
+            fi
+            return
+        fi
+    done
+    # Not found in registry, passthrough as-is
+    echo "$name"
 }
 
 ghostty_cs_change() {
@@ -96,9 +119,10 @@ ghostty_cs_change() {
         return 1
     fi
 
-    ghostty_theme=$(ghostty_theme_for "$colorscheme")
-    $SED -i -E "s/^theme\s*=.*/theme = \"$ghostty_theme\"/" "$ghostty_config"
-    echo "Ghostty theme -> $ghostty_theme"
+    local theme
+    theme=$(lookup_theme "$colorscheme" 1)
+    $SED -i -E "s/^theme\s*=.*/theme = \"$theme\"/" "$ghostty_config"
+    echo "Ghostty theme -> $theme"
 }
 
 helix_cs_change() {
@@ -107,9 +131,10 @@ helix_cs_change() {
         return 1
     fi
 
-    helix_theme=$(helix_theme_for "$colorscheme")
-    $SED -i -E "s/^theme\s*=.*/theme = \"$helix_theme\"/" "$helix_config"
-    echo "Helix  theme -> $helix_theme"
+    local theme
+    theme=$(lookup_theme "$colorscheme" 2)
+    $SED -i -E "s/^theme\s*=.*/theme = \"$theme\"/" "$helix_config"
+    echo "Helix  theme -> $theme"
 }
 
 zellij_cs_change() {
@@ -118,9 +143,10 @@ zellij_cs_change() {
         return 1
     fi
 
-    zellij_theme=$(zellij_theme_for "$colorscheme")
-    $SED -i -E "s/^theme\s+\"[^\"]*\"/theme \"$zellij_theme\"/" "$zellij_config"
-    echo "Zellij theme -> $zellij_theme"
+    local theme
+    theme=$(lookup_theme "$colorscheme" 3)
+    $SED -i -E "s/^theme\s+\"[^\"]*\"/theme \"$theme\"/" "$zellij_config"
+    echo "Zellij theme -> $theme"
 }
 
 ghostty_cs_change

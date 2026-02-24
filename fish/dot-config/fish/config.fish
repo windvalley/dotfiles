@@ -145,11 +145,18 @@ if status is-interactive
 
     # 自动启动 Zellij
     # 跳过: 已在 zellij 中 / SSH / Quick Terminal / 禁用标志 / 未安装 / 非 Ghostty 运行时
+    # 逃生方法: 终端中执行 `set -Ux ZELLIJ_AUTO_DISABLE 1` 可永久禁用自动启动
     if not set -q ZELLIJ_SESSION_NAME; and not set -q SSH_CONNECTION; and not set -q GHOSTTY_QUICK_TERMINAL; and not set -q ZELLIJ_AUTO_DISABLE; and type -q zellij; and test "$GHOSTTY_RUNTIME" = 1
-        exec zellij
+        if zellij setup --check &>/dev/null
+            exec zellij
+        else
+            echo "⚠️  Zellij 配置检查失败，跳过自动启动。"
+            echo "   修复: 运行 'zellij setup --check' 查看详情"
+            echo "   禁用: 运行 'set -Ux ZELLIJ_AUTO_DISABLE 1' 永久关闭"
+        end
     end
 
-    # zoxide: 智能目录跳转 (z 替代传统的 z)
+    # zoxide: 智能目录跳转 (z 替代传统的 cd)
     # 用法: z <目录关键词> - 跳转到匹配的目录
     #      zi <关键词> - 交互式选择 (需要安装 fzf)
     #      z foo bar   - 匹配包含 foo 和 bar 的目录

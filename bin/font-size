@@ -24,8 +24,12 @@ config_home=${XDG_CONFIG_HOME:-"$HOME/.config"}
 ghostty_config="$config_home/ghostty/config"
 
 if [ "$#" -ne 1 ]; then
-    echo "Usage: font-size <1-200>"
-    exit 1
+    if [ -f "$ghostty_config" ]; then
+        current=$(grep -E '^font-size\s*=' "$ghostty_config" | $SED -E 's/^font-size\s*=\s*//' | head -1)
+        echo "当前字体大小: ${current:-未设置}"
+    fi
+    echo "用法: font-size <1-200>"
+    exit 0
 fi
 
 if [ "$to_font_size" -lt 1 ] || [ "$to_font_size" -gt 200 ]; then

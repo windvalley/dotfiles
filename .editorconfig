@@ -76,7 +76,7 @@ indent_size = 2
 indent_size = 2
 
 # Shell 脚本
-[*.sh,bash,zsh}]
+[*.{sh,bash,zsh}]
 indent_size = 2
 
 # ============================================

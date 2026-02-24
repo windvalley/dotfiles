@@ -16,7 +16,7 @@ HOME_DIR := $(HOME)
 BIN_DIR := $(HOME)/.local/bin
 
 # 标准包（通过 --dotfiles 选项处理）
-STOW_PACKAGES := ghostty helix zellij mise git karabiner
+STOW_PACKAGES := ghostty helix zellij mise git karabiner btop
 # Fish 需要特殊处理
 FISH_PACKAGE := fish
 # Bin 目录特殊目标
@@ -71,21 +71,8 @@ stow-packages: ## 同步标准包配置
 	done
 	@echo "$(GREEN)  ✅ 标准包同步完成$(NC)"
 
-stow-fish: ## 同步 Fish 配置（特殊处理）
+stow-fish: ## 同步 Fish 配置
 	@echo "$(BLUE)🐟 同步 Fish 配置...$(NC)"
-	@if [ -L "$(HOME)/.config/fish" ]; then \
-		echo "  解除已存在的 fish 软链接..."; \
-		unlink $(HOME)/.config/fish; \
-		mkdir -p $(HOME)/.config/fish; \
-	fi
-	@if [ -f "$(HOME)/.config/fish/config.fish" ] && [ ! -L "$(HOME)/.config/fish/config.fish" ]; then \
-		echo "  备份已存在的 config.fish..."; \
-		mv $(HOME)/.config/fish/config.fish $(HOME)/.config/fish/config.fish.bak.$$(date +%Y%m%d_%H%M%S); \
-	fi
-	@if [ -f "$(HOME)/.config/fish/fish_plugins" ] && [ ! -L "$(HOME)/.config/fish/fish_plugins" ]; then \
-		echo "  备份已存在的 fish_plugins..."; \
-		mv $(HOME)/.config/fish/fish_plugins $(HOME)/.config/fish/fish_plugins.bak.$$(date +%Y%m%d_%H%M%S); \
-	fi
 	@stow --restow --target=$(HOME_DIR) --dir=$(DOTFILES_DIR) $(STOW_IGNORE) --dotfiles $(FISH_PACKAGE)
 	@echo "$(GREEN)  ✅ Fish 配置同步完成$(NC)"
 
@@ -151,9 +138,13 @@ plugins: ## 安装/更新 Fisher 插件
 		echo "$(RED)  ❌ Fish 未安装$(NC)"; \
 		exit 1; \
 	fi
-	@fish -c "if not type -q fisher; \
-		curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher; \
-	end"
+	@if ! fish -c "type -q fisher" 2>/dev/null; then \
+		echo "  安装 Fisher..."; \
+		tmp=$$(mktemp); \
+		curl -fsSL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish -o "$$tmp" && \
+		fish -c "source '$$tmp' && fisher install jorgebucaran/fisher"; \
+		rm -f "$$tmp"; \
+	fi
 	@if [ -f fish/dot-config/fish/fish_plugins ]; then \
 		fish -c "fisher install (cat fish/dot-config/fish/fish_plugins)"; \
 	fi

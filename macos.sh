@@ -9,13 +9,23 @@ set -euo pipefail
 # 参考：https://mths.be/macos
 
 # 关闭所有已打开的"系统设置"窗口，防止它们覆盖我们即将更改的设置
-osascript -e 'tell application "System Preferences" to quit'
+# macOS 13+ 改名为 "System Settings"，同时兼容旧版 "System Preferences"
+osascript -e 'tell application "System Settings" to quit' 2>/dev/null || true
+osascript -e 'tell application "System Preferences" to quit' 2>/dev/null || true
 
 # 预先请求管理员密码
 sudo -v
 
-# 保持 sudo 权限：每隔 60 秒更新一次 sudo 时间戳，直到脚本执行完毕
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+# 保持 sudo 权限：后台续期，脚本结束时自动清理
+sudo_keepalive() {
+    while kill -0 "$$" 2>/dev/null; do
+        sudo -n true
+        sleep 50
+    done
+}
+sudo_keepalive &
+SUDO_PID=$!
+trap 'kill $SUDO_PID 2>/dev/null; sudo -k' EXIT
 
 echo "正在配置 macOS..."
 
