@@ -1,18 +1,24 @@
-# Dotfiles 管理的 fish 配置约定（尽量少文件，但保持可维护）
-# - dotfiles 仓库只跟踪 `config.fish` + `fish_plugins` + functions目录下自己编写的 fish 文件。
-# - 你当然可以把所有配置都写在 `config.fish`，但它会越变越大且每次启动都会执行。
-# - 更重的逻辑建议放到 `functions/*.fish`（autoload），更早/更独立的初始化放到 `conf.d/*.fish`。
-# - 机器差异/私密环境变量放本地文件且不入库：`~/.config/fish/config.local.fish`。
-# - Fisher 会在 `functions/`、`conf.d/`、`completions/` 生成/更新插件文件，不要把这些自动生成的产物提交到 git。
+# ==============================================================================
+# Fish Shell 核心配置约定 (追求极简与高性能)
+# ==============================================================================
+# - 📦 主配置: 本文件 (config.fish) 仅保留核心 PATH、全局环境变量、轻量缩写 (abbr) 和初始键绑定。
+# - ⚡️ 按需加载 (Autoload): 任何自定义功能函数必须独立存放在 `functions/` 目录下 (如 d.fish, nh.fish)。
+#             ✅ 优势 1：大幅提升终端每次新建 Tab 的启动速度。
+#             ✅ 优势 2：修改函数内容后开箱即用，无需执行 source 命令重载配置。
+# - 🔒 私密环境: 不想提交进 Git 的私有凭证或机器特定变量放在本地 `config.local.fish`。
+# - 🧩 第三方隔离: Fisher 第三方插件被硬路由到 `~/.local/share/fisher`，确保配置目录干爽纯洁。
+# - 🎨 主题隔离: Fish 自身保持默认 ANSI 配色，无需配置 theme。颜色渲染统一交由外层终端
+#             (Ghostty) 管理全局调色板。这样保证全量工具的主题体验绝对一致。
 #
-# NOTE: 更新本文件使及时生效的方法：exec fish
+# NOTE: 若修改了本文件，可通过执行 `exec fish` 使其立即生效
+# ==============================================================================
 
 # 关闭默认欢迎语
 set -g fish_greeting ""
 
 # --- Fisher Path Isolation ---
-# 将第三方插件的产生文件（functions/conf.d/completions）彻底隔离到 ~/.local/share/fisher
-# 保持 ~/.config/fish 目录的高贵纯洁，完全受 GNU Stow 和 Git 掌控
+# 将第三方插件的文件（functions/conf.d/completions）隔离到 ~/.local/share/fisher
+# 确保 ~/.config/fish 目录仅包含自己编写的配置，便于集中通过 Stow 和 Git 进行版本控制
 set -g fisher_path ~/.local/share/fisher
 
 set fish_complete_path $fish_complete_path[1] $fisher_path/completions $fish_complete_path[2..-1]
@@ -24,12 +30,6 @@ for file in $fisher_path/conf.d/*.fish
     end
 end
 # -----------------------------
-
-# 新机器若还没有主题/颜色，手动执行一次即可。
-# 列出有哪些主题可供选择：fish_config theme list
-# NOTE: fish_config theme 只控制语法高亮颜色（命令、参数、字符串等的颜色），
-#       不包括 Prompt（提示符）外观
-#fish_config theme choose dracula
 
 # 抑制由于 Python 3.12+ 结合 os.fork() 引发的系统级 DeprecationWarning 刷屏问题（如 grc）
 set -gx PYTHONWARNINGS "ignore::DeprecationWarning"
@@ -53,25 +53,7 @@ if type -q hx
     set -gx VISUAL hx
 end
 
-# 常用快捷函数
-# d: 显示日期时间 (格式: 02-17 Tuesday 20:19:24)
-function d
-    date +"%m-%d %A %T"
-end
 
-# nh: 后台运行命令 (nohup + 丢弃输出)
-# 用法: nh <命令> [参数...]
-# 示例: nh scrcpy -w -S
-function nh
-    nohup $argv &>/dev/null &
-end
-
-# ch: 查询 cheat.sh 快速获取命令帮助
-# 用法: ch <命令>
-# 示例: ch tar, ch curl
-function ch
-    curl cheat.sh/$argv[1]
-end
 
 if status is-interactive
     # Vi 模式：键绑定见 functions/fish_user_key_bindings.fish

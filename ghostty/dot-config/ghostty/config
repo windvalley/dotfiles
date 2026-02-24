@@ -316,8 +316,8 @@ selection-clear-on-copy = true
 #
 # 空字符 (U+0000) 始终被视为边界，无需包含在此配置中。
 #
-# 默认值: ` \t'"│`|:;,()[]{}<>$`
-selection-word-chars = 	'"│`|:;,()[]{}<>$
+# 默认值: " \t'\"│`|:,()[]{}<>$"
+# selection-word-chars = " \t'\"│`|:,()[]{}<>$"
 
 # minimum-contrast
 # 前景色和背景色之间的最小对比度

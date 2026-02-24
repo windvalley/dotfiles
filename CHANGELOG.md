@@ -9,20 +9,31 @@
 ## [Unreleased]
 
 ### Added
+
+### Fixed
+
+### Changed
+
+## [0.7.0] - 2026-02-24
+
+### Added
 - `Makefile` 新增 `make lint` 目标：集成 shellcheck 对所有 `bin/` 脚本进行静态分析
 - `Brewfile` 新增 `ripgrep`（极速正则搜索）和 `shellcheck`（Shell 脚本静态分析）
 - `config.fish` 新增 `MANPAGER` 配置：通过 bat 实现 man 手册页语法高亮
 - `dot-gitconfig` 新增 `rerere.enabled = true`：自动记忆冲突解决方案，提升 rebase 体验
 - `validate-configs` 新增 Karabiner JSON 语法验证（`python3 -m json.tool`）
+- `config.fish` 核心精简：将自定义函数（`d`, `nh`, `ch`）抽离为独立的 `functions/*.fish` 文件，利用按需加载（autoload）提升启动速度并在重构头部注释声明架构哲学
 
 ### Fixed
 - `config.fish` 注释 typo 修正（`nvim` → `helix & zellij`）
 - `install.sh` 移除 stow 后冗余的 `mkdir -p "$HOME/.config/fish"`
 - `colorscheme` / `font-size` / `opacity` 修复 shellcheck SC2209 警告（`SED=sed` → `SED="sed"`）
 - `validate-configs` 移除未使用的 `script_errors` 变量（shellcheck SC2034）
+- `ghostty/config` 修复 `selection-word-chars` 因为缺少双引号导致的等号后导空格被丢弃 Bug，修改为仅保留制表符
 
 ### Changed
 - `karabiner.json` 针对 HHKB 键盘（Vendor ID: 2131 PFU / 1278 Topre）自动禁用 Caps Lock 与 Left Control 的互换映射
+- `config.fish` 清理残存的 `fish_config theme` 失效且产生误导的手动换题注释
 - `README.md` 同步更新 Brew 依赖列表、Git 特性、validate-configs 描述、Makefile 命令表
 
 ## [0.6.0] - 2026-02-24
