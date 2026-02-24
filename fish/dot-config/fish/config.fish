@@ -32,7 +32,9 @@ end
 # -----------------------------
 
 # 抑制由于 Python 3.12+ 结合 os.fork() 引发的系统级 DeprecationWarning 刷屏问题（如 grc）
-set -gx PYTHONWARNINGS "ignore::DeprecationWarning"
+if type -q grc
+    alias grc="env PYTHONWARNINGS=ignore::DeprecationWarning grc"
+end
 
 # Homebrew：默认禁止自动更新
 set -gx HOMEBREW_NO_AUTO_UPDATE 1
@@ -52,8 +54,6 @@ if type -q hx
     set -gx EDITOR hx
     set -gx VISUAL hx
 end
-
-
 
 if status is-interactive
     # Vi 模式：键绑定见 functions/fish_user_key_bindings.fish
@@ -112,9 +112,9 @@ if status is-interactive
     abbr -a -g .... ../../..
     abbr -a -g ..... ../../../..
 
-    # 用 bat 替代 cat（需 brew install bat）
+    # 带语法高亮和 Git 集成的 cat 替代品（需 brew install bat）
     if type -q bat
-        abbr -a -g cat bat
+        abbr -a -g b bat
     end
 
     # 用 eza 替代 ls（需 brew install eza）
@@ -154,7 +154,7 @@ end
 
 # ============================================================
 # 加载本地忽略的私有配置 (API Keys, 机器特定别名等)
-# 
+#
 # 任何不应被提交到 GitHub 的变量请写在下面这个文件中:
 # touch ~/.config/fish/config.local.fish
 # ============================================================

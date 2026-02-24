@@ -449,6 +449,19 @@ echo "*.log" >> ~/.gitignore
 | `d` | 快速显示当前日期时间 |
 | `nh <cmd>` | 后台运行命令，丢弃输出 (nohup 简写) |
 | `ch <cmd>` | 查询 cheat.sh 快速获取命令帮助 |
+| `wt [city]` | 查询 3 日简易天气预报 (支持指定城市) |
+| `lunar [date]` | 万年历，查询公历+农历+生肖+干支 (支持指定日期如 2025-01-29) |
+| `myip` | 获取本机局域网 IP、公网 IP 及地理位置 |
+| `port <num>` | 查看本地特定端口的 TCP/UDP 监听状态及进程情况 |
+| `ports` | 查看本机所有正在监听的 TCP 端口及进程列表 |
+| `extract <file>` | 万能解压缩工具，自动识别压缩包格式（zip, tar, gz, rar, 7z...）并解压 |
+| `mkcd <dir>` | 创建目录并使用 cd 直接跳转进入 |
+| `proxy` / `unproxy` | 一键开启/关闭终端全局网络代理 (用于解决代码拉取缓慢) |
+| `gitignore <语言>` | 从 GitHub 模板快速输出标准项目 .gitignore 内容 (例: `gitignore Node`) |
+| `backup <file/dir>` | 为敏感文件或目录极速创建带有精确时间戳的完整备份副本 |
+| `copy [file]` | 将文件内容或前一个命令的标准输出(`\| copy`)极速复制到 Mac 剪贴板 |
+| `f [query]` | 结合 fzf 从当前目录搜索文件，选中后直接使用 Helix 全屏打开 |
+| `rec [name]` | 极简终端操作录屏工具 (基于 asciinema)，支持录制、回放(`rec play`)与网页分享(`rec upload`) |
 | `sc` | 无线投屏到电脑 (需安装 scrcpy) |
 | `scam` | 使用手机摄像头作为视频源 (需安装 scrcpy) |
 
