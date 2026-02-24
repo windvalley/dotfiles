@@ -525,7 +525,7 @@ web_client {
 // 内置亮色主题:
 //   catppuccin-latte, gruvbox-light, solarized-light, tokyo-night-light,
 //   ayu_light, everforest-light, dayfox
-theme "dracula"
+theme "rose-pine"
 
 // 启动时的默认模式 (normal/locked 等) (默认值: "normal")
 // default_mode "locked"

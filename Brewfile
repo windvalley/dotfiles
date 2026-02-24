@@ -35,6 +35,10 @@ brew "eza"
 brew "grc"
 # 终端 Markdown 阅读器
 brew "glow"
+# 极速正则搜索工具 (替代 grep，与 Helix picker 配合)
+brew "ripgrep"
+# Shell 脚本静态分析工具
+brew "shellcheck"
 
 # --- System Utilities (系统工具) ---
 # GNU 版本的 awk, sed, grep (macOS 自带的是 BSD 版本，功能较弱)

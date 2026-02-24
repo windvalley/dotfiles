@@ -47,6 +47,7 @@ help: ## 显示帮助信息
 	@echo ""
 	@echo "$(GREEN)维护:$(NC)"
 	@echo "  $(YELLOW)make validate$(NC)   验证所有配置文件语法"
+	@echo "  $(YELLOW)make lint$(NC)       静态分析 bin/ 脚本 (shellcheck)"
 	@echo "  $(YELLOW)make update$(NC)     更新 dotfiles 仓库"
 	@echo "  $(YELLOW)make clean$(NC)      清理临时文件"
 	@echo ""
@@ -155,6 +156,29 @@ validate: ## 验证所有配置文件语法
 	@./bin/validate-configs all 2>&1 || exit 1
 	@echo "$(GREEN)✅ 所有配置文件验证通过$(NC)"
 
+lint: ## 静态分析 bin/ 脚本 (shellcheck)
+	@echo "$(BLUE)🔍 运行 shellcheck 静态分析...$(NC)"
+	@if ! command -v shellcheck > /dev/null 2>&1; then \
+		echo "$(RED)  ❌ shellcheck 未安装，请运行 'brew install shellcheck'$(NC)"; \
+		exit 1; \
+	fi
+	@errors=0; \
+	for script in bin/*; do \
+		if [ -f "$$script" ] && head -1 "$$script" | grep -q "^#!.*bash"; then \
+			if shellcheck -S warning "$$script" 2>/dev/null; then \
+				echo "$(GREEN)  ✓$(NC) $$script"; \
+			else \
+				errors=$$((errors + 1)); \
+			fi; \
+		fi; \
+	done; \
+	if [ "$$errors" -eq 0 ]; then \
+		echo "$(GREEN)✅ 所有脚本通过 shellcheck 检查$(NC)"; \
+	else \
+		echo "$(RED)❌ $$errors 个脚本存在问题$(NC)"; \
+		exit 1; \
+	fi
+
 update: ## 更新 dotfiles 仓库
 	@echo "$(BLUE)🔄 更新 dotfiles...$(NC)"
 	@git pull --rebase
@@ -167,5 +191,3 @@ clean: ## 清理临时文件
 	@find . -type f -name '*.tmp' -delete
 	@find . -type f -name '*~' -delete
 	@echo "$(GREEN)✅ 清理完成$(NC)"
-
-

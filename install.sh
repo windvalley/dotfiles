@@ -169,7 +169,6 @@ fi
 # --- 3. Fish 私有环境变量模板 ---
 FISH_LOCAL_CONF="$HOME/.config/fish/config.local.fish"
 if [ ! -f "$FISH_LOCAL_CONF" ]; then
-    mkdir -p "$HOME/.config/fish"
     cp "$DOTFILES_DIR/local/config.local.fish.example" "$FISH_LOCAL_CONF"
     info "  -> Created $FISH_LOCAL_CONF (For private API keys and aliases)"
 else
@@ -199,11 +198,12 @@ if [ -f "$DOTFILES_DIR/fish/dot-config/fish/fish_plugins" ]; then
         info "Installing fisher..."
         FISHER_URL="https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish"
         FISHER_TMP=$(mktemp)
-        trap "rm -f '$FISHER_TMP'" EXIT
 
         if curl -fsSL "$FISHER_URL" -o "$FISHER_TMP"; then
             fish -c "source '$FISHER_TMP' && fisher install jorgebucaran/fisher && fisher install (cat $DOTFILES_DIR/fish/dot-config/fish/fish_plugins)"
+            rm -f "$FISHER_TMP"
         else
+            rm -f "$FISHER_TMP"
             error "Failed to download fisher. Check your network connection."
             exit 1
         fi

@@ -54,6 +54,11 @@
     # 自动关联远程同名分支（无需每次 git push --set-upstream origin ...）
     autoSetupRemote = true
 
+[rerere]
+    # 自动记忆冲突解决方案（Reuse Recorded Resolution）
+    # 相同的冲突再次出现时，Git 会自动应用之前的解决方式，极大提升 rebase 体验
+    enabled = true
+
 [credential]
     # 使用 macOS 钥匙串存储 HTTPS 密码
     helper = osxkeychain

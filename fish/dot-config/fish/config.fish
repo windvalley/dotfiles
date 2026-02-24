@@ -37,6 +37,11 @@ set -gx PYTHONWARNINGS "ignore::DeprecationWarning"
 # Homebrew：默认禁止自动更新
 set -gx HOMEBREW_NO_AUTO_UPDATE 1
 
+# Man 手册页语法高亮（需 brew install bat）
+if type -q bat
+    set -gx MANPAGER "sh -c 'sed -u -e \"s/\\x1B\[[0-9;]*m//g; s/.\\x08//g\" | bat -l man -p'"
+end
+
 # PATH: fish_add_path 自动处理重复，无需手动检查
 # 使用 --path 参数仅修改当前会话的 PATH，避免污染 Universal 变量 (fish_user_paths)
 test -d "$HOME/.local/bin"; and fish_add_path --path "$HOME/.local/bin"
@@ -88,7 +93,7 @@ if status is-interactive
     set -g tide_vi_mode_icon_visual V
 
     # ~/dotfiles/bin/ 下的自定义命令
-    # ghostty & nvim 主题切换
+    # ghostty & helix & zellij 主题切换
     abbr -a -g cs colorscheme
     # ghostty 字体大小设置
     abbr -a -g fs font-size

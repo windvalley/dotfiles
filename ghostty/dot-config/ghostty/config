@@ -207,7 +207,7 @@ font-shaping-break = cursor
 # 配置示例:
 #   theme = "Catppuccin Macchiato"
 #   theme = "light:Catppuccin Latte,dark:Catppuccin Macchiato"
-theme = "Dracula"
+theme = "Rose Pine"
 
 # background
 # 背景颜色

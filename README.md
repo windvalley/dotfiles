@@ -57,7 +57,7 @@ cd "$HOME/dotfiles"
 
 **该脚本将执行以下操作：**
 1. 检查并安装 **Homebrew**（如果尚未安装）。
-2. 安装所有常用的 **Brew 依赖**（stow, zellij, fish, helix, mise, bat, eza, fzf, zoxide, grc, gawk, gnu-sed, grep, switchaudio-osx, glow）。
+2. 安装所有常用的 **Brew 依赖**（stow, zellij, fish, helix, mise, bat, eza, fzf, zoxide, grc, gawk, gnu-sed, grep, switchaudio-osx, glow, ripgrep, shellcheck）。
 3. 安装 **Nerd Fonts**（默认 JetBrains Mono, Maple Mono, Geist Mono）。
 4. 安装 **Ghostty** 终端（通过 `brew install --cask ghostty@tip`）。
 5. 使用 `stow` 将所有配置软链到正确的位置。
@@ -593,6 +593,7 @@ mise ls-remote python  # 查看所有可用的 Python 版本
   - `pull.rebase = true`: 保持提交历史线性整洁。
   - `push.autoSetupRemote = true`: 自动关联远程分支。
   - `init.defaultBranch = main`: 默认分支名为 main。
+  - `rerere.enabled = true`: 自动记忆冲突解决方案，提升 rebase 体验。
 
 **常用别名**：
 | 别名 | 命令 | 说明 |
@@ -635,7 +636,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 - `preview-md <file>`: 在 Zellij 浮动窗口中预览 Markdown 文件（需要 `glow`）
 - `colors-print`: 打印终端 256 色板
 - `print-256-hex-colors`: 打印 256 色的十六进制色值
-- `validate-configs [tool|all]`: 验证配置文件语法和完整性（支持 fish/git/zellij/helix/mise/ghostty）
+- `validate-configs [tool|all]`: 验证配置文件语法和完整性（支持 fish/git/zellij/helix/mise/ghostty/karabiner）
 
 > [!TIP]
 > **变更生效方式：**
@@ -662,6 +663,7 @@ fish 内置了一些缩写（见 `fish/dot-config/fish/config.fish`）：`cs`/`f
 | `make plugins` | 更新 Fisher 插件 |
 | `make macos` | 配置 macOS 系统偏好设置 |
 | `make validate` | 运行完整的配置验证（包含工具检查） |
+| `make lint` | 静态分析 `bin/` 脚本（shellcheck） |
 | `make update` | 拉取远程代码并更新 |
 | `make clean` | 清理临时文件 (`.bak`, `.tmp` 等) |
 

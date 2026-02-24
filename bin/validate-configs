@@ -225,11 +225,29 @@ validate_ghostty() {
     fi
 }
 
+# 验证 Karabiner 配置
+validate_karabiner() {
+    info "验证 Karabiner 配置..."
+    local karabiner_config="$DOTFILES_DIR/karabiner/dot-config/karabiner/karabiner.json"
+    
+    if [ ! -f "$karabiner_config" ]; then
+        error "Karabiner 配置文件不存在: $karabiner_config"
+        return 1
+    fi
+
+    # JSON 语法验证
+    if python3 -m json.tool "$karabiner_config" > /dev/null 2>&1; then
+        success "Karabiner 配置语法正确 (JSON)"
+    else
+        error "Karabiner 配置 JSON 语法错误"
+        ERRORS=$((ERRORS + 1))
+    fi
+}
+
 # 验证自定义脚本
 validate_bin_scripts() {
     info "验证自定义脚本..."
     local bin_dir="$DOTFILES_DIR/bin"
-    local script_errors=0
     
     for script in "$bin_dir"/*; do
         if [ -f "$script" ] && [ -x "$script" ]; then
@@ -274,6 +292,9 @@ main() {
         ghostty)
             validate_ghostty
             ;;
+        karabiner)
+            validate_karabiner
+            ;;
         all)
             validate_fish
             validate_git
@@ -281,10 +302,11 @@ main() {
             validate_helix
             validate_mise
             validate_ghostty
+            validate_karabiner
             validate_bin_scripts
             ;;
         *)
-            echo "用法: validate-configs [fish|git|zellij|helix|mise|ghostty|all]"
+            echo "用法: validate-configs [fish|git|zellij|helix|mise|ghostty|karabiner|all]"
             exit 1
             ;;
     esac

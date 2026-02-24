@@ -10,9 +10,9 @@ set -euo pipefail
 
 # Check for gsed (GNU sed)
 if command -v gsed &>/dev/null; then
-    SED=gsed
+    SED="gsed"
 elif command -v sed &>/dev/null; then
-    SED=sed
+    SED="sed"
 else
     echo "Error: sed not found" >&2
     exit 1
@@ -26,9 +26,9 @@ ghostty_config="$config_home/ghostty/config"
 if [ "$#" -ne 1 ]; then
     if [ -f "$ghostty_config" ]; then
         current=$(grep -E '^background-opacity\s*=' "$ghostty_config" | $SED -E 's/^background-opacity\s*=\s*//' | head -1)
-        echo "当前透明度: ${current:-1.0 (默认不透明)}"
+        echo "Current opacity: ${current:-1.0 (default, fully opaque)}"
     fi
-    echo "用法: opacity <0.0-1.0>"
+    echo "Usage: opacity <0.0-1.0>"
     exit 0
 fi
 

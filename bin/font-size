@@ -10,9 +10,9 @@ set -euo pipefail
 
 # Check for gsed (GNU sed)
 if command -v gsed &>/dev/null; then
-    SED=gsed
+    SED="gsed"
 elif command -v sed &>/dev/null; then
-    SED=sed
+    SED="sed"
 else
     echo "Error: sed not found" >&2
     exit 1
@@ -26,9 +26,9 @@ ghostty_config="$config_home/ghostty/config"
 if [ "$#" -ne 1 ]; then
     if [ -f "$ghostty_config" ]; then
         current=$(grep -E '^font-size\s*=' "$ghostty_config" | $SED -E 's/^font-size\s*=\s*//' | head -1)
-        echo "当前字体大小: ${current:-未设置}"
+        echo "Current font size: ${current:-not set}"
     fi
-    echo "用法: font-size <1-200>"
+    echo "Usage: font-size <1-200>"
     exit 0
 fi
 

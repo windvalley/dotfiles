@@ -36,9 +36,9 @@ THEMES=(
 
 # Check for gsed (GNU sed)
 if command -v gsed &>/dev/null; then
-    SED=gsed
+    SED="gsed"
 elif command -v sed &>/dev/null; then
-    SED=sed
+    SED="sed"
 else
     echo "Error: sed not found" >&2
     exit 1
@@ -52,28 +52,28 @@ zellij_config="$config_home/zellij/config.kdl"
 
 # Show current theme from config files
 show_current() {
-    echo "当前主题:"
+    echo "Current theme:"
     if [ -f "$ghostty_config" ]; then
         local gt
         gt=$(grep -E '^theme\s*=' "$ghostty_config" | $SED -E 's/^theme\s*=\s*"?([^"]*)"?\s*$/\1/' | head -1)
-        echo "  Ghostty : ${gt:-未设置}"
+        echo "  Ghostty : ${gt:-not set}"
     fi
     if [ -f "$helix_config" ]; then
         local ht
         ht=$(grep -E '^theme\s*=' "$helix_config" | $SED -E 's/^theme\s*=\s*"?([^"]*)"?\s*$/\1/' | head -1)
-        echo "  Helix   : ${ht:-未设置}"
+        echo "  Helix   : ${ht:-not set}"
     fi
     if [ -f "$zellij_config" ]; then
         local zt
         zt=$(grep -E '^theme\s' "$zellij_config" | $SED -E 's/^theme\s+"?([^"]*)"?\s*$/\1/' | head -1)
-        echo "  Zellij  : ${zt:-未设置}"
+        echo "  Zellij  : ${zt:-not set}"
     fi
 }
 
 # List available themes
 list_themes() {
     echo ""
-    echo "可用主题:"
+    echo "Available themes:"
     for entry in "${THEMES[@]}"; do
         IFS='|' read -r name _ _ _ <<< "$entry"
         echo "  $name"
@@ -86,8 +86,8 @@ if [ -z "$colorscheme" ]; then
     show_current
     list_themes
     echo ""
-    echo "用法: colorscheme <name>"
-    echo "提示: 不在列表中的名称会直接透传给各工具（适用于工具原生主题名）。"
+    echo "Usage: colorscheme <name>"
+    echo "Hint: names not in the list are passed through directly to each tool."
     exit 0
 fi
 
