@@ -144,50 +144,34 @@ git pull --rebase
 #### 2.2.3 链接配置（stow）
 
 > [!TIP]
-> 如果你的系统已安装 `make`，可以直接运行 `make stow` 一键完成所有链接，无需逐个执行下面的命令。
+> 如果你的系统已安装 `make`，可以运行 `make stow` 一键链接，该命令及 `install.sh` 脚本均已内置了完善的目录保护机制，推荐直接使用，不用手动折腾。
 
-链接核心配置到 `$HOME`：
+如果坚持手动链接配置，为了确保 stow 能为 GUI 应用（如 Btop、Karabiner）以及扩展性强的工具创建纯净的**目录级软链**，需要对所有目标配置目录进行防御性清理：
+
+```sh
+# 如果目标工具的配置目录已经是真实目录（非软链），必须将其重命名或删除，切忌保留！
+# 目的：确保 stow 时发现目标目录"不存在"，从而直接把整个目录映射为一个【纯目录级软链】。
+# 否则 stow 会进入真实目录执行【文件级】软链，导致后续工具在本地新生成的文件脱离版本控制。
+for pkg in ghostty helix zellij mise karabiner btop fish; do
+    if [ -d ~/.config/$pkg ] && [ ! -L ~/.config/$pkg ]; then
+        mv ~/.config/$pkg ~/.config/$pkg.bak
+    elif [ -L ~/.config/$pkg ]; then
+        unlink ~/.config/$pkg
+    fi
+done
+```
+
+然后执行统一链接映射：
 
 ```sh
 cd "$HOME/dotfiles"
-stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles ghostty helix zellij mise git
-```
 
-链接 Fish 配置（需预处理以避免 stow 冲突）：
+# 统一链接所有标准配置包（包括 git。它们都直接映射到用户根目录下）
+stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles ghostty helix zellij mise karabiner btop fish git
 
-```sh
-# 如果 ~/.config/fish 是软链，需先解除。
-# 如果是真实目录（非软链），必须将其重命名或删除，切忌保留真实目录！
-# 目的：确保 stow 时发现目标目录"不存在"，从而直接把整个 ~/.config/fish 映射为一个【纯目录级软链】。
-# 若存在真实目录，stow 会进入该目录执行【文件级】软链，破坏纯净架构。
-if [ -d ~/.config/fish ] && [ ! -L ~/.config/fish ]; then
-    mv ~/.config/fish ~/.config/fish.bak
-elif [ -L ~/.config/fish ]; then
-    unlink ~/.config/fish
-fi
-
-# 执行 stow
-cd "$HOME/dotfiles"
-stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles fish
-```
-
-> [!TIP]
-> 以上预处理步骤按需执行，如果对应的软链接或文件不存在则跳过即可。
-> `install.sh` 已自动处理这些情况，无需手动操作。
-
-链接命令脚本（`bin/` -> `~/.local/bin`）：
-
-```sh
+# 单独链接需要特定前置结构的包（例如将自定义命令放置在 ~/.local/bin 下）
 mkdir -p "$HOME/.local/bin"
-cd "$HOME/dotfiles"
 stow --restow --target="$HOME/.local/bin" --dir="$HOME/dotfiles" bin
-```
-
-链接 Karabiner（`karabiner/` -> `~/.config/karabiner`）：
-
-```sh
-cd "$HOME/dotfiles"
-stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles karabiner
 ```
 
 ## 3. 配置指南

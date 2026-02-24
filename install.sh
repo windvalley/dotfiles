@@ -96,20 +96,24 @@ fi
 info "Linking configuration files with stow..."
 
 mkdir -p "$HOME/.local/bin"
-mkdir -p "$HOME/.config/karabiner"
 
-# Handle fish config directory before stow
-FISH_CONFIG_DIR="$HOME/.config/fish"
+CONFIG_PACKAGES=(ghostty helix zellij mise karabiner btop fish)
 
-if [ -L "$FISH_CONFIG_DIR" ]; then
-    warn "$FISH_CONFIG_DIR is a symlink, unlinking..."
-    unlink "$FISH_CONFIG_DIR"
-elif [ -d "$FISH_CONFIG_DIR" ]; then
-    BACKUP_DIR="${FISH_CONFIG_DIR}.bak.$(date +%Y%m%d_%H%M%S)"
-    warn "Backing up existing real directory $FISH_CONFIG_DIR -> $BACKUP_DIR"
-    mv "$FISH_CONFIG_DIR" "$BACKUP_DIR"
-fi
-
+# Handle all config directories for stow
+for pkg in "${CONFIG_PACKAGES[@]}"; do
+    DIR="$HOME/.config/$pkg"
+    # Ensure any existing directory is either unlinked (if symlink) or backed up (if real dir).
+    # This guarantees stow creates a pure directory-level mapping to ~/dotfiles,
+    # ensuring locally generated files (like Karabiner/Btop UI saves) are tracked automatically.
+    if [ -L "$DIR" ]; then
+        warn "$DIR is a symlink, unlinking..."
+        unlink "$DIR"
+    elif [ -d "$DIR" ]; then
+        BACKUP_DIR="${DIR}.bak.$(date +%Y%m%d_%H%M%S)"
+        warn "Backing up existing real directory $DIR -> $BACKUP_DIR"
+        mv "$DIR" "$BACKUP_DIR"
+    fi
+done
 STANDARD_PACKAGES=(ghostty fish helix zellij mise karabiner git btop)
 for pkg in "${STANDARD_PACKAGES[@]}"; do
     info "Stowing $pkg..."
