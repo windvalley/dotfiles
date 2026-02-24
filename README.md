@@ -446,6 +446,7 @@ echo "*.log" >> ~/.gitignore
 | `fish_update_completions` | 更新命令补全 |
 | `fish_add_path <path>` | 添加路径 |
 | `fish_config` | 打开交互配置 |
+| `c` | 列出所有 dotfiles 自定义命令及其说明（命令发现入口） |
 | `d` | 快速显示当前日期时间 |
 | `nh <cmd>` | 后台运行命令，丢弃输出 (nohup 简写) |
 | `ch <cmd>` | 查询 cheat.sh 快速获取命令帮助 |
@@ -462,6 +463,7 @@ echo "*.log" >> ~/.gitignore
 | `copy [file]` | 将文件内容或前一个命令的标准输出(`\| copy`)极速复制到 Mac 剪贴板 |
 | `f [query]` | 结合 fzf 从当前目录搜索文件，选中后直接使用 Helix 全屏打开 |
 | `rec [name]` | 极简终端操作录屏工具 (基于 asciinema)，支持录制、回放(`rec play`)与网页分享(`rec upload`) |
+| `gtd <tag>` | 一键同时删除本地和远端的 Git Tag |
 | `sc` | 无线投屏到电脑 (需安装 scrcpy) |
 | `scam` | 使用手机摄像头作为视频源 (需安装 scrcpy) |
 

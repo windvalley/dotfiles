@@ -67,12 +67,16 @@ if status is-interactive
     set fish_cursor_replace underscore
     set fish_cursor_external line
 
-    # Tide: vi_mode 提示符 (可复刻，覆盖 universal 默认值)
+    # Tide: 确保 vi_mode 组件出现在 prompt 左侧
     set -g tide_left_prompt_items vi_mode os pwd git newline character
-    set -g tide_vi_mode_icon_default N
-    set -g tide_vi_mode_icon_insert I
-    set -g tide_vi_mode_icon_replace R
-    set -g tide_vi_mode_icon_visual V
+
+    # Tide: vi_mode 提示符 (自动纠正 Universal 变量，一劳永逸)
+    # Tide 默认用 Fish 内部模式名首字母 (default→D)，这里纠正为 Vim 社区通用的 N (Normal)
+    # 使用 set -U 直接写入持久化的 Universal 变量，仅在值不符合预期时才写入，避免每次启动都触发磁盘 IO
+    if test "$tide_vi_mode_icon_default" != N
+        set -U tide_vi_mode_icon_default N
+    end
+
 
     # ~/dotfiles/bin/ 下的自定义命令
     # ghostty & helix & zellij 主题切换
