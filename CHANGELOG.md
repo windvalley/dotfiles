@@ -6,6 +6,11 @@
 > - `MINOR`（x）= 新增功能或行为变更
 > - `PATCH`（y）= Bug 修复、文档完善、代码清理
 
+## [Unreleased]
+
+### Changed
+- `karabiner.json` 针对 HHKB 键盘（Vendor ID: 2131 PFU / 1278 Topre）自动禁用 Caps Lock 与 Left Control 的互换映射
+
 ## [0.6.0] - 2026-02-24
 
 ### Added
