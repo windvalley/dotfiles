@@ -44,3 +44,6 @@ venv/
 # System
 .Trash-1000
 .Trashes
+
+# Fish shell machine-specific variables
+fish_variables

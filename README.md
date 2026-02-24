@@ -156,16 +156,15 @@ stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles ghostty helix z
 链接 Fish 配置（需预处理以避免 stow 冲突）：
 
 ```sh
-# 如果 ~/.config/fish 是软链接（如之前手动创建的），需先解除再创建目录。
-# 原因：fish 会在该目录下自动生成大量运行时文件，若整个目录是软链接，
-# 这些文件会进入 dotfiles 仓库，产生不必要的 git 变更。
-ls -ld ~/.config/fish
-unlink ~/.config/fish
-mkdir -p ~/.config/fish
-
-# 如果 config.fish 或 fish_plugins 已存在（如 fish 自动生成的），需先备份
-mv ~/.config/fish/{config.fish,config.fish.bak}
-mv ~/.config/fish/{fish_plugins,fish_plugins.bak}
+# 如果 ~/.config/fish 是软链，需先解除。
+# 如果是真实目录（非软链），必须将其重命名或删除，切忌保留真实目录！
+# 目的：确保 stow 时发现目标目录"不存在"，从而直接把整个 ~/.config/fish 映射为一个【纯目录级软链】。
+# 若存在真实目录，stow 会进入该目录执行【文件级】软链，破坏纯净架构。
+if [ -d ~/.config/fish ] && [ ! -L ~/.config/fish ]; then
+    mv ~/.config/fish ~/.config/fish.bak
+elif [ -L ~/.config/fish ]; then
+    unlink ~/.config/fish
+fi
 
 # 执行 stow
 cd "$HOME/dotfiles"
@@ -259,12 +258,13 @@ fish_add_path ~/.local/bin
 ### 3.4 配置 fisher
 
 fisher 是 fish 的插件管理器。
+通过在 `config.fish` 中设置 `fisher_path`，所有插件相关的文件会被**彻底隔离**在 `~/.local/share/fisher` 下，避免污染 `~/.config/fish` 目录。
 
 ```fish
 # 安装 Fisher
 curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
 
-# 安装插件
+# 安装插件 (将从 dotfiles 配置列表中同步安装)
 fisher install (cat ~/.config/fish/fish_plugins)
 ```
 

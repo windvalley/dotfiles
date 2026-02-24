@@ -104,17 +104,11 @@ FISH_CONFIG_DIR="$HOME/.config/fish"
 if [ -L "$FISH_CONFIG_DIR" ]; then
     warn "$FISH_CONFIG_DIR is a symlink, unlinking..."
     unlink "$FISH_CONFIG_DIR"
-    mkdir -p "$FISH_CONFIG_DIR"
+elif [ -d "$FISH_CONFIG_DIR" ]; then
+    BACKUP_DIR="${FISH_CONFIG_DIR}.bak.$(date +%Y%m%d_%H%M%S)"
+    warn "Backing up existing real directory $FISH_CONFIG_DIR -> $BACKUP_DIR"
+    mv "$FISH_CONFIG_DIR" "$BACKUP_DIR"
 fi
-
-# Back up existing fish config files that would conflict with stow
-for f in config.fish fish_plugins; do
-    if [ -f "$FISH_CONFIG_DIR/$f" ] && [ ! -L "$FISH_CONFIG_DIR/$f" ]; then
-        BACKUP_NAME="${f}.$(date +%Y%m%d_%H%M%S).bak"
-        warn "Backing up $FISH_CONFIG_DIR/$f -> $FISH_CONFIG_DIR/$BACKUP_NAME"
-        mv "$FISH_CONFIG_DIR/$f" "$FISH_CONFIG_DIR/$BACKUP_NAME"
-    fi
-done
 
 STANDARD_PACKAGES=(ghostty fish helix zellij mise karabiner git btop)
 for pkg in "${STANDARD_PACKAGES[@]}"; do

@@ -10,6 +10,21 @@
 # 关闭默认欢迎语
 set -g fish_greeting ""
 
+# --- Fisher Path Isolation ---
+# 将第三方插件的产生文件（functions/conf.d/completions）彻底隔离到 ~/.local/share/fisher
+# 保持 ~/.config/fish 目录的高贵纯洁，完全受 GNU Stow 和 Git 掌控
+set -g fisher_path ~/.local/share/fisher
+
+set fish_complete_path $fish_complete_path[1] $fisher_path/completions $fish_complete_path[2..-1]
+set -g fish_function_path $fish_function_path[1] $fisher_path/functions $fish_function_path[2..-1]
+
+for file in $fisher_path/conf.d/*.fish
+    if test -f $file
+        source $file
+    end
+end
+# -----------------------------
+
 # 新机器若还没有主题/颜色，手动执行一次即可。
 # 列出有哪些主题可供选择：fish_config theme list
 # NOTE: fish_config theme 只控制语法高亮颜色（命令、参数、字符串等的颜色），
