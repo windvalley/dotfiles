@@ -13,7 +13,7 @@ brew "mise"
 # --- Shell & Terminal (Shell 环境) ---
 # 现代化交互式 Shell
 brew "fish"
-# 终端复用器 (替代 tmux)，提供多窗口/分屏体验
+# 终端复用器，提供多窗口/分屏体验
 brew "zellij"
 # 智能目录跳转工具 (替代 cd)，支持权重记忆
 brew "zoxide"

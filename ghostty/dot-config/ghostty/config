@@ -1185,9 +1185,7 @@ command =
 # 可选值: 同 command
 # 默认值: 空
 #
-# TMUX自动启动:
-# NOTE: fish 没有使用绝对路径是为了同时适配 intel mac 和 silicon mac
-# initial-command = /bin/sh -l -c "exec fish -c \"tmux attach -t dotfiles || tmux new -s dotfiles -n 'nvim' ';' splitw -h ';' neww -n 'tmux' ';' splitw -h ';' neww -n 'ghostty' ';' splitw -h\""
+
 #
 # Zellij自动启动:
 # Zellij 启动逻辑已移到 fish config.fish，更灵活可控, 因此这里注释掉
@@ -1948,8 +1946,7 @@ confirm-close-surface = false
 #   - false                      - 保持运行（macOS 默认）
 #
 # 默认值: false（macOS），true（Linux）
-# NOTE: 如果不设置为 true，会导致偶尔重新启动 ghostty 时不自动执行 initial-command 命令,
-#       从而导致 tmux 无法启动,  特别是通过 tmux kill-server 命令退出终端时。
+# NOTE: 如果不设置为 true，会导致偶尔重新启动 ghostty 时不自动执行 initial-command 命令
 quit-after-last-window-closed = true
 
 # quit-after-last-window-closed-delay
@@ -2210,7 +2207,7 @@ macos-dock-drop-behavior = new-tab
 # 默认值: 空
 #
 # 配置示例:
-#   # 如果你需要 Alt 键组合在 Vim/Tmux 中工作
+#   # 如果你需要 Alt 键组合在 Vim 中工作
 #   macos-option-as-alt = true
 macos-option-as-alt =
 

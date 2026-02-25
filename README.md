@@ -49,8 +49,6 @@ cd "$HOME/dotfiles"
 - `Makefile`: 自动化构建与维护脚本
 - `.editorconfig`: 跨编辑器格式化标准。内置了严格的格式控制（例如缩进模式、行尾序列 LF 强制设定、文件末空行保护等），确保项目源码整洁、消除跨平台和跨编辑器带来的格式问题。
 
-> [!NOTE]
-> `tmux/` 目录仅作为历史配置存档保留，当前方案已切换至 Zellij，默认不安装 tmux。
 
 ## 2. 安装步骤
 
@@ -100,7 +98,7 @@ brew install stow
 # 终端
 brew install --cask ghostty@tip
 
-# 多窗口管理(替代 tmux)
+# 多窗口管理
 brew install zellij
 
 # 交互 Shell
@@ -377,7 +375,7 @@ echo "*.log" >> ~/.gitignore
 | `Ctrl + h` | 进入移动模式 |
 | `Ctrl + s` | 进入滚动模式 |
 | `Ctrl + o` | 进入会话管理模式 |
-| `Ctrl + a` | 进入 tmux 兼容模式 |
+| `Ctrl + a` | 进入 TMUX 兼容模式 |
 
 **面板模式 (Ctrl + p)**：
 | 快捷键 | 功能 |
@@ -684,9 +682,10 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 - [Helix](https://helix-editor.com/)
 - [Mise](https://mise.jdx.dev/)
 - [fzf](https://github.com/junegunn/fzf) / [zoxide](https://github.com/ajeetdsouza/zoxide) / [eza](https://github.com/eza-community/eza) / [bat](https://github.com/sharkdp/bat)
-- [git-delta](https://github.com/dandavison/delta) / [glow](https://github.com/charmbracelet/glow) / [btop](https://github.com/aristocratos/btop)
+- [ripgrep](https://github.com/BurntSushi/ripgrep) / [grc](https://github.com/garabik/grc) / [GNU Coreutils](https://www.gnu.org/software/coreutils/) / [shellcheck](https://github.com/koalaman/shellcheck)
+- [git-delta](https://github.com/dandavison/delta) / [glow](https://github.com/charmbracelet/glow) / [btop](https://github.com/aristocratos/btop) / [asciinema](https://github.com/asciinema/asciinema)
 - [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono) / [Maple Mono](https://github.com/subframe7536/maple-font) / [Geist Mono](https://github.com/vercel/geist-font) / [Nerd Fonts](https://www.nerdfonts.com/)
-- [Karabiner-Elements](https://karabiner-elements.pqrs.org/)
+- [Karabiner-Elements](https://karabiner-elements.pqrs.org/) / [switchaudio-osx](https://github.com/deweller/switchaudio-osx)
 - [GNU Stow](https://www.gnu.org/software/stow/)
 
 ---
