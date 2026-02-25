@@ -116,11 +116,6 @@ if status is-interactive
     abbr -a -g .... ../../..
     abbr -a -g ..... ../../../..
 
-    # 带语法高亮和 Git 集成的 cat 替代品（需 brew install bat）
-    if type -q bat
-        abbr -a -g b bat
-    end
-
     # 用 eza 替代 ls（需 brew install eza）
     if type -q eza
         abbr -a -g ls eza

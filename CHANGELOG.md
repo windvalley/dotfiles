@@ -8,14 +8,18 @@
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-02-25
+
 ### Added
 - `colorscheme` 扩展支持 Btop、Bat 和 Delta：THEMES 注册表从 4 列扩展为 6 列，新增 `btop` 和 `bat/delta`（共享 syntect 主题库）字段；`bat_cs_change` 通过 fish universal 变量设置 `BAT_THEME`；`delta_cs_change` 修改 `~/.gitconfig` 中的 `syntax-theme`
 - `dot-gitconfig` 在 `[delta]` 区块下新增 `syntax-theme = Dracula`，由 `colorscheme` 脚本统一管理
+- `b.fish` 新增 `b [query]` 函数：结合 `fzf` 模糊搜索与关键字精确过滤，选中后使用 `bat` 全屏语法高亮查看，与 `f` 函数设计风格完全一致
 
 ### Changed
 - `colorscheme` 从 THEMES 注册表中移除 `catppuccin` 和 `rose-pine`（两者均无 btop 内置主题），预设主题数从 10 减为 8
 - `colorscheme` 对 Bat/Delta 字段使用 `-` 作为"不支持"标记，遇到无内置 syntect 主题时静默跳过而非报错
 - `btop/btop.conf` 设置 `save_config_on_exit = false`
+- `config.fish` 移除 `abbr b bat`：`b` 已升级为交互式函数（`b.fish`），abbr 会产生冲突
 
 ## [0.8.0] - 2026-02-24
 

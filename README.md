@@ -445,6 +445,7 @@ echo "*.log" >> ~/.gitignore
 | `backup <file/dir>` | 为敏感文件或目录极速创建带有精确时间戳的完整备份副本 |
 | `copy [file]` | 将文件内容或前一个命令的标准输出(`\| copy`)极速复制到 Mac 剪贴板 |
 | `f [query]` | 结合 fzf 从当前目录搜索文件，选中后直接使用 Helix 全屏打开 |
+| `b [query]` | 结合 fzf 从当前目录搜索文件，选中后使用 bat 全屏查看（带语法高亮与分页） |
 | `rec [name]` | 极简终端操作录屏工具 (基于 asciinema)，支持录制、回放(`rec play`)与网页分享(`rec upload`) |
 | `gtd <tag>` | 一键同时删除本地和远端的 Git Tag |
 
@@ -458,7 +459,6 @@ echo "*.log" >> ~/.gitignore
 | 缩写 | 展开为 |
 |------|--------|
 | `mkdir` | `mkdir -p` |
-| `b` | `bat` |
 | `ls` | `eza` |
 | `ll` | `eza -l` |
 | `...` | `../..` (以此类推 `....`, `.....`) |
