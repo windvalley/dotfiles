@@ -127,13 +127,6 @@ if status is-interactive
         abbr -a -g ll eza -l
     end
 
-    # brew install --cask android-platform-tools
-    # brew install scrcpy
-    # sc: 无线投屏到电脑 (电脑作为显示器), 默认参数: 关闭声音 H265编码 1440码率
-    alias sc "nh scrcpy -w -S --no-audio --video-codec=h265 -m1440"
-    # scam: 使用手机摄像头作为视频源 (手机变成电脑摄像头)
-    alias scam "nh scrcpy --video-source=camera --no-audio --video-codec=h265 --camera-size=1080x720"
-
     # 自动启动 Zellij
     # 跳过: 已在 zellij 中 / SSH / Quick Terminal / 禁用标志 / 未安装 / 非 Ghostty 运行时
     # 逃生方法: 终端中执行 `set -Ux ZELLIJ_AUTO_DISABLE 1` 可永久禁用自动启动

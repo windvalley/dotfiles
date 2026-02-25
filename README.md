@@ -1,14 +1,17 @@
 # dotfiles
 
-这是一套精心设计的 **现代 macOS 终端开发环境**。
+一套 **极简、高效、开箱即用** 的 macOS 终端开发环境，所有配置集中版本控制，通过 GNU Stow 一键部署。
 
-基于 GNU Stow 进行模块化管理，核心目标是打造一个**极简、高效、开箱即用**的工作流。它集成了高性能终端、现代化编辑器、高效 Shell 和多窗口管理工具，并确保它们在视觉和交互上保持高度一致。
+核心工具栈：Ghostty（终端）+ Zellij（复用器）+ Fish（Shell）+ Helix（编辑器）+ Mise（版本管理），视觉与交互风格全栈统一。
 
-**核心设计哲学：**
+**核心设计理念：**
 1. **配置即代码**：所有配置通过 Git 追踪与 Stow 符号链接管理，支持一键幂等重置。
 2. **终端即容器**：终端仅作渲染容器（Ghostty），窗口布局与会话状态全部收敛于复用器（Zellij）。
-3. **声明式环境**：终结全局变量污染与多版本管理器的混乱，依靠统一基座在一处声明全部语言沙箱（Mise）。
+3. **统一环境**：终结全局变量污染与多版本管理器的混乱，依靠统一基座在一处声明全部语言沙箱（Mise）。
 4. **心智减负**：抵制无休止的插件拼凑，拥抱原生 LSP 架构的现代“开箱即用”编辑器（Helix），专注代码本身。
+
+> [!NOTE]
+> 此 dotfiles 仅适用于 macOS，不兼容 Linux 或 Windows (WSL)，且没有跨平台适配计划。
 
 ## 0. TL;DR (快速开始)
 
@@ -81,7 +84,6 @@ cd "$HOME/dotfiles"
 - 如需手动安装 Homebrew，请访问 https://brew.sh
 - 脚本会自动检测并迁移 zsh 的 PATH 设置到 fish
 
-**提示：** 该脚本支持多次执行（幂等），可随时运行以确保环境处于最新状态。
 
 ---
 
@@ -219,7 +221,7 @@ fish_add_path ~/.local/bin
 
 > [!TIP]
 > `fish_add_path` 是持久化的（写入 universal 变量），只需执行一次，重启后仍然生效。
-> 可用 `echo $PATH | tr ' ' '\n'` 查看当前所有路径。
+> 可用 `printf '%s\n' $PATH` 查看当前所有路径。
 
 ### 3.3 本地私有配置 (不入库)
 
@@ -329,27 +331,7 @@ echo "*.log" >> ~/.gitignore
 > [!TIP]
 > 上述修改会直接更新 `~/dotfiles/git/dot-gitignore`，建议将这些变更提交到你自己的 dotfiles 仓库中。
 
-## 4. 核心理念与使用哲学 (Core Usage Philosophy)
-
-在深入了解各工具的具体快捷键之前，建议先理解本套环境的设计初衷。基于对终端效率和代码美学的极致追求，本项目的日常工作流遵循以下 4 条核心哲学，它们按照从外围环境基建到沉浸编码心流的逻辑递进：
-
-#### 1. 配置即代码与幂等重置 (Configuration as Code & Idempotency)
-**【宏观基建】** 将个人开发环境视为一个现代化的软件工程项目来严谨对待。
-*   **哲学**：所有的配置变更必须经过 Git 的版本追踪，所有的环境同步必须通过 GNU Stow 软链。引入 `Makefile` 统管全局，无论是新机部署还是环境损坏，只需一句 `make restow` 即可实现“幂等性”的状态重置。告别在终端里难以追踪和复现的手动试错。
-
-#### 2. 终端即容器与状态持久化 (Terminal as Container)
-**【工作区管理】** 抛弃系统层级的杂乱多窗口堆叠，将所有的开发上下文收敛于独立且持久的虚拟空间内。
-*   **哲学**：把终端模拟器（Ghostty）仅当作一个极速的渲染容器。所有的标签页管理、面板分割以及会话保持，全部交由下一代复用器（Zellij）处理。即使意外关闭终端或切换设备，这套“空间架构”也能让你秒级无缝恢复之前的工作现场。
-
-#### 3. 声明式环境与解耦管理 (Declarative Environment Management)
-**【依赖生态】** 终结环境变量的全局污染和各语言版本管理器（nvm/pyenv/gvm）的群雄割据时代。
-*   **哲学**：在微观依赖上，依靠统一的底层基座（Mise），在一处对 Node.js、Python、Go、Rust 等所有运行时环境进行声明与管控。结合 Fish Shell 的特性，实现进出不同项目目录时的“无感沙箱切换”，确保每个项目都在隔离且精确的依赖沙箱中运行。
-
-#### 4. 极简编辑与心智减负 (Minimalist Editing & Cognitive Offloading)
-**【核心动作】** 抵制“为了配置而配置”的无底洞，拥抱“开箱即用”的现代文本编辑美学。
-*   **哲学**：使用基于 Tree-sitter 和原生 LSP（语言服务器协议）架构的 Helix 替代重度依赖自建插件生态的传统编辑器。摒弃维护数百行 Lua 或 Vimscript 配置的心智负担。只需专注提供语言服务器，即可享受一流的代码跳转、重构与补全。将开发者的全部精力回归到代码逻辑本身。
-
----
+## 4. 使用方法
 
 ### 4.1 Ghostty 终端
 
@@ -440,13 +422,16 @@ echo "*.log" >> ~/.gitignore
 
 **配置文件**：`~/.config/fish/config.fish`
 
-**常用命令与函数**：
+**Fish 常用命令**：
 | 命令 | 功能 |
 |------|------|
 | `fish_update_completions` | 更新命令补全 |
 | `fish_add_path <path>` | 添加路径 |
 | `fish_config` | 打开交互配置 |
-| `c` | 列出所有 dotfiles 自定义命令及其说明（命令发现入口） |
+
+**自定义函数**（输入 `c` 可列出所有命令及说明）：
+| 命令 | 功能 |
+|------|------|
 | `d` | 快速显示当前日期时间 |
 | `nh <cmd>` | 后台运行命令，丢弃输出 (nohup 简写) |
 | `ch <cmd>` | 查询 cheat.sh 快速获取命令帮助 |
@@ -464,30 +449,36 @@ echo "*.log" >> ~/.gitignore
 | `f [query]` | 结合 fzf 从当前目录搜索文件，选中后直接使用 Helix 全屏打开 |
 | `rec [name]` | 极简终端操作录屏工具 (基于 asciinema)，支持录制、回放(`rec play`)与网页分享(`rec upload`) |
 | `gtd <tag>` | 一键同时删除本地和远端的 Git Tag |
-| `sc` | 无线投屏到电脑 (需安装 scrcpy) |
-| `scam` | 使用手机摄像头作为视频源 (需安装 scrcpy) |
-
-**内置常用缩写 (Abbreviations)**：
-- `mkdir` 👉 `mkdir -p`
-- `...` 👉 `../..` (以此类推 `....`, `.....`)
-- `cat` 👉 `bat`
-- `ls` 👉 `eza`
-- `ll` 👉 `eza -l`
 
 > [!TIP]
-> Fish 的缩写会在输入后按空格时**自动展开**为完整命令。本套环境还内置了以下类别的缩写，请在实际使用中体会：
-> - **Git 操作**：`g` (git), `ga` (git add), `gc` (git commit), `gs` (git status), `gd` (git diff), `gp` (git push), `gl` (git pull), `gco` (git checkout) 等。
-> - **编辑器**：`vi`, `vim`, `h` 都会自动展开为你的系统默认现代编辑器 `hx`。
-> - **全局工具**：`cs` (colorscheme), `fs` (font-size), `o` (opacity), `vol` (audio-volume) 等。
+> 更多自定义命令（如 `colorscheme`、`font-size`、`opacity` 等）见 [4.8 自定义命令（bin/）](#48-自定义命令bin)。
 
-**Tide prompt**：`tide configure`（交互式配置）
+**内置缩写 (Abbreviations)**：
+
+缩写在输入后按空格时**自动展开**为完整命令。
+
+| 缩写 | 展开为 |
+|------|--------|
+| `mkdir` | `mkdir -p` |
+| `b` | `bat` |
+| `ls` | `eza` |
+| `ll` | `eza -l` |
+| `...` | `../..` (以此类推 `....`, `.....`) |
+| `vi` / `vim` / `h` | `hx` |
+| `cs` / `fs` / `o` / `vol` | `colorscheme` / `font-size` / `opacity` / `audio-volume` |
+| `g` | `git` |
+| `ga` / `gs` / `gd` / `gds` | `git add` / `git status` / `git diff` / `git diff --staged` |
+| `gc` / `gca` | `git commit` / `git commit --amend` |
+| `gp` / `gl` / `gco` | `git push` / `git pull` / `git checkout` |
+| `gr` / `grs` | `git restore` / `git restore --staged` |
+| `gg` | `git log` |
 
 **Vi 模式**：
 Fish 支持 Vi 风格编辑模式，本配置已默认启用。
 
 | 快捷键 | 功能 |
 |--------|------|
-| `Esc` | 进入 Vi 正常模式 |
+| `Esc` | 进入 Vi 普通模式 |
 | `i`/`a` | 进入插入模式 (光标前/光标后) |
 | `h`/`l` | 光标左/右移动 |
 | `k`/`j` | 上一条/下一条命令历史（基于输入过滤） |
@@ -499,7 +490,7 @@ Fish 支持 Vi 风格编辑模式，本配置已默认启用。
 | `u` | 撤销 |
 | `Ctrl+e` | 在普通模式/插入模式下，使用当前默认编辑器 (hx) 全屏编辑当前命令行 |
 
-在 Vi 正常模式下可以使用所有 Vim 风格的编辑命令。
+在 Vi 普通模式下可以使用所有 Vim 风格的编辑命令。
 
 ---
 
@@ -598,6 +589,8 @@ mise ls-remote python  # 查看所有可用的 Python 版本
 
 ### 4.6 Git 配置用法
 
+> Git 初始配置（用户信息、多账号隔离等）请参见 [3.7 配置 Git](#37-配置-git)。
+
 **配置文件**：
 - `~/.gitconfig`: 核心配置
 - `~/.gitignore`: 全局忽略文件
@@ -658,7 +651,6 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 > - `colorscheme`：Zellij 实时生效；Ghostty 需按 `Cmd + Shift + ,` 重载配置；Helix 需执行 `:config-reload` 使已打开的 buffer 生效。
 > - `font-size` / `opacity`：修改的是 Ghostty 配置文件，需按 `Cmd + Shift + ,` 重载配置后生效。
 
-fish 内置了一些缩写（见 `fish/dot-config/fish/config.fish`）：`cs`/`fs`/`o`/`vol`。
 
 ---
 
