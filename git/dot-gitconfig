@@ -33,6 +33,8 @@
     line-numbers = true
     # 并排对比模式（左右分栏显示变更）
     side-by-side = false
+    # 语法高亮主题（与 bat 共享 syntect 库，由 colorscheme 脚本管理）
+    syntax-theme = Dracula
 
 [merge]
     # 冲突显示风格：同时显示本地、远程和基准代码（diff3），方便合并

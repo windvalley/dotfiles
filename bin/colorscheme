@@ -1,54 +1,55 @@
 #!/usr/bin/env bash
 # colorscheme
 #
-# Switch colorscheme for Ghostty, Helix and Zellij simultaneously.
+# Switch colorscheme for Ghostty, Helix, Zellij, Btop, Bat and Delta simultaneously.
 #
 # Requirements:
 #   brew install gnu-sed
 #
 # Adding a new theme:
 #   Just add a line to the THEMES array below. Format:
-#   "shortname|Ghostty Theme Name|helix_theme_name|zellij-theme-name"
+#   "shortname|Ghostty Theme Name|helix_theme_name|zellij-theme-name|btop-theme-name|bat-theme-name"
+#   Use '=' if the theme name is the same as the shortname, '-' if unsupported by that tool.
 
 set -euo pipefail
 
 # ============================================
 # Theme Registry (single source of truth)
-# Format: "shortname|ghostty|helix|zellij"
+# Format: "shortname|ghostty|helix|zellij|btop|bat"
 # If a tool's theme name matches the shortname, use '=' as a placeholder.
+# Use '-' if a theme is not supported by a specific tool (will be skipped).
 #
 # Ghostty theme names: run `ghostty +list-themes` to list all available themes.
-# Helix theme names: run `hx --health` or check ~/.config/helix/runtime/themes/.
-# Zellij theme names: check built-in themes in zellij docs.
+# Helix theme names:   run `hx --health` or check ~/.config/helix/runtime/themes/.
+# Zellij theme names:  check built-in themes in zellij docs.
+# Btop theme names:    check ~/.config/btop/themes/ or btop built-in themes.
+# Bat theme names:     run `bat --list-themes` (only built-in themes; '-' = unsupported).
 # ============================================
 THEMES=(
-    "dracula|Dracula|=|="
-    "tokyonight|TokyoNight Moon|tokyonight_moon|tokyo-night"
-    "gruvbox|Gruvbox Material Dark|gruvbox_dark_hard|="
-    "catppuccin|Catppuccin Mocha|catppuccin_mocha|catppuccin-mocha"
-    "kanagawa|Kanagawa Wave|kanagawa|="
-    "nord|Nord|nord|nord"
-    "rose-pine|Rose Pine|rose_pine|="
-    "solarized-dark|Solarized Dark Higher Contrast|solarized_dark|="
-    "one-dark|Atom One Dark|one_dark|="
-    "everforest|Everforest Dark Hard|everforest_dark|="
+    "dracula|Dracula|=|=|=|Dracula"
+    "tokyonight|TokyoNight Moon|tokyonight_moon|tokyo-night|tokyo-night|-"
+    "gruvbox|Gruvbox Material Dark|gruvbox_dark_hard|=|gruvbox_material_dark|gruvbox-dark"
+    "kanagawa|Kanagawa Wave|kanagawa|=|kanagawa-wave|-"
+    "nord|Nord|nord|nord|=|Nord"
+    "solarized-dark|Solarized Dark Higher Contrast|solarized_dark|=|solarized_dark|Solarized (dark)"
+    "one-dark|Atom One Dark|one_dark|=|onedark|-"
+    "everforest|Everforest Dark Hard|everforest_dark|=|everforest-dark-hard|-"
 )
 
 # Check for gsed (GNU sed)
-if command -v gsed &>/dev/null; then
-    SED="gsed"
-elif command -v sed &>/dev/null; then
-    SED="sed"
-else
-    echo "Error: sed not found" >&2
+if ! command -v gsed &>/dev/null; then
+    echo "Error: gsed (GNU sed) is required but not found. Please 'brew install gnu-sed'." >&2
     exit 1
 fi
+SED="gsed"
 
 config_home=${XDG_CONFIG_HOME:-"$HOME/.config"}
 
 ghostty_config="$config_home/ghostty/config"
 helix_config="$config_home/helix/config.toml"
 zellij_config="$config_home/zellij/config.kdl"
+btop_config="$config_home/btop/btop.conf"
+gitconfig="$HOME/.gitconfig"
 
 # Show current theme from config files
 show_current() {
@@ -68,6 +69,21 @@ show_current() {
         zt=$(grep -E '^theme\s' "$zellij_config" | $SED -E 's/^theme\s+"?([^"]*)"?\s*$/\1/' | head -1)
         echo "  Zellij  : ${zt:-not set}"
     fi
+    if [ -f "$btop_config" ]; then
+        local bt
+        bt=$(grep -E '^color_theme\s*=' "$btop_config" | $SED -E 's/^color_theme\s*=\s*"?([^"]*)"?\s*$/\1/' | head -1)
+        echo "  Btop    : ${bt:-not set}"
+    fi
+    if command -v fish &>/dev/null; then
+        local bat_theme
+        bat_theme=$(fish -c 'echo $BAT_THEME' 2>/dev/null)
+        echo "  Bat     : ${bat_theme:-not set}"
+    fi
+    if [ -f "$gitconfig" ]; then
+        local dt
+        dt=$(grep -E '^\s+syntax-theme\s*=' "$gitconfig" | $SED -E 's/^\s+syntax-theme\s*=\s*(.*)$/\1/' | head -1)
+        echo "  Delta   : ${dt:-not set}"
+    fi
 }
 
 # List available themes
@@ -75,7 +91,7 @@ list_themes() {
     echo ""
     echo "Available themes:"
     for entry in "${THEMES[@]}"; do
-        IFS='|' read -r name _ _ _ <<< "$entry"
+        IFS='|' read -r name _ _ _ <<<"$entry"
         echo "  $name"
     done
 }
@@ -92,13 +108,14 @@ if [ -z "$colorscheme" ]; then
 fi
 
 # Lookup theme name for a specific tool.
-# $1 = shortname, $2 = field index (1=ghostty, 2=helix, 3=zellij)
+# $1 = shortname, $2 = field index (1=ghostty, 2=helix, 3=zellij, 4=btop, 5=bat/delta)
+# Note: bat and delta share the same syntect theme library, so field 5 is reused for both.
 lookup_theme() {
     local name="$1" field="$2"
     for entry in "${THEMES[@]}"; do
-        IFS='|' read -r entry_name ghostty helix zellij <<< "$entry"
+        IFS='|' read -r entry_name ghostty helix zellij btop bat <<< "$entry"
         if [ "$entry_name" = "$name" ]; then
-            local values=("$entry_name" "$ghostty" "$helix" "$zellij")
+            local values=("$entry_name" "$ghostty" "$helix" "$zellij" "$btop" "$bat")
             local result="${values[$field]}"
             # '=' means same as shortname
             if [ "$result" = "=" ]; then
@@ -149,8 +166,54 @@ zellij_cs_change() {
     echo "Zellij theme -> $theme"
 }
 
+btop_cs_change() {
+    if [ ! -f "$btop_config" ]; then
+        echo "btop config not found: $btop_config" >&2
+        return 1
+    fi
+
+    local theme
+    theme=$(lookup_theme "$colorscheme" 4)
+    $SED -i -E "s/^color_theme\s*=.*/color_theme = \"$theme\"/" "$btop_config"
+    echo "Btop   theme -> $theme"
+}
+
+bat_cs_change() {
+    local theme
+    theme=$(lookup_theme "$colorscheme" 5)
+    if [ "$theme" = "-" ]; then
+        echo "Bat    theme -> (not supported, skipped)"
+        return 0
+    fi
+    if ! command -v fish &>/dev/null; then
+        echo "fish not found, cannot set BAT_THEME" >&2
+        return 1
+    fi
+    fish -c "set -Ux BAT_THEME '$theme'"
+    echo "Bat    theme -> $theme"
+}
+
+delta_cs_change() {
+    if [ ! -f "$gitconfig" ]; then
+        echo "gitconfig not found: $gitconfig" >&2
+        return 1
+    fi
+
+    local theme
+    theme=$(lookup_theme "$colorscheme" 5)  # shares syntect themes with bat
+    if [ "$theme" = "-" ]; then
+        echo "Delta  theme -> (not supported, skipped)"
+        return 0
+    fi
+    $SED -i -E "s/^(\s+)syntax-theme\s*=.*/\1syntax-theme = $theme/" "$gitconfig"
+    echo "Delta  theme -> $theme"
+}
+
 ghostty_cs_change
 helix_cs_change
 zellij_cs_change
+btop_cs_change
+bat_cs_change
+delta_cs_change
 
 exit 0

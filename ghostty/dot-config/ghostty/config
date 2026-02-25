@@ -207,7 +207,7 @@ font-shaping-break = cursor
 # 配置示例:
 #   theme = "Catppuccin Macchiato"
 #   theme = "light:Catppuccin Latte,dark:Catppuccin Macchiato"
-theme = "Rose Pine"
+theme = "Dracula"
 
 # background
 # 背景颜色
@@ -805,7 +805,7 @@ right-click-action = context-menu
 # 默认值: 1
 #
 # 注意: 在 macOS 上需要重启才能生效
-background-opacity = 0.9
+background-opacity = 1
 
 # background-opacity-cells
 # 是否将透明度应用于显式设置了背景色的单元格

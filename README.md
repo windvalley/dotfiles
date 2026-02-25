@@ -594,7 +594,7 @@ mise ls-remote python  # 查看所有可用的 Python 版本
 - `~/.gitignore`: 全局忽略文件
 
 **核心特性**：
-- **Delta 集成**：使用 `git-delta` 进行 Diff 语法高亮，支持行号、并排显示和颜色优化。
+- **Delta 集成**：使用 `git-delta` 进行 Diff 语法高亮，支持行号、并排显示和颜色优化；`syntax-theme` 由 `colorscheme` 脚本统一管理。
 - **智能默认值**：
   - `pull.rebase = true`: 保持提交历史线性整洁。
   - `push.autoSetupRemote = true`: 自动关联远程分支。
@@ -635,7 +635,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
 这些命令会在 stow `bin` 后出现在 `~/.local/bin`：
 
-- `colorscheme [name]`: 切换 Ghostty、Helix 和 Zellij 主题。无参数时显示当前主题和可用主题列表，内置 10 个预设（dracula / tokyonight / gruvbox / catppuccin / kanagawa / nord / rose-pine / solarized-dark / one-dark / everforest），也支持直接传入工具原生主题名
+- `colorscheme [name]`: 同步切换 Ghostty、Helix、Zellij、Btop、Bat 和 Delta 主题。无参数时显示当前主题和可用主题列表，内置 8 个预设（dracula / tokyonight / gruvbox / kanagawa / nord / solarized-dark / one-dark / everforest），也支持直接传入工具原生主题名
 - `font-size <1-200>`: 设置 Ghostty 字体大小
 - `opacity <0.0-1.0>`: 设置 Ghostty 背景透明度
 - `audio-volume`: 音量控制与输出设备切换（需要 `switchaudio-osx`）
@@ -646,7 +646,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
 > [!TIP]
 > **变更生效方式：**
-> - `colorscheme`：Zellij 实时生效；Ghostty 需按 `Cmd + Shift + ,` 重载配置；Helix 需执行 `:config-reload` 使已打开的 buffer 生效。
+> - `colorscheme`：Zellij 实时生效；Ghostty 需按 `Cmd + Shift + ,` 重载配置；Helix 需执行 `:config-reload` 使已打开的 buffer 生效；Btop、Bat 与 Delta 下次执行命令时生效。注：Bat 与 Delta 不支持 tokyonight / kanagawa / one-dark / everforest，切换到这些主题时会自动跳过。
 > - `font-size` / `opacity`：修改的是 Ghostty 配置文件，需按 `Cmd + Shift + ,` 重载配置后生效。
 
 

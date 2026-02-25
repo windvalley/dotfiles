@@ -8,14 +8,14 @@
 
 ## [Unreleased]
 
-### Changed
-- `README.md` 全面优化：重写开头描述（直接列出核心工具栈）、新增 macOS-only 声明、第 4 章精简为"使用方法"（去除冗余哲学论述）、"声明式环境"修正为"统一环境"
-- `README.md` Fish Shell 章节重构：拆分命令/函数表，审计缩写表（修正 `cat`→`bat` 为 `b`→`bat`），新增跨章节引用
+### Added
+- `colorscheme` 扩展支持 Btop、Bat 和 Delta：THEMES 注册表从 4 列扩展为 6 列，新增 `btop` 和 `bat/delta`（共享 syntect 主题库）字段；`bat_cs_change` 通过 fish universal 变量设置 `BAT_THEME`；`delta_cs_change` 修改 `~/.gitconfig` 中的 `syntax-theme`
+- `dot-gitconfig` 在 `[delta]` 区块下新增 `syntax-theme = Dracula`，由 `colorscheme` 脚本统一管理
 
-### Removed
-- `tmux/` 目录：彻底移除遗留的 tmux 配置目录及其在 `README.md`、`Brewfile`、`helix` 和 `ghostty` 中的所有引用
-- `config.fish` 移除 scrcpy 相关别名（`sc`/`scam`），该功能与终端开发环境定位无关
-- `README.md` 同步移除 scrcpy 和 tmux 相关文档
+### Changed
+- `colorscheme` 从 THEMES 注册表中移除 `catppuccin` 和 `rose-pine`（两者均无 btop 内置主题），预设主题数从 10 减为 8
+- `colorscheme` 对 Bat/Delta 字段使用 `-` 作为"不支持"标记，遇到无内置 syntect 主题时静默跳过而非报错
+- `btop/btop.conf` 设置 `save_config_on_exit = false`
 
 ## [0.8.0] - 2026-02-24
 
