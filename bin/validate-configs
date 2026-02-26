@@ -89,7 +89,7 @@ validate_fish() {
 # 验证 Git 配置
 validate_git() {
     info "验证 Git 配置..."
-    local git_config="$DOTFILES_DIR/git/dot-gitconfig"
+    local git_config="$DOTFILES_DIR/git/dot-config/git/config"
     
     if [ ! -f "$git_config" ]; then
         error "Git 配置文件不存在: $git_config"

@@ -10,14 +10,19 @@
 
 ### Added
 - `zellij/config.kdl` 新增 `dracula-pro` 自定义主题：基于 Dracula 调色板，通过显式声明 `text_selected` / `text_unselected` 解决 Zellij 内置 dracula 主题与 Ghostty Dracula 配色冲突导致选中文本不可见的问题
+- `.gitignore` 新增 `fish_variables` 规则：防止 Fish 自动管理的 universal 变量文件被意外提交
 
 ### Changed
+- Git 配置迁移至 XDG 标准位置：`dot-gitconfig` → `dot-config/git/config`，`dot-gitignore` → `dot-config/git/ignore`，`excludesFile` 显式指向 `~/.config/git/ignore`
+- `install.sh` 将 git 从 `STANDARD_PACKAGES` 移入 `CONFIG_PACKAGES`，统一走 `~/.config/` 目录级链接，消除 `$HOME` 直接映射的特例
+- `bin/colorscheme` Delta 配置路径从 `$HOME/.gitconfig` 改为 `$config_home/git/config`
+- `bin/validate-configs` Git 验证路径同步更新为 XDG 布局
 - `bin/colorscheme` 将 dracula 的 Zellij 映射从内置 `dracula` 切换为自定义 `dracula-pro`，确保 `colorscheme dracula` 自动使用修复后的主题
 
 ## [0.9.0] - 2026-02-25
 
 ### Added
-- `colorscheme` 扩展支持 Btop、Bat 和 Delta：THEMES 注册表从 4 列扩展为 6 列，新增 `btop` 和 `bat/delta`（共享 syntect 主题库）字段；`bat_cs_change` 通过 fish universal 变量设置 `BAT_THEME`；`delta_cs_change` 修改 `~/.gitconfig` 中的 `syntax-theme`
+- `colorscheme` 扩展支持 Btop、Bat 和 Delta：THEMES 注册表从 4 列扩展为 6 列，新增 `btop` 和 `bat/delta`（共享 syntect 主题库）字段；`bat_cs_change` 通过 fish universal 变量设置 `BAT_THEME`；`delta_cs_change` 修改 `~/.config/git/config` 中的 `syntax-theme`
 - `dot-gitconfig` 在 `[delta]` 区块下新增 `syntax-theme = Dracula`，由 `colorscheme` 脚本统一管理
 - `b.fish` 新增 `b [query]` 函数：结合 `fzf` 模糊搜索与关键字精确过滤，选中后使用 `bat` 全屏语法高亮查看，与 `f` 函数设计风格完全一致
 

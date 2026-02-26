@@ -49,7 +49,7 @@ ghostty_config="$config_home/ghostty/config"
 helix_config="$config_home/helix/config.toml"
 zellij_config="$config_home/zellij/config.kdl"
 btop_config="$config_home/btop/btop.conf"
-gitconfig="$HOME/.gitconfig"
+gitconfig="$config_home/git/config"
 
 # Show current theme from config files
 show_current() {

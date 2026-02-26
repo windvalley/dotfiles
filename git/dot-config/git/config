@@ -15,8 +15,8 @@
     editor = hx
     # 设置默认分页器为 Delta（语法高亮 Diff）
     pager = delta
-    # 全局忽略文件路径
-    excludesfile = ~/.gitignore
+    # 全局忽略文件路径（XDG 标准位置）
+    excludesFile = ~/.config/git/ignore
     # 提交时转换为 LF，检出时不转换（适合 macOS/Linux）
     autocrlf = input
 

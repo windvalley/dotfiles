@@ -154,7 +154,7 @@ git pull --rebase
 # 如果目标工具的配置目录已经是真实目录（非软链），必须将其重命名或删除，切忌保留！
 # 目的：确保 stow 时发现目标目录"不存在"，从而直接把整个目录映射为一个【纯目录级软链】。
 # 否则 stow 会进入真实目录执行【文件级】软链，导致后续工具在本地新生成的文件脱离版本控制。
-for pkg in ghostty helix zellij mise karabiner btop fish; do
+for pkg in ghostty helix zellij mise karabiner btop fish git; do
     if [ -d ~/.config/$pkg ] && [ ! -L ~/.config/$pkg ]; then
         mv ~/.config/$pkg ~/.config/$pkg.bak
     elif [ -L ~/.config/$pkg ]; then
@@ -168,7 +168,7 @@ done
 ```sh
 cd "$HOME/dotfiles"
 
-# 统一链接所有标准配置包（包括 git。它们都直接映射到用户根目录下）
+# 统一链接所有标准配置包（全部遵循 XDG 规范，映射到 ~/.config/ 下）
 stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles ghostty helix zellij mise karabiner btop fish git
 
 # 单独链接需要特定前置结构的包（例如将自定义命令放置在 ~/.local/bin 下）
@@ -247,6 +247,9 @@ fisher 是 fish 的插件管理器。
 通过在 `config.fish` 中设置 `fisher_path`，所有插件相关的文件会被**彻底隔离**在 `~/.local/share/fisher` 下，避免污染 `~/.config/fish` 目录。
 
 ```fish
+# ⚠️ 重要：安装前先清理 fisher_path 目录，避免残留数据导致安装冲突
+rm -rf ~/.local/share/fisher
+
 # 安装 Fisher
 curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
 
@@ -300,7 +303,7 @@ make macos
 
 **1. 配置用户信息及多账号分离 (Local Overrides)**
 
-为了防止工作邮箱和个人邮箱混用，或意外泄露身份信息，本仓库的 `~/.gitconfig` 中**移除了硬编码的用户信息**，采用基于 `include` 特性的分离机制。
+为了防止工作邮箱和个人邮箱混用，或意外泄露身份信息，本仓库的 `~/.config/git/config` 中**移除了硬编码的用户信息**，采用基于 `include` 特性的分离机制。
 
 **设置个人全局身份（必须）：**
 在你的 Home 目录创建被 Git 忽略的本地配置文件（可以将模板直接复制过去修改）：
@@ -315,19 +318,19 @@ cp ~/dotfiles/local/dot-gitconfig.local.example ~/.gitconfig.local
 cp ~/dotfiles/local/dot-gitconfig.work.example ~/.gitconfig.work
 # 然后编辑 ~/.gitconfig.work，填入你的公司邮箱
 ```
-只要你在这个目录进行 `git commit`，Git 会利用 `dot-gitconfig` 中的 `includeIf "gitdir:~/work/"` 条件自动切换到你的公司邮箱，彻底杜绝身份错误。
+只要你在这个目录进行 `git commit`，Git 会利用配置中的 `includeIf "gitdir:~/work/"` 条件自动切换到你的公司邮箱，彻底杜绝身份错误。
 
 **2. 自定义全局忽略文件**
 
-仓库中已包含通用的 `~/.gitignore`（通过 `core.excludesfile` 配置）。如果你有特定的文件需要全局忽略（例如 IDE 配置、临时文件等），可以直接编辑该文件：
+仓库中已包含通用的 `~/.config/git/ignore`（Git XDG 标准位置，自动发现）。如果你有特定的文件需要全局忽略（例如 IDE 配置、临时文件等），可以直接编辑该文件：
 
 ```bash
 # 添加自定义忽略规则 (例如忽略所有 .log 文件)
-echo "*.log" >> ~/.gitignore
+echo "*.log" >> ~/.config/git/ignore
 ```
 
 > [!TIP]
-> 上述修改会直接更新 `~/dotfiles/git/dot-gitignore`，建议将这些变更提交到你自己的 dotfiles 仓库中。
+> 上述修改会直接更新 `~/dotfiles/git/dot-config/git/ignore`，建议将这些变更提交到你自己的 dotfiles 仓库中。
 
 ## 4. 使用方法
 
@@ -590,8 +593,8 @@ mise ls-remote python  # 查看所有可用的 Python 版本
 > Git 初始配置（用户信息、多账号隔离等）请参见 [3.7 配置 Git](#37-配置-git)。
 
 **配置文件**：
-- `~/.gitconfig`: 核心配置
-- `~/.gitignore`: 全局忽略文件
+- `~/.config/git/config`: 核心配置（XDG 标准位置）
+- `~/.config/git/ignore`: 全局忽略文件（XDG 标准位置）
 
 **核心特性**：
 - **Delta 集成**：使用 `git-delta` 进行 Diff 语法高亮，支持行号、并排显示和颜色优化；`syntax-theme` 由 `colorscheme` 脚本统一管理。

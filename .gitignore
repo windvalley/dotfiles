@@ -15,6 +15,7 @@ Thumbs.db
 secret.*
 .env
 .env.local
+fish_variables
 
 # === Build & Cache ===
 node_modules/

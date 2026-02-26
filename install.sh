@@ -116,11 +116,11 @@ info "Linking configuration files with stow..."
 mkdir -p "$HOME/.local/bin"
 
 if [ "$MINIMAL" = true ]; then
-    CONFIG_PACKAGES=(helix fish)
-    STANDARD_PACKAGES=(fish helix git)
+    CONFIG_PACKAGES=(helix fish git)
+    STANDARD_PACKAGES=(fish helix)
 else
-    CONFIG_PACKAGES=(ghostty helix zellij mise karabiner btop fish)
-    STANDARD_PACKAGES=(ghostty fish helix zellij mise karabiner git btop)
+    CONFIG_PACKAGES=(ghostty helix zellij mise karabiner btop fish git)
+    STANDARD_PACKAGES=(ghostty fish helix zellij mise karabiner btop)
 fi
 
 # Handle all config directories for stow
@@ -138,6 +138,7 @@ for pkg in "${CONFIG_PACKAGES[@]}"; do
         mv "$DIR" "$BACKUP_DIR"
     fi
 done
+
 for pkg in "${STANDARD_PACKAGES[@]}"; do
     info "Stowing $pkg..."
     stow --restow --target="$HOME" --dir="$DOTFILES_DIR" --dotfiles "$pkg"
@@ -190,6 +191,14 @@ else
 fi
 
 info "Installing fisher and plugins..."
+# 清理 fisher_path 目录（与 config.fish 中 set -g fisher_path 保持一致）
+# 该目录存放第三方插件的 functions/completions/conf.d，残留旧数据可能导致安装冲突
+FISHER_DATA_DIR="$HOME/.local/share/fisher"
+if [ -d "$FISHER_DATA_DIR" ]; then
+    warn "Cleaning existing fisher data: $FISHER_DATA_DIR"
+    rm -rf "$FISHER_DATA_DIR"
+fi
+
 if [ -f "$DOTFILES_DIR/fish/dot-config/fish/fish_plugins" ]; then
     if fish -c "type -q fisher" 2>/dev/null; then
         success "Fisher already installed, updating plugins..."
