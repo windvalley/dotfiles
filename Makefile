@@ -1,4 +1,4 @@
-.PHONY: help install stow unstow restow test clean validate fish plugins update lint
+.PHONY: help install stow unstow restow test clean validate fish plugins update lint docs
 
 # 默认目标
 .DEFAULT_GOAL := help
@@ -48,6 +48,7 @@ help: ## 显示帮助信息
 	@echo "$(GREEN)维护:$(NC)"
 	@echo "  $(YELLOW)make validate$(NC)   验证所有配置文件语法"
 	@echo "  $(YELLOW)make lint$(NC)       静态分析 bin/ 脚本 (shellcheck)"
+	@echo "  $(YELLOW)make docs$(NC)       生成或更新 README 的目录 (TOC)"
 	@echo "  $(YELLOW)make update$(NC)     更新 dotfiles 仓库"
 	@echo "  $(YELLOW)make clean$(NC)      清理临时文件"
 	@echo ""
@@ -178,6 +179,15 @@ lint: ## 静态分析 bin/ 脚本 (shellcheck)
 		echo "$(RED)❌ $$errors 个脚本存在问题$(NC)"; \
 		exit 1; \
 	fi
+
+docs: ## 生成或更新 README 的目录 (TOC)
+	@echo "$(BLUE)📚 生成或更新 README.md 的目录结构...$(NC)"
+	@if ! command -v npx > /dev/null 2>&1; then \
+		echo "$(RED)  ❌ npx 未安装，请先安装 Node.js$(NC)"; \
+		exit 1; \
+	fi
+	@npx doctoc README.md --notitle --maxlevel 3
+	@echo "$(GREEN)✅ README.md 目录已更新$(NC)"
 
 update: ## 更新 dotfiles 仓库
 	@echo "$(BLUE)🔄 更新 dotfiles...$(NC)"

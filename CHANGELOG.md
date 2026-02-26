@@ -10,6 +10,7 @@
 
 ### Added
 - `Brewfile` 新增 `orbstack`：现代、轻量的 macOS 容器开发环境（替代 Docker Desktop/VirtualBox）
+- `Makefile` 新增 `make docs` 自动化命令：通过使用 `npx markdown-toc -i README.md` 原地为过长的项目主文档生成且维护一层精美的高亮跳转大纲
 - `README.md` 新增“与官方默认的关键差异”章节：系统梳理并公开了 Karabiner、Ghostty、Zellij、Fish、Helix、Git 六大核心工具的全部非默认定制，极大降低新用户的理解成本
 
 ### Changed

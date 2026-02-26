@@ -13,6 +13,44 @@
 > [!NOTE]
 > 此 dotfiles 仅适用于 macOS，不兼容 Linux 或 Windows (WSL)，且没有跨平台适配计划。
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [0. TL;DR (快速开始)](#0-tldr-%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)
+- [1. 项目结构](#1-%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84)
+- [2. 安装步骤](#2-%E5%AE%89%E8%A3%85%E6%AD%A5%E9%AA%A4)
+  - [2.1 一键安装 (推荐)](#21-%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85-%E6%8E%A8%E8%8D%90)
+  - [2.2 手动安装步骤 (可选)](#22-%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85%E6%AD%A5%E9%AA%A4-%E5%8F%AF%E9%80%89)
+- [3. 配置指南](#3-%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97)
+  - [3.1 配置 fish](#31-%E9%85%8D%E7%BD%AE-fish)
+  - [3.2 从 zsh 迁移](#32-%E4%BB%8E-zsh-%E8%BF%81%E7%A7%BB)
+  - [3.3 本地私有配置 (不入库)](#33-%E6%9C%AC%E5%9C%B0%E7%A7%81%E6%9C%89%E9%85%8D%E7%BD%AE-%E4%B8%8D%E5%85%A5%E5%BA%93)
+  - [3.4 配置 fisher](#34-%E9%85%8D%E7%BD%AE-fisher)
+  - [3.5 配置 tide](#35-%E9%85%8D%E7%BD%AE-tide)
+  - [3.6 macOS 系统偏好 (macos.sh)](#36-macos-%E7%B3%BB%E7%BB%9F%E5%81%8F%E5%A5%BD-macossh)
+  - [3.7 配置 Git](#37-%E9%85%8D%E7%BD%AE-git)
+- [4. 使用方法](#4-%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95)
+  - [4.1 Ghostty 终端](#41-ghostty-%E7%BB%88%E7%AB%AF)
+  - [4.2 Zellij 终端复用器](#42-zellij-%E7%BB%88%E7%AB%AF%E5%A4%8D%E7%94%A8%E5%99%A8)
+  - [4.3 Fish Shell](#43-fish-shell)
+  - [4.4 Helix 编辑器](#44-helix-%E7%BC%96%E8%BE%91%E5%99%A8)
+  - [4.5 Mise 工具版本管理](#45-mise-%E5%B7%A5%E5%85%B7%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
+  - [4.6 Git 配置用法](#46-git-%E9%85%8D%E7%BD%AE%E7%94%A8%E6%B3%95)
+  - [4.7 stow 的用法说明](#47-stow-%E7%9A%84%E7%94%A8%E6%B3%95%E8%AF%B4%E6%98%8E)
+  - [4.8 自定义命令（bin/）](#48-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%91%BD%E4%BB%A4bin)
+- [5. 常用维护命令 (Makefile)](#5-%E5%B8%B8%E7%94%A8%E7%BB%B4%E6%8A%A4%E5%91%BD%E4%BB%A4-makefile)
+- [6. 与官方默认的关键差异](#6-%E4%B8%8E%E5%AE%98%E6%96%B9%E9%BB%98%E8%AE%A4%E7%9A%84%E5%85%B3%E9%94%AE%E5%B7%AE%E5%BC%82)
+  - [🔑 Karabiner — 全局键位改造](#-karabiner--%E5%85%A8%E5%B1%80%E9%94%AE%E4%BD%8D%E6%94%B9%E9%80%A0)
+  - [🖥️ Ghostty — 终端行为与键位](#-ghostty--%E7%BB%88%E7%AB%AF%E8%A1%8C%E4%B8%BA%E4%B8%8E%E9%94%AE%E4%BD%8D)
+  - [🧩 Zellij — 快捷键与会话架构](#-zellij--%E5%BF%AB%E6%8D%B7%E9%94%AE%E4%B8%8E%E4%BC%9A%E8%AF%9D%E6%9E%B6%E6%9E%84)
+  - [🐟 Fish — Shell 行为与键位](#-fish--shell-%E8%A1%8C%E4%B8%BA%E4%B8%8E%E9%94%AE%E4%BD%8D)
+  - [✏️ Helix — 编辑器键位与显示](#-helix--%E7%BC%96%E8%BE%91%E5%99%A8%E9%94%AE%E4%BD%8D%E4%B8%8E%E6%98%BE%E7%A4%BA)
+  - [🔧 Git — 工作流增强](#-git--%E5%B7%A5%E4%BD%9C%E6%B5%81%E5%A2%9E%E5%BC%BA)
+- [7. 致谢 (Acknowledgments)](#7-%E8%87%B4%E8%B0%A2-acknowledgments)
+- [8. 开源协议 (License)](#8-%E5%BC%80%E6%BA%90%E5%8D%8F%E8%AE%AE-license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## 0. TL;DR (快速开始)
 
 最简单的方法是使用一键安装脚本：
@@ -58,14 +96,14 @@ cd "$HOME/dotfiles"
 仓库根目录下提供了一个 `install.sh` 脚本，可以自动化完成绝大部分安装和配置工作。
 
 **该脚本将执行以下操作：**
-1. 检查并安装 **Homebrew**（如果尚未安装）。
-2. 安装所有常用的 **Brew 依赖**（stow, zellij, fish, helix, mise, bat, eza, fzf, zoxide, grc, gawk, gnu-sed, grep, switchaudio-osx, glow, ripgrep, shellcheck）。
-3. 安装 **Nerd Fonts**（默认 JetBrains Mono, Maple Mono, Geist Mono）。
-4. 安装 **Ghostty** 终端（通过 `brew install --cask ghostty@tip`）。
-5. 使用 `stow` 将所有配置软链到正确的位置。
-6. 检查并将 **Fish** 设为默认 Shell。
-7. 安装 **Fisher** 插件管理器并同步插件。
-8. 提示是否应用 **macOS 系统偏好设置**（通过 `macos.sh`）。
+1. **环境准备**：检查并自动安装 **Homebrew**（如果尚未安装）。
+2. **核心依赖**：读取 `Brewfile`，安装所有 CLI 工具（stow, zellij, fish, helix, mise, bat, eza, fzf, ripgrep 等）与 GUI 应用（Ghostty, OrbStack, JetBrains Mono 字体等）。
+3. **字体安装**：默认已通过 Brew 安装 JetBrains Mono，并**询问是否安装**其他扩展字体（Maple Mono, Geist Mono）。
+4. **软链配置**：自动识别已存在的配置并备份，然后使用 `stow` 将所有配置（含 `bin` 脚本）软链到对应的系统目录。
+5. **隐私配置模板**：自动在用户目录创建 Git 信息模板（`.gitconfig.local`/`.work`）和私密环境变量模板（`config.local.fish`）。
+6. **Shell 初始化**：将 **Fish** 设为默认 Shell，并**自动迁移原 Zsh 的 PATH 环境变量**到 Fish 中。
+7. **插件配置**：安装 **Fisher** 插件管理器并同步所有 Fish 插件。
+8. **系统优化**：提示是否应用 **macOS 常用系统偏好设置**（通过 `macos.sh`）。
 
 **使用方法：**
 ```sh
@@ -651,7 +689,6 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 > - `colorscheme`：Zellij 实时生效；Ghostty 需按 `Cmd + Shift + ,` 重载配置；Helix 需执行 `:config-reload` 使已打开的 buffer 生效；Btop、Bat 与 Delta 下次执行命令时生效。注：Bat 与 Delta 不支持 tokyonight / kanagawa / one-dark / everforest，切换到这些主题时会自动跳过。
 > - `font-size` / `opacity`：修改的是 Ghostty 配置文件，需按 `Cmd + Shift + ,` 重载配置后生效。
 
-
 ---
 
 ## 5. 常用维护命令 (Makefile)
@@ -671,6 +708,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | `make macos` | 配置 macOS 系统偏好设置 |
 | `make validate` | 运行完整的配置验证（包含工具检查） |
 | `make lint` | 静态分析 `bin/` 脚本（shellcheck） |
+| `make docs` | 生成或更新 README 的目录 (TOC) |
 | `make update` | 拉取远程代码并更新 |
 | `make clean` | 清理临时文件 (`.bak`, `.tmp` 等) |
 
@@ -684,7 +722,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
 | 改动 | 官方默认 | 本项目 | 原因 |
 |------|----------|--------|------|
-| Caps Lock ↔ Left Control 互换 | 各自独立 | 双向互换（排除特定外接键盘） | Caps Lock 位置更适合高频的 Ctrl 操作（Vim/Emacs/Zellij 均依赖 Ctrl） |
+| Caps Lock ↔ Left Control 互换 | 保持原位置 | 交换位置（已排除 HHKB 键位的键盘）| Caps Lock 位置更适合高频的 Ctrl 操作（Emacs/Zellij/Helix/Vim 等均重度依赖 Ctrl） |
 
 ### 🖥️ Ghostty — 终端行为与键位
 
