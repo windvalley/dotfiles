@@ -511,34 +511,132 @@ web_client {
 }
 
 themes {
-    // NOTE: 自定义 dracula 主题的目的是为了解决zellij 原生dracula主题和 ghostty dracula 主题兼容不好导致的在终端选择文本时看不到选择范围的问题。
+    // NOTE: 基于官方 dracula 主题定义完整的 UI 组件，同时自定义 text_selected 的
+    // background 为 #44475A，解决 zellij 原生 dracula 主题和 ghostty dracula 主题
+    // 兼容不好导致的在终端选择文本时看不到选择范围的问题。
     dracula-pro {
-        fg "#F8F8F2"
-        bg "#282A36"
-        black "#21222C"
-        red "#FF5555"
-        green "#50FA7B"
-        yellow "#F1FA8C"
-        blue "#BD93F9"
-        magenta "#FF79C6"
-        cyan "#8BE9FD"
-        white "#F8F8F2"
-        orange "#FFB86C"
-        text_selected {
-            base "#F8F8F2"
-            background "#44475A"
-            emphasis_0 "#FF5555"
-            emphasis_1 "#50FA7B"
-            emphasis_2 "#F1FA8C"
-            emphasis_3 "#BD93F9"
-        }
+        // --- 文本组件 ---
         text_unselected {
-            base "#F8F8F2"
-            background "#282A36"
-            emphasis_0 "#FF5555"
-            emphasis_1 "#50FA7B"
-            emphasis_2 "#F1FA8C"
-            emphasis_3 "#BD93F9"
+            base 248 248 242          // #F8F8F2
+            background 40 42 54       // #282A36
+            emphasis_0 255 184 108    // #FFB86C (orange)
+            emphasis_1 139 233 253    // #8BE9FD (cyan)
+            emphasis_2 80 250 123     // #50FA7B (green)
+            emphasis_3 255 121 198    // #FF79C6 (magenta)
+        }
+        text_selected {
+            base 248 248 242          // #F8F8F2
+            background 68 71 90       // #44475A (自定义: 更暗的选中背景)
+            emphasis_0 255 184 108    // #FFB86C
+            emphasis_1 139 233 253    // #8BE9FD
+            emphasis_2 80 250 123     // #50FA7B
+            emphasis_3 255 121 198    // #FF79C6
+        }
+        // --- Ribbon 组件 (标签栏 + 状态栏模式指示器) ---
+        ribbon_selected {
+            base 0 0 0                // 黑色文字
+            background 80 250 123     // #50FA7B (green) 选中标签/模式
+            emphasis_0 255 85 85      // #FF5555 (red)
+            emphasis_1 255 184 108    // #FFB86C (orange)
+            emphasis_2 255 121 198    // #FF79C6 (magenta)
+            emphasis_3 98 114 164     // #6272A4 (comment)
+        }
+        ribbon_unselected {
+            base 0 0 0                // 黑色文字
+            background 248 248 242    // #F8F8F2 未选中标签/模式
+            emphasis_0 255 85 85      // #FF5555
+            emphasis_1 255 255 255    // 白色
+            emphasis_2 98 114 164     // #6272A4 (comment)
+            emphasis_3 255 121 198    // #FF79C6
+        }
+        // --- 表格组件 ---
+        table_title {
+            base 80 250 123           // #50FA7B (green)
+            background 0
+            emphasis_0 255 184 108    // #FFB86C
+            emphasis_1 139 233 253    // #8BE9FD
+            emphasis_2 80 250 123     // #50FA7B
+            emphasis_3 255 121 198    // #FF79C6
+        }
+        table_cell_selected {
+            base 248 248 242
+            background 40 42 54       // #282A36
+            emphasis_0 255 184 108
+            emphasis_1 139 233 253
+            emphasis_2 80 250 123
+            emphasis_3 255 121 198
+        }
+        table_cell_unselected {
+            base 248 248 242
+            background 0 0 0
+            emphasis_0 255 184 108
+            emphasis_1 139 233 253
+            emphasis_2 80 250 123
+            emphasis_3 255 121 198
+        }
+        // --- 列表组件 ---
+        list_selected {
+            base 248 248 242
+            background 40 42 54
+            emphasis_0 255 184 108
+            emphasis_1 139 233 253
+            emphasis_2 80 250 123
+            emphasis_3 255 121 198
+        }
+        list_unselected {
+            base 248 248 242
+            background 0 0 0
+            emphasis_0 255 184 108
+            emphasis_1 139 233 253
+            emphasis_2 80 250 123
+            emphasis_3 255 121 198
+        }
+        // --- 面板边框组件 ---
+        frame_selected {
+            base 80 250 123           // 绿色边框表示聚焦面板
+            background 0
+            emphasis_0 255 184 108
+            emphasis_1 139 233 253
+            emphasis_2 255 121 198
+            emphasis_3 0
+        }
+        frame_highlight {
+            base 255 184 108          // 橙色边框表示特殊模式
+            background 0
+            emphasis_0 255 121 198
+            emphasis_1 255 184 108
+            emphasis_2 255 184 108
+            emphasis_3 255 184 108
+        }
+        // --- 退出码颜色 ---
+        exit_code_success {
+            base 80 250 123           // 绿色表示成功
+            background 0
+            emphasis_0 139 233 253
+            emphasis_1 0 0 0
+            emphasis_2 255 121 198
+            emphasis_3 98 114 164
+        }
+        exit_code_error {
+            base 255 85 85            // 红色表示失败
+            background 0
+            emphasis_0 241 250 140
+            emphasis_1 0
+            emphasis_2 0
+            emphasis_3 0
+        }
+        // --- 多人协作用户颜色 ---
+        multiplayer_user_colors {
+            player_1 255 121 198
+            player_2 98 114 164
+            player_3 0
+            player_4 241 250 140
+            player_5 139 233 253
+            player_6 0
+            player_7 255 85 85
+            player_8 0
+            player_9 0
+            player_10 0
         }
     }
 }

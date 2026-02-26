@@ -116,15 +116,13 @@ info "Linking configuration files with stow..."
 mkdir -p "$HOME/.local/bin"
 
 if [ "$MINIMAL" = true ]; then
-    CONFIG_PACKAGES=(helix fish git)
-    STANDARD_PACKAGES=(fish helix)
+    STOW_PACKAGES=(fish helix git)
 else
-    CONFIG_PACKAGES=(ghostty helix zellij mise karabiner btop fish git)
-    STANDARD_PACKAGES=(ghostty fish helix zellij mise karabiner btop)
+    STOW_PACKAGES=(ghostty fish helix zellij mise karabiner btop git)
 fi
 
-# Handle all config directories for stow
-for pkg in "${CONFIG_PACKAGES[@]}"; do
+# Clean up existing config directories and stow packages
+for pkg in "${STOW_PACKAGES[@]}"; do
     DIR="$HOME/.config/$pkg"
     # Ensure any existing directory is either unlinked (if symlink) or backed up (if real dir).
     # This guarantees stow creates a pure directory-level mapping to ~/dotfiles,
@@ -137,9 +135,7 @@ for pkg in "${CONFIG_PACKAGES[@]}"; do
         warn "Backing up existing real directory $DIR -> $BACKUP_DIR"
         mv "$DIR" "$BACKUP_DIR"
     fi
-done
 
-for pkg in "${STANDARD_PACKAGES[@]}"; do
     info "Stowing $pkg..."
     stow --restow --target="$HOME" --dir="$DOTFILES_DIR" --dotfiles "$pkg"
 done

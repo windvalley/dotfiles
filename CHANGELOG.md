@@ -8,8 +8,10 @@
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-02-26
+
 ### Added
-- `zellij/config.kdl` 新增 `dracula-pro` 自定义主题：基于 Dracula 调色板，通过显式声明 `text_selected` / `text_unselected` 解决 Zellij 内置 dracula 主题与 Ghostty Dracula 配色冲突导致选中文本不可见的问题
+- `zellij/config.kdl` 新增 `dracula-pro` 自定义主题：定义全部 UI 组件（`ribbon_*`、`frame_*`、`table_*`、`list_*`、`exit_code_*`、`multiplayer_user_colors`），自定义 `text_selected` 背景色以解决 Ghostty Dracula 配色下选中文本不可见的问题
 - `.gitignore` 新增 `fish_variables` 规则：防止 Fish 自动管理的 universal 变量文件被意外提交
 
 ### Changed
