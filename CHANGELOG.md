@@ -8,6 +8,14 @@
 
 ## [Unreleased]
 
+### Added
+- `Brewfile` 新增 `orbstack`：现代、轻量的 macOS 容器开发环境（替代 Docker Desktop/VirtualBox）
+- `README.md` 新增“与官方默认的关键差异”章节：系统梳理并公开了 Karabiner、Ghostty、Zellij、Fish、Helix、Git 六大核心工具的全部非默认定制，极大降低新用户的理解成本
+
+### Changed
+- `helix/config.toml` 移除 Normal/Select 模式下 `C-h`/`C-l`（`extend_to_line_start`/`extend_to_line_end`）自定义快捷键绑定，选中到行首/行尾可用 Helix 内置 `vgh`/`vgl`
+- `helix/config.toml` Normal/Select 模式新增 `Space + o`/`Space + i` 映射 `expand_selection`/`shrink_selection`（语法树节点扩展/收缩），替代被 Hammerspoon 占用的 `A-o`/`A-i`
+
 ## [0.10.0] - 2026-02-26
 
 ### Added
@@ -16,6 +24,7 @@
 
 ### Changed
 - Git 配置迁移至 XDG 标准位置：`dot-gitconfig` → `dot-config/git/config`，`dot-gitignore` → `dot-config/git/ignore`，`excludesFile` 显式指向 `~/.config/git/ignore`
+- `fish/dot-config/fish/completions/` 及 `conf.d/`：移除冗余静态补全文件并将其从 Git 中忽略，改为系统或运行时动态生成，保持仓库纯度
 - `install.sh` 将 git 从 `STANDARD_PACKAGES` 移入 `CONFIG_PACKAGES`，统一走 `~/.config/` 目录级链接，消除 `$HOME` 直接映射的特例
 - `bin/colorscheme` Delta 配置路径从 `$HOME/.gitconfig` 改为 `$config_home/git/config`
 - `bin/validate-configs` Git 验证路径同步更新为 XDG 布局

@@ -447,11 +447,8 @@ C-r = ":reload"
 # %{cursor_line} - 当前行号
 #
 # 使用 glow 工具渲染 Markdown
-"space" = { m = ":run-shell-command preview-md %{buffer_name}" }
-
-# 选中到行首/行尾 (替代 Alt+h/l，因为 Alt 键被其他程序占用)
-C-h = "extend_to_line_start"
-C-l = "extend_to_line_end"
+# Space + o/i: 语法树节点扩展/收缩 (替代 A-o/A-i，因为 Alt 键被 Hammerspoon 占用)
+"space" = { m = ":run-shell-command preview-md %{buffer_name}", o = "expand_selection", i = "shrink_selection" }
 
 [keys.insert]
 # Emacs 风格的光标移动
@@ -464,9 +461,8 @@ C-e = "goto_line_end"
 
 [keys.select]
 
-# 选中到行首/行尾 (与 normal 模式保持一致)
-C-h = "extend_to_line_start"
-C-l = "extend_to_line_end"
+# Space + o/i: 语法树节点扩展/收缩 (与 normal 模式保持一致)
+"space" = { o = "expand_selection", i = "shrink_selection" }
 
 # ============================================================
 # 次要模式 (Minor Modes)

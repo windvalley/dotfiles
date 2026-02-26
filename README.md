@@ -32,6 +32,7 @@ cd "$HOME/dotfiles"
 > [!TIP]
 > 如果你想手动精准控制安装过程，请参考下面的详细步骤。
 
+
 ## 1. 项目结构
 
 本仓库包含以下配置包及核心文件：
@@ -675,7 +676,112 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | `make update` | 拉取远程代码并更新 |
 | `make clean` | 清理临时文件 (`.bak`, `.tmp` 等) |
 
-## 6. 致谢 (Acknowledgments)
+---
+
+## 6. 与官方默认的关键差异
+
+本项目对各工具的默认配置做了若干有意识的定制。以下是**所有偏离官方默认值的关键改动**，帮助你快速了解本 dotfiles 的"个性化"部分。
+
+### 🔑 Karabiner — 全局键位改造
+
+| 改动 | 官方默认 | 本项目 | 原因 |
+|------|----------|--------|------|
+| Caps Lock ↔ Left Control 互换 | 各自独立 | 双向互换（排除特定外接键盘） | Caps Lock 位置更适合高频的 Ctrl 操作（Vim/Emacs/Zellij 均依赖 Ctrl） |
+
+### 🖥️ Ghostty — 终端行为与键位
+
+**键位变更：**
+| 改动 | 官方默认 | 本项目 | 原因 |
+|------|----------|--------|------|
+| `Cmd + ;` → Quick Terminal | 无绑定 | `global:cmd+;=toggle_quick_terminal` | 全局一键唤出/隐藏终端 |
+| `Cmd + 1~9` | 切换 Ghostty 标签页 | `unbind`（解绑） | 让出给 Zellij 管理标签页切换 |
+| 选中即复制 | `copy-on-select = true` | `copy-on-select = clipboard` | 同时复制到主选区和系统剪贴板 |
+
+**行为变更：**
+| 改动 | 官方默认 | 本项目 | 原因 |
+|------|----------|--------|------|
+| 窗口状态恢复 | `default` | `window-save-state = never` | 避免与 Zellij 会话恢复冲突 |
+| 打字时隐藏鼠标 | `false` | `mouse-hide-while-typing = true` | 减少视觉干扰 |
+| 背景模糊 | `false` | `background-blur = 25` | 半透明时的毛玻璃效果 |
+| 未聚焦分屏不透明度 | `0.7` | `unfocused-split-opacity = 0.3` | 更明显区分聚焦/非聚焦面板 |
+| 环境变量 | 无 | `env = GHOSTTY_RUNTIME=1` | 供 Fish 判断是否在 Ghostty 中运行 |
+
+### 🧩 Zellij — 快捷键与会话架构
+
+**架构变更：**
+| 改动 | 官方默认 | 本项目 | 原因 |
+|------|----------|--------|------|
+| 快捷键体系 | 内置默认快捷键 | `keybinds clear-defaults=true` 全部重建 | 精简并统一 Vim 风格导航，移除未使用的绑定 |
+| 默认布局 | `default` | `default_layout "dev-workspace"` | 使用自定义的开发工作区布局 |
+| 会话名 | 随机生成 | `session_name "main"` | 固定会话名，方便 attach |
+| 自动附加 | `false` | `attach_to_session true` | 打开新终端自动连接已有会话 |
+| 主题 | `default` | `theme "dracula-pro"` | 自定义 Dracula 变体，修复文本选中色的兼容问题 |
+
+**键位增强：**
+| 改动 | 说明 |
+|------|------|
+| `Cmd + 1~9` 全局切换标签页 | 无需进入 tab 模式，配合 Ghostty 的 unbind 实现 |
+| 所有模式添加 `h/j/k/l` 导航 | 面板/标签页/调整大小/移动/滚动均支持 Vim 风格 |
+| `Ctrl + a` 进入 tmux 兼容模式 | 为 tmux 用户提供肌肉记忆兼容层 |
+
+### 🐟 Fish — Shell 行为与键位
+
+**行为变更：**
+| 改动 | 官方默认 | 本项目 | 原因 |
+|------|----------|--------|------|
+| 欢迎语 | 显示版本信息 | `fish_greeting ""` (关闭) | 保持终端启动干净 |
+| 编辑模式 | Emacs 模式 | Vi 混合模式 (Vi + Emacs insert) | Vi 键位为主，保留 Ctrl-a/e 等 Emacs 快捷键 |
+| 默认编辑器 | 无 | `EDITOR=hx` / `VISUAL=hx` | 统一使用 Helix |
+| 分页器 | 无 | `MANPAGER` 使用 bat 语法高亮 | Man 手册页更易读 |
+| Homebrew 自动更新 | 启用 | `HOMEBREW_NO_AUTO_UPDATE=1` | 避免每次安装包时卡在更新 |
+| Fisher 插件路径 | `~/.config/fish` | `~/.local/share/fisher` | 隔离第三方插件，保持配置目录纯净 |
+| Zellij 自动启动 | 不自动启动 | 在 Ghostty 中自动启动 | 无需手动 `zellij`，同时排除 SSH/Quick Terminal 等场景 |
+
+**键位变更：**
+| 改动 | 说明 |
+|------|------|
+| `Ctrl + e` (normal 模式) | 用 Helix 全屏编辑当前命令行 |
+| Vi 光标形状 | normal=block, insert=line, replace=underscore |
+| Tide vi_mode 标识 | `D` → `N`（对齐 Vim 社区的 Normal 缩写习惯） |
+
+### ✏️ Helix — 编辑器键位与显示
+
+**键位变更：**
+| 改动 | 官方默认 | 本项目 | 原因 |
+|------|----------|--------|------|
+| `Ctrl + r` | 无绑定 | `:reload` 重载当前文件 | 快速重载被外部修改的文件 |
+| `Ctrl + ;` | 无绑定 | `repeat_last_motion` | 重复上次 f/t 跳转（类似 Vim 的 `;`） |
+| `Space + m` | 无绑定 | 使用 glow 预览 Markdown | 在浮动窗口中渲染 Markdown |
+| `Space + o/i` | 无绑定 | `expand_selection` / `shrink_selection` | 替代 `Alt-o/i`，避免 Alt 键冲突 |
+| 插入模式 `Ctrl + f/b/n/p/a/e` | 无绑定 | Emacs 风格光标移动 | 无需退出插入模式即可快速移动光标 |
+
+**显示变更：**
+| 改动 | 官方默认 | 本项目 | 原因 |
+|------|----------|--------|------|
+| 行号 | 绝对行号 | `line-number = "relative"` | 配合 Vim 动作快速跳转 |
+| 光标行/列高亮 | 均关闭 | `cursorline = true` / `cursorcolumn = true` | 快速定位光标位置 |
+| 标签栏 | `never` | `bufferline = "multiple"` | 多文件时显示缓冲区标签 |
+| 色彩模式指示器 | `false` | `color-modes = true` | 不同模式不同颜色 |
+| Inlay hints | `false` | `display-inlay-hints = true` | 显示类型提示等内联信息 |
+| 行尾诊断 | `disable` | `end-of-line-diagnostics = "warning"` | 行尾直接显示警告 |
+| 内联诊断 | `disable` | `cursor-line = "warning"` / `other-lines = "warning"` | 所有行内联显示诊断 |
+| 保存时清理 | 均关闭 | `trim-final-newlines` / `trim-trailing-whitespace = true` | 保持文件整洁 |
+| 软换行 | 关闭 | `soft-wrap.enable = true` | 长行自动换行 |
+
+### 🔧 Git — 工作流增强
+
+| 改动 | 官方默认 | 本项目 | 原因 |
+|------|----------|--------|------|
+| 默认编辑器 | `vim` | `core.editor = hx` | 统一使用 Helix |
+| 分页器 | `less` | `core.pager = delta` | Diff 语法高亮 |
+| Pull 策略 | `merge` | `pull.rebase = true` | 保持提交历史线性 |
+| Push 行为 | 需手动设置上游 | `push.autoSetupRemote = true` | 省去 `--set-upstream` |
+| 冲突风格 | `merge` | `merge.conflictstyle = diff3` | 同时显示 base/ours/theirs 三方 |
+| 分支名 | `master` | `init.defaultBranch = main` | 现代社区规范 |
+| 重用冲突解决 | 关闭 | `rerere.enabled = true` | 自动记忆冲突解决方案 |
+| 用户信息 | 硬编码在配置中 | 通过 `include` 引入本地文件 | 防止敏感信息入库 |
+
+## 7. 致谢 (Acknowledgments)
 
 本项目的诞生离不开现代开源社区的繁荣生态，特别感谢以下卓越的项目构建了这套工作流的基石：
 
@@ -693,7 +799,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
 ---
 
-## 7. 开源协议 (License)
+## 8. 开源协议 (License)
 
 本项目采用 [MIT License](LICENSE) 开源协议。
 

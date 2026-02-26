@@ -16,6 +16,8 @@ secret.*
 .env
 .env.local
 fish_variables
+/fish/dot-config/fish/completions/
+/fish/dot-config/fish/conf.d/
 
 # === Build & Cache ===
 node_modules/

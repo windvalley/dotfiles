@@ -55,3 +55,5 @@ brew "btop"
 cask "ghostty@tip"
 # JetBrains Mono 字体 (带 Nerd Font 图标)
 cask "font-jetbrains-mono-nerd-font"
+# 轻量级 Docker 容器与 Linux 虚拟机管理工具 (替代 Docker Desktop)
+cask "orbstack"
