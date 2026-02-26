@@ -26,7 +26,7 @@ set -euo pipefail
 # Bat theme names:     run `bat --list-themes` (only built-in themes; '-' = unsupported).
 # ============================================
 THEMES=(
-    "dracula|Dracula|=|=|=|Dracula"
+    "dracula|Dracula|=|dracula-pro|=|Dracula"
     "tokyonight|TokyoNight Moon|tokyonight_moon|tokyo-night|tokyo-night|-"
     "gruvbox|Gruvbox Material Dark|gruvbox_dark_hard|=|gruvbox_material_dark|gruvbox-dark"
     "kanagawa|Kanagawa Wave|kanagawa|=|kanagawa-wave|-"

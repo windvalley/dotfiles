@@ -4,7 +4,7 @@
 // 配置生效说明 (Zellij 0.41+):
 // - 立即生效 (热重载): 修改保存后 Zellij 会自动更新。包含：快捷键 (keybinds)、主题 (theme)、UI 元素 (pane_frames, mouse_mode 等)。
 // - 需重启/新会话生效: 修改后需重启 Zellij 进程。包含：默认 Shell (default_shell)、默认布局 (default_layout)、目录路径 (layout_dir, theme_dir)、会话及序列化行为 (on_force_close, session_serialization)、资源限制 (scroll_buffer_size)。
-// 
+//
 // 快捷键模式说明:
 // - normal: 默认模式，正常输入
 // - locked: 锁定模式，禁止所有快捷键, 比如在使用 helix、nvim、fzf 等可能存在快捷键冲突的场景，可以进入该模式。
@@ -32,46 +32,46 @@ keybinds clear-defaults=true {
         bind "down" { MoveFocus "down"; }
         bind "up" { MoveFocus "up"; }
         bind "right" { MoveFocus "right"; }
-        
+
         // c: 重命名当前面板
         bind "c" { SwitchToMode "renamepane"; PaneNameInput 0; }
-        
+
         // d: 在下方新建面板 (水平分割)
         bind "d" { NewPane "down"; SwitchToMode "normal"; }
-        
+
         // e: 切换面板嵌入/浮动状态
         bind "e" { TogglePaneEmbedOrFloating; SwitchToMode "normal"; }
-        
+
         // f: 切换当前面板全屏
         bind "f" { ToggleFocusFullscreen; SwitchToMode "normal"; }
-        
+
         // h/j/k/l: Vim 风格导航 (左/下/上/右)
         bind "h" { MoveFocus "left"; }
         bind "j" { MoveFocus "down"; }
         bind "k" { MoveFocus "up"; }
         bind "l" { MoveFocus "right"; }
-        
+
         // i: 切换面板固定状态 (固定后不受布局调整影响)
         bind "i" { TogglePanePinned; SwitchToMode "normal"; }
-        
+
         // n: 新建面板 (默认方向)
         bind "n" { NewPane; SwitchToMode "normal"; }
-        
+
         // p: 切换到上一个聚焦的面板
         bind "p" { SwitchFocus; }
-        
+
         // Ctrl+p: 退出 pane 模式
         bind "Ctrl p" { SwitchToMode "normal"; }
-        
+
         // r: 在右侧新建面板 (垂直分割)
         bind "r" { NewPane "right"; SwitchToMode "normal"; }
-        
+
         // s: 新建堆叠面板 (面板堆叠，只显示当前激活的)
         bind "s" { NewPane "stacked"; SwitchToMode "normal"; }
-        
+
         // w: 显示/隐藏浮动面板
         bind "w" { ToggleFloatingPanes; SwitchToMode "normal"; }
-        
+
         // z: 显示/隐藏面板边框
         bind "z" { TogglePaneFrames; SwitchToMode "normal"; }
     }
@@ -83,7 +83,7 @@ keybinds clear-defaults=true {
         bind "down" { GoToNextTab; }
         bind "up" { GoToPreviousTab; }
         bind "right" { GoToNextTab; }
-        
+
         // 数字键 1-9 直接跳转到对应标签页
         bind "1" { GoToTab 1; SwitchToMode "normal"; }
         bind "2" { GoToTab 2; SwitchToMode "normal"; }
@@ -94,37 +94,37 @@ keybinds clear-defaults=true {
         bind "7" { GoToTab 7; SwitchToMode "normal"; }
         bind "8" { GoToTab 8; SwitchToMode "normal"; }
         bind "9" { GoToTab 9; SwitchToMode "normal"; }
-        
+
         // [: 将面板移到左侧标签页
         bind "[" { BreakPaneLeft; SwitchToMode "normal"; }
-        
+
         // ]: 将面板移到右侧标签页
         bind "]" { BreakPaneRight; SwitchToMode "normal"; }
-        
+
         // b: 将面板拆分为独立标签页
         bind "b" { BreakPane; SwitchToMode "normal"; }
-        
+
         // h/j/k/l: Vim 风格标签页导航
         bind "h" { GoToPreviousTab; }
         bind "j" { GoToNextTab; }
         bind "k" { GoToPreviousTab; }
         bind "l" { GoToNextTab; }
-        
+
         // n: 新建标签页
         bind "n" { NewTab; SwitchToMode "normal"; }
-        
+
         // r: 重命名当前标签页
         bind "r" { SwitchToMode "renametab"; TabNameInput 0; }
-        
+
         // s: 切换同步模式 (输入会发送到标签页内所有面板)
         bind "s" { ToggleActiveSyncTab; SwitchToMode "normal"; }
-        
+
         // Ctrl+t: 退出 tab 模式
         bind "Ctrl t" { SwitchToMode "normal"; }
-        
+
         // x: 关闭当前标签页
         bind "x" { CloseTab; SwitchToMode "normal"; }
-        
+
         // Tab: 在最近两个标签页间切换
         bind "tab" { ToggleTab; }
     }
@@ -136,24 +136,24 @@ keybinds clear-defaults=true {
         bind "down" { Resize "Increase down"; }
         bind "up" { Resize "Increase up"; }
         bind "right" { Resize "Increase right"; }
-        
+
         // +/-: 等比增大/缩小面板
         bind "+" { Resize "Increase"; }
         bind "-" { Resize "Decrease"; }
         bind "=" { Resize "Increase"; }
-        
+
         // 大写 H/J/K/L: Vim 风格缩小面板
         bind "H" { Resize "Decrease left"; }
         bind "J" { Resize "Decrease down"; }
         bind "K" { Resize "Decrease up"; }
         bind "L" { Resize "Decrease right"; }
-        
+
         // 小写 h/j/k/l: Vim 风格增大面板
         bind "h" { Resize "Increase left"; }
         bind "j" { Resize "Increase down"; }
         bind "k" { Resize "Increase up"; }
         bind "l" { Resize "Increase right"; }
-        
+
         // Ctrl+n: 退出 resize 模式
         bind "Ctrl n" { SwitchToMode "normal"; }
     }
@@ -165,16 +165,16 @@ keybinds clear-defaults=true {
         bind "down" { MovePane "down"; }
         bind "up" { MovePane "up"; }
         bind "right" { MovePane "right"; }
-        
+
         // h/j/k/l: Vim 风格移动面板
         bind "h" { MovePane "left"; }
-        
+
         // Ctrl+h: 退出 move 模式
         bind "Ctrl h" { SwitchToMode "normal"; }
         bind "j" { MovePane "down"; }
         bind "k" { MovePane "up"; }
         bind "l" { MovePane "right"; }
-        
+
         // n/tab: 移动面板到下一个位置 (循环)
         bind "n" { MovePane; }
         bind "p" { MovePaneBackwards; }
@@ -185,7 +185,7 @@ keybinds clear-defaults=true {
     scroll {
         // e: 用编辑器打开整个滚动缓冲区
         bind "e" { EditScrollback; SwitchToMode "normal"; }
-        
+
         // s: 进入搜索输入模式
         bind "s" { SwitchToMode "entersearch"; SearchInput 0; }
     }
@@ -194,14 +194,14 @@ keybinds clear-defaults=true {
     search {
         // c: 切换大小写敏感
         bind "c" { SearchToggleOption "CaseSensitivity"; }
-        
+
         // n/p: 跳到下一个/上一个匹配
         bind "n" { Search "down"; }
         bind "p" { Search "up"; }
-        
+
         // o: 切换全词匹配
         bind "o" { SearchToggleOption "WholeWord"; }
-        
+
         // w: 切换循环搜索
         bind "w" { SearchToggleOption "Wrap"; }
     }
@@ -216,7 +216,7 @@ keybinds clear-defaults=true {
             }
             SwitchToMode "normal"
         }
-        
+
         // c: 打开配置查看器
         bind "c" {
             LaunchOrFocusPlugin "configuration" {
@@ -225,10 +225,10 @@ keybinds clear-defaults=true {
             }
             SwitchToMode "normal"
         }
-        
+
         // Ctrl+o: 退出 session 模式
         bind "Ctrl o" { SwitchToMode "normal"; }
-        
+
         // p: 打开插件管理器
         bind "p" {
             LaunchOrFocusPlugin "plugin-manager" {
@@ -237,7 +237,7 @@ keybinds clear-defaults=true {
             }
             SwitchToMode "normal"
         }
-        
+
         // s: 打开共享面板
         bind "s" {
             LaunchOrFocusPlugin "zellij:share" {
@@ -246,7 +246,7 @@ keybinds clear-defaults=true {
             }
             SwitchToMode "normal"
         }
-        
+
         // w: 打开会话管理器 (切换/创建/销毁会话)
         bind "w" {
             LaunchOrFocusPlugin "session-manager" {
@@ -264,22 +264,22 @@ keybinds clear-defaults=true {
         bind "Alt down" { MoveFocus "down"; }
         bind "Alt up" { MoveFocus "up"; }
         bind "Alt right" { MoveFocusOrTab "right"; }
-        
+
         // Alt + -/+/=: 快速调整面板大小
         bind "Alt +" { Resize "Increase"; }
         bind "Alt -" { Resize "Decrease"; }
         bind "Alt =" { Resize "Increase"; }
-        
+
         // Alt + [/]: 切换预设布局
         bind "Alt [" { PreviousSwapLayout; }
         bind "Alt ]" { NextSwapLayout; }
-        
+
         // Alt+f: 切换浮动面板显示
         bind "Alt f" { ToggleFloatingPanes; }
-        
+
         // Ctrl+g: 进入锁定模式 (全局锁定)
         bind "Ctrl g" { SwitchToMode "locked"; }
-        
+
         // Alt + h/j/k/l: Vim 风格 Alt 导航
         bind "Alt h" { MoveFocusOrTab "left"; }
         bind "Alt i" { MoveTab "left"; }    // 移动标签页到左边
@@ -297,79 +297,79 @@ keybinds clear-defaults=true {
         bind "Super 7" { GoToTab 7; }
         bind "Super 8" { GoToTab 8; }
         bind "Super 9" { GoToTab 9; }
-        
+
         // Alt+n: 快速新建面板 (无需进入 pane 模式)
         bind "Alt n" { NewPane; }
-        
+
         // Alt+o: 移动标签页到右边
         bind "Alt o" { MoveTab "right"; }
-        
+
         // Alt+p: 切换面板在面板组中的激活状态
         bind "Alt p" { TogglePaneInGroup; }
-        
+
         // Alt+Shift+p: 切换面板组标记模式
         bind "Alt Shift p" { ToggleGroupMarking; }
-        
+
         // Ctrl+q: 退出 Zellij
         bind "Ctrl q" { Quit; }
     }
 
     // ===== 模式切换: 进入各操作模式的快捷键 =====
-    
+
     // Ctrl+h: 进入 move 模式 (除了 locked 和 move 本身)
     shared_except "locked" "move" {
         bind "Ctrl h" { SwitchToMode "move"; }
     }
-    
+
     // Ctrl+o: 进入 session 模式 (除了 locked 和 session 本身)
     shared_except "locked" "session" {
         bind "Ctrl o" { SwitchToMode "session"; }
     }
-    
+
     // Ctrl+a: 进入 tmux 兼容模式
     shared_except "locked" "scroll" "search" "tmux" {
         bind "Ctrl a" { SwitchToMode "tmux"; }
     }
-    
+
     // Ctrl+s: 进入 scroll 模式
     shared_except "locked" "scroll" "search" {
         bind "Ctrl s" { SwitchToMode "scroll"; }
     }
-    
+
     // Ctrl+t: 进入 tab 模式
     shared_except "locked" "tab" {
         bind "Ctrl t" { SwitchToMode "tab"; }
     }
-    
+
     // Ctrl+p: 进入 pane 模式
     shared_except "locked" "pane" {
         bind "Ctrl p" { SwitchToMode "pane"; }
     }
-    
+
     // Ctrl+n: 进入 resize 模式
     shared_except "locked" "resize" {
         bind "Ctrl n" { SwitchToMode "resize"; }
     }
 
     // ===== 通用退出键 =====
-    
+
     // Enter: 退出当前模式 (除了 normal, locked, entersearch)
     shared_except "normal" "locked" "entersearch" {
         bind "enter" { SwitchToMode "normal"; }
     }
-    
+
     // Esc: 退出当前模式 (除了 normal, locked, entersearch, renametab, renamepane)
     shared_except "normal" "locked" "entersearch" "renametab" "renamepane" {
         bind "esc" { SwitchToMode "normal"; }
     }
 
     // ===== shared_among: 在指定模式间共享的快捷键 =====
-    
+
     // pane + tmux 共享: x 关闭当前面板
     shared_among "pane" "tmux" {
         bind "x" { CloseFocus; SwitchToMode "normal"; }
     }
-    
+
     // scroll + search 共享: 滚动相关快捷键
     shared_among "scroll" "search" {
         bind "PageDown" { PageScrollDown; }    // 整页向下滚
@@ -389,29 +389,29 @@ keybinds clear-defaults=true {
         bind "Ctrl s" { SwitchToMode "normal"; }  // 退出滚动模式
         bind "u" { HalfPageScrollUp; }           // vim 风格半页向上
     }
-    
+
     // entersearch 模式: 输入搜索关键词时的快捷键
     entersearch {
         bind "Ctrl c" { SwitchToMode "scroll"; }  // Ctrl+c 取消搜索
         bind "esc" { SwitchToMode "scroll"; }      // Esc 取消搜索
         bind "enter" { SwitchToMode "search"; }    // Enter 开始搜索
     }
-    
+
     // renametab 模式: 重命名标签页
     renametab {
         bind "esc" { UndoRenameTab; SwitchToMode "tab"; }  // Esc 取消重命名
     }
-    
+
     // renametab + renamepane 共享
     shared_among "renametab" "renamepane" {
         bind "Ctrl c" { SwitchToMode "normal"; }  // Ctrl+c 取消重命名
     }
-    
+
     // renamepane 模式: 重命名面板
     renamepane {
         bind "esc" { UndoRenamePane; SwitchToMode "pane"; }  // Esc 取消重命名
     }
-    
+
     // session + tmux 共享: d 分离会话
     shared_among "session" "tmux" {
         bind "d" { Detach; }  // 分离会话 (Zellij 后台运行)
@@ -424,37 +424,37 @@ keybinds clear-defaults=true {
         bind "down" { MoveFocus "down"; SwitchToMode "normal"; }
         bind "up" { MoveFocus "up"; SwitchToMode "normal"; }
         bind "right" { MoveFocus "right"; SwitchToMode "normal"; }
-        
+
         // space: 切换预设布局
         bind "space" { NextSwapLayout; }
-        
+
         // ": 水平分割 (tmux 习惯)
         bind "\"" { NewPane "down"; SwitchToMode "normal"; }
-        
+
         // %: 垂直分割 (tmux 习惯)
         bind "%" { NewPane "right"; SwitchToMode "normal"; }
-        
+
         // ,: 重命名标签页
         bind "," { SwitchToMode "renametab"; }
-        
+
         // [: 进入滚动模式 (tmux 习惯)
         bind "[" { SwitchToMode "scroll"; }
-        
+
         // Ctrl+a: 用于取消 tmux 模式，或者将光标移动到行首
         bind "Ctrl a" { Write 1; SwitchToMode "normal"; }
-        
+
         // a: 支持 Ctrl+a  松手后，再按 a 移动到行首
         bind "a" { Write 1; SwitchToMode "normal"; }
-        
+
         // c: 新建标签页 (tmux 习惯)
         bind "c" { NewTab; SwitchToMode "normal"; }
-        
+
         // h/j/k/l: Vim 风格导航
         bind "h" { MoveFocus "left"; SwitchToMode "normal"; }
         bind "j" { MoveFocus "down"; SwitchToMode "normal"; }
         bind "k" { MoveFocus "up"; SwitchToMode "normal"; }
         bind "l" { MoveFocus "right"; SwitchToMode "normal"; }
-        
+
         // 数字键 1-9: 跳转到对应标签页 (tmux 习惯)
         bind "1" { GoToTab 1; SwitchToMode "normal"; }
         bind "2" { GoToTab 2; SwitchToMode "normal"; }
@@ -465,16 +465,16 @@ keybinds clear-defaults=true {
         bind "7" { GoToTab 7; SwitchToMode "normal"; }
         bind "8" { GoToTab 8; SwitchToMode "normal"; }
         bind "9" { GoToTab 9; SwitchToMode "normal"; }
-        
+
         // n: 下一个标签页
         bind "n" { GoToNextTab; SwitchToMode "normal"; }
-        
+
         // o: 聚焦下一个面板 (循环)
         bind "o" { FocusNextPane; }
-        
+
         // p: 上一个标签页
         bind "p" { GoToPreviousTab; SwitchToMode "normal"; }
-        
+
         // z: 全屏切换 (tmux 的 zoom)
         bind "z" { ToggleFocusFullscreen; SwitchToMode "normal"; }
     }
@@ -510,11 +510,44 @@ web_client {
     font "monospace"
 }
 
+themes {
+    // NOTE: 自定义 dracula 主题的目的是为了解决zellij 原生dracula主题和 ghostty dracula 主题兼容不好导致的在终端选择文本时看不到选择范围的问题。
+    dracula-pro {
+        fg "#F8F8F2"
+        bg "#282A36"
+        black "#21222C"
+        red "#FF5555"
+        green "#50FA7B"
+        yellow "#F1FA8C"
+        blue "#BD93F9"
+        magenta "#FF79C6"
+        cyan "#8BE9FD"
+        white "#F8F8F2"
+        orange "#FFB86C"
+        text_selected {
+            base "#F8F8F2"
+            background "#44475A"
+            emphasis_0 "#FF5555"
+            emphasis_1 "#50FA7B"
+            emphasis_2 "#F1FA8C"
+            emphasis_3 "#BD93F9"
+        }
+        text_unselected {
+            base "#F8F8F2"
+            background "#282A36"
+            emphasis_0 "#FF5555"
+            emphasis_1 "#50FA7B"
+            emphasis_2 "#F1FA8C"
+            emphasis_3 "#BD93F9"
+        }
+    }
+}
+
 // ===== 以下是所有可用的全局配置选项 (已注释) =====
 // 使用方法: 去掉行首的 // 取消注释
 
 // 简化 UI，不使用特殊字体/箭头符号 (默认值: false)
-//simplified_ui true
+// simplified_ui true
 
 // 主题名称 (需要在 themes 目录中定义，或使用内置主题) (默认值: "default")
 // 内置暗色主题:
@@ -525,7 +558,8 @@ web_client {
 // 内置亮色主题:
 //   catppuccin-latte, gruvbox-light, solarized-light, tokyo-night-light,
 //   ayu_light, everforest-light, dayfox
-theme "dracula"
+// 自定义主题：dracula-pro
+theme "dracula-pro"
 
 // 启动时的默认模式 (normal/locked 等) (默认值: "normal")
 // default_mode "locked"

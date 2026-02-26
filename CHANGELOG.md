@@ -8,6 +8,12 @@
 
 ## [Unreleased]
 
+### Added
+- `zellij/config.kdl` 新增 `dracula-pro` 自定义主题：基于 Dracula 调色板，通过显式声明 `text_selected` / `text_unselected` 解决 Zellij 内置 dracula 主题与 Ghostty Dracula 配色冲突导致选中文本不可见的问题
+
+### Changed
+- `bin/colorscheme` 将 dracula 的 Zellij 映射从内置 `dracula` 切换为自定义 `dracula-pro`，确保 `colorscheme dracula` 自动使用修复后的主题
+
 ## [0.9.0] - 2026-02-25
 
 ### Added
