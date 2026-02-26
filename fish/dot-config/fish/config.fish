@@ -55,6 +55,37 @@ if type -q hx
     set -gx VISUAL hx
 end
 
+# --- AI CLI Tool Detection ---
+# 按照优先级自动检测可用的 AI CLI，并设置为全局变量供各功能函数复用
+# 若需手动指定，可在 config.local.fish 中重新设置这些变量
+set -gx AI_CMD ""
+set -gx AI_NAME ""
+
+if type -q kimi
+    set -gx AI_CMD "kimi --quiet -p"
+    set -gx AI_NAME "Kimi"
+else if type -q aichat
+    set -gx AI_CMD "aichat"
+    set -gx AI_NAME "AIChat"
+else if type -q opencode
+    set -gx AI_CMD "opencode run"
+    set -gx AI_NAME "OpenCode"
+else if type -q claude
+    set -gx AI_CMD "claude -p"
+    set -gx AI_NAME "Claude"
+else if type -q gemini
+    set -gx AI_CMD "gemini generate"
+    set -gx AI_NAME "Gemini"
+else if type -q sgpt
+    set -gx AI_CMD "sgpt"
+    set -gx AI_NAME "ShellGPT"
+else if type -q gh
+    if gh extension list | grep -q "copilot"
+        set -gx AI_CMD "gh copilot suggest -t shell"
+        set -gx AI_NAME "GitHub Copilot"
+    end
+end
+
 if status is-interactive
     # Vi 模式：键绑定见 functions/fish_user_key_bindings.fish
     # (Fish autoload 机制要求该函数必须在 functions/ 目录下)

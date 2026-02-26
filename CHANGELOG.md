@@ -8,6 +8,15 @@
 
 ## [Unreleased]
 
+### Added
+- `gci` (Git Commit with AI) Fish 函数：结合大模型（Kimi, AIChat, OpenCode, Claude, Gemini, ShellGPT, GitHub Copilot）分析暂存区差异并自动生成符合 Conventional Commits 规范的提交信息
+- 全局 AI 工具探测机制：在 `config.fish` 中自动识别系统中安装的最佳 AI CLI 工具，并导出为全局变量 `$AI_CMD` 和 `$AI_NAME`，支持在 `config.local.fish` 中一键覆盖
+- `gci` 交互流增强：支持中英文智能切换、重写建议、手动编辑以及优雅的 `Ctrl+C` 中断处理
+- `gci` 规范增强：生成的提交信息严格遵循 Subject < 50 字符且 Body 每行 < 72 字符的业界排版标准
+
+### Changed
+- `README.md` 补充了 `gci` 命令说明及 AI 全局变量的配置范式
+
 ## [0.11.0] - 2026-02-26
 
 ### Added

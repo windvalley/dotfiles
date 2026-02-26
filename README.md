@@ -272,6 +272,7 @@ fish_add_path ~/.local/bin
 2. 将你所有的私密配置写入新生成的文件：
    ```fish
    # ~/.config/fish/config.local.fish
+   set -gx AI_CMD "opencode run"  # 手动覆盖默认探测到的 AI 工具
    set -gx OPENAI_API_KEY "sk-xxxxxxxxx"
    abbr -a -g work-vpn "sudo launchctl restart com.corp.vpn"
    ```
@@ -486,6 +487,7 @@ echo "*.log" >> ~/.config/git/ignore
 | `backup <file/dir>` | 为敏感文件或目录极速创建带有精确时间戳的完整备份副本 |
 | `copy [file]` | 将文件内容或前一个命令的标准输出(`\| copy`)极速复制到 Mac 剪贴板 |
 | `f [query]` | 结合 fzf 从当前目录搜索文件，选中后直接使用 Helix 全屏打开 |
+| `gci [args]` | AI 自动生成 Git 提交信息。自带重写/编辑/中英切换/退出流，极速完成规范化提交 |
 | `b [query]` | 结合 fzf 从当前目录搜索文件，选中后使用 bat 全屏查看（带语法高亮与分页） |
 | `rec [name]` | 极简终端操作录屏工具 (基于 asciinema)，支持录制、回放(`rec play`)与网页分享(`rec upload`) |
 | `gtd <tag>` | 一键同时删除本地和远端的 Git Tag |
