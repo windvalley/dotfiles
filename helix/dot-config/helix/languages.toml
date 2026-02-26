@@ -53,9 +53,6 @@
 #    # ---- Dockerfile ----
 #    npm i -g dockerfile-language-server-nodejs
 #
-#    # ---- Markdown ----
-#    brew install marksman
-#
 #    # ---- C / C++ ----
 #    brew install llvm   # clangd 包含在其中
 #    # 或 brew install clang-format  # 仅格式化
@@ -285,13 +282,8 @@ args = ["start"]
 # ============================================================
 # Markdown
 # ============================================================
-[[language]]
-name = "markdown"
-language-servers = ["marksman"]
-
-[language-server.marksman]
-command = "marksman"
-args = ["server"]
+# 移除 marksman，因为对于纯文本编辑过于臃肿且缺乏实际必要性。
+# 依靠 Helix 内置的 Tree-sitter 语法高亮即可。
 
 # ============================================================
 # Dockerfile

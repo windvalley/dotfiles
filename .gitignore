@@ -15,7 +15,7 @@ Thumbs.db
 secret.*
 .env
 .env.local
-fish_variables
+fish_variables*
 /fish/dot-config/fish/completions/
 /fish/dot-config/fish/conf.d/
 

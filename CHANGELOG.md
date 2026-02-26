@@ -8,16 +8,23 @@
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-02-26
+
 ### Added
 - `Brewfile` 新增 `orbstack`：现代、轻量的 macOS 容器开发环境（替代 Docker Desktop/VirtualBox）
 - `Makefile` 新增 `make docs` 自动化命令：通过使用 `npx markdown-toc -i README.md` 原地为过长的项目主文档生成且维护一层精美的高亮跳转大纲
 - `README.md` 新增“与官方默认的关键差异”章节：系统梳理并公开了 Karabiner、Ghostty、Zellij、Fish、Helix、Git 六大核心工具的全部非默认定制，极大降低新用户的理解成本
+- `README.md` 新增“配置即文档”核心理念：强调基于深度的中文注释实现配置即文档的立意，并澄清 `mise` 全局兜底与特定项目沙盒隔离的 LSP 管理版本观
 
 ### Changed
 - `install.sh` 彻底移除 `-m`/`--minimal` 最小化安装模式，统一执行完整依赖安装与配置链接，大幅降低维护心智负担并保持体验一致性
 - `config.fish` 针对通过 SSH 或 OrbStack 登入未配置相应 terminfo 的远程 Linux 时执行 `clear` 等程序报错 `unknown terminal type` 的问题，新增动态降级 `TERM` 为标准 `xterm-256color` 的命令别名 (alias) 修复方案；同时说明并保留了 `ghostty/config` 中默认的 `xterm-ghostty` 设置，以支持彩色波浪下划线等原生高级特性
 - `helix/config.toml` 移除 Normal/Select 模式下 `C-h`/`C-l`（`extend_to_line_start`/`extend_to_line_end`）自定义快捷键绑定，选中到行首/行尾可用 Helix 内置 `vgh`/`vgl`
 - `helix/config.toml` Normal/Select 模式新增 `Space + o`/`Space + i` 映射 `expand_selection`/`shrink_selection`（语法树节点扩展/收缩），替代被 Hammerspoon 占用的 `A-o`/`A-i`
+- `.gitignore` 扩大 `fish_variables` 忽略范围为 `fish_variables*`，彻底隔离 Fish 并发落盘带来的持久化临时文件（僵尸文件）污染
+
+### Removed
+- `helix/languages.toml` 及 `mise/config.toml` 中彻底移除 `marksman`（基于 .NET 的重量级 Markdown LSP）：剥离过度臃肿的知识库链接能力，退回由 Tree-sitter 主导的轻盈纯正纯文本编辑体验
 
 ## [0.10.0] - 2026-02-26
 

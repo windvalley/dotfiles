@@ -9,6 +9,7 @@
 2. **终端即容器**：终端仅作渲染容器（Ghostty），窗口布局与会话状态全部收敛于复用器（Zellij）。
 3. **统一环境**：终结全局变量污染与多版本管理器的混乱，依靠统一基座在一处声明全部语言沙箱（Mise）。
 4. **心智减负**：抵制无休止的插件拼凑，拥抱原生 LSP 架构的现代“开箱即用”编辑器（Helix），专注代码本身。
+5. **注释即文档**：本项目的每一个配置文件本身就是最详尽的说明书，包含深度的中文注释、设计取舍与最佳实践指引。
 
 > [!NOTE]
 > 此 dotfiles 仅适用于 macOS，不兼容 Linux 或 Windows (WSL)，且没有跨平台适配计划。
@@ -600,28 +601,43 @@ Fish 支持 Vi 风格编辑模式，本配置已默认启用。
 
 ### 4.5 Mise 工具版本管理
 
+**核心理念：**
+摒弃传统通过 `npm i -g`, `pip install`, `go install` 全局滥装工具导致的系统污染和版本冲突。
+本配置将所有的运行时框架（Node/Python/Go）和语言服务器（LSP）**全部统一收敛交由 mise 管理**，实现两层优雅隔离：
+1. **全局防灾保底**：全局配置 (`~/.config/mise/config.toml`) 中声明了各大语言**最新版本 (`@latest`) 的 LSP 工具链**，保证了在任何普通目录打开编辑器都有充足的补全提示能力。
+2. **纯净的项目级沙盒**：进入特定项目时，使用 `mise use` 可生成只对当前目录生效的 `.mise.toml` 进行精准隔离。
+    - **关于 Runtime（运行环境）**：强烈建议锁定具体版本（如 `node@16`）以保证团队构建一致性。
+    - **关于 LSP（语言服务器）**：通常建议在项目中也使用 `@latest` 获取最新的代码高亮、提示和性能优化；仅当最新版 LSP 与古董级老项目出现不兼容时，才妥协锁定 LSP 的旧版本。
+
 **配置文件**：`~/.config/mise/config.toml`
 
 **常用命令**：
 | 命令 | 功能 |
 |------|------|
-| `mise install` | 安装配置中声明的工具版本 |
-| `mise ls` | 列出已安装的工具 |
-| `mise ls-remote <tool>` | 查看可安装的远程版本 |
-| `mise use <tool>@<version>` | 设置项目本地版本 |
-| `mise use -g <tool>@<version>` | 设置全局默认版本 |
-| `mise current <tool>` | 查看当前激活版本 |
-| `mise prune` | 清理未使用的版本 |
-| `mise doctor` | 诊断配置问题 |
+| `mise install` | 根据当前目录 `.mise.toml` 或全局配置安装所有缺失工具 |
+| `mise ls` | 列出当前生效及已安装的工具版本 |
+| `mise ls-remote <tool>` | 查看该工具可配置的所有远程版本 |
+| `mise use <tool>@<version>` | **在当前项目生成 `.mise.toml` 并使用特定版本** |
+| `mise use -g <tool>@<version>` | 修改全局默认版本 |
+| `mise current <tool>` | 查看当前环境实际激活的版本来源（本地/全局） |
+| `mise prune` | 释放磁盘，清理不再使用的旧版本缓存 |
+| `mise doctor` | 环境变量诊断，排查不生效的原因 |
 
-**版本查询示例**：
+**实战示例**：
 ```bash
-mise ls-remote go      # 查看所有可用的 Go 版本
-mise ls-remote node    # 查看所有可用的 Node.js 版本
-mise ls-remote python  # 查看所有可用的 Python 版本
-```
+# 查询可用版本并安装
+mise ls-remote go
+mise use -g go@latest
 
-**Fish 自动激活**：无需手动配置，Fish 会通过 vendor_conf.d 自动激活 mise。
+# 项目内实战最佳实践：锁定特定版 Runtime + 最新版 LSP
+cd my-old-project
+mise use node@16
+mise use npm:@vtsls/language-server@latest
+
+# 极端情况：由于项目太老，最新的 LSP 解析报错，被迫降级锁定特定版 LSP
+cd my-ancient-project
+mise use npm:@vtsls/language-server@1.0.0
+```
 
 ---
 
