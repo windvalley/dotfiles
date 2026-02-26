@@ -386,7 +386,7 @@ display-progress-messages = false
 auto-signature-help = true
 
 # 显示内联提示 (inlay hints) (默认: false)
-display-inlay-hints = false
+display-inlay-hints = true
 
 # 内联提示最大显示长度
 # inlay-hints-length-limit = 25

@@ -23,10 +23,7 @@
 #    go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest  # lint 引擎
 #
 #    # ---- Python ----
-#    pip install python-lsp-server    # pylsp
-#    # 或
-#    pip install ruff-lsp             # ruff (更快的 linter)
-#    # 或
+#    pip install ruff                 # ruff (内置 LSP + 格式化 + lint)
 #    pip install pyright              # pyright (类型检查)
 #
 #    # ---- Rust ----
@@ -34,7 +31,7 @@
 #    # 或 rustup component add rust-analyzer
 #
 #    # ---- TypeScript / JavaScript ----
-#    npm i -g typescript-language-server typescript
+#    npm i -g @vtsls/language-server   # vtsls
 #
 #    # ---- HTML / CSS / JSON ----
 #    npm i -g vscode-langservers-extracted
@@ -42,15 +39,16 @@
 #    # ---- YAML ----
 #    npm i -g yaml-language-server
 #
+#    # ---- Tailwind CSS ----
+#    npm i -g @tailwindcss/language-server
+#
 #    # ---- TOML ----
 #    cargo install taplo-cli --locked
 #    # 或 brew install taplo
 #
 #    # ---- Bash / Shell ----
 #    npm i -g bash-language-server
-#
-#    # ---- Lua ----
-#    brew install lua-language-server
+#    brew install shfmt                # 格式化
 #
 #    # ---- Dockerfile ----
 #    npm i -g dockerfile-language-server-nodejs
@@ -66,7 +64,7 @@
 #    npm i -g sql-language-server
 #
 #    # ---- Protobuf ----
-#    go install github.com/bufbuild/buf-language-server/cmd/bufls@latest
+#    # buf CLI 已内置 LSP, 安装: brew install bufbuild/buf/buf
 #
 # 3. 安装后重新检查:
 #      hx --health <语言名>
@@ -105,6 +103,7 @@ name = "go"
 auto-format = true
 # 使用 goimports 格式化 (自动整理 import)
 formatter = { command = "goimports" }
+language-servers = ["gopls", "golangci-lint-langserver"]
 
 # gopls 语言服务器设置
 [language-server.gopls]
@@ -125,16 +124,29 @@ functionTypeParameters = true
 parameterNames = true
 rangeVariableTypes = true
 
+# golangci-lint 语言服务器 (实时 lint 诊断)
+[language-server.golangci-lint-langserver]
+command = "golangci-lint-langserver"
+
+[language-server.golangci-lint-langserver.config]
+command = ["golangci-lint", "run", "--out-format", "json", "--issues-exit-code=1"]
+
 # ============================================================
 # Python
 # ============================================================
 [[language]]
 name = "python"
 auto-format = true
-language-servers = ["pylsp"]
+language-servers = ["ruff", "pyright"]
 
-[language-server.pylsp]
-command = "pylsp"
+[language-server.pyright]
+command = "pyright-langserver"
+args = ["--stdio"]
+
+# ruff 内置 LSP (取代已废弃的 ruff-lsp)
+[language-server.ruff]
+command = "ruff"
+args = ["server"]
 
 # ============================================================
 # Rust
@@ -167,21 +179,32 @@ command = "clangd"
 args = ["--background-index", "--clang-tidy", "--completion-style=detailed"]
 
 # ============================================================
-# TypeScript / JavaScript
+# TypeScript / JavaScript / TSX / JSX
 # ============================================================
 [[language]]
 name = "typescript"
 auto-format = true
-language-servers = ["typescript-language-server"]
+language-servers = ["vtsls", "tailwindcss-language-server"]
 
 [[language]]
 name = "javascript"
 auto-format = true
-language-servers = ["typescript-language-server"]
+language-servers = ["vtsls", "tailwindcss-language-server"]
 
-[language-server.typescript-language-server]
-command = "typescript-language-server"
+[[language]]
+name = "tsx"
+auto-format = true
+language-servers = ["vtsls", "tailwindcss-language-server"]
+
+[[language]]
+name = "jsx"
+auto-format = true
+language-servers = ["vtsls", "tailwindcss-language-server"]
+
+[language-server.vtsls]
+command = "vtsls"
 args = ["--stdio"]
+config = { typescript = { tsserver = { maxTsServerMemory = 4096 } } }
 
 # ============================================================
 # TOML
@@ -210,8 +233,8 @@ args = ["--stdio"]
 [language-server.yaml-language-server.config.yaml]
 # 启用 JSON schema 验证
 validate = true
-# Kubernetes schema 支持
-# schemas = { "https://json.schemastore.org/github-workflow.json" = ".github/workflows/*.yml" }
+# JSON Schema 自动匹配
+schemas = { "https://json.schemastore.org/github-workflow.json" = ".github/workflows/*.{yml,yaml}", "https://json.schemastore.org/github-action.json" = "action.{yml,yaml}", "https://json.schemastore.org/docker-compose.json" = "docker-compose*.{yml,yaml}", "https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.28.0-standalone-strict/all.json" = "k8s/**/*.{yml,yaml}" }
 
 # ============================================================
 # JSON
@@ -225,18 +248,26 @@ language-servers = ["vscode-json-language-server"]
 command = "vscode-json-language-server"
 args = ["--stdio"]
 
+[language-server.vscode-json-language-server.config.json]
+schemas = [
+  { fileMatch = ["package.json"], url = "https://json.schemastore.org/package.json" },
+  { fileMatch = ["tsconfig.json", "tsconfig.*.json"], url = "https://json.schemastore.org/tsconfig.json" },
+  { fileMatch = [".eslintrc.json", ".eslintrc"], url = "https://json.schemastore.org/eslintrc.json" },
+  { fileMatch = [".prettierrc", ".prettierrc.json"], url = "https://json.schemastore.org/prettierrc.json" },
+]
+
 # ============================================================
 # HTML / CSS
 # ============================================================
 [[language]]
 name = "html"
 auto-format = true
-language-servers = ["vscode-html-language-server"]
+language-servers = ["vscode-html-language-server", "tailwindcss-language-server"]
 
 [[language]]
 name = "css"
 auto-format = true
-language-servers = ["vscode-css-language-server"]
+language-servers = ["vscode-css-language-server", "tailwindcss-language-server"]
 
 # ============================================================
 # Bash / Shell
@@ -245,6 +276,7 @@ language-servers = ["vscode-css-language-server"]
 name = "bash"
 auto-format = true
 language-servers = ["bash-language-server"]
+formatter = { command = "shfmt", args = ["-i", "2", "-ci"] }
 
 [language-server.bash-language-server]
 command = "bash-language-server"
@@ -277,7 +309,7 @@ args = ["--stdio"]
 # ============================================================
 [[language]]
 name = "ini"
-file-types = ["ini", "conf", "cfg", "properties"]
+file-types = ["ini", "cfg", "properties"]
 
 # ============================================================
 # SQL
@@ -289,3 +321,10 @@ language-servers = ["sql-language-server"]
 [language-server.sql-language-server]
 command = "sql-language-server"
 args = ["up", "--method", "stdio"]
+
+# ============================================================
+# Tailwind CSS
+# ============================================================
+[language-server.tailwindcss-language-server]
+command = "tailwindcss-language-server"
+args = ["--stdio"]
