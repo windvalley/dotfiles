@@ -144,6 +144,13 @@ if status is-interactive
     end
 end
 
+# 针对 Ghostty 的 xterm-ghostty 终端类型在远程机器缺失的问题
+# 在执行 ssh 或 orb 命令时动态降级 TERM 为 xterm-256color 以保证远程兼容性
+alias ssh="TERM=xterm-256color command ssh"
+if type -q orb
+    alias orb="TERM=xterm-256color command orb"
+end
+
 # ============================================================
 # 加载本地忽略的私有配置 (API Keys, 机器特定别名等)
 #

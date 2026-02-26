@@ -13,6 +13,8 @@
 - `README.md` 新增“与官方默认的关键差异”章节：系统梳理并公开了 Karabiner、Ghostty、Zellij、Fish、Helix、Git 六大核心工具的全部非默认定制，极大降低新用户的理解成本
 
 ### Changed
+- `install.sh` 彻底移除 `-m`/`--minimal` 最小化安装模式，统一执行完整依赖安装与配置链接，大幅降低维护心智负担并保持体验一致性
+- `config.fish` 针对通过 SSH 或 OrbStack 登入未配置相应 terminfo 的远程 Linux 时执行 `clear` 等程序报错 `unknown terminal type` 的问题，新增动态降级 `TERM` 为标准 `xterm-256color` 的命令别名 (alias) 修复方案；同时说明并保留了 `ghostty/config` 中默认的 `xterm-ghostty` 设置，以支持彩色波浪下划线等原生高级特性
 - `helix/config.toml` 移除 Normal/Select 模式下 `C-h`/`C-l`（`extend_to_line_start`/`extend_to_line_end`）自定义快捷键绑定，选中到行首/行尾可用 Helix 内置 `vgh`/`vgl`
 - `helix/config.toml` Normal/Select 模式新增 `Space + o`/`Space + i` 映射 `expand_selection`/`shrink_selection`（语法树节点扩展/收缩），替代被 Hammerspoon 占用的 `A-o`/`A-i`
 

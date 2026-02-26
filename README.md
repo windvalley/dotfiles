@@ -75,8 +75,6 @@ cd "$HOME/dotfiles"
 
 > [!TIP]
 > **非交互模式**：如果在自动化环境（如 CI/CD 等）中执行，可追加 `-y` 或 `--unattended` 标志跳过所有确认自动安装：`./install.sh -y`
->
-> **最小安装模式**：如果只需要核心编辑体验（fish + helix + git），可追加 `-m` 或 `--minimal` 标志跳过 GUI 应用和字体：`./install.sh -m`
 
 **安装过程说明：**
 - 如果系统未安装 Homebrew，脚本默认会**询问是否安装**

@@ -16,17 +16,13 @@ error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
 # Parse arguments
 NON_INTERACTIVE=false
-MINIMAL=false
-
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -y|--yes|--unattended) NON_INTERACTIVE=true ;;
-        -m|--minimal) MINIMAL=true ;;
         -h|--help) 
             echo "Usage: $0 [options]"
             echo "Options:"
             echo "  -y, --yes, --unattended    Run in non-interactive mode without prompting"
-            echo "  -m, --minimal              Minimal install (fish + helix + git only, no GUI apps)"
             echo "  -h, --help                 Show this help message"
             exit 0
             ;;
@@ -51,11 +47,7 @@ ask_yes_no() {
     fi
 }
 
-if [ "$MINIMAL" = true ]; then
-    info "Starting MINIMAL dotfiles installation (fish + helix + git)..."
-else
-    info "Starting dotfiles installation..."
-fi
+info "Starting dotfiles installation..."
 
 if ! command -v brew &> /dev/null; then
     warn "Homebrew not found."
@@ -79,47 +71,32 @@ fi
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-if [ "$MINIMAL" = true ]; then
-    info "Installing minimal dependencies..."
-    MINIMAL_DEPS=(stow fish helix git-delta)
-    for dep in "${MINIMAL_DEPS[@]}"; do
-        if ! brew list "$dep" &>/dev/null; then
-            brew install "$dep"
-        fi
-    done
-    success "Minimal dependencies installed."
-else
-    info "Installing dependencies from Brewfile..."
-    if [ -f "$DOTFILES_DIR/Brewfile" ]; then
-        if ! brew bundle check --file="$DOTFILES_DIR/Brewfile" &>/dev/null; then
-            brew bundle install --file="$DOTFILES_DIR/Brewfile"
-        else
-            success "All Brew dependencies are already satisfied."
-        fi
+info "Installing dependencies from Brewfile..."
+if [ -f "$DOTFILES_DIR/Brewfile" ]; then
+    if ! brew bundle check --file="$DOTFILES_DIR/Brewfile" &>/dev/null; then
+        brew bundle install --file="$DOTFILES_DIR/Brewfile"
     else
-        error "Brewfile not found at $DOTFILES_DIR/Brewfile"
-        exit 1
+        success "All Brew dependencies are already satisfied."
     fi
+else
+    error "Brewfile not found at $DOTFILES_DIR/Brewfile"
+    exit 1
+fi
 
-    info "Installing additional Fonts..."
-    if ask_yes_no "Do you want to install additional fonts (Maple Mono, Geist Mono)? (y/n)"; then
-        REQUIRED_CASKS=(
-            font-maple-mono-nf
-            font-geist-mono-nerd-font
-        )
-        brew install --cask "${REQUIRED_CASKS[@]}"
-    fi
+info "Installing additional Fonts..."
+if ask_yes_no "Do you want to install additional fonts (Maple Mono, Geist Mono)? (y/n)"; then
+    REQUIRED_CASKS=(
+        font-maple-mono-nf
+        font-geist-mono-nerd-font
+    )
+    brew install --cask "${REQUIRED_CASKS[@]}"
 fi
 
 info "Linking configuration files with stow..."
 
 mkdir -p "$HOME/.local/bin"
 
-if [ "$MINIMAL" = true ]; then
-    STOW_PACKAGES=(fish helix git)
-else
-    STOW_PACKAGES=(ghostty fish helix zellij mise karabiner btop git)
-fi
+STOW_PACKAGES=(ghostty fish helix zellij mise karabiner btop git)
 
 # Clean up existing config directories and stow packages
 for pkg in "${STOW_PACKAGES[@]}"; do
@@ -140,10 +117,9 @@ for pkg in "${STOW_PACKAGES[@]}"; do
     stow --restow --target="$HOME" --dir="$DOTFILES_DIR" --dotfiles "$pkg"
 done
 
-if [ "$MINIMAL" != true ]; then
-    info "Stowing bin..."
-    stow --restow --target="$HOME/.local/bin" --dir="$DOTFILES_DIR" bin
-fi
+# Always stow bin for scripts, they are useful in CLI
+info "Stowing bin..."
+stow --restow --target="$HOME/.local/bin" --dir="$DOTFILES_DIR" bin
 
 info "Setting up local configuration overrides..."
 

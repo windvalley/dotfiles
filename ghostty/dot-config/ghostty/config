@@ -2041,7 +2041,11 @@ vt-kam-allowed = false
 #
 # 可选值: 任意 terminfo 名称
 # 默认值: xterm-ghostty
-term = xterm-ghostty
+#
+# 注意: 默认保持 xterm-ghostty 以支持彩色波浪下划线等原生高级特性。
+# 针对 SSH 或 OrbStack 登入远程时可能报 'unknown terminal type' 的问题，
+# 现已改为在 fish 配置中通过 alias (ssh/orb) 动态降级 TERM 为 xterm-256color。
+# term = xterm-ghostty
 
 # enquiry-response
 # ENQ (0x05) 查询的响应字符串
