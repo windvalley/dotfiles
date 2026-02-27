@@ -65,17 +65,15 @@
 
 ## 0. TL;DR (快速开始)
 
-最简单的方法是使用一键安装脚本：
+最简单的方法是使用一键安装脚本（Bootstrap）：
 
 ```sh
-# 克隆仓库并运行安装脚本
-git clone --depth=1 https://github.com/windvalley/dotfiles.git "$HOME/dotfiles"
-cd "$HOME/dotfiles"
-./install.sh
+# 直接运行以下命令，会自动完成克隆仓库并执行安装脚本
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main/bootstrap.sh)"
 ```
 
 > [!NOTE]
-> `install.sh` 支持多次执行（幂等），你可以放心地运行它来更新依赖或修复配置链接。
+> `install.sh` (以及 `bootstrap.sh`) 支持多次执行（幂等），你可以放心地运行它来更新依赖或修复配置链接。
 
 该脚本会自动安装 Homebrew（如果缺失）、ghostty、fish、zellij、helix、mise、stow, 并完成配置链接以及 Fish Shell 的初始化。
 
@@ -707,6 +705,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 - `colors-print`: 打印终端 256 色板
 - `print-256-hex-colors`: 打印 256 色的十六进制色值
 - `validate-configs [tool|all]`: 验证配置文件语法和完整性（支持 fish/git/zellij/helix/mise/ghostty/karabiner）
+- `dot-update`: 一键聚合更新所有核心依赖包（包含 Homebrew, Mise 工具链, Fisher 插件, 以及 Helix Tree-sitter 语法库）
 
 > [!TIP]
 > **变更生效方式：**
@@ -733,7 +732,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | `make validate` | 运行完整的配置验证（包含工具检查） |
 | `make lint` | 静态分析 `bin/` 脚本（shellcheck） |
 | `make docs` | 生成或更新 README 的目录 (TOC) |
-| `make update` | 拉取远程代码并更新 |
+| `make update` | 拉取远程代码并更新所有核心工具链体系 (`dot-update`) |
 | `make clean` | 清理临时文件 (`.bak`, `.tmp` 等) |
 
 ---

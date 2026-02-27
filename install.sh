@@ -216,7 +216,7 @@ if command -v zsh &>/dev/null; then
 
         # Check if path is already in fish
         if ! echo "$FISH_PATHS" | grep -qxF "$p"; then
-            fish -c "fish_add_path --append '$p'" 2>/dev/null
+            fish -c "fish_add_path --append '$p'" 2>/dev/null || true
             info "  Added: $p"
             MIGRATED=$((MIGRATED + 1))
         fi

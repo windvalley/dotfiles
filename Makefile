@@ -49,7 +49,7 @@ help: ## 显示帮助信息
 	@echo "  $(YELLOW)make validate$(NC)   验证所有配置文件语法"
 	@echo "  $(YELLOW)make lint$(NC)       静态分析 bin/ 脚本 (shellcheck)"
 	@echo "  $(YELLOW)make docs$(NC)       生成或更新 README 的目录 (TOC)"
-	@echo "  $(YELLOW)make update$(NC)     更新 dotfiles 仓库"
+	@echo "  $(YELLOW)make update$(NC)     更新 dotfiles 仓库与所有工具链"
 	@echo "  $(YELLOW)make clean$(NC)      清理临时文件"
 	@echo ""
 
@@ -191,9 +191,10 @@ docs: ## 生成或更新 README 的目录 (TOC)
 	@npx doctoc README.md --notitle --maxlevel 3
 	@echo "$(GREEN)✅ README.md 目录已更新$(NC)"
 
-update: ## 更新 dotfiles 仓库
-	@echo "$(BLUE)🔄 更新 dotfiles...$(NC)"
+update: ## 更新 dotfiles 仓库与所有工具链
+	@echo "$(BLUE)🔄 更新 dotfiles 及相关工具链...$(NC)"
 	@git pull --rebase
+	@./bin/dot-update
 	@echo "$(GREEN)✅ 更新完成$(NC)"
 	@echo "  $(YELLOW)提示:$(NC) 运行 'make restow' 应用最新配置"
 
