@@ -8,6 +8,22 @@
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-02-27
+
+### Added
+- 新增 GitHub Actions CI 自动化工作流，持续集成部署能力全面升级
+- 新增 `dot-update` 和 `bootstrap` 脚本，提供标准化的安装和更新流程
+- 新增 Git clean filter 过滤器，实现主题配置的解耦管理
+
+### Changed
+- 重构 CI 任务结构，优化 fisher 安装逻辑
+- 扩展 Makefile 的 shellcheck 检查范围，覆盖所有 shell 脚本
+- 优化 macos.sh 中关于键盘重复、Finder 搜索和软件更新设置的注释说明
+
+### Documentation
+- README 添加项目徽章，并将 macos.sh 明确标记为可选组件
+
+
 ## [0.12.1] - 2026-02-27
 
 ### Fixed
