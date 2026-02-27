@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  lint-and-validate:
+  lint-and-docs:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,10 +28,23 @@ jobs:
       - name: Run shell script linter (shellcheck)
         run: make lint
 
-      - name: Validate configuration files syntax
-        run: make validate
-
       - name: Verify README.md TOC is up-to-date
         run: |
           make docs
           git diff --exit-code README.md || (echo "❌ README.md generated TOC is out of sync. Please run 'make docs' locally and commit the changes." && exit 1)
+
+  test-macos-install:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run install script in non-interactive mode
+        run: ./install.sh -y
+
+      - name: Validate configuration files syntax
+        run: |
+          # Include .local/bin in PATH (for validate-configs) and opt/homebrew/bin for tools
+          export PATH="/opt/homebrew/bin:$HOME/.local/bin:$PATH"
+          make validate

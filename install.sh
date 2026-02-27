@@ -173,26 +173,28 @@ if [ -d "$FISHER_DATA_DIR" ]; then
     rm -rf "$FISHER_DATA_DIR"
 fi
 
-if [ -f "$DOTFILES_DIR/fish/dot-config/fish/fish_plugins" ]; then
-    if fish -c "type -q fisher" 2>/dev/null; then
-        success "Fisher already installed, updating plugins..."
-        fish -c "fisher update"
-    else
-        info "Installing fisher..."
-        FISHER_URL="https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish"
-        FISHER_TMP=$(mktemp)
-
-        if curl -fsSL "$FISHER_URL" -o "$FISHER_TMP"; then
-            fish -c "source '$FISHER_TMP' && fisher install jorgebucaran/fisher && fisher install (cat $DOTFILES_DIR/fish/dot-config/fish/fish_plugins)"
-            rm -f "$FISHER_TMP"
-        else
-            rm -f "$FISHER_TMP"
-            error "Failed to download fisher. Check your network connection."
-            exit 1
-        fi
-    fi
+if fish -c "type -q fisher" 2>/dev/null; then
+    success "Fisher already installed."
 else
-    warn "fish_plugins not found at $DOTFILES_DIR/fish/dot-config/fish/fish_plugins, skipping fisher update."
+    info "Installing fisher..."
+    FISHER_URL="https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish"
+    FISHER_TMP=$(mktemp)
+
+    if curl -fsSL "$FISHER_URL" -o "$FISHER_TMP"; then
+        fish -c "source '$FISHER_TMP' && fisher install jorgebucaran/fisher"
+        rm -f "$FISHER_TMP"
+    else
+        rm -f "$FISHER_TMP"
+        error "Failed to download fisher. Check your network connection."
+        exit 1
+    fi
+fi
+
+if [ -f "$DOTFILES_DIR/fish/dot-config/fish/fish_plugins" ]; then
+    info "Updating plugins from fish_plugins..."
+    fish -c "fisher update"
+else
+    warn "fish_plugins not found at $DOTFILES_DIR/fish/dot-config/fish/fish_plugins, skipping plugin installation."
 fi
 
 info "Configuring Fish Homebrew PATH..."
