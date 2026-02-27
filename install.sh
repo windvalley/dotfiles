@@ -60,11 +60,7 @@ if ! command -v brew &> /dev/null; then
         info "Installing Homebrew..."
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-        if [[ $(uname -m) == "arm64" ]]; then
-            eval "$(/opt/homebrew/bin/brew shellenv)"
-        else
-            eval "$(/usr/local/bin/brew shellenv)"
-        fi
+        eval "$(/opt/homebrew/bin/brew shellenv 2>/dev/null || /usr/local/bin/brew shellenv 2>/dev/null)"
         success "Homebrew installed successfully."
     else
         error "Homebrew is required. Please install it manually from https://brew.sh"

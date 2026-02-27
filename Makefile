@@ -157,19 +157,21 @@ validate: ## 验证所有配置文件语法
 	@./bin/validate-configs all 2>&1 || exit 1
 	@echo "$(GREEN)✅ 所有配置文件验证通过$(NC)"
 
-lint: ## 静态分析 bin/ 脚本 (shellcheck)
+lint: ## 静态分析 Shell 脚本 (shellcheck)
 	@echo "$(BLUE)🔍 运行 shellcheck 静态分析...$(NC)"
 	@if ! command -v shellcheck > /dev/null 2>&1; then \
 		echo "$(RED)  ❌ shellcheck 未安装，请运行 'brew install shellcheck'$(NC)"; \
 		exit 1; \
 	fi
 	@errors=0; \
-	for script in bin/*; do \
-		if [ -f "$$script" ] && head -1 "$$script" | grep -q "^#!.*bash"; then \
-			if shellcheck -S warning "$$script" 2>/dev/null; then \
-				echo "$(GREEN)  ✓$(NC) $$script"; \
-			else \
-				errors=$$((errors + 1)); \
+	for script in install.sh macos.sh bin/*; do \
+		if [ -f "$$script" ]; then \
+			if file "$$script" | grep -q "shell script" || head -1 "$$script" | grep -Eq '^#!.*(bash|sh)'; then \
+				if shellcheck -S warning "$$script" 2>/dev/null; then \
+					echo "$(GREEN)  ✓$(NC) $$script"; \
+				else \
+					errors=$$((errors + 1)); \
+				fi; \
 			fi; \
 		fi; \
 	done; \
