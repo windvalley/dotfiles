@@ -216,4 +216,17 @@ btop_cs_change
 bat_cs_change
 delta_cs_change
 
+# --- Git Clean Filter Integration ---
+# After modifying files, run git add to trigger the clean filter.
+# This keeps 'git status' clean by syncing the index with the masked default values.
+if git rev-parse --is-inside-work-tree &>/dev/null; then
+    # We must use relative paths within the repo for 'git add' to work reliably
+    # even when the files are symlinked to ~/.config
+    git add ghostty/dot-config/ghostty/config \
+            helix/dot-config/helix/config.toml \
+            zellij/dot-config/zellij/config.kdl \
+            btop/dot-config/btop/btop.conf \
+            git/dot-config/git/config 2>/dev/null || true
+fi
+
 exit 0

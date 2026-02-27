@@ -80,3 +80,11 @@
 
     # 清理已合并的本地分支（强迫症福音）
     cleanup = "!git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
+
+# === Git Clean Filter: 主题解耦配置 ===
+# 该配置配合 .gitattributes 文件使用，用于解决 colorscheme 切换导致仓库变脏的问题。
+# 当执行 git add 或 git status 时，Git 会调用 bin/dot-theme-filter 脚本处理匹配的文件。
+# 脚本会将本地的主题名称实时替换为预设的默认值（如 Dracula），确保 Git index 中记录的内容始终保持干净。
+# %f 参数用于将当前被处理的文件路径传递给过滤脚本，以便针对不同应用进行精准替换。
+[filter "dot-theme"]
+	clean = bin/dot-theme-filter %f

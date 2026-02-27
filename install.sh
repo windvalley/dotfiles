@@ -140,6 +140,7 @@ else
     success "  -> ~/.gitconfig.work already exists, skipping."
 fi
 
+
 # --- 3. Fish 私有环境变量模板 ---
 FISH_LOCAL_CONF="$HOME/.config/fish/config.local.fish"
 if [ ! -f "$FISH_LOCAL_CONF" ]; then

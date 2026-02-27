@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Git clean filter for dotfiles colorscheme decoupling
+# This filter restores the "default" theme when git reads the file into the index,
+# preventing local colorscheme changes from dirtying the git working tree.
+
+file="$1"
+
+# Check for gsed (GNU sed) - macOS default sed doesn't support some -E features uniformly
+if command -v gsed &>/dev/null; then
+    SED="gsed"
+else
+    SED="sed"
+fi
+
+case "$file" in
+    *ghostty/config)
+        $SED -E 's/^theme\s*=\s*".*"/theme = "Dracula"/'
+        ;;
+    *helix/config.toml)
+        $SED -E 's/^theme\s*=\s*".*"/theme = "dracula"/'
+        ;;
+    *zellij/config.kdl)
+        $SED -E 's/^theme\s+".+"/theme "dracula-pro"/'
+        ;;
+    *btop/btop.conf)
+        $SED -E 's/^color_theme\s*=\s*".*"/color_theme = "dracula"/'
+        ;;
+    *git/config)
+        $SED -E 's/^(\s+)syntax-theme\s*=\s*.+/\1syntax-theme = Dracula/'
+        ;;
+    *)
+        cat
+        ;;
+esac
