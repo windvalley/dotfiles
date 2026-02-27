@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  lint-and-validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install ShellCheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+
+      - name: Install Node.js (for doctoc)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install doctoc
+        run: npm install -g doctoc
+
+      - name: Run shell script linter (shellcheck)
+        run: make lint
+
+      - name: Validate configuration files syntax
+        run: make validate
+
+      - name: Verify README.md TOC is up-to-date
+        run: |
+          make docs
+          git diff --exit-code README.md || (echo "❌ README.md generated TOC is out of sync. Please run 'make docs' locally and commit the changes." && exit 1)
