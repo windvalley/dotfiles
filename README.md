@@ -1,6 +1,15 @@
 # dotfiles
 
-[![CI](https://github.com/windvalley/dotfiles/actions/workflows/ci.yml/badge.svg)](https://github.com/windvalley/dotfiles/actions/workflows/ci.yml)
+![macOS](https://img.shields.io/badge/macOS-000000?style=flat&logo=apple&logoColor=white) 
+[![Ghostty](https://img.shields.io/badge/Ghostty-212121.svg)](https://ghostty.org/) 
+[![Zellij](https://img.shields.io/badge/Zellij-FF9800.svg)](https://zellij.dev/) 
+[![Fish](https://img.shields.io/badge/Fish-4E5B3D.svg?logo=fish&logoColor=white)](https://fishshell.com/) 
+[![Helix](https://img.shields.io/badge/Helix-5A5D7A.svg)](https://helix-editor.com/) 
+[![Mise](https://img.shields.io/badge/Mise-3e1e5b.svg)](https://mise.jdx.dev/) 
+[![Stow](https://img.shields.io/badge/Stow-005090.svg)](https://www.gnu.org/software/stow/) 
+[![CI](https://github.com/windvalley/dotfiles/actions/workflows/ci.yml/badge.svg)](https://github.com/windvalley/dotfiles/actions/workflows/ci.yml) 
+[![License](https://img.shields.io/github/license/windvalley/dotfiles)](https://github.com/windvalley/dotfiles/blob/main/LICENSE)
+
 
 一套 **极简、高效、开箱即用** 的 macOS 终端开发环境，所有配置集中版本控制，通过 GNU Stow 一键部署。
 
@@ -30,7 +39,7 @@
   - [3.3 本地私有配置 (不入库)](#33-%E6%9C%AC%E5%9C%B0%E7%A7%81%E6%9C%89%E9%85%8D%E7%BD%AE-%E4%B8%8D%E5%85%A5%E5%BA%93)
   - [3.4 配置 fisher](#34-%E9%85%8D%E7%BD%AE-fisher)
   - [3.5 配置 tide](#35-%E9%85%8D%E7%BD%AE-tide)
-  - [3.6 macOS 系统偏好 (macos.sh)](#36-macos-%E7%B3%BB%E7%BB%9F%E5%81%8F%E5%A5%BD-macossh)
+  - [3.6 macOS 系统偏好 (macos.sh) (可选)](#36-macos-%E7%B3%BB%E7%BB%9F%E5%81%8F%E5%A5%BD-macossh-%E5%8F%AF%E9%80%89)
   - [3.7 配置 Git](#37-%E9%85%8D%E7%BD%AE-git)
 - [4. 使用方法](#4-%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95)
   - [4.1 Ghostty 终端](#41-ghostty-%E7%BB%88%E7%AB%AF)
@@ -320,7 +329,7 @@ tide configure --auto \
 tide configure
 ```
 
-### 3.6 macOS 系统偏好 (macos.sh)
+### 3.6 macOS 系统偏好 (macos.sh) (可选)
 
 根目录下提供了 `macos.sh` 脚本，利用 `defaults write` 一键配置符合开发者习惯的深层系统偏好：
 
@@ -338,7 +347,8 @@ make macos
 ```
 
 > [!WARNING]
-> 该脚本在执行前可能会要求输入管理员密码（`sudo -v`）。如果某些设置与你的个人习惯冲突，可以自行查阅并修改 `macos.sh` 中相应的 `defaults write` 命令。
+> 该脚本在执行前可能会要求输入管理员密码（`sudo -v`），且包含了高度个人主观偏好的系统设定。
+> **强烈建议你在执行前，先打开 `macos.sh` 快速浏览一遍带有详细中文解释的源码**。你可以轻松地注释掉任何与你习惯不符的 `defaults write` 命令。
 
 ### 3.7 配置 Git
 
