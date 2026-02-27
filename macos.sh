@@ -33,8 +33,9 @@ echo "正在配置 macOS..."
 # 通用界面与用户体验                                                          #
 ###############################################################################
 
-# 设置极快的键盘重复速率
-# 默认值：KeyRepeat = 2 (30ms)，InitialKeyRepeat = 15 (225ms)
+# 设置突破系统 UI 限制的极快键盘重复速率和极短延迟（对 Vim 等极客用户极其友好）
+# 系统出厂默认值：KeyRepeat = 6 (90ms)，InitialKeyRepeat = 25 (375ms)
+# 系统设置 UI 面板允许的最快极限值：KeyRepeat = 2 (30ms)，InitialKeyRepeat = 15 (225ms)
 # KeyRepeat：重复速率（数字越小越快，1 是最快）
 defaults write NSGlobalDomain KeyRepeat -int 1
 # InitialKeyRepeat：首次重复前的延迟（单位：毫秒，约 150ms）
@@ -93,8 +94,8 @@ defaults write com.apple.finder ShowPathbar -bool true
 # 默认值：false（文件夹与文件混合排序）
 defaults write com.apple.finder _FXSortFoldersFirst -bool true
 
-# 搜索时默认搜索当前文件夹
-# 默认值：SCev (搜索此 Mac)
+# 搜索时默认搜索当前文件夹，而不是全局搜索
+# 默认值：SCmac (搜索此 Mac)
 defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
 
 # 避免在网络卷或 USB 存储设备上创建 .DS_Store 文件
@@ -166,15 +167,15 @@ defaults write com.apple.ActivityMonitor SortDirection -int 0
 defaults write com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true
 
 # 每天检查软件更新（而非每周一次）
-# 默认值：7（每周检查一次）
+# 默认值：早期 macOS 默认值为 7（每周），现代通常按需或每天轮询
 defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 1
 
-# 在后台自动下载可用更新
-# 默认值：0（不自动下载）
+# 自动下载后台可用更新
+# 默认值：现代 macOS 中默认为 1 (自动下载但可能不会自动安装)
 defaults write com.apple.SoftwareUpdate AutomaticDownload -int 1
 
-# 安装系统数据文件和安全更新
-# 默认值：0（不自动安装关键更新）
+# 确保强制开启：安装系统数据文件和关键安全更新 (如 XProtect 等守护组件)
+# 默认值：现代 macOS 出厂一般为 1 (强制保底安全防御)，这里显式开启防止意外关闭
 defaults write com.apple.SoftwareUpdate CriticalUpdateInstall -int 1
 
 ###############################################################################
