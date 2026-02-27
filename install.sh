@@ -151,7 +151,10 @@ else
 fi
 
 if [[ "$SHELL" != *"fish"* ]]; then
-    if ask_yes_no "Do you want to set fish as your default shell? (y/n)"; then
+    if [ "$NON_INTERACTIVE" = true ]; then
+        info "Skipping default shell change in non-interactive mode."
+        info "Please run 'chsh -s $(which fish)' manually later if needed."
+    elif ask_yes_no "Do you want to set fish as your default shell? (y/n)"; then
         FISH_PATH=$(which fish)
         if ! grep -q "$FISH_PATH" /etc/shells; then
             info "Adding $FISH_PATH to /etc/shells..."
