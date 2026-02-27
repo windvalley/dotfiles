@@ -1,4 +1,4 @@
-function ait -d "自动更新 Changelog 加发版 (AI Release)"
+function ait -d "自动更新 Changelog 并提交打 Tag 发版 (AI Release)"
     # 检查 AI 工具配置
     if test -z "$AI_CMD"
         echo "❌ 未检测到可用的 AI 命令，请在 ~/.config/fish/config.local.fish 中配置 AI_CMD"
