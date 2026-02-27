@@ -88,7 +88,21 @@ $commit_logs
 $supplementary_info"
         end
 
-        set -l ai_output (eval "$AI_CMD" \"\$prompt\" | string collect)
+        # 安全执行 AI_CMD（禁止 eval），避免提交信息中的特殊字符触发命令注入
+        # 兼容两种配置：
+        # 1) set -gx AI_CMD opencode run
+        # 2) set -gx AI_CMD "opencode run"
+        set -l ai_cmd_argv $AI_CMD
+        if test (count $ai_cmd_argv) -eq 1
+            set ai_cmd_argv (string split -n " " -- $ai_cmd_argv[1])
+        end
+
+        if test (count $ai_cmd_argv) -eq 0
+            echo "❌ AI_CMD 配置无效，请检查 ~/.config/fish/config.local.fish"
+            return 1
+        end
+
+        set -l ai_output (command $ai_cmd_argv "$prompt" | string collect)
         if test $status -ne 0
             echo ""
             echo "❌ AI 生成失败"
