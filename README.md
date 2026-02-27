@@ -272,7 +272,7 @@ fish_add_path ~/.local/bin
 2. 将你所有的私密配置写入新生成的文件：
    ```fish
    # ~/.config/fish/config.local.fish
-   set -gx AI_CMD "opencode run"  # 手动覆盖默认探测到的 AI 工具
+   set -gx AI_CMD "opencode run"  # 配置全局 AI 命令，供 aic 等辅助工具使用
    set -gx OPENAI_API_KEY "sk-xxxxxxxxx"
    abbr -a -g work-vpn "sudo launchctl restart com.corp.vpn"
    ```
@@ -486,9 +486,9 @@ echo "*.log" >> ~/.config/git/ignore
 | `gitignore <语言>` | 从 GitHub 模板快速输出标准项目 .gitignore 内容 (例: `gitignore Node`) |
 | `backup <file/dir>` | 为敏感文件或目录极速创建带有精确时间戳的完整备份副本 |
 | `copy [file]` | 将文件内容或前一个命令的标准输出(`\| copy`)极速复制到 Mac 剪贴板 |
-| `f [query]` | 结合 fzf 从当前目录搜索文件，选中后直接使用 Helix 全屏打开 |
-| `gci [args]` | AI 自动生成 Git 提交信息。自带重写/编辑/中英切换/退出流，极速完成规范化提交 |
-| `b [query]` | 结合 fzf 从当前目录搜索文件，选中后使用 bat 全屏查看（带语法高亮与分页） |
+| `f [query]` | 搜索文件并使用 Helix 打开。若关键字匹配唯一结果则直接打开 |
+| `aic` | 根据代码变更自动生成 Git 提交信息。支持中英交互切换、Prompt 微调及重写功能 |
+| `b [query]` | 搜索文件并使用 bat 查看。若关键字匹配唯一结果则直接打开 |
 | `rec [name]` | 极简终端操作录屏工具 (基于 asciinema)，支持录制、回放(`rec play`)与网页分享(`rec upload`) |
 | `gtd <tag>` | 一键同时删除本地和远端的 Git Tag |
 
@@ -582,20 +582,7 @@ Fish 支持 Vi 风格编辑模式，本配置已默认启用。
 - **语言配置**：`~/.config/helix/languages.toml`
 - **检查健康状态**：`hx --health` 或 `hx --health go`
 - **安装 LSP**：
-  ```bash
-  # Go
-  go install golang.org/x/tools/gopls@latest
-  go install golang.org/x/tools/cmd/goimports@latest
-
-  # Python
-  pip install python-lsp-server
-
-  # Rust
-  brew install rust-analyzer
-
-  # TypeScript
-  npm i -g typescript-language-server typescript
-  ```
+  本项目采用 `mise` 集中管理所有语言服务器，详情请参考 [4.5 Mise 工具版本管理](#45-mise-工具版本管理)。
 - **重启 LSP**：`:lsp-restart`
 - **查看文档**：`:config-open` 打开配置，`:config-reload` 重载
 
@@ -612,6 +599,12 @@ Fish 支持 Vi 风格编辑模式，本配置已默认启用。
     - **关于 LSP（语言服务器）**：通常建议在项目中也使用 `@latest` 获取最新的代码高亮、提示和性能优化；仅当最新版 LSP 与古董级老项目出现不兼容时，才妥协锁定 LSP 的旧版本。
 
 **配置文件**：`~/.config/mise/config.toml`
+
+> [!NOTE]
+> **关于特殊 LSP 的说明**：
+> 部分底层工具由于平台依赖较强或构建极其复杂（如 `rust-analyzer` 和 `clangd`），本配置**未通过 mise 管理**，仍建议通过 `brew` 安装以获得最佳稳定性和补全体验：
+> - **Rust**: `brew install rust-analyzer`
+> - **C/C++**: `brew install llvm` (包含 `clangd`)
 
 **常用命令**：
 | 命令 | 功能 |

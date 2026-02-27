@@ -47,6 +47,11 @@ ask_yes_no() {
     fi
 }
 
+if [ "$(uname -s)" != "Darwin" ]; then
+    error "This dotfiles setup is only supported on macOS."
+    exit 1
+fi
+
 info "Starting dotfiles installation..."
 
 if ! command -v brew &> /dev/null; then
