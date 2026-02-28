@@ -8,6 +8,20 @@
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-02-28
+
+### Added
+- 集成 OpenCode 作为 mise 环境下的默认 AI 命令行工具。
+- 升级 Fish shell 智能助手工具集 (aic/ait) 并同步更新配套文档。
+
+### Changed
+- 优化 GNU Stow 配置文件管理逻辑及系统更新自动化脚本。
+- 调整 Helix 编辑器核心移动指令映射，交换 j/k 与 gj/gk 的绑定以优化操作流。
+
+### Fixed
+- 修复安装脚本在 CI/CD 等非交互式环境下因执行 shell 切换 (chsh) 导致的构建失败问题。
+
+
 ## [0.13.0] - 2026-02-27
 
 ### Added
