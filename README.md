@@ -1,26 +1,25 @@
 # dotfiles
 
 ![macOS](https://img.shields.io/badge/macOS-000000?style=flat&logo=apple&logoColor=white) 
-[![Ghostty](https://img.shields.io/badge/Ghostty-212121.svg)](https://ghostty.org/) 
+[![Ghostty](https://img.shields.io/badge/Ghostty-212121.svg?logo=ghostty&logoColor=white)](https://ghostty.org/) 
 [![Zellij](https://img.shields.io/badge/Zellij-FF9800.svg)](https://zellij.dev/) 
-[![Fish](https://img.shields.io/badge/Fish-4E5B3D.svg?logo=fish&logoColor=white)](https://fishshell.com/) 
-[![Helix](https://img.shields.io/badge/Helix-5A5D7A.svg)](https://helix-editor.com/) 
+[![Fish](https://img.shields.io/badge/Fish-4E5B3D.svg?logo=fishshell&logoColor=white)](https://fishshell.com/) 
+[![Helix](https://img.shields.io/badge/Helix-5A5D7A.svg?logo=helix&logoColor=white)](https://helix-editor.com/) 
 [![Mise](https://img.shields.io/badge/Mise-3e1e5b.svg)](https://mise.jdx.dev/) 
-[![Stow](https://img.shields.io/badge/Stow-005090.svg)](https://www.gnu.org/software/stow/) 
+[![Stow](https://img.shields.io/badge/Stow-005090.svg?logo=gnu&logoColor=white)](https://www.gnu.org/software/stow/) 
 [![CI](https://github.com/windvalley/dotfiles/actions/workflows/ci.yml/badge.svg)](https://github.com/windvalley/dotfiles/actions/workflows/ci.yml) 
 [![License](https://img.shields.io/github/license/windvalley/dotfiles)](https://github.com/windvalley/dotfiles/blob/main/LICENSE)
 
 
-一套 **极简、高效、开箱即用** 的 macOS 终端开发环境，所有配置集中版本控制，通过 GNU Stow 一键部署。
+本项目是一套 **现代、高效、精炼、开箱即用** 的 macOS 终端开发环境，所有配置集中版本控制，通过 GNU Stow 一键部署。
 
 核心工具栈：Ghostty（终端）+ Zellij（复用器）+ Fish（Shell）+ Helix（编辑器）+ Mise（版本管理），视觉与交互风格全栈统一。
 
 **核心设计理念：**
 1. **配置即代码**：所有配置通过 Git 追踪与 Stow 符号链接管理，支持一键幂等重置。
-2. **终端即容器**：终端仅作渲染容器（Ghostty），窗口布局与会话状态全部收敛于复用器（Zellij）。
-3. **统一环境**：终结全局变量污染与多版本管理器的混乱，依靠统一基座在一处声明全部语言沙箱（Mise）。
-4. **心智减负**：抵制无休止的插件拼凑，拥抱原生 LSP 架构的现代“开箱即用”编辑器（Helix），专注代码本身。
-5. **注释即文档**：本项目的每一个配置文件本身就是最详尽的说明书，包含深度的中文注释、设计取舍与最佳实践指引。
+2. **终端即容器**：终端仅作渲染容器（Ghostty），会话与布局调度收敛于复用器（Zellij），代码编辑则交由开箱即用的现代编辑器（Helix），彻底消除插件拼凑的心智负担。
+3. **环境即沙箱**：终结全局变量污染与多版本管理器的混乱，依靠统一基座在一处声明全部语言沙箱（Mise）。
+4. **注释即文档**：本项目的每一个配置文件本身就是最详尽的说明书，包含深度的中文注释、设计取舍与最佳实践指引。
 
 > [!NOTE]
 > 此 dotfiles 仅适用于 macOS，不兼容 Linux 或 Windows (WSL)，且没有跨平台适配计划。
@@ -498,7 +497,7 @@ echo "*.log" >> ~/.config/git/ignore
 | `copy [file]` | 将文件内容或前一个命令的标准输出(`\| copy`)极速复制到 Mac 剪贴板 |
 | `f [query]` | 搜索文件并使用 Helix 打开。若关键字匹配唯一结果则直接打开 |
 | `aic` | 根据代码变更自动生成 Git 提交信息。支持中英交互切换、Prompt 微调及重写功能 |
-| `ait` | 自动根据 Git 变更历史生成 Changelog 并提交打 Tag。 支持中英交互切换、Prompt 微调及重写功能 |
+| `ait` | 自动根据 Git 变更历史生成 Changelog 并提交打 Tag。支持中英交互切换、Prompt 微调及重写功能 |
 | `b [query]` | 搜索文件并使用 bat 查看。若关键字匹配唯一结果则直接打开 |
 | `rec [name]` | 极简终端操作录屏工具 (基于 asciinema)，支持录制、回放(`rec play`)与网页分享(`rec upload`) |
 | `gtd <tag>` | 一键同时删除本地和远端的 Git Tag |

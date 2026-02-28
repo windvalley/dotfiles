@@ -1,4 +1,8 @@
 function ait -d "自动更新 Changelog 并提交打 Tag 发版 (AI Release)"
+    # 打印工具简介
+    echo -e "\n🚀 [\e[1mait\e[0m] \e[36mAI-Powered Release Tool\e[0m"
+    echo -e "   \e[90mWorkflow: Analyze Commits -> AI Gen Changelog -> Commit CHANGELOG.md -> Tag\e[0m\n"
+
     # 检查 AI 工具配置
     if test -z "$AI_CMD"
         echo "❌ 未检测到可用的 AI 命令，请在 ~/.config/fish/config.local.fish 中配置 AI_CMD"
@@ -18,13 +22,11 @@ function ait -d "自动更新 Changelog 并提交打 Tag 发版 (AI Release)"
     end
 
     # 2. 获取版本上下文
-    set -l last_tag (git tag --sort=-v:refname | head -n 1)
+    # 业界最佳实践：使用 git describe 获取当前分支上最近的 Tag，而非全局按名称排序
+    set -l last_tag (git describe --tags --abbrev=0 2>/dev/null)
     set -l log_range "HEAD"
     if test -n "$last_tag"
         set log_range "$last_tag..HEAD"
-        echo "📡 正在分析自 $last_tag 以来的变更..."
-    else
-        echo "📡 未发现历史 Tag，正在从头分析所有提交..."
     end
 
     set -l commit_logs (git log $log_range --pretty=format:"%h %s" | string collect)
@@ -33,11 +35,11 @@ function ait -d "自动更新 Changelog 并提交打 Tag 发版 (AI Release)"
         return 1
     end
 
-    # 交互式语言选择
+    # 3. 交互式语言选择
     set -l is_chinese 0
     set -l lang_prompt "Please generate the version number and changelog in English."
     
-    if not read -P "🌐 发布说明语言选择? [Enter=英文 / c=中文] " lang_choice
+    if not read -P "🌐 请选择 CHANGELOG 内容语言类型: [Enter=英文 / c=中文] " lang_choice
         echo ""
         echo "❌ 已取消"
         return 1
@@ -45,13 +47,20 @@ function ait -d "自动更新 Changelog 并提交打 Tag 发版 (AI Release)"
 
     if test "$lang_choice" = "c" -o "$lang_choice" = "C"
         set is_chinese 1
-        set lang_prompt "请使用中文生成版本号和发布说明。"
+        set lang_prompt "请使用中文生成版本号和变更记录。"
         echo "🇨🇳 已选择中文"
     else
         echo "🇺🇸 已选择英文 (默认)"
     end
 
-    # 3. 调用 AI 循环生成 Changelog 和版本号
+    # 4. 显示分析进度并执行分析
+    if test -n "$last_tag"
+        echo "📡 正在分析自 $last_tag 以来的变更..."
+    else
+        echo "📡 未发现历史 Tag，正在从头分析所有提交..."
+    end
+
+    # 5. 调用 AI 循环生成 Changelog 和版本号
     set -l supplementary_info ""
     set -l loop_active true
     
@@ -59,7 +68,7 @@ function ait -d "自动更新 Changelog 并提交打 Tag 发版 (AI Release)"
     set -l release_lines
     
     while test "$loop_active" = "true"
-        echo "🤖 正在由 AI 生成发布说明并推断版本号..."
+        echo "🤖 正在由 AI 生成变更记录并推断版本号..."
         
         set -l current_date (date "+%Y-%m-%d")
         set -l prompt "你是一个资深开源项目发布工程师。请不要把 Commit 当作流水账翻译！请你站在本次『全局整合发版』的视角，分析这些零乱的 Git Commit 记录，合并出最终的交付成果，生成一份务实的 CHANGELOG 总结，并推断下一个合理的版本号。
@@ -73,7 +82,7 @@ $lang_prompt
 $commit_logs
 
 要求:
-1. 【全局视角聚合】: 不要原样逐条列出 Commit！合并同一个特性的进度。比如提交中如果有“新增 A”、“完善 A”、“将 A 重命名为 B”，在发布总结里只需要写一条：“新增核心功能 B”。屏蔽开发过程中反反复复的中间状态和修复，只展示给用户看的变化！
+1. 【全局视角聚合】: 不要原样逐条列出 Commit！合并同一个特性的进度。比如提交中如果有“新增 A”、“完善 A”、“将 A 重命名为 B”，在变更总结里只需要写一条：“新增核心功能 B”。屏蔽开发过程中反反复复的中间状态和修复，只展示给用户看的变化！
 2. 根据语义化版本 (SemVer) 规范推断版本号。如果有新功能(feat)则增加 MINOR，只有修复(fix/patch)则增加 PATCH。
 3. 返回格式必须是以下两部分，用 '---VERSION_SPLIT---' 分隔：
    第一部分：仅包含推断出的纯版本号（例如 1.2.0，不要带 v）
@@ -145,7 +154,7 @@ $supplementary_info"
         else
             echo ""
             echo "📦 推断版本号: v$new_version"
-            echo "📝 预览发布说明:"
+            echo "📝 预览变更记录:"
             # 遍历原汁原味的行数组，保留所有的缩进与文本排版
             for line in $release_lines
                 echo "   $line"
@@ -197,7 +206,7 @@ $supplementary_info"
                     echo "🇺🇸 正在切换为英文并重新生成..."
                 else
                     set is_chinese 1
-                    set lang_prompt "请使用中文生成版本号和发布说明。"
+                    set lang_prompt "请使用中文生成版本号和变更记录。"
                     echo "🇨🇳 正在切换为中文并重新生成..."
                 end
                 

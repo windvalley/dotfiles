@@ -1,4 +1,8 @@
 function aic -d "根据代码变更自动生成 Git Commit 信息"
+    # 打印工具简介
+    echo -e "\n🚀 [\e[1maic\e[0m] \e[36mAI-Powered Commit Tool\e[0m"
+    echo -e "   \e[90mWorkflow: Analyze Staged Changes -> AI Gen Commit Message -> Commit\e[0m\n"
+
     # 检查 AI 工具配置（已由 config.fish 初始化）
     if test -z "$AI_CMD"
         echo "❌ 未检测到可用的 AI 命令，请在 ~/.config/fish/config.local.fish 中配置 AI_CMD"
@@ -74,9 +78,20 @@ $diff
         # 调用检测到的 AI 工具生成内容
         set -l msg_tmpfile (mktemp)
         eval $ai_cmd \"\$prompt_text\" > $msg_tmpfile
+        set -l ai_exit_status $status
         
-        # 捕捉在 AI 生成过程中被 Ctrl+C 中断的情况
-        if test $status -ne 0
+        # 捕捉在 AI 生成过程中被 Ctrl+C 中断的情况或者命令执行失败
+        # 先检查退出码：Ctrl+C (130) 或其他错误
+        if test $ai_exit_status -ne 0
+            rm -f $msg_tmpfile
+            echo ""
+            echo "❌ 操作已中断"
+            return 1
+        end
+
+        # opencode 有时被中断返回 0 但输出包含 Interrupted by user
+        # 仅在退出码为 0 时额外检查此边缘情况
+        if grep -q "Interrupted by user" $msg_tmpfile
             rm -f $msg_tmpfile
             echo ""
             echo "❌ 操作已中断"
