@@ -274,7 +274,13 @@ skip-levels = 0
 
 [editor.statusline]
 # 左侧元素 (默认: ["mode", "spinner", "file-name", "read-only-indicator", "file-modification-indicator"])
-left = ["mode", "spinner", "file-name", "read-only-indicator", "file-modification-indicator"]
+left = [
+  "mode",
+  "spinner",
+  "file-name",
+  "read-only-indicator",
+  "file-modification-indicator",
+]
 # 中间元素 (默认: [])
 center = []
 # 右侧元素 (默认: ["diagnostics", "selections", "register", "position", "file-encoding"])
@@ -436,6 +442,11 @@ goto-reference-include-declaration = true
 
 # Helix 默认不会自动重载被外部修改的文件，使用 Ctrl+r 快速重载当前文件
 C-r = ":reload"
+
+# 交换 j/k 和 gj/gk：让 j/k 按物理行移动（与行号对应），gj/gk 按视觉行移动
+j = "move_line_down"
+k = "move_line_up"
+g = { j = "move_visual_line_down", k = "move_visual_line_up" }
 
 # 重复上次 f/t 跳转动作 (类似 Vim 的 ;)
 # Helix 的 ; 默认绑定 collapse_selection (折叠选区)，在 selection-first 模型中使用频率极高，
