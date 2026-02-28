@@ -46,7 +46,7 @@ end
 # --- AI CLI Tool Configuration ---
 # 配置当前激活的 AI 命令行工具, 用于 aic.fish 等脚本；
 # 建议在 ~/.config/fish/config.local.fish 中根据自身实际安装的 API Key 覆盖以下默认值。
-set -gx AI_CMD "kimi --quiet -p"
+set -gx AI_CMD "opencode run"
 
 # 🚀 交互式会话专用配置区 (Interactive Session Only)
 if status is-interactive

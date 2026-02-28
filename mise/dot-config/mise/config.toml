@@ -83,3 +83,6 @@ python = "latest"
 "npm:bash-language-server" = "latest"
 "npm:dockerfile-language-server-nodejs" = "latest"
 "npm:sql-language-server" = "latest"
+
+# --- AI 工具链 ---
+"npm:opencode-ai" = "latest"
