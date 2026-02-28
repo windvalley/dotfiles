@@ -20,6 +20,7 @@ fish_variables*
 /fish/dot-config/fish/conf.d/
 
 # === Build & Cache ===
+/helix/dot-config/helix/runtime/
 node_modules/
 vendor/
 __pycache__/

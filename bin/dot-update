@@ -17,8 +17,26 @@ info "Updating dotfiles..."
 info "1/4: Updating Homebrew and installed packages..."
 if command -v brew &> /dev/null; then
     brew update
-    brew upgrade
-    success "Homebrew updated."
+
+    # 先列出即将升级的包，让用户确认
+    # 2>/dev/null: 屏蔽 brew 对有问题 cask（如已废弃包）产生的 Error 行，避免 set -e 误中断
+    # || true: 同理，brew outdated 在存在问题 cask 时会返回非零退出码
+    OUTDATED=$(brew outdated --quiet 2>/dev/null || true)
+    if [ -z "$OUTDATED" ]; then
+        success "Homebrew: 所有包已是最新版本。"
+    else
+        echo ""
+        echo "以下 Homebrew 包将被升级："
+        echo "$OUTDATED" | sed 's/^/  /'
+        echo ""
+        read -r -p "确认升级以上包？[y/N] " confirm
+        if [[ "$confirm" =~ ^[Yy]$ ]]; then
+            brew upgrade
+            success "Homebrew updated."
+        else
+            info "已跳过 Homebrew 升级。"
+        fi
+    fi
 else
     error "Homebrew not found, skipping."
 fi

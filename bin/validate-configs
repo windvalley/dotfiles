@@ -109,17 +109,21 @@ validate_git() {
 validate_zellij() {
     info "验证 Zellij 配置..."
     local zellij_config="$DOTFILES_DIR/zellij/dot-config/zellij/config.kdl"
-    
+
     if [ ! -f "$zellij_config" ]; then
         error "Zellij 配置文件不存在: $zellij_config"
         return 1
     fi
-    
+
+    # 静态 KDL 语法检查（通过 zellij 解析自身配置文件）
     if command -v zellij &>/dev/null; then
-        if zellij setup --check &>/dev/null; then
-            success "Zellij 配置正确"
+        local parse_output
+        if parse_output=$(zellij --config "$zellij_config" setup --dump-config 2>&1 >/dev/null); then
+            success "Zellij 配置语法正确 (KDL)"
         else
-            warn "Zellij 配置检查返回警告（可能不影响使用）"
+            error "Zellij 配置 KDL 语法错误:"
+            echo "$parse_output" | sed 's/^/    /'
+            ERRORS=$((ERRORS + 1))
         fi
     else
         warn "Zellij 未安装，跳过配置检查"
