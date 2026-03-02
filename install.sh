@@ -14,6 +14,32 @@ success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
 warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
+spinner() {
+    local pid=$1
+    local delay=0.1
+    local spinstr='|/-\'
+    # Only show spinner if in a TTY
+    if [ ! -t 1 ]; then
+        wait $pid
+        return
+    fi
+
+    # Use tput to hide cursor
+    tput civis 2>/dev/null || true
+    while [ "$(ps -p $pid -o state= 2>/dev/null)" ]; do
+        local temp=${spinstr#?}
+        printf " [%c]  " "$spinstr"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\b\b\b\b\b\b"
+    done
+    printf "    \b\b\b\b"
+    # Show cursor again
+    tput cnorm 2>/dev/null || true
+    # Clear the spinner line
+    printf "\r\033[K"
+}
+
 # Parse arguments
 NON_INTERACTIVE=false
 while [[ "$#" -gt 0 ]]; do
@@ -72,12 +98,31 @@ fi
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-info "Installing dependencies from Brewfile..."
+info "Checking current status..."
 if [ -f "$DOTFILES_DIR/Brewfile" ]; then
-    if ! brew bundle check --file="$DOTFILES_DIR/Brewfile" &>/dev/null; then
-        brew bundle install --file="$DOTFILES_DIR/Brewfile"
+    # Wrap 'brew bundle check' with a spinner since it can also take a few seconds
+    (brew bundle check --file="$DOTFILES_DIR/Brewfile" >/dev/null 2>&1) &
+    spinner $!
+    wait $!
+
+    if [ $? -ne 0 ]; then
+        info "Installing/Updating dependencies..."
+        (brew bundle install --file="$DOTFILES_DIR/Brewfile" --no-lock > /tmp/brew_bundle.log 2>&1) &
+        spinner $!
+        wait $!
+        if [ $? -eq 0 ]; then
+            success "Brew dependencies installed."
+        else
+            error "Brew bundle failed. Check /tmp/brew_bundle.log"
+            exit 1
+        fi
     else
         success "All Brew dependencies are already satisfied."
+        # Even if satisfied, let's show what we have
+        brew bundle list --file="$DOTFILES_DIR/Brewfile" | head -n 5 | while read -r item; do
+            printf "  ${GREEN}✓${NC} %s\n" "$item"
+        done
+        echo "  ..."
     fi
 else
     error "Brewfile not found at $DOTFILES_DIR/Brewfile"
@@ -90,7 +135,10 @@ if ask_yes_no "Do you want to install additional fonts (Maple Mono, Geist Mono)?
         font-maple-mono-nf
         font-geist-mono-nerd-font
     )
-    brew install --cask "${REQUIRED_CASKS[@]}"
+    (brew install --cask "${REQUIRED_CASKS[@]}" > /tmp/brew_fonts.log 2>&1) &
+    spinner $!
+    wait $!
+    success "Fonts installed."
 fi
 
 info "Linking configuration files with stow..."
@@ -195,7 +243,10 @@ fi
 
 if [ -f "$DOTFILES_DIR/fish/dot-config/fish/fish_plugins" ]; then
     info "Updating plugins from fish_plugins..."
-    fish -c "fisher update"
+    (fish -c "fisher update" > /tmp/fisher_update.log 2>&1) &
+    spinner $!
+    wait $!
+    success "Fisher plugins updated."
 else
     warn "fish_plugins not found at $DOTFILES_DIR/fish/dot-config/fish/fish_plugins, skipping plugin installation."
 fi
