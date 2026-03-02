@@ -126,16 +126,8 @@ defaults write com.apple.dock showhidden -bool true
 ###############################################################################
 # Safari 浏览器及 WebKit                                                      #
 ###############################################################################
-
-# 在 Safari 中启用"开发"菜单和 Web 检查器
-# 默认值：false（开发菜单和 Web 检查器未启用）
-defaults write com.apple.Safari IncludeDevelopMenu -bool true
-defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
-defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true
-
-# 在网页视图中添加右键菜单项以显示 Web 检查器
-# 默认值：false（右键菜单中不显示检查元素选项）
-defaults write NSGlobalDomain WebKitDeveloperExtras -bool true
+# 注意：macOS 对 Safari 的 defaults domain 有沙盒保护，脚本无法直接写入。
+# 如需启用开发者菜单，请在 Safari -> 高级 -> 功能标志 中手动开启。
 
 ###############################################################################
 # 活动监视器                                                                #

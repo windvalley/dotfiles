@@ -40,11 +40,16 @@
 #
 # ============================================================
 
+[env]
+# 抑制 npm 全局安装时的 deprecation 等冗长警告输出
+NPM_CONFIG_LOGLEVEL = "error"
+
 [tools]
 # --- 基础语言运行时 ---
 go = "latest"
 node = "lts"
 python = "latest"
+rust = "latest"
 
 # === 语言服务器与配套工具链 (用于支持 Helix/Neovim) ===
 # 运行 `mise install` 即可自动并隔离地下载以下所有依赖
@@ -57,7 +62,7 @@ python = "latest"
 "go:github.com/golangci/golangci-lint/cmd/golangci-lint" = "latest"
 
 # --- Python 生态 ---
-"pipx:ruff" = "latest"             # Linter/Formatter/LSP
+ruff = "latest"             # Linter/Formatter/LSP (使用 native 预编译版更轻快)
 "npm:pyright" = "latest"           # Type Checker LSP (由 npm 分发更快更稳)
 
 # --- Web 生态 (TS/JS/CSS/HTML/JSON) ---
@@ -67,7 +72,7 @@ python = "latest"
 "npm:@tailwindcss/language-server" = "latest"
 
 # --- Rust 生态 ---
-"cargo:taplo-cli" = "latest"       # TOML Formatter/LSP
+taplo = "latest"       # TOML Formatter/LSP (使用 native 预编译版，告别 cargo 编译)
 # 注意: 不通过 mise 管理 rust-analyzer 的原因
 # 1. 它是 Rust 官方工具链的一部分，强依赖底层的 rustc 和特定平台的系统级 API。
 # 2. 从源码通过 cargo 编译安装极其耗时，且容易因为 C 依赖报错。

@@ -28,6 +28,14 @@ for file in $fisher_path/conf.d/*.fish
 end
 # -----------------------------
 
+# Homebrew: 兼容 Apple Silicon (/opt/homebrew) 和 Intel Mac (/usr/local)
+for brew_prefix in /opt/homebrew /usr/local
+    if test -x $brew_prefix/bin/brew
+        eval ($brew_prefix/bin/brew shellenv)
+        break
+    end
+end
+
 # Homebrew：默认禁止自动更新
 set -gx HOMEBREW_NO_AUTO_UPDATE 1
 
@@ -43,6 +51,10 @@ if type -q hx
     set -gx VISUAL hx
 end
 
+# 抑制由于 Python 3.12+ 结合 os.fork() 引引发的系统级 DeprecationWarning 刷屏问题（如 grc）
+# 使用环境变量而非 alias，因为 oh-my-fish/plugin-grc 内部使用 `command grc` 会跳过 alias
+set -gx PYTHONWARNINGS "ignore::DeprecationWarning"
+
 # --- AI CLI Tool Configuration ---
 # 配置当前激活的 AI 命令行工具, 用于 aic.fish 等脚本；
 # 建议在 ~/.config/fish/config.local.fish 中根据自身实际安装的 API Key 覆盖以下默认值。
@@ -57,9 +69,9 @@ if status is-interactive
     # 跳过: 已在 zellij 中 / SSH / Quick Terminal / 禁用标志 / 未安装 / 非 Ghostty 运行时;
     if not set -q ZELLIJ_SESSION_NAME; and not set -q SSH_CONNECTION; and not set -q GHOSTTY_QUICK_TERMINAL; and not set -q ZELLIJ_AUTO_DISABLE; and type -q zellij; and test "$GHOSTTY_RUNTIME" = 1
         if zellij setup --check &>/dev/null
-            exec zellij attach -c main
+            exec zellij
         else
-            echo "⚠️  Zellij 配置检查失败，跳过自动启动。"
+            echo "⚠️ Zellij 配置检查失败，跳过自动启动。"
             echo "   修复: 运行 'zellij setup --check' 查看详情"
             echo "   禁用: 运行 'set -Ux ZELLIJ_AUTO_DISABLE 1' 永久关闭"
         end
@@ -100,11 +112,6 @@ if status is-interactive
     # =========================================================================
     # 3. 【操作捷径重写层】：所有的 alias 和 abbr 大军在此集结
     # =========================================================================
-    # 抑制由于 Python 3.12+ 结合 os.fork() 引发的系统级 DeprecationWarning 刷屏问题（如 grc）
-    if type -q grc
-        alias grc="env PYTHONWARNINGS=ignore::DeprecationWarning grc"
-    end
-
     # 针对 Ghostty 的 xterm-ghostty 终端类型在远程机器缺失的问题
     # 在执行 ssh 或 orb 命令时动态降级 TERM 为 xterm-256color 以保证远程兼容性
     alias ssh="TERM=xterm-256color command ssh"
