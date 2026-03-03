@@ -154,6 +154,8 @@ plugins: ## 安装/更新 Fisher 插件
 		fish -c "source '$$tmp' && fisher install jorgebucaran/fisher"; \
 		rm -f "$$tmp"; \
 	fi
+	@echo "  清理残留插件缓存..."
+	@rm -rf $(HOME)/.local/share/fisher
 	@if [ -f fish/dot-config/fish/fish_plugins ]; then \
 		fish -c "fisher install (cat fish/dot-config/fish/fish_plugins)"; \
 	fi
@@ -171,7 +173,7 @@ lint: ## 静态分析 Shell 脚本 (shellcheck)
 		exit 1; \
 	fi
 	@errors=0; \
-	for script in install.sh macos.sh bin/*; do \
+	for script in bootstrap.sh install.sh macos.sh bin/*; do \
 		if [ -f "$$script" ]; then \
 			if file "$$script" | grep -q "shell script" || head -1 "$$script" | grep -Eq '^#!.*(bash|sh)'; then \
 				if shellcheck -S warning "$$script" 2>/dev/null; then \

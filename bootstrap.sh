@@ -27,8 +27,17 @@ if ! command -v git &> /dev/null; then
     xcode-select --install
     
     info "Waiting for Git installation to complete..."
+    wait_count=0
     until command -v git &> /dev/null; do
         sleep 5
+        wait_count=$((wait_count + 1))
+        if [ $((wait_count % 6)) -eq 0 ]; then
+            info "Still waiting for Xcode Command Line Tools. Please click 'Install' on the macOS popup..."
+        fi
+        if [ $wait_count -ge 180 ]; then
+            error "Git installation took too long or was cancelled. Please install manually: xcode-select --install"
+            exit 1
+        fi
     done
     success "Git installed successfully."
 fi

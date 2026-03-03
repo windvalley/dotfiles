@@ -60,7 +60,12 @@ function aic -d "根据代码变更自动生成 Git Commit 信息"
 $lang_prompt
 
 类型可选: feat, fix, docs, style, refactor, test, chore
-只返回完整的提交信息本身（包含首行和 Body/Footer），不加任何啰嗦的解释和外层的 Markdown 代码块 (```)。"
+
+⚠️ 绝对约束：
+- 绝对禁止输出任何解释、思考过程、分析意图（如 'I detect implementation intent'）或引导语！
+- 只返回严格的提交信息文本本身。
+- 禁止使用外层的 Markdown 代码块 (\`\`\`)。
+- 第一行必须直接是 type(scope): description 格式！"
 
         if test -n "$supplementary_info"
             set prompt_text "$prompt_text
@@ -75,9 +80,23 @@ $supplementary_info"
 $diff
 </diff>"
 
+        # 安全执行 AI_CMD（禁止 eval），避免 git diff 中的特殊字符触发命令注入
+        # 兼容两种配置：
+        # 1) set -gx AI_CMD opencode run
+        # 2) set -gx AI_CMD "opencode run"
+        set -l ai_cmd_argv $AI_CMD
+        if test (count $ai_cmd_argv) -eq 1
+            set ai_cmd_argv (string split -n " " -- $ai_cmd_argv[1])
+        end
+
+        if test (count $ai_cmd_argv) -eq 0
+            echo "❌ AI_CMD 配置无效，请检查 ~/.config/fish/config.local.fish"
+            return 1
+        end
+
         # 调用检测到的 AI 工具生成内容
         set -l msg_tmpfile (mktemp)
-        eval $ai_cmd \"\$prompt_text\" > $msg_tmpfile
+        $ai_cmd_argv "$prompt_text" > $msg_tmpfile
         set -l ai_exit_status $status
         
         # 捕捉在 AI 生成过程中被 Ctrl+C 中断的情况或者命令执行失败
@@ -85,7 +104,15 @@ $diff
         if test $ai_exit_status -ne 0
             rm -f $msg_tmpfile
             echo ""
-            echo "❌ 操作已中断"
+            echo "❌ 操作已中断或报错退出"
+            return 1
+        end
+
+        # 如果文件为空（AI未输出或因发生类似模型未找到的错误而仅输出到了 stderr）
+        if not test -s $msg_tmpfile
+            rm -f $msg_tmpfile
+            echo ""
+            echo "❌ AI 生成失败 (未获取到输出内容，请检查上方报错信息)"
             return 1
         end
 
@@ -98,8 +125,17 @@ $diff
             return 1
         end
         
-        # 清理响应
+        # 清理响应: 移除 Markdown 块标记
         sed -i '' -e '/^```\(commit\|text\)/d' -e '/^```$/d' $msg_tmpfile
+        
+        # 兜底防御：大模型有时仍会输出思考过程或废话。
+        # 这里使用 awk 截取从标准的 Conventional Commit 起始的所有内容，抛弃前面的废话
+        awk '/^(feat|fix|docs|style|refactor|test|chore|perf|build|ci|revert)(\([^)]+\))?: / {found=1} found {print}' $msg_tmpfile > $msg_tmpfile.tmp
+        if test -s $msg_tmpfile.tmp
+            mv $msg_tmpfile.tmp $msg_tmpfile
+        else
+            rm -f $msg_tmpfile.tmp
+        end
         
         echo ""
         echo "📝 建议提交信息:"

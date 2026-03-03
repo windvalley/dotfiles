@@ -88,7 +88,7 @@ $commit_logs
    第一部分：仅包含推断出的纯版本号（例如 1.2.0，不要带 v）
    第二部分：对应的 CHANGELOG 内容，格式遵循 Keep a Changelog 规范。二级标题必须为 ## [VERSION] - DATE。具体条目按 Added, Changed, Fixed 等归类，内容使用无序列表即可。
 
-4. 强制约束：只返回以上两部分内容，不带 Markdown 代码块或其他多余解释。"
+4. 强制约束：绝对禁止输出任何解释、思考过程、分析意图或引导语！只返回以上两部分内容本身，严禁带 Markdown 代码块或其余口语化废话。"
 
         if test -n "$supplementary_info"
             set prompt "$prompt
