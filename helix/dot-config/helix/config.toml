@@ -448,10 +448,7 @@ j = "move_line_down"
 k = "move_line_up"
 g = { j = "move_visual_line_down", k = "move_visual_line_up" }
 
-# 重复上次 f/t 跳转动作 (类似 Vim 的 ;)
-# Helix 的 ; 默认绑定 collapse_selection (折叠选区)，在 selection-first 模型中使用频率极高，
-# 因此不覆盖 ; 。
-"C-;" = "repeat_last_motion"
+
 
 # Markdown 预览 - 使用 Helix 25.07+ 的 Expansions 功能
 # %{buffer_name} - 当前文件名

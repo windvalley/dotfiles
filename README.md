@@ -811,7 +811,6 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | 改动 | 官方默认 | 本项目 | 原因 |
 |------|----------|--------|------|
 | `Ctrl + r` | 无绑定 | `:reload` 重载当前文件 | 快速重载被外部修改的文件 |
-| `Ctrl + ;` | 无绑定 | `repeat_last_motion` | 重复上次 f/t 跳转（类似 Vim 的 `;`） |
 | `Space + m` | 无绑定 | 使用 glow 预览 Markdown | 在浮动窗口中渲染 Markdown |
 | `Space + o/i` | 无绑定 | `expand_selection` / `shrink_selection` | 替代 `Alt-o/i`，避免 Alt 键冲突 |
 | 插入模式 `Ctrl + f/b/n/p/a/e` | 无绑定 | Emacs 风格光标移动 | 无需退出插入模式即可快速移动光标 |
