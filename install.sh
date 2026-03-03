@@ -8,11 +8,13 @@ GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 NC='\033[0m'
+export RED GREEN BLUE YELLOW NC
 
 info() { echo -e "${BLUE}[INFO]${NC} $1"; }
 success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
 warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1"; }
+export -f info success warn error
 
 
 
@@ -39,7 +41,9 @@ ask_yes_no() {
         info "${prompt} (auto-yes)"
         return 0
     else
-        read -p "$prompt " -n 1 -r
+        # 从 /dev/tty 直接读取终端输入，避免上一步命令（brew/zsh/fish 等）
+        # 向 stdin 写入残留字节导致 read 跳过用户输入的问题
+        read -p "$prompt " -n 1 -r REPLY < /dev/tty
         echo
         if [[ $REPLY =~ ^[Yy]$ ]]; then
             return 0
@@ -254,12 +258,11 @@ else
 fi
 
 if [[ "$(uname)" == "Darwin" ]]; then
-    if [ "$NON_INTERACTIVE" = true ]; then
-        info "Skipping macOS system preferences in non-interactive mode."
-    elif ask_yes_no "Do you want to apply macOS system preferences (macos.sh)? (y/n)"; then
+    if ask_yes_no "Do you want to apply macOS system preferences (macos.sh)? (y/n)"; then
         info "Applying macOS system preferences..."
         bash "$DOTFILES_DIR/macos.sh"
     fi
+
 fi
 
 success "Installation complete!"

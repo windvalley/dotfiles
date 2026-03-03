@@ -7,21 +7,26 @@
 #
 # 使用方法：
 # cp config.local.fish.example ~/.config/fish/config.local.fish
-# 重启 fish 即可生效。
+# 执行 exec fish 即可生效。
 # ============================================================
 
 # --- 敏感环境变量 ---
-# 例如：LLM API 密钥，Homebrew 个人授权 token 等
+# 例如：OpenAI API 密钥
 # set -gx OPENAI_API_KEY "sk-xxxxxxxxx"
-# set -gx HOMEBREW_GITHUB_API_TOKEN "ghp_xxxxxxxx"
-#
-# 覆盖config.fish 中的 AI_CMD 默认配置
+
+# 强烈建议配置，用于提升 mise/Homebrew 等工具调用 GitHub API 的频率限制
+# 获取方式：https://github.com/settings/tokens (申请 Classic Token，无需勾选任何权限即可)
+# set -gx GITHUB_TOKEN "ghp_xxxxxxxx"
+
+# --- AI 命令行工具 ---
+# 覆盖 config.fish 中的 AI_CMD 默认配置
 # set -gx AI_CMD "opencode run -m google/antigravity-gemini-3-flash"
 
 # --- 机器特定别名 (Aliases) ---
 # 例如：某些只存在于这台 Mac 上的启动守护进程命令 / 脚本快捷方式
 # abbr -a -g restart-work-vpn "sudo launchctl restart com.corp.vpn"
 
-# --- 本机路径注入 ---
-# 虽然 install.sh 已经做了通用路径集成，如果你有特定工具仅安装在本机：
-# test -d "$HOME/.cargo/bin"; and fish_add_path --path "$HOME/.cargo/bin"
+# --- 本机特有路径注入 ---
+# 例如：公司内网 SDK 或手动解压的第三方工具，无法通过 mise/brew 管理的私有二进制
+# test -d "/opt/company-sdk/bin"; and fish_add_path --path "/opt/company-sdk/bin"
+

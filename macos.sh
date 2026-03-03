@@ -2,6 +2,13 @@
 
 set -euo pipefail
 
+# Fallback logging functions when run standalone (not via install.sh)
+if ! declare -f warn > /dev/null 2>&1; then
+    YELLOW='\033[1;33m'
+    NC='\033[0m'
+    warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
+fi
+
 # ==============================================================================
 # 🍎 macOS 系统偏好设置
 # ==============================================================================
@@ -13,21 +20,7 @@ set -euo pipefail
 osascript -e 'tell application "System Settings" to quit' 2>/dev/null || true
 osascript -e 'tell application "System Preferences" to quit' 2>/dev/null || true
 
-# 预先请求管理员密码
-sudo -v
-
-# 保持 sudo 权限：后台续期，脚本结束时自动清理
-sudo_keepalive() {
-    while kill -0 "$$" 2>/dev/null; do
-        sudo -n true
-        sleep 50
-    done
-}
-sudo_keepalive &
-SUDO_PID=$!
-trap 'kill $SUDO_PID 2>/dev/null; sudo -k' EXIT
-
-echo "正在配置 macOS..."
+echo "Configuring macOS..."
 
 ###############################################################################
 # 通用界面与用户体验                                                          #
@@ -38,8 +31,8 @@ echo "正在配置 macOS..."
 # 系统设置 UI 面板允许的最快极限值：KeyRepeat = 2 (30ms)，InitialKeyRepeat = 15 (225ms)
 # KeyRepeat：重复速率（数字越小越快，1 是最快）
 defaults write NSGlobalDomain KeyRepeat -int 1
-# InitialKeyRepeat：首次重复前的延迟（单位：毫秒，约 150ms）
-defaults write NSGlobalDomain InitialKeyRepeat -int 10
+# InitialKeyRepeat：首次重复前的延迟
+defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
 # 禁用按键长按功能，改为重复输入该按键（对 Vim 用户很有用）
 # 默认值：true（启用长按显示特殊字符选择菜单）
@@ -182,4 +175,5 @@ for app in "Activity Monitor" \
 	killall "${app}" &> /dev/null || true
 done
 
-echo "完成。注意：部分更改需要注销或重启后才能生效。"
+echo "Done."
+warn "Some changes will only take effect after restarting your Mac."

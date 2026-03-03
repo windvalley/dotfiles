@@ -11,7 +11,7 @@
 [![License](https://img.shields.io/github/license/windvalley/dotfiles)](https://github.com/windvalley/dotfiles/blob/main/LICENSE)
 
 
-本项目是一套 **现代、高效、精炼、开箱即用** 的 macOS 终端开发环境，所有配置集中版本控制，通过 GNU Stow 一键部署。
+本项目是一套 **现代、高效、开箱即用** 的 macOS 终端开发环境，所有配置集中版本控制，通过 GNU Stow 一键部署。
 
 核心工具栈：Ghostty（终端）+ Zellij（复用器）+ Fish（Shell）+ Helix（编辑器）+ Mise（版本管理），视觉与交互风格全栈统一。
 
@@ -64,19 +64,21 @@
 
 ## 0. TL;DR (快速开始)
 
-最简单的方法是使用一键安装脚本（Bootstrap）：
+最简单的方法是使用一键安装脚本（Bootstrap），该脚本**专为首次安装设计**：
 
 ```sh
-# 直接运行以下命令，会自动完成克隆仓库并执行安装脚本
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main/bootstrap.sh)"
 ```
 
 > [!NOTE]
-> `install.sh` (以及 `bootstrap.sh`) 支持多次执行（幂等），你可以放心地运行它来更新依赖或修复配置链接。
+> 如果目标目录 `~/dotfiles` 已存在，脚本出于安全保护会主动报错退出。
+> 如需重新安装，建议先将旧目录备份移走（或自行决定删除）：`mv ~/dotfiles ~/dotfiles.bak`
+> 如需安装到其他位置，可指定环境变量：`export DOTFILES_DIR=~/custom_path; curl ... | bash`
 
 该脚本会自动安装 Homebrew（如果缺失）、ghostty、fish、zellij、helix、mise、stow, 并完成配置链接以及 Fish Shell 的初始化。
 
 > [!TIP]
+> 如果你的 `~/dotfiles` 已经克隆到本地，你可以放心地多次执行它里面的 `./install.sh`，它是幂等的，常用于更新依赖或修复软链接。
 > 如果你想手动精准控制安装过程，请参考下面的详细步骤。
 
 

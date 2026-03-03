@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # dotfiles bootstrap script
 # curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main/bootstrap.sh | bash
 
@@ -8,6 +7,7 @@ set -euo pipefail
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
 NC='\033[0m'
 
 info() { echo -e "${BLUE}[INFO]${NC} $1"; }
@@ -33,16 +33,23 @@ if ! command -v git &> /dev/null; then
     success "Git installed successfully."
 fi
 
-if [ -d "$DOTFILES_DIR" ]; then
-    info "Dotfiles directory already exists at $DOTFILES_DIR. Updating..."
-    cd "$DOTFILES_DIR"
-    git pull origin main
-else
-    info "Cloning dotfiles repository to $DOTFILES_DIR..."
-    git clone "$REPO_URL" "$DOTFILES_DIR"
+# Allow user to specify a custom target directory via DOTFILES_DIR environment variable
+TARGET_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+
+if [ -d "$TARGET_DIR" ]; then
+    error "Target directory already exists at $TARGET_DIR."
+    error "The bootstrap script is designed for first-time installation only."
+    echo -e "${YELLOW}[WARN]${NC} If you want to reinstall, please backup or remove the existing directory:"
+    echo "       mv $TARGET_DIR ${TARGET_DIR}.bak"
+    echo -e "${YELLOW}[WARN]${NC} Or specify a different location by running:"
+    echo "       export DOTFILES_DIR=~/some_other_path; curl ... | bash"
+    exit 1
 fi
 
-cd "$DOTFILES_DIR"
+info "Cloning dotfiles repository to $TARGET_DIR..."
+git clone "$REPO_URL" "$TARGET_DIR"
+
+cd "$TARGET_DIR"
 
 info "Executing install.sh..."
 bash install.sh "$@"
