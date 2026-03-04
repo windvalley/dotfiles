@@ -500,6 +500,7 @@ echo "*.log" >> ~/.config/git/ignore
 | `f [query]` | 搜索文件并使用 Helix 打开。若关键字匹配唯一结果则直接打开 |
 | `aic` | 根据代码变更自动生成 Git 提交信息。支持中英交互切换、Prompt 微调及重写功能 |
 | `ait` | 自动根据 Git 变更历史生成 Changelog 并提交打 Tag。支持中英交互切换、Prompt 微调及重写功能 |
+| `aip` | AI 即插即用指令库。交互式选择常用开发指挥语并自动复制到剪贴板。支持 fzf 多选预览、编号直跳、关键词过滤和随机模式 |
 | `b [query]` | 搜索文件并使用 bat 查看。若关键字匹配唯一结果则直接打开 |
 | `rec [name]` | 极简终端操作录屏工具 (基于 asciinema)，支持录制、回放(`rec play`)与网页分享(`rec upload`) |
 | `gtd <tag>` | 一键同时删除本地和远端的 Git Tag |
