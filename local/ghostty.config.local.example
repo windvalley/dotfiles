@@ -1,0 +1,11 @@
+# Ghostty Local Configuration Template
+# ------------------------------------------------------------------------------
+# 复制此文件到 ~/.config/ghostty/config.local
+# 该文件已被 .gitignore 忽略，适合存放敏感快捷键或机器特定配置。
+# ------------------------------------------------------------------------------
+
+# [示例] 快捷键：输入密码并自动回车
+# keybind = ctrl+backspace=text:your_password_here\r
+
+# [示例] 机器特定字体调整
+# font-size = 14

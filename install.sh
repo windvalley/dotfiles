@@ -166,6 +166,16 @@ else
     success "  -> $FISH_LOCAL_CONF already exists, skipping."
 fi
 
+# --- 4. Ghostty 私有配置模板 ---
+GHOSTTY_LOCAL_CONF="$HOME/.config/ghostty/config.local"
+if [ ! -f "$GHOSTTY_LOCAL_CONF" ]; then
+    mkdir -p "$HOME/.config/ghostty"
+    cp "$DOTFILES_DIR/local/ghostty.config.local.example" "$GHOSTTY_LOCAL_CONF"
+    info "  -> Created $GHOSTTY_LOCAL_CONF (For private shortcuts and overrides)"
+else
+    success "  -> $GHOSTTY_LOCAL_CONF already exists, skipping."
+fi
+
 if [[ "$SHELL" != *"fish"* ]]; then
     if [ "$NON_INTERACTIVE" = true ]; then
         info "Skipping default shell change in non-interactive mode."
@@ -291,7 +301,8 @@ echo "       --transient=Yes"
 echo ""
 echo "3. Edit ~/.config/mise/config.toml to customize your language runtimes if needed, then run 'mise install node && mise install'."
 echo "4. IMPORTANT: Edit ~/.config/fish/config.local.fish to set private ENVs like AI_CMD and API keys."
-echo "5. IMPORTANT: Edit ~/.gitconfig.local (and ~/.gitconfig.work if needed) to set your Git Identity."
-echo "6. IMPORTANT (macOS): Allow Ghostty in 'System Settings > Privacy & Security > Accessibility'."
+echo "5. IMPORTANT: Edit ~/.config/ghostty/config.local to set private shortcuts or machine-specific settings."
+echo "6. IMPORTANT: Edit ~/.gitconfig.local (and ~/.gitconfig.work if needed) to set your Git Identity."
+echo "7. IMPORTANT (macOS): Allow Ghostty in 'System Settings > Privacy & Security > Accessibility'."
 echo ""
 success "Enjoy your new setup!"

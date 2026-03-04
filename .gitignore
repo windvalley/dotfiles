@@ -11,10 +11,10 @@ Thumbs.db
 
 # === Private & Local files ===
 *.local.*
+*.local
 !*.example
 secret.*
 .env
-.env.local
 fish_variables*
 /fish/dot-config/fish/completions/
 /fish/dot-config/fish/conf.d/

@@ -95,7 +95,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 - `mise/`: Mise（/miːz/，源自法语 mise en place，就位准备）工具版本管理器配置
 - `btop/`: btop 现代系统资源监控工具配置
 - `bin/`: 自定义命令脚本（自动链接到 `~/.local/bin`）
-- `local/`: 本地环境私有配置模板（用于环境变量脱敏及git多账号隔离）
+- `local/`: 本地环境私有配置模板（用于 Fish 环境变量脱敏、Git 多账号隔离及 Ghostty 私有配置）
 - `Makefile`: 自动化构建与维护脚本
 - `.editorconfig`: 跨编辑器格式化标准。内置了严格的格式控制（例如缩进模式、行尾序列 LF 强制设定、文件末空行保护等），确保项目源码整洁、消除跨平台和跨编辑器带来的格式问题。
 
@@ -279,6 +279,8 @@ fish_add_path ~/.local/bin
 
 为了防止这些信息被 Git 追踪并泄露到公开仓库中，本 dotfiles 已预设了本地分离机制：
 
+#### Fish Shell 本地配置
+
 1. 将本仓库中的示例模板复制到对应目录并去除 `.example` 后缀：
    ```fish
    cp ~/dotfiles/local/config.local.fish.example ~/.config/fish/config.local.fish
@@ -289,6 +291,19 @@ fish_add_path ~/.local/bin
    set -gx AI_CMD "opencode run"  # 配置全局 AI 命令，供 aic 等辅助工具使用
    set -gx OPENAI_API_KEY "sk-xxxxxxxxx"
    abbr -a -g work-vpn "sudo launchctl restart com.corp.vpn"
+   ```
+
+#### Ghostty 终端本地配置
+
+1. 将本仓库中的示例模板复制到对应目录并去除 `.example` 后缀：
+   ```bash
+   cp ~/dotfiles/local/ghostty.config.local.example ~/dotfiles/ghostty/dot-config/ghostty/config.local
+   ```
+2. 在新生成的文件中添加你的私密或特定机器配置（如快捷键、字体等）：
+   ```ini
+   # ~/.config/ghostty/config.local
+   # 示例：按下 ctrl+backspace 自动键入密码并回车
+   keybind = ctrl+backspace=text:your_password\r
    ```
 
 > [!NOTE]

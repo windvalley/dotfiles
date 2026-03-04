@@ -2450,3 +2450,7 @@ gtk-custom-css =
 # 可选值: true | false
 # 默认值: true
 desktop-notifications = true
+
+# 加载本地私有配置 (如敏感的快捷键、机器特定设置)
+# 该文件已被 .gitignore 忽略，不会提交到 Git
+config-file = config.local
