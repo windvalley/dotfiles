@@ -145,6 +145,8 @@ if status is-interactive
     abbr -a -g gp 'git push'
     abbr -a -g gl 'git pull'
     abbr -a -g gco 'git checkout'
+    abbr -a -g gsw 'git switch'
+    abbr -a -g gswc 'git switch -c'
     abbr -a -g gr 'git restore'
     abbr -a -g grs 'git restore --staged'
     abbr -a -g gg 'git log'

@@ -529,6 +529,7 @@ echo "*.log" >> ~/.config/git/ignore
 | `ga` / `gs` / `gd` / `gds` | `git add` / `git status` / `git diff` / `git diff --staged` |
 | `gc` / `gca` | `git commit` / `git commit --amend` |
 | `gp` / `gl` / `gco` | `git push` / `git pull` / `git checkout` |
+| `gsw` / `gswc` | `git switch` / `git switch -c` |
 | `gr` / `grs` | `git restore` / `git restore --staged` |
 | `gg` | `git log` |
 
