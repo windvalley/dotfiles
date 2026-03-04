@@ -98,9 +98,11 @@ function aipr -d "根据分支变更自动生成 Pull Request 描述"
     set -l supplementary_info ""
 
     set -l loop_active true
+    set -l msg_tmpfile ""
 
     while test "$loop_active" = true
-        # 每次循环重新构建 Prompt，以便语言选项发生变化时能生效
+        if test -z "$msg_tmpfile"
+            # 每次循环重新构建 Prompt，以便语言选项发生变化时能生效
         set -l prompt_text "根据以下 Git 分支变更信息，生成一份结构化的 Pull Request 描述。
 
 格式要求:
@@ -162,7 +164,7 @@ $diff_content
         end
 
         # 调用 AI 工具生成内容
-        set -l msg_tmpfile (mktemp)
+        set msg_tmpfile (mktemp)
         $ai_cmd_argv "$prompt_text" >$msg_tmpfile
         set -l ai_exit_status $status
 
@@ -193,6 +195,7 @@ $diff_content
 
         # 清理响应: 移除外层 Markdown 块标记
         sed -i '' -e '/^```\(markdown\|md\|text\)/d' -e '/^```$/d' $msg_tmpfile
+        end
 
         echo ""
         echo "📝 建议 PR 描述:"
@@ -235,18 +238,17 @@ $diff_content
                 end
                 eval $editor $msg_tmpfile
 
-                cat $msg_tmpfile | pbcopy
-                echo "✅ 编辑后的 PR 描述已复制到剪贴板"
-                rm $msg_tmpfile
-                set loop_active false
+                echo "✅ 修改已保存"
 
             case R r
-                rm $msg_tmpfile
+                rm -f $msg_tmpfile
+                set msg_tmpfile ""
                 echo "🔄 正在重新生成..."
                 echo "🤖 正在分析分支变更..."
 
             case P p
-                rm $msg_tmpfile
+                rm -f $msg_tmpfile
+                set msg_tmpfile ""
                 echo ""
 
                 # 捕获 Ctrl+C 或 Ctrl+D 中断
@@ -264,7 +266,8 @@ $diff_content
                 echo "🤖 正在分析分支变更..."
 
             case T t
-                rm $msg_tmpfile
+                rm -f $msg_tmpfile
+                set msg_tmpfile ""
                 if test "$is_chinese" -eq 1
                     set is_chinese 0
                     set lang_prompt "Please generate the PR description in English."
@@ -293,9 +296,7 @@ $diff_content
 
                 if not read -P "确认创建? [Y/n] " gh_confirm
                     echo ""
-                    echo "❌ 已取消"
-                    rm $msg_tmpfile
-                    set loop_active false
+                    echo "❌ 已取消创建"
                     continue
                 end
 
@@ -308,11 +309,11 @@ $diff_content
                             echo "❌ PR 创建失败，描述已复制到剪贴板备用"
                             cat $msg_tmpfile | pbcopy
                         end
+                        rm -f $msg_tmpfile
+                        set loop_active false
                     case '*'
                         echo "❌ 已取消创建"
                 end
-                rm $msg_tmpfile
-                set loop_active false
 
             case N n
                 rm $msg_tmpfile

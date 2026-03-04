@@ -197,7 +197,7 @@ docs: ## 生成或更新 README 的目录 (TOC)
 		echo "$(RED)  ❌ npx 未安装，请先安装 Node.js$(NC)"; \
 		exit 1; \
 	fi
-	@npx doctoc README.md --notitle --maxlevel 3
+	@npx --yes doctoc README.md --notitle --maxlevel 3
 	@echo "$(GREEN)✅ README.md 目录已更新$(NC)"
 
 update: ## 更新 dotfiles 仓库与所有工具链
