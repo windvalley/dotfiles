@@ -25,6 +25,8 @@ brew "fzf"
 brew "helix"
 
 # --- CLI Enhancements (命令行增强) ---
+# GitHub 官方 CLI (用于 PR 创建等 GitHub 交互)
+brew "gh"
 # Git diff 语法高亮与美化工具
 brew "git-delta"
 # 带语法高亮和 Git 集成的 cat 替代品
