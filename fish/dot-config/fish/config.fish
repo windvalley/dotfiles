@@ -121,67 +121,67 @@ if status is-interactive
 
     # ~/dotfiles/bin/ 下的自定义命令
     # ghostty & helix & zellij 主题切换
-    abbr -a -g cs colorscheme
+    abbr -a -g cs colorscheme # 详情见自定义命令 colorscheme
     # ghostty 字体大小设置
-    abbr -a -g fs font-size
+    abbr -a -g fs font-size # 详情见自定义命令 font-size
     # ghostty 透明度设置
-    abbr -a -g o opacity
+    abbr -a -g o opacity # 详情见自定义命令 opacity
     # 电脑音量设置以及渠道选择
-    abbr -a -g vol audio-volume
+    abbr -a -g vol audio-volume # 详情见自定义命令 audio-volume
 
     # 用 hx 替代 vi/vim
-    abbr -a -g vi hx
-    abbr -a -g vim hx
-    abbr -a -g h hx
+    abbr -a -g vi hx # 统一唤起 Helix 现代文本编辑器
+    abbr -a -g vim hx # 统一唤起 Helix 现代文本编辑器
+    abbr -a -g h hx # 统一唤起 Helix 现代文本编辑器
 
     # Git 缩写
-    abbr -a -g g git
-    abbr -a -g ga 'git add'
-    abbr -a -g gs 'git status'
-    abbr -a -g gd 'git diff'
-    abbr -a -g gds 'git diff --staged'
-    abbr -a -g gb 'git branch'
-    abbr -a -g gba 'git branch -a'
-    abbr -a -g gbd 'git branch -D'
-    abbr -a -g gc 'git commit'
-    abbr -a -g gca 'git commit --amend'
-    abbr -a -g gcm 'git commit -m'
-    abbr -a -g gcam 'git commit -a -m'
-    abbr -a -g gp 'git push'
-    abbr -a -g gpl 'git pull'
-    abbr -a -g gm 'git merge'
-    abbr -a -g gms 'git merge --squash'
-    abbr -a -g grb 'git rebase'
-    abbr -a -g grbc 'git rebase --continue'
-    abbr -a -g grbi 'git rebase -i'
-    abbr -a -g gco 'git checkout'
-    abbr -a -g gsw 'git switch'
-    abbr -a -g gswc 'git switch -c'
-    abbr -a -g gr 'git reset'
-    abbr -a -g grh 'git reset HEAD'
-    abbr -a -g gro 'git restore'
-    abbr -a -g gros 'git restore --staged'
-    abbr -a -g gsta 'git stash'
-    abbr -a -g gstp 'git stash pop'
-    abbr -a -g gt 'git tag'
-    abbr -a -g gts 'git tag -s'
-    abbr -a -g gg 'git log'
-    abbr -a -g gl 'git log --oneline --decorate --graph'
-    abbr -a -g glo 'git log --oneline'
-    abbr -a -g gls 'git log --stat'
+    abbr -a -g g git # Git 基础命令调用入口
+    abbr -a -g ga 'git add' # 添加文件到暂存区
+    abbr -a -g gs 'git status' # 查看工作区及合并状态
+    abbr -a -g gd 'git diff' # 查看工作区尚未暂存的修改
+    abbr -a -g gds 'git diff --staged' # 查看暂存区里尚未提交的差异
+    abbr -a -g gb 'git branch' # 查看本地分支
+    abbr -a -g gba 'git branch -a' # 查看全部(含远程)分支
+    abbr -a -g gbd 'git branch -D' # 强制删除分支
+    abbr -a -g gc 'git commit' # 提交代码
+    abbr -a -g gca 'git commit --amend' # 追加或修改最后一次提交
+    abbr -a -g gcm 'git commit -m' # 带信息提交代码
+    abbr -a -g gcam 'git commit -a -m' # 暂存所有已跟踪文件并提交代码
+    abbr -a -g gp 'git push' # 推送代码到远程仓库
+    abbr -a -g gpl 'git pull' # 拉取远程代码
+    abbr -a -g gm 'git merge' # 合并分支
+    abbr -a -g gms 'git merge --squash' # 将整条开发分支的多次提交合并压缩为一次改动
+    abbr -a -g grb 'git rebase' # 变基分支
+    abbr -a -g grbc 'git rebase --continue' # 解决冲突后继续跑变基
+    abbr -a -g grbi 'git rebase -i' # 交互式手工挑选、压缩变基
+    abbr -a -g gco 'git checkout' # 检出分支或文件 (传统方式)
+    abbr -a -g gsw 'git switch' # 切换分支 (推荐的现代分支方式)
+    abbr -a -g gswc 'git switch -c' # 创建并切换分支
+    abbr -a -g gr 'git reset' # 重置暂存区或 HEAD 状态
+    abbr -a -g grh 'git reset HEAD' # 仅重置暂存区 (撤销 add)
+    abbr -a -g gro 'git restore' # 撤销工作区修改 (推荐的现代重置方式)
+    abbr -a -g gros 'git restore --staged' # 撤销暂存区修改
+    abbr -a -g gsta 'git stash' # 雪藏当前未提交改动清空工作区
+    abbr -a -g gstp 'git stash pop' # 弹出并恢复雪藏内容
+    abbr -a -g gt 'git tag' # 查看本地所有标签
+    abbr -a -g gts 'git tag -s' # 创建带本地 GPG 签名的标签
+    abbr -a -g gg 'git log' # 查看原始 Git 提交日志
+    abbr -a -g gl 'git log --oneline --decorate --graph' # 带分支图谱路径、彩色树状结构的美化历史日志
+    abbr -a -g glo 'git log --oneline' # 单行极简日志
+    abbr -a -g gls 'git log --stat' # 附带每次提交具体增删文件统计信息的日志
 
     # 常用命令增强
-    abbr -a -g mkdir 'mkdir -p'
+    abbr -a -g mkdir 'mkdir -p' # 级联创建多级目录 (如果父目录不存在自动创建)
 
     # 目录跳转
-    abbr -a -g ... ../..
-    abbr -a -g .... ../../..
-    abbr -a -g ..... ../../../..
+    abbr -a -g ... ../.. # 极速向父级两层目录跳转
+    abbr -a -g .... ../../.. # 极速向父级三层目录跳转
+    abbr -a -g ..... ../../../.. # 极速向父级四层目录跳转
 
     # 用 eza 替代 ls（需 brew install eza）
     if type -q eza
-        abbr -a -g ls eza
-        abbr -a -g ll eza -l
+        abbr -a -g ls eza # 现代版的文件列表显示
+        abbr -a -g ll eza -l # 现代版文件列表附带详细权限尺寸等信息
     end
 
     # =========================================================================
