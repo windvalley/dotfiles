@@ -8,6 +8,26 @@
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-03-04
+
+### Added
+
+- **Ghostty**: 新增本地配置文件支持，用于管理私密设置 (`config.local` 机制)
+- **Fish**: 全新 Git 缩写系统
+  - 添加核心 Git 工作流缩写：`gb`（分支）、`gba`（全部分支）、`gbd`（删除分支）、`gcam`（提交并推送）、`gsta`/`gstp`（储藏操作）
+  - 扩展高级 Git 工作流缩写
+  - 添加 `gsw`/`gswm` 等分支切换别名
+  - 为所有缩写添加描述信息和辅助函数，支持 `abbr --show` 查看说明
+- **AI PR 助手 (aipr)**: 全新 AI 驱动的 Pull Request 描述生成器
+  - Fish 集成：通过 `aipr` 命令一键生成 PR 描述
+  - 依赖管理：新增 GitHub CLI (`gh`) 到 Brewfile
+  - 完整文档：README 中新增 `gh` CLI 和 `aipr` 命令使用说明
+
+### Fixed
+
+- **aipr**: 修复临时文件泄漏问题，优化清理逻辑
+
+
 ## [0.16.0] - 2026-03-04
 
 ### Added
