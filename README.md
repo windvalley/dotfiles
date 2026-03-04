@@ -517,23 +517,31 @@ echo "*.log" >> ~/.config/git/ignore
 
 缩写在输入后按空格时**自动展开**为完整命令。
 
-| 缩写 | 展开为 |
-|------|--------|
-| `mkdir` | `mkdir -p` |
-| `ls` | `eza` |
-| `ll` | `eza -l` |
-| `...` | `../..` (以此类推 `....`, `.....`) |
-| `vi` / `vim` / `h` | `hx` |
-| `cs` / `fs` / `o` / `vol` | `colorscheme` / `font-size` / `opacity` / `audio-volume` |
-| `g` | `git` |
-| `gb` / `gba` / `gbd` | `git branch` / `git branch -a` / `git branch -D` |
-| `ga` / `gs` / `gd` / `gds` | `git add` / `git status` / `git diff` / `git diff --staged` |
-| `gc` / `gca` / `gcam` | `git commit` / `git commit --amend` / `git commit -a -m` |
-| `gsta` / `gstp` | `git stash` / `git stash pop` |
-| `gp` / `gl` / `gco` | `git push` / `git pull` / `git checkout` |
-| `gsw` / `gswc` | `git switch` / `git switch -c` |
-| `gr` / `grs` | `git restore` / `git restore --staged` |
-| `gg` | `git log` |
+| 缩写 | 展开为 | 实际含义 |
+|------|--------|----------|
+| `mkdir` | `mkdir -p` | 级联创建多级目录 (如果父目录不存在自动创建) |
+| `ls` / `ll` | `eza` / `eza -l` | 现代版的文件列表显示 / 附带详细权限尺寸等信息 |
+| `...` / `....` | `../..` / `../../..` | 极速向下上级两层、三层目录跳转 |
+| `vi` / `vim` / `h` | `hx` | 统一唤起 Helix 现代文本编辑器 |
+| `cs`... | `colorscheme`... | 详情见自定义命令 `colorscheme`/`font-size`/`opacity`/`audio-volume` |
+| `g` | `git` | Git 基础命令调用入口 |
+| `ga` / `gs` | `git add` / `git status` | 添加文件到暂存区 / 查看工作区及合并状态 |
+| `gd` / `gds` | `git diff` / `git diff --staged` | 查看工作区尚未暂存的修改 / 查看暂存区里尚未提交的差异 |
+| `gb` / `gba` / `gbd` | `git branch`... | 查看本地分支 / 查看全部(含远程)分支 / 强制删除分支 |
+| `gc` / `gca` | `git commit` / `git commit --amend` | 提交代码 / 追加或修改最后一次提交 |
+| `gcm` / `gcam` | `git commit -m` / `git commit -a -m` | 带信息提交代码 / 暂存所有已跟踪文件并提交代码 |
+| `gp` / `gpl` | `git push` / `git pull` | 推送代码到远程仓库 / 拉取远程代码 |
+| `gm` / `gms` | `git merge` / `git merge --squash` | 合并分支 / 将整条开发分支的多次提交合并压缩为一次改动 |
+| `grb` / `grbc` / `grbi` | `git rebase`... | 变基分支 / 解决冲突后继续跑变基 / 交互式手工挑选、压缩变基 |
+| `gco` | `git checkout` | 检出分支或文件 (传统方式) |
+| `gsw` / `gswc` | `git switch` / `git switch -c` | 切换分支 / 创建并切换分支 (推荐的现代分支方式) |
+| `gr` / `grh` | `git reset` / `git reset HEAD` | 重置暂存区或 HEAD 状态 / 仅重置暂存区 (撤销 add) |
+| `gro` / `gros` | `git restore`... | 撤销工作区修改 / 撤销暂存区修改 (推荐的现代重置方式) |
+| `gsta` / `gstp` | `git stash` / `git stash pop` | 雪藏当前未提交改动清空工作区 / 弹出并恢复雪藏内容 |
+| `gt` / `gts` | `git tag` / `git tag -s` | 查看本地所有标签 / 创建带本地 GPG 签名的标签 |
+| `gg` | `git log` | 查看原始 Git 提交日志 |
+| `gl` | `git log --oneline --decorate --graph` | 【高频】带分支图谱路径、彩色树状结构的美化历史日志 |
+| `glo` / `gls` | `git log --oneline` / `git log --stat` | 单行极简日志 / 附带每次提交具体增删文件统计信息的日志 |
 
 **Vi 模式**：
 Fish 支持 Vi 风格编辑模式，本配置已默认启用。
