@@ -108,7 +108,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 
 **该脚本将执行以下操作：**
 1. **环境准备**：检查并自动安装 **Homebrew**（如果尚未安装）。
-2. **核心依赖**：读取 `Brewfile`，安装所有 CLI 工具（stow, zellij, fish, helix, mise, bat, eza, fzf, ripgrep 等）与 GUI 应用（Ghostty, OrbStack, JetBrains Mono 字体等）。
+2. **核心依赖**：读取 `Brewfile`，安装所有 CLI 工具（stow, zellij, fish, helix, mise, gh, bat, eza, fzf, ripgrep 等）与 GUI 应用（Ghostty, OrbStack, JetBrains Mono 字体等）。
 3. **字体安装**：默认已通过 Brew 安装 JetBrains Mono，并**询问是否安装**其他扩展字体（Maple Mono, Geist Mono）。
 4. **软链配置**：自动识别已存在的配置并备份，然后使用 `stow` 将所有配置（含 `bin` 脚本）软链到对应的系统目录。
 5. **隐私配置模板**：自动在用户目录创建 Git 信息模板（`.gitconfig.local`/`.work`）和私密环境变量模板（`config.local.fish`）。
@@ -158,6 +158,9 @@ brew install helix
 # 软件版本管理工具
 brew install mise
 
+# GitHub 官方 CLI (用于 PR 创建等 GitHub 交互)
+brew install gh
+
 # Git 美化工具 (Diff 语法高亮)
 brew install git-delta
 
@@ -175,6 +178,7 @@ brew install switchaudio-osx
 ```
 
 **说明：**
+- `gh`: GitHub 官方命令行工具，用于 PR 创建、Issue 管理等 GitHub 交互（`aipr` 命令依赖）。
 - `zoxide`: 智能目录跳转工具，替代传统的 `cd`。用法：`z <关键词>` 跳转目录，`zi <关键词>` 交互式选择（需 fzf）。
 - `gnu-sed`: 提供 `gsed`，用于 `colorscheme` / `font-size` / `opacity` 等脚本。
 - `switchaudio-osx`: 提供 `SwitchAudioSource`，用于 `audio-volume`。
@@ -499,6 +503,7 @@ echo "*.log" >> ~/.config/git/ignore
 | `copy [file]` | 将文件内容或前一个命令的标准输出(`\| copy`)极速复制到 Mac 剪贴板 |
 | `f [query]` | 搜索文件并使用 Helix 打开。若关键字匹配唯一结果则直接打开 |
 | `aic` | 根据代码变更自动生成 Git 提交信息。支持中英交互切换、Prompt 微调及重写功能 |
+| `aipr` | 根据分支变更自动生成 Pull Request 描述。分析 commit 和 diff 后 AI 生成结构化 PR 描述，支持复制到剪贴板、编辑、重写、微调、中英切换，以及通过 gh CLI 直接创建 PR |
 | `ait` | 自动根据 Git 变更历史生成 Changelog 并提交打 Tag。支持中英交互切换、Prompt 微调及重写功能 |
 | `aip` | AI 即插即用指令库。交互式选择常用开发指挥语并自动复制到剪贴板。支持 fzf 多选预览、编号直跳、关键词过滤和随机模式 |
 | `b [query]` | 搜索文件并使用 bat 查看。若关键字匹配唯一结果则直接打开 |
