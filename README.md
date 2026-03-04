@@ -526,8 +526,10 @@ echo "*.log" >> ~/.config/git/ignore
 | `vi` / `vim` / `h` | `hx` |
 | `cs` / `fs` / `o` / `vol` | `colorscheme` / `font-size` / `opacity` / `audio-volume` |
 | `g` | `git` |
+| `gb` / `gba` / `gbd` | `git branch` / `git branch -a` / `git branch -D` |
 | `ga` / `gs` / `gd` / `gds` | `git add` / `git status` / `git diff` / `git diff --staged` |
-| `gc` / `gca` | `git commit` / `git commit --amend` |
+| `gc` / `gca` / `gcam` | `git commit` / `git commit --amend` / `git commit -a -m` |
+| `gsta` / `gstp` | `git stash` / `git stash pop` |
 | `gp` / `gl` / `gco` | `git push` / `git pull` / `git checkout` |
 | `gsw` / `gswc` | `git switch` / `git switch -c` |
 | `gr` / `grs` | `git restore` / `git restore --staged` |

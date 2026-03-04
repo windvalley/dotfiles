@@ -137,11 +137,17 @@ if status is-interactive
     # Git 缩写
     abbr -a -g g git
     abbr -a -g ga 'git add'
+    abbr -a -g gb 'git branch'
+    abbr -a -g gba 'git branch -a'
     abbr -a -g gs 'git status'
     abbr -a -g gd 'git diff'
     abbr -a -g gds 'git diff --staged'
     abbr -a -g gc 'git commit'
     abbr -a -g gca 'git commit --amend'
+    abbr -a -g gcam 'git commit -a -m'
+    abbr -a -g gsta 'git stash'
+    abbr -a -g gstp 'git stash pop'
+    abbr -a -g gbd 'git branch -D'
     abbr -a -g gp 'git push'
     abbr -a -g gl 'git pull'
     abbr -a -g gco 'git checkout'
