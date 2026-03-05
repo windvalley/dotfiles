@@ -20,6 +20,7 @@
 2. **终端即容器**：终端仅作渲染容器（Ghostty），会话与布局调度收敛于复用器（Zellij），代码编辑则交由开箱即用的现代编辑器（Helix），彻底消除插件拼凑的心智负担。
 3. **环境即沙箱**：终结全局变量污染与多版本管理器的混乱，依靠统一基座在一处声明全部语言沙箱（Mise）。
 4. **注释即文档**：本项目的每一个配置文件本身就是最详尽的说明书，包含深度的中文注释、设计取舍与最佳实践指引。
+5. **AI驱动提效**：将AI大模型能力内建到命令行与常用工作流等，帮助提效。
 
 > [!NOTE]
 > 此 dotfiles 仅适用于 macOS，不兼容 Linux 或 Windows (WSL)，且没有跨平台适配计划。
@@ -29,36 +30,37 @@
 
 - [0. TL;DR (快速开始)](#0-tldr-%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B)
 - [1. 项目结构](#1-%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84)
-- [2. 安装步骤](#2-%E5%AE%89%E8%A3%85%E6%AD%A5%E9%AA%A4)
-  - [2.1 一键安装 (推荐)](#21-%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85-%E6%8E%A8%E8%8D%90)
-  - [2.2 手动安装步骤 (可选)](#22-%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85%E6%AD%A5%E9%AA%A4-%E5%8F%AF%E9%80%89)
-- [3. 配置指南](#3-%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97)
-  - [3.1 配置 fish](#31-%E9%85%8D%E7%BD%AE-fish)
-  - [3.2 从 zsh 迁移](#32-%E4%BB%8E-zsh-%E8%BF%81%E7%A7%BB)
-  - [3.3 本地私有配置 (不入库)](#33-%E6%9C%AC%E5%9C%B0%E7%A7%81%E6%9C%89%E9%85%8D%E7%BD%AE-%E4%B8%8D%E5%85%A5%E5%BA%93)
-  - [3.4 配置 fisher](#34-%E9%85%8D%E7%BD%AE-fisher)
-  - [3.5 配置 tide](#35-%E9%85%8D%E7%BD%AE-tide)
-  - [3.6 macOS 系统偏好 (macos.sh) (可选)](#36-macos-%E7%B3%BB%E7%BB%9F%E5%81%8F%E5%A5%BD-macossh-%E5%8F%AF%E9%80%89)
-  - [3.7 配置 Git](#37-%E9%85%8D%E7%BD%AE-git)
-- [4. 使用方法](#4-%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95)
-  - [4.1 Ghostty 终端](#41-ghostty-%E7%BB%88%E7%AB%AF)
-  - [4.2 Zellij 终端复用器](#42-zellij-%E7%BB%88%E7%AB%AF%E5%A4%8D%E7%94%A8%E5%99%A8)
-  - [4.3 Fish Shell](#43-fish-shell)
-  - [4.4 Helix 编辑器](#44-helix-%E7%BC%96%E8%BE%91%E5%99%A8)
-  - [4.5 Mise 工具版本管理](#45-mise-%E5%B7%A5%E5%85%B7%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
-  - [4.6 Git 配置用法](#46-git-%E9%85%8D%E7%BD%AE%E7%94%A8%E6%B3%95)
-  - [4.7 stow 的用法说明](#47-stow-%E7%9A%84%E7%94%A8%E6%B3%95%E8%AF%B4%E6%98%8E)
-  - [4.8 自定义命令（bin/）](#48-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%91%BD%E4%BB%A4bin)
-- [5. 常用维护命令 (Makefile)](#5-%E5%B8%B8%E7%94%A8%E7%BB%B4%E6%8A%A4%E5%91%BD%E4%BB%A4-makefile)
-- [6. 与官方默认的关键差异](#6-%E4%B8%8E%E5%AE%98%E6%96%B9%E9%BB%98%E8%AE%A4%E7%9A%84%E5%85%B3%E9%94%AE%E5%B7%AE%E5%BC%82)
+- [2. AI 能力](#2-ai-%E8%83%BD%E5%8A%9B)
+- [3. 安装步骤](#3-%E5%AE%89%E8%A3%85%E6%AD%A5%E9%AA%A4)
+  - [3.1 一键安装 (推荐)](#31-%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85-%E6%8E%A8%E8%8D%90)
+  - [3.2 手动安装步骤 (可选)](#32-%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85%E6%AD%A5%E9%AA%A4-%E5%8F%AF%E9%80%89)
+- [4. 配置指南](#4-%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97)
+  - [4.1 配置 fish](#41-%E9%85%8D%E7%BD%AE-fish)
+  - [4.2 从 zsh 迁移](#42-%E4%BB%8E-zsh-%E8%BF%81%E7%A7%BB)
+  - [4.3 本地私有配置 (不入库)](#43-%E6%9C%AC%E5%9C%B0%E7%A7%81%E6%9C%89%E9%85%8D%E7%BD%AE-%E4%B8%8D%E5%85%A5%E5%BA%93)
+  - [4.4 配置 fisher](#44-%E9%85%8D%E7%BD%AE-fisher)
+  - [4.5 配置 tide](#45-%E9%85%8D%E7%BD%AE-tide)
+  - [4.6 macOS 系统偏好 (macos.sh) (可选)](#46-macos-%E7%B3%BB%E7%BB%9F%E5%81%8F%E5%A5%BD-macossh-%E5%8F%AF%E9%80%89)
+  - [4.7 配置 Git](#47-%E9%85%8D%E7%BD%AE-git)
+- [5. 使用方法](#5-%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95)
+  - [5.1 Ghostty 终端](#51-ghostty-%E7%BB%88%E7%AB%AF)
+  - [5.2 Zellij 终端复用器](#52-zellij-%E7%BB%88%E7%AB%AF%E5%A4%8D%E7%94%A8%E5%99%A8)
+  - [5.3 Fish Shell](#53-fish-shell)
+  - [5.4 Helix 编辑器](#54-helix-%E7%BC%96%E8%BE%91%E5%99%A8)
+  - [5.5 Mise 工具版本管理](#55-mise-%E5%B7%A5%E5%85%B7%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86)
+  - [5.6 Git 配置用法](#56-git-%E9%85%8D%E7%BD%AE%E7%94%A8%E6%B3%95)
+  - [5.7 stow 的用法说明](#57-stow-%E7%9A%84%E7%94%A8%E6%B3%95%E8%AF%B4%E6%98%8E)
+  - [5.8 自定义命令（bin/）](#58-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%91%BD%E4%BB%A4bin)
+- [6. 常用维护命令 (Makefile)](#6-%E5%B8%B8%E7%94%A8%E7%BB%B4%E6%8A%A4%E5%91%BD%E4%BB%A4-makefile)
+- [7. 与官方默认的关键差异](#7-%E4%B8%8E%E5%AE%98%E6%96%B9%E9%BB%98%E8%AE%A4%E7%9A%84%E5%85%B3%E9%94%AE%E5%B7%AE%E5%BC%82)
   - [🔑 Karabiner — 全局键位改造](#-karabiner--%E5%85%A8%E5%B1%80%E9%94%AE%E4%BD%8D%E6%94%B9%E9%80%A0)
   - [🖥️ Ghostty — 终端行为与键位](#-ghostty--%E7%BB%88%E7%AB%AF%E8%A1%8C%E4%B8%BA%E4%B8%8E%E9%94%AE%E4%BD%8D)
   - [🧩 Zellij — 快捷键与会话架构](#-zellij--%E5%BF%AB%E6%8D%B7%E9%94%AE%E4%B8%8E%E4%BC%9A%E8%AF%9D%E6%9E%B6%E6%9E%84)
   - [🐟 Fish — Shell 行为与键位](#-fish--shell-%E8%A1%8C%E4%B8%BA%E4%B8%8E%E9%94%AE%E4%BD%8D)
   - [✏️ Helix — 编辑器键位与显示](#-helix--%E7%BC%96%E8%BE%91%E5%99%A8%E9%94%AE%E4%BD%8D%E4%B8%8E%E6%98%BE%E7%A4%BA)
   - [🔧 Git — 工作流增强](#-git--%E5%B7%A5%E4%BD%9C%E6%B5%81%E5%A2%9E%E5%BC%BA)
-- [7. 致谢 (Acknowledgments)](#7-%E8%87%B4%E8%B0%A2-acknowledgments)
-- [8. 开源协议 (License)](#8-%E5%BC%80%E6%BA%90%E5%8D%8F%E8%AE%AE-license)
+- [8. 致谢 (Acknowledgments)](#8-%E8%87%B4%E8%B0%A2-acknowledgments)
+- [9. 开源协议 (License)](#9-%E5%BC%80%E6%BA%90%E5%8D%8F%E8%AE%AE-license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -93,6 +95,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 - `karabiner/`: Karabiner（/ˌkær.əˈbiː.nər/，德语，登山扣）键盘映射（交换 Caps Lock 和 Left Control）
 - `git/`: Git 基础配置（别名、Delta 美化、全局忽略等）
 - `mise/`: Mise（/miːz/，源自法语 mise en place，就位准备）工具版本管理器配置
+- `aichat`: 终端 AI 客户端；Fish 中预置 `AI_CMD` / `AICHAT_*` 环境变量与数据隔离，本地敏感项模板见 `local/config.local.fish.example`
 - `btop/`: btop 现代系统资源监控工具配置
 - `bin/`: 自定义命令脚本（自动链接到 `~/.local/bin`）
 - `local/`: 本地环境私有配置模板（用于 Fish 环境变量脱敏、Git 多账号隔离及 Ghostty 私有配置）
@@ -100,9 +103,24 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 - `.editorconfig`: 跨编辑器格式化标准。内置了严格的格式控制（例如缩进模式、行尾序列 LF 强制设定、文件末空行保护等），确保项目源码整洁、消除跨平台和跨编辑器带来的格式问题。
 
 
-## 2. 安装步骤
+## 2. AI 能力
 
-### 2.1 一键安装 (推荐)
+本项目把 AI 能力收敛到 **Fish 命令行编辑区** 与 **Git 工作流**，形成统一入口和可复用的工具链（而不是零散 alias）。
+
+- `Ctrl+y`：命令解释/命令生成统一入口
+  - 输入命令后按 `Ctrl+y`：输出解释（仅解释不执行；使用 bat 分页展示；第一行是原始命令）
+  - 输入 `# <描述>` 后按 `Ctrl+y`：生成多条候选命令（fzf 选择后写回命令行；回车才执行）
+- `aic` / `aipr` / `ait`：分别用于生成提交信息、PR 描述、Release Notes（底座由 `$AI_CMD` 驱动）
+- `aip`：AI 指令库（交互选择常用指挥语并复制到剪贴板）
+- 可配置：在 `~/.config/fish/config.local.fish` 覆盖 `AI_CMD` / `AICHAT_MODEL`
+
+> [!TIP]
+> 生成命令会做 Fish 语法解析校验，并针对 macOS(BSD userland) 过滤/规避常见 GNU 参数差异（如 `ps --sort`）。
+
+
+## 3. 安装步骤
+
+### 3.1 一键安装 (推荐)
 
 仓库根目录下提供了一个 `install.sh` 脚本，可以自动化完成绝大部分安装和配置工作。
 
@@ -133,7 +151,7 @@ cd "$HOME/dotfiles"
 
 ---
 
-### 2.2 手动安装步骤 (可选)
+### 3.2 手动安装步骤 (可选)
 
 如果你更倾向于手动操作，请按以下顺序执行：
 
@@ -178,7 +196,7 @@ brew install switchaudio-osx
 ```
 
 **说明：**
-- `aichat`: 终端上的大模型原生客户端，支持多模态及本地/云端模型，提供 `Alt+e` 智能命令辅助功能。
+- `aichat`: 终端上的大模型原生客户端，支持多模态及本地/云端模型。本配置提供 `Ctrl+y` 一键解释/生成命令（以 `#` 开头表示“描述 -> 生成命令”）。
 - `gh`: GitHub 官方命令行工具，用于 PR 创建、Issue 管理等 GitHub 交互（`aipr` 命令依赖）。
 - `zoxide`: 智能目录跳转工具，替代传统的 `cd`。用法：`z <关键词>` 跳转目录，`zi <关键词>` 交互式选择（需 fzf）。
 - `gnu-sed`: 提供 `gsed`，用于 `colorscheme` / `font-size` / `opacity` 等脚本。
@@ -229,9 +247,9 @@ mkdir -p "$HOME/.local/bin"
 stow --restow --target="$HOME/.local/bin" --dir="$HOME/dotfiles" bin
 ```
 
-## 3. 配置指南
+## 4. 配置指南
 
-### 3.1 配置 fish
+### 4.1 配置 fish
 
 将 fish 设为默认 shell：
 
@@ -256,7 +274,7 @@ fish_update_completions
 fish_config theme choose dracula
 ```
 
-### 3.2 从 zsh 迁移
+### 4.2 从 zsh 迁移
 
 > [!IMPORTANT]
 > 从 zsh 切换到 fish 后，zsh 配置文件（`~/.zshrc`、`~/.zprofile` 等）中的 PATH 不会自动继承，可能导致已安装软件的命令找不到。
@@ -274,7 +292,7 @@ fish_add_path ~/.local/bin
 > `fish_add_path` 是持久化的（写入 universal 变量），只需执行一次，重启后仍然生效。
 > 可用 `printf '%s\n' $PATH` 查看当前所有路径。
 
-### 3.3 本地私有配置 (不入库)
+### 4.3 本地私有配置 (不入库)
 
 在实际使用中，我们经常需要配置一些**仅属于当前机器**或**包含敏感信息**的环境变量（例如 `OPENAI_API_KEY`、公司内网代理、特定机器别名等）。
 
@@ -310,7 +328,7 @@ fish_add_path ~/.local/bin
 > [!NOTE]
 > `config.local.fish` 以及 `*.local` 均已被 `.gitignore` 忽略，你可以安全地在本地使用它们，不用担心通过 `stow` 软链后被意外 `git push` 给共享出去。
 
-### 3.4 配置 fisher
+### 4.4 配置 fisher
 
 fisher 是 fish 的插件管理器。
 通过在 `config.fish` 中设置 `fisher_path`，所有插件相关的文件会被**彻底隔离**在 `~/.local/share/fisher` 下，避免污染 `~/.config/fish` 目录。
@@ -328,7 +346,7 @@ fisher install (cat ~/.config/fish/fish_plugins)
 
 更多见：`fish/dot-config/fish/README.md`
 
-### 3.5 配置 tide
+### 4.5 配置 tide
 
 tide 是 fish 的 prompt 插件。
 
@@ -348,7 +366,7 @@ tide configure --auto \
 tide configure
 ```
 
-### 3.6 macOS 系统偏好 (macos.sh) (可选)
+### 4.6 macOS 系统偏好 (macos.sh) (可选)
 
 根目录下提供了 `macos.sh` 脚本，利用 `defaults write` 一键配置符合开发者习惯的深层系统偏好：
 
@@ -369,7 +387,7 @@ make macos
 > 该脚本在执行前可能会要求输入管理员密码（`sudo -v`），且包含了高度个人主观偏好的系统设定。
 > **强烈建议你在执行前，先打开 `macos.sh` 快速浏览一遍带有详细中文解释的源码**。你可以轻松地注释掉任何与你习惯不符的 `defaults write` 命令。
 
-### 3.7 配置 Git
+### 4.7 配置 Git
 
 **1. 配置用户信息及多账号分离 (Local Overrides)**
 
@@ -402,9 +420,9 @@ echo "*.log" >> ~/.config/git/ignore
 > [!TIP]
 > 上述修改会直接更新 `~/dotfiles/git/dot-config/git/ignore`，建议将这些变更提交到你自己的 dotfiles 仓库中。
 
-## 4. 使用方法
+## 5. 使用方法
 
-### 4.1 Ghostty 终端
+### 5.1 Ghostty 终端
 
 **配置文件**：`~/.config/ghostty/config`
 
@@ -421,7 +439,7 @@ echo "*.log" >> ~/.config/git/ignore
 
 ---
 
-### 4.2 Zellij 终端复用器
+### 5.2 Zellij 终端复用器
 
 **配置文件**：`~/.config/zellij/config.kdl`
 
@@ -489,7 +507,7 @@ echo "*.log" >> ~/.config/git/ignore
 
 ---
 
-### 4.3 Fish Shell
+### 5.3 Fish Shell
 
 **配置文件**：`~/.config/fish/config.fish`
 
@@ -530,7 +548,7 @@ echo "*.log" >> ~/.config/git/ignore
 | `gtd <tag>` | 一键同时删除本地和远端的 Git Tag |
 
 > [!TIP]
-> 更多自定义命令（如 `colorscheme`、`font-size`、`opacity` 等）见 [4.8 自定义命令（bin/）](#48-自定义命令bin)。
+> 更多自定义命令（如 `colorscheme`、`font-size`、`opacity` 等）见 [5.8 自定义命令（bin/）](#58-自定义命令bin)。
 
 **内置缩写 (Abbreviations)**：
 
@@ -581,14 +599,14 @@ Fish 支持 Vi 风格编辑模式，本配置已默认启用。
 | `y` | 复制 (配合移动命令，如 yw, yy) |
 | `p` | 粘贴 |
 | `u` | 撤销 |
-| `Alt+e` | 在插入模式下，唤起 **AIChat**，将当前光标前的自然语言转换为相应的 Shell 命令 |
+| `Ctrl+y` | AI 助手：`#` 开头生成候选命令（fzf 选择后写回命令行）；非 `#` 开头解释当前命令（仅解释不执行） |
 | `Ctrl+e` | 在普通模式/插入模式下，使用当前默认编辑器 (hx) 全屏编辑当前命令行 |
 
 在 Vi 普通模式下可以使用所有 Vim 风格的编辑命令。
 
 ---
 
-### 4.4 Helix 编辑器
+### 5.4 Helix 编辑器
 
 **配置文件**：`~/.config/helix/config.toml`
 
@@ -635,13 +653,13 @@ Fish 支持 Vi 风格编辑模式，本配置已默认启用。
 - **语言配置**：`~/.config/helix/languages.toml`
 - **检查健康状态**：`hx --health` 或 `hx --health go`
 - **安装 LSP**：
-  本项目采用 `mise` 集中管理所有语言服务器，详情请参考 [4.5 Mise 工具版本管理](#45-mise-工具版本管理)。
+  本项目采用 `mise` 集中管理所有语言服务器，详情请参考 [5.5 Mise 工具版本管理](#55-mise-工具版本管理)。
 - **重启 LSP**：`:lsp-restart`
 - **查看文档**：`:config-open` 打开配置，`:config-reload` 重载
 
 ---
 
-### 4.5 Mise 工具版本管理
+### 5.5 Mise 工具版本管理
 
 **核心理念：**
 摒弃传统通过 `npm i -g`, `pip install`, `go install` 全局滥装工具导致的系统污染和版本冲突。
@@ -689,9 +707,9 @@ mise use npm:@vtsls/language-server@1.0.0
 
 ---
 
-### 4.6 Git 配置用法
+### 5.6 Git 配置用法
 
-> Git 初始配置（用户信息、多账号隔离等）请参见 [3.7 配置 Git](#37-配置-git)。
+> Git 初始配置（用户信息、多账号隔离等）请参见 [4.7 配置 Git](#47-配置-git)。
 
 **配置文件**：
 - `~/.config/git/config`: 核心配置（XDG 标准位置）
@@ -715,7 +733,7 @@ mise use npm:@vtsls/language-server@1.0.0
 
 ---
 
-### 4.7 stow 的用法说明
+### 5.7 stow 的用法说明
 
 ```sh
 # 安装或重新安装
@@ -735,7 +753,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
 ---
 
-### 4.8 自定义命令（bin/）
+### 5.8 自定义命令（bin/）
 
 这些命令会在 stow `bin` 后出现在 `~/.local/bin`：
 
@@ -756,8 +774,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 > - `font-size` / `opacity`：修改的是 Ghostty 配置文件，需按 `Cmd + Shift + ,` 重载配置后生效。
 
 ---
-
-## 5. 常用维护命令 (Makefile)
+## 6. 常用维护命令 (Makefile)
 
 本项目引入了 `Makefile` 来标准化日常维护任务，集成了安装、同步、验证和清理等操作。
 
@@ -780,7 +797,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
 ---
 
-## 6. 与官方默认的关键差异
+## 7. 与官方默认的关键差异
 
 本项目对各工具的默认配置做了若干有意识的定制。以下是**所有偏离官方默认值的关键改动**，帮助你快速了解本 dotfiles 的"个性化"部分。
 
@@ -885,7 +902,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | 用户信息 | 硬编码在配置中 | 通过 `include` 引入本地文件 | 防止敏感信息入库 |
 | 主题解耦 | 切换配色会导致仓库变脏 | 使用 Git Clean Filter 自动处理 | 确保 local 配色变更不产生 unstaged changes |
 
-## 7. 致谢 (Acknowledgments)
+## 8. 致谢 (Acknowledgments)
 
 本项目的诞生离不开现代开源社区的繁荣生态，特别感谢以下卓越的项目构建了这套工作流的基石：
 
@@ -903,7 +920,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
 ---
 
-## 8. 开源协议 (License)
+## 9. 开源协议 (License)
 
 本项目采用 [MIT License](LICENSE) 开源协议。
 
