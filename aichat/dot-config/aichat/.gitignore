@@ -1,0 +1,8 @@
+# Ignore all by default
+*
+
+# Allow these files to be tracked in dotfiles
+!config.yaml
+!roles.yaml
+!prompts.yaml
+!.gitignore

@@ -58,7 +58,14 @@ set -gx PYTHONWARNINGS "ignore::DeprecationWarning"
 # --- AI CLI Tool Configuration ---
 # 配置当前激活的 AI 命令行工具, 用于 aic.fish 等脚本；
 # 建议在 ~/.config/fish/config.local.fish 中根据自身实际安装的 API Key 覆盖以下默认值。
-set -gx AI_CMD "opencode run"
+set -gx AI_CMD "aichat"
+
+# 强制 aichat 在 macOS 下也使用 ~/.config/aichat 作为配置目录
+set -gx AICHAT_CONFIG_DIR "$HOME/.config/aichat"
+
+# 剥离 aichat 运行状态与数据文件到独立目录 (XDG_DATA_HOME 规范)
+set -gx AICHAT_MESSAGES_FILE "$HOME/.local/share/aichat/messages.md"
+set -gx AICHAT_SESSIONS_DIR "$HOME/.local/share/aichat/sessions"
 
 # 🚀 交互式会话专用配置区 (Interactive Session Only)
 if status is-interactive

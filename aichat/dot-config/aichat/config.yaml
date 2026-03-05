@@ -1,0 +1,158 @@
+# aichat configuration
+# Doc: https://github.com/sigoden/aichat/wiki/Configuration-Guide
+
+# ==========================================
+# LLM (大语言模型设置)
+# ==========================================
+# 默认开启的模型。
+# 【强烈建议】：不要在此文件内直接写入明文 API Key，而是通过在 ~/.config/fish/config.local.fish 末尾导出的环境变量配置。
+# - 设置 API 密钥：set -gx OPENAI_API_KEY "sk-..." 或 set -gx GEMINI_API_KEY "AIzaSy..."
+# - 覆盖此处的默认模型设定：set -gx AICHAT_MODEL "anthropic:claude-3-5-sonnet-20240620"
+# 示例：openai:gpt-4o, anthropic:claude-3-5-sonnet-20240620, gemini:gemini-2.5-flash
+# 默认值：无设定 (根据首次运行交互写入或后续配置)
+model:
+# 默认的温度参数，控制生成的随机性。范围 (0, 1) 或者 (0, 2)（根据具体的模型而异）。
+# 默认值: null (使用模型自身的默认温度)
+temperature: null
+# 默认的 top-p 参数，控制采样范围的多样性。范围同上。
+# 默认值: null (使用模型自身的默认 top-p)
+top_p: null
+
+# ==========================================
+# Behavior (行为控制)
+# ==========================================
+# 是否使用流式输出 API（逐字打印）。
+# 默认值: true
+stream: true
+# 是否持久化保存对话消息。
+# 默认值: true
+save: true
+# REPL 中的快捷键绑定风格，支持 'emacs' 或 'vi'。
+# 默认值: emacs
+keybindings: emacs
+# 用于编辑当前输入缓冲区或 session.yaml 的命令。如果为 null，默认使用环境变量 EDITOR。
+# 默认值: null
+editor: null
+# 控制长文本自动换行模式 ('no' 不换行, 'auto' 根据终端宽度自动, <max-width> 指定字符数)。
+# 默认值: no
+wrap: no
+# 是否对代码块内的长代码进行折行。
+# 默认值: false
+wrap_code: false
+
+# ==========================================
+# Function calling (函数调用机制)
+# ==========================================
+# 全局开启或禁用工具函数调用能力。
+# 默认值: false (此处我为您改为 true 以开启强大能力)
+function_calling: true
+# 配置工具别名映射，将常用工具组合为一个。比如：
+# 默认值: (无)
+# mapping_tools:
+#   fs: 'fs_cat,fs_ls,fs_mkdir,fs_rm,fs_write'
+# 默认激活使用的工具组。
+# 默认值: (无)
+# use_tools: 'fs'
+
+# ==========================================
+# Prelude (预启动状态设定)
+# ==========================================
+# REPL 模式下的默认预加载 Role 或 Session（例如：role:coder, session:temp, temp:coder）
+# 默认值: null
+repl_prelude: null
+# CMD 一次性模式下的默认预加载设定（同样适用 role / session）
+# 默认值: null
+cmd_prelude: null
+# 启动智能体 (Agent) 时加载的对应 session 名称 (例如: default)
+# 默认值: null
+agent_prelude: null
+
+# ==========================================
+# Session (会话管理与长文本压缩)
+# ==========================================
+# 退出时是否自动保存对话会话（true: 自动保存, false: 不保留, null: 交互式询问）。
+# 默认值: null (此处我为您改为 true)
+save_session: true
+# 当 Token 长度超过此阈值，自动触发当前长对话的历史记录压缩整合。
+# 默认值: 4000
+compress_threshold: 4000
+# 指导 LLM 进行对话历史摘要浓缩时的特殊 Prompt 提示词。
+# 默认值: (内部默认的系统英文 Prompt)
+# summarize_prompt: '...'
+# 将新摘要包装提交进去的 Prompt 格式模版。
+# 默认值: (内部默认的系统英文 Prompt)
+# summary_prompt: '...'
+
+# ==========================================
+# RAG (检索增强生成有关配置)
+# ==========================================
+# RAG 专用的默认嵌入模型 (Embedding Model)。
+# 默认值: null
+rag_embedding_model: null
+# RAG 专用的默认重排模型 (Reranker Model)。
+# 默认值: null
+rag_reranker_model: null
+# 检索后返回的最相关文档数量 (top_k)。
+# 默认值: 4
+rag_top_k: 4
+# 每个切片的文本长度 (chunk size)。
+# 默认值: null (根据 Embedding 模型有所不同)
+rag_chunk_size: null
+# 切片之间相交叠的 Token 数，以保持上下文连贯性 (chunk overlap)。
+# 默认值: null
+rag_chunk_overlap: null
+# RAG 查询时拼装前置知识模板。__CONTEXT__ 和 __INPUT__ 占位符将被自动替换。
+# 默认值: (内部定义好的默认查询模板)
+# rag_template: | ...
+# 定义针对特定文件类型的自定义文档解析器 (Loaders)。
+# 默认值: null
+# document_loaders: ...
+
+# ==========================================
+# Appearance (外观表现)
+# ==========================================
+# 是否启用 Markdown/代码块的语法高亮。
+# 默认值: true
+highlight: true
+# 主题颜色极性切换 ('dark' / 'light' / null 自动)。
+# 默认值: null (根据系统自适应)
+light_theme: false
+# 终端 REPL 输入区域的左侧提示符结构，可配置显示角色和消耗。
+# 默认值: (内置的左侧提示符结构)
+# left_prompt: '...'
+# 终端 REPL 输入区域的右侧辅助提示符结构。
+# 默认值: (无)
+# right_prompt: '...'
+
+# ==========================================
+# Misc (杂项与其他服务)
+# ==========================================
+# 内置 HTTP API Server 监听的地址与端口。
+# 默认值: 127.0.0.1:8000
+serve_addr: 127.0.0.1:8000
+# 向服务端发送请求时的自定义 User-Agent ('auto' 或具体字符串)。
+# 默认值: null
+user_agent: null
+# 是否将终端执行过的命令，记录到 aichat 的专属命令历史文件中，便于追溯。
+# 默认值: true
+save_shell_history: true
+# 同步获取并更新最新的模型与 API 变动的在线地址 (URL)。
+# 设为官方 models.yaml 后，aichat 才能识别 moonshot:kimi-k2.5 等模型。
+# 默认值: null
+sync_models_url: https://raw.githubusercontent.com/sigoden/aichat/refs/heads/main/models.yaml
+
+# ==========================================
+# Clients (API 客户端配置)
+# ==========================================
+clients:
+  # API Key 通过环境变量 GEMINI_API_KEY 注入 (在 config.local.fish 中配置)
+  - type: gemini
+  # API Key 通过环境变量 MOONSHOT_API_KEY 注入 (在 config.local.fish 中配置)
+  - type: openai-compatible
+    name: moonshot
+    api_base: https://api.moonshot.cn/v1
+  # 本地模型通过 Ollama 配置
+  - type: ollama
+    name: local-llm
+    api_base: http://localhost:11434/v1
+    model: llama3:8b

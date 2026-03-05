@@ -24,7 +24,9 @@ brew "fzf"
 # 现代化模态编辑器 (后现代 Vim)，开箱即用
 brew "helix"
 
-# --- CLI Enhancements (命令行增强) ---
+# === CLI Enhancements (命令行增强) ===
+# All-in-one LLM CLI tool (内建终端 AI 助手)
+brew "aichat"
 # GitHub 官方 CLI (用于 PR 创建等 GitHub 交互)
 brew "gh"
 # Git diff 语法高亮与美化工具

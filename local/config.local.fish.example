@@ -11,16 +11,24 @@
 # ============================================================
 
 # --- 敏感环境变量 ---
-# 例如：OpenAI API 密钥
+# 例如：设置 aichat (sigoden/aichat) 使用的全局 Model 及 API 密钥
+# 参阅：https://github.com/sigoden/aichat/wiki/Environment-Variables
+# set -gx AICHAT_MODEL "gemini:gemini-3-flash"
 # set -gx OPENAI_API_KEY "sk-xxxxxxxxx"
+# set -gx GEMINI_API_KEY "AIzaSy..."
+# set -gx ANTHROPIC_API_KEY "sk-ant-..."
+# Moonshot/Kimi：国内用 platform.moonshot.cn 申请，国际用 platform.moonshot.ai；key 与 api_base 需对应
+# set -gx MOONSHOT_API_KEY "sk-xxxxxxxx"
 
 # 强烈建议配置，用于提升 mise/Homebrew 等工具调用 GitHub API 的频率限制
+# 同时可作为 aichat 的 GitHub Models API 密钥
 # 获取方式：https://github.com/settings/tokens (申请 Classic Token，无需勾选任何权限即可)
 # set -gx GITHUB_TOKEN "ghp_xxxxxxxx"
 
 # --- AI 命令行工具 ---
-# 覆盖 config.fish 中的 AI_CMD 默认配置
-# set -gx AI_CMD "opencode run -m google/antigravity-gemini-3-flash"
+# 覆盖 config.fish 中的 AI_CMD 默认配置 (支持 aic 等辅助工具的自定义调用方式)
+# 默认值已经变为 "aichat", 如果你有特定的模型需求，可以通过环境变量或者配置实现
+# set -gx AI_CMD "aichat -m anthropic:claude-3-5-sonnet-20240620"
 
 # --- 机器特定别名 (Aliases) ---
 # 例如：某些只存在于这台 Mac 上的启动守护进程命令 / 脚本快捷方式

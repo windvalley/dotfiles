@@ -63,8 +63,8 @@ rust = "latest"
 
 # --- Python 生态 ---
 # ruff: 默认 aqua backend 无法正确解析 @latest，改用 pipx 通过 PyPI 获取
-"pipx:ruff" = "latest"      # Linter/Formatter/LSP
-"npm:pyright" = "latest"    # Type Checker LSP
+"pipx:ruff" = "latest"   # Linter/Formatter/LSP
+"npm:pyright" = "latest" # Type Checker LSP
 
 # --- Web 生态 (TS/JS/CSS/HTML/JSON) ---
 "npm:@vtsls/language-server" = "latest"

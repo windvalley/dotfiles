@@ -13,7 +13,7 @@
 
 本项目是一套 **现代、高效、开箱即用** 的 macOS 终端开发环境，所有配置集中版本控制，通过 GNU Stow 一键部署。
 
-核心工具栈：Ghostty（终端）+ Zellij（复用器）+ Fish（Shell）+ Helix（编辑器）+ Mise（版本管理），视觉与交互风格全栈统一。
+核心工具栈：Ghostty（终端）+ Zellij（复用器）+ Fish（Shell）+ Helix（编辑器）+ Mise（版本管理）+ AIChat（AI 极客助手），视觉与交互风格全栈统一。
 
 **核心设计理念：**
 1. **配置即代码**：所有配置通过 Git 追踪与 Stow 符号链接管理，支持一键幂等重置。
@@ -158,11 +158,11 @@ brew install helix
 # 软件版本管理工具
 brew install mise
 
-# GitHub 官方 CLI (用于 PR 创建等 GitHub 交互)
-brew install gh
-
 # Git 美化工具 (Diff 语法高亮)
 brew install git-delta
+
+# 终端 AI 全能助手 (集成大模型与 Shell 辅助)
+brew install aichat
 
 # 现代、跨平台的系统资源监控工具
 brew install btop
@@ -178,6 +178,7 @@ brew install switchaudio-osx
 ```
 
 **说明：**
+- `aichat`: 终端上的大模型原生客户端，支持多模态及本地/云端模型，提供 `Alt+e` 智能命令辅助功能。
 - `gh`: GitHub 官方命令行工具，用于 PR 创建、Issue 管理等 GitHub 交互（`aipr` 命令依赖）。
 - `zoxide`: 智能目录跳转工具，替代传统的 `cd`。用法：`z <关键词>` 跳转目录，`zi <关键词>` 交互式选择（需 fzf）。
 - `gnu-sed`: 提供 `gsed`，用于 `colorscheme` / `font-size` / `opacity` 等脚本。
@@ -520,10 +521,10 @@ echo "*.log" >> ~/.config/git/ignore
 | `backup <file/dir>` | 为敏感文件或目录极速创建带有精确时间戳的完整备份副本 |
 | `copy [file]` | 将文件内容或前一个命令的标准输出(`\| copy`)极速复制到 Mac 剪贴板 |
 | `f [query]` | 搜索文件并使用 Helix 打开。若关键字匹配唯一结果则直接打开 |
-| `aic` | 根据代码变更自动生成 Git 提交信息。支持中英交互切换、Prompt 微调及重写功能 |
-| `aipr` | 根据分支变更自动生成 Pull Request 描述。分析 commit 和 diff 后 AI 生成结构化 PR 描述，支持复制到剪贴板、编辑、重写、微调、中英切换，以及通过 gh CLI 直接创建 PR |
-| `ait` | 自动根据 Git 变更历史生成 Changelog 并提交打 Tag。支持中英交互切换、Prompt 微调及重写功能 |
-| `aip` | AI 即插即用指令库。交互式选择常用开发指挥语并自动复制到剪贴板。支持 fzf 多选预览、编号直跳、关键词过滤和随机模式 |
+| `aic` | 根据代码变更自动生成 Git 提交信息。底座由 `$AI_CMD` (默认 `aichat`) 驱动，支持微调及重写功能 |
+| `aipr` | 根据分支变更自动生成 Pull Request 描述。使用大模型分析 commit 和 diff |
+| `ait` | 自动根据 Git 变更历史生成 Changelog 并提交打 Tag |
+| `aip` | AI 即插即用指令库。交互式选择常用开发指挥语并自动复制到剪贴板 |
 | `b [query]` | 搜索文件并使用 bat 查看。若关键字匹配唯一结果则直接打开 |
 | `rec [name]` | 极简终端操作录屏工具 (基于 asciinema)，支持录制、回放(`rec play`)与网页分享(`rec upload`) |
 | `gtd <tag>` | 一键同时删除本地和远端的 Git Tag |
@@ -570,6 +571,7 @@ Fish 支持 Vi 风格编辑模式，本配置已默认启用。
 | 快捷键 | 功能 |
 |--------|------|
 | `Esc` | 进入 Vi 普通模式 |
+| `Esc` | 进入 Vi 普通模式 |
 | `i`/`a` | 进入插入模式 (光标前/光标后) |
 | `h`/`l` | 光标左/右移动 |
 | `k`/`j` | 上一条/下一条命令历史（基于输入过滤） |
@@ -579,6 +581,7 @@ Fish 支持 Vi 风格编辑模式，本配置已默认启用。
 | `y` | 复制 (配合移动命令，如 yw, yy) |
 | `p` | 粘贴 |
 | `u` | 撤销 |
+| `Alt+e` | 在插入模式下，唤起 **AIChat**，将当前光标前的自然语言转换为相应的 Shell 命令 |
 | `Ctrl+e` | 在普通模式/插入模式下，使用当前默认编辑器 (hx) 全屏编辑当前命令行 |
 
 在 Vi 普通模式下可以使用所有 Vim 风格的编辑命令。
