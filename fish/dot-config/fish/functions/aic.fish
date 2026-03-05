@@ -3,13 +3,10 @@ function aic -d "根据代码变更自动生成 Git Commit 信息"
     echo -e "\n🚀 [\e[1maic\e[0m] \e[36mAI-Powered Commit Tool\e[0m"
     echo -e "   \e[90mWorkflow: Analyze Staged Changes -> AI Gen Commit Message -> Commit\e[0m\n"
 
-    # 检查 AI 工具配置（已由 config.fish 初始化）
-    if test -z "$AI_CMD"
-        echo "❌ 未检测到可用的 AI 命令，请在 ~/.config/fish/config.local.fish 中配置 AI_CMD"
-        return 1
+    if not command -sq aichat
+        echo "❌ 未找到 aichat，请先安装并配置"
+        return 127
     end
-    
-    set -l ai_cmd "$AI_CMD"
     
     # 检查是否在 git 仓库中
     if not git rev-parse --is-inside-work-tree >/dev/null 2>&1
@@ -80,23 +77,9 @@ $supplementary_info"
 $diff
 </diff>"
 
-        # 安全执行 AI_CMD（禁止 eval），避免 git diff 中的特殊字符触发命令注入
-        # 兼容两种配置：
-        # 1) set -gx AI_CMD opencode run
-        # 2) set -gx AI_CMD "opencode run"
-        set -l ai_cmd_argv $AI_CMD
-        if test (count $ai_cmd_argv) -eq 1
-            set ai_cmd_argv (string split -n " " -- $ai_cmd_argv[1])
-        end
-
-        if test (count $ai_cmd_argv) -eq 0
-            echo "❌ AI_CMD 配置无效，请检查 ~/.config/fish/config.local.fish"
-            return 1
-        end
-
-        # 调用检测到的 AI 工具生成内容
+        # 调用 aichat 生成内容
         set -l msg_tmpfile (mktemp)
-        $ai_cmd_argv "$prompt_text" > $msg_tmpfile
+        aichat --no-stream "$prompt_text" > $msg_tmpfile
         set -l ai_exit_status $status
         
         # 捕捉在 AI 生成过程中被 Ctrl+C 中断的情况或者命令执行失败
@@ -125,7 +108,8 @@ $diff
             return 1
         end
         
-        # 清理响应: 移除 Markdown 块标记
+        # 清理响应: 移除模型思考与 Markdown 块标记
+        sed -i '' -e '/^<think>/,/^<\/think>/d' $msg_tmpfile
         sed -i '' -e '/^```\(commit\|text\)/d' -e '/^```$/d' $msg_tmpfile
         
         # 兜底防御：大模型有时仍会输出思考过程或废话。

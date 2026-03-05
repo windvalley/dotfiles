@@ -55,11 +55,7 @@ end
 # 使用环境变量而非 alias，因为 oh-my-fish/plugin-grc 内部使用 `command grc` 会跳过 alias
 set -gx PYTHONWARNINGS "ignore::DeprecationWarning"
 
-# --- AI CLI Tool Configuration ---
-# 配置当前激活的 AI 命令行工具, 用于 aic.fish 等脚本；
-# 建议在 ~/.config/fish/config.local.fish 中根据自身实际安装的 API Key 覆盖以下默认值。
-set -gx AI_CMD "aichat"
-
+# --- AIChat Configuration ---
 # 强制 aichat 在 macOS 下也使用 ~/.config/aichat 作为配置目录
 set -gx AICHAT_CONFIG_DIR "$HOME/.config/aichat"
 

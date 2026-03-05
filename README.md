@@ -95,7 +95,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 - `karabiner/`: Karabiner（/ˌkær.əˈbiː.nər/，德语，登山扣）键盘映射（交换 Caps Lock 和 Left Control）
 - `git/`: Git 基础配置（别名、Delta 美化、全局忽略等）
 - `mise/`: Mise（/miːz/，源自法语 mise en place，就位准备）工具版本管理器配置
-- `aichat`: 终端 AI 客户端；Fish 中预置 `AI_CMD` / `AICHAT_*` 环境变量与数据隔离，本地敏感项模板见 `local/config.local.fish.example`
+- `aichat`: 终端 AI 客户端；Fish 中预置 `AICHAT_*` 环境变量与数据隔离，本地敏感项模板见 `local/config.local.fish.example`
 - `btop/`: btop 现代系统资源监控工具配置
 - `bin/`: 自定义命令脚本（自动链接到 `~/.local/bin`）
 - `local/`: 本地环境私有配置模板（用于 Fish 环境变量脱敏、Git 多账号隔离及 Ghostty 私有配置）
@@ -111,9 +111,9 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
   - 输入命令后按 `Ctrl+y`：输出解释（仅解释不执行；使用 bat 分页展示；第一行是原始命令）
   - 输入 `# <描述>` 后按 `Ctrl+y`：生成多条候选命令（fzf 选择后写回命令行；回车才执行）
 - `??`：将上一条失败命令及其输出发送给 AI 诊断（需要 Zellij 以便自动捕获 pane 输出）
-- `aic` / `aipr` / `ait`：分别用于生成提交信息、PR 描述、Release Notes（底座由 `$AI_CMD` 驱动）
+- `aic` / `aipr` / `ait`：分别用于生成提交信息、PR 描述、Release Notes（底座为 `aichat`）
 - `aip`：AI 指令库（交互选择常用指挥语并复制到剪贴板）
-- 可配置：在 `~/.config/fish/config.local.fish` 覆盖 `AI_CMD` / `AICHAT_MODEL`
+- 可配置：在 `~/.config/fish/config.local.fish` 配置 `AICHAT_MODEL` 及各模型 API Key
 
 > [!TIP]
 > 生成命令会做 Fish 语法解析校验，并针对 macOS(BSD userland) 过滤/规避常见 GNU 参数差异（如 `ps --sort`）。
@@ -308,7 +308,7 @@ fish_add_path ~/.local/bin
 2. 将你所有的私密配置写入新生成的文件：
    ```fish
    # ~/.config/fish/config.local.fish
-   set -gx AI_CMD "opencode run"  # 配置全局 AI 命令，供 aic 等辅助工具使用
+    # set -gx AICHAT_MODEL "gemini:gemini-3-flash-preview"
    set -gx OPENAI_API_KEY "sk-xxxxxxxxx"
    abbr -a -g work-vpn "sudo launchctl restart com.corp.vpn"
    ```
@@ -540,7 +540,7 @@ echo "*.log" >> ~/.config/git/ignore
 | `backup <file/dir>` | 为敏感文件或目录极速创建带有精确时间戳的完整备份副本 |
 | `copy [file]` | 将文件内容或前一个命令的标准输出(`\| copy`)极速复制到 Mac 剪贴板 |
 | `f [query]` | 搜索文件并使用 Helix 打开。若关键字匹配唯一结果则直接打开 |
-| `aic` | 根据代码变更自动生成 Git 提交信息。底座由 `$AI_CMD` (默认 `aichat`) 驱动，支持微调及重写功能 |
+| `aic` | 根据代码变更自动生成 Git 提交信息。底座为 `aichat`，支持重写/微调 |
 | `aipr` | 根据分支变更自动生成 Pull Request 描述。使用大模型分析 commit 和 diff |
 | `ait` | 自动根据 Git 变更历史生成 Changelog 并提交打 Tag |
 | `aip` | AI 即插即用指令库。交互式选择常用开发指挥语并自动复制到剪贴板 |

@@ -16,97 +16,98 @@ warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1"; }
 export -f info success warn error
 
-
-
 # Parse arguments
 NON_INTERACTIVE=false
 while [[ "$#" -gt 0 ]]; do
-    case $1 in
-        -y|--yes|--unattended) NON_INTERACTIVE=true ;;
-        -h|--help) 
-            echo "Usage: $0 [options]"
-            echo "Options:"
-            echo "  -y, --yes, --unattended    Run in non-interactive mode without prompting"
-            echo "  -h, --help                 Show this help message"
-            exit 0
-            ;;
-        *) error "Unknown parameter: $1"; exit 1 ;;
-    esac
-    shift
+  case $1 in
+  -y | --yes | --unattended) NON_INTERACTIVE=true ;;
+  -h | --help)
+    echo "Usage: $0 [options]"
+    echo "Options:"
+    echo "  -y, --yes, --unattended    Run in non-interactive mode without prompting"
+    echo "  -h, --help                 Show this help message"
+    exit 0
+    ;;
+  *)
+    error "Unknown parameter: $1"
+    exit 1
+    ;;
+  esac
+  shift
 done
 
 ask_yes_no() {
-    local prompt="$1"
-    if [ "$NON_INTERACTIVE" = true ]; then
-        info "${prompt} (auto-yes)"
-        return 0
+  local prompt="$1"
+  if [ "$NON_INTERACTIVE" = true ]; then
+    info "${prompt} (auto-yes)"
+    return 0
+  else
+    # 从 /dev/tty 直接读取终端输入，避免上一步命令（brew/zsh/fish 等）
+    # 向 stdin 写入残留字节导致 read 跳过用户输入的问题
+    read -p "$prompt " -n 1 -r REPLY </dev/tty
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+      return 0
     else
-        # 从 /dev/tty 直接读取终端输入，避免上一步命令（brew/zsh/fish 等）
-        # 向 stdin 写入残留字节导致 read 跳过用户输入的问题
-        read -p "$prompt " -n 1 -r REPLY < /dev/tty
-        echo
-        if [[ $REPLY =~ ^[Yy]$ ]]; then
-            return 0
-        else
-            return 1
-        fi
+      return 1
     fi
+  fi
 }
 
 if [ "$(uname -s)" != "Darwin" ]; then
-    error "This dotfiles setup is only supported on macOS."
-    exit 1
+  error "This dotfiles setup is only supported on macOS."
+  exit 1
 fi
 
 info "Starting dotfiles installation..."
 
-if ! command -v brew &> /dev/null; then
-    warn "Homebrew not found."
-    if ask_yes_no "Install Homebrew from official source? (y/n)"; then
-        info "Installing Homebrew..."
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+if ! command -v brew &>/dev/null; then
+  warn "Homebrew not found."
+  if ask_yes_no "Install Homebrew from official source? (y/n)"; then
+    info "Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-        eval "$(/opt/homebrew/bin/brew shellenv 2>/dev/null || /usr/local/bin/brew shellenv 2>/dev/null)"
-        success "Homebrew installed successfully."
-    else
-        error "Homebrew is required. Please install it manually from https://brew.sh"
-        exit 1
-    fi
+    eval "$(/opt/homebrew/bin/brew shellenv 2>/dev/null || /usr/local/bin/brew shellenv 2>/dev/null)"
+    success "Homebrew installed successfully."
+  else
+    error "Homebrew is required. Please install it manually from https://brew.sh"
+    exit 1
+  fi
 else
-    success "Homebrew is already installed."
+  success "Homebrew is already installed."
 fi
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 info "Checking current status..."
 if [ -f "$DOTFILES_DIR/Brewfile" ]; then
-    if ! brew bundle check --file="$DOTFILES_DIR/Brewfile" > /dev/null 2>&1; then
-        info "Installing/Updating dependencies..."
-        if brew bundle install --file="$DOTFILES_DIR/Brewfile"; then
-            success "Brew dependencies installed."
-        else
-            error "Brew bundle install failed."
-            exit 1
-        fi
+  if ! brew bundle check --file="$DOTFILES_DIR/Brewfile" >/dev/null 2>&1; then
+    info "Installing/Updating dependencies..."
+    if brew bundle install --file="$DOTFILES_DIR/Brewfile"; then
+      success "Brew dependencies installed."
     else
-        success "All Brew dependencies are already satisfied."
+      error "Brew bundle install failed."
+      exit 1
     fi
+  else
+    success "All Brew dependencies are already satisfied."
+  fi
 else
-    error "Brewfile not found at $DOTFILES_DIR/Brewfile"
-    exit 1
+  error "Brewfile not found at $DOTFILES_DIR/Brewfile"
+  exit 1
 fi
 
 info "Installing additional Fonts..."
 if ask_yes_no "Do you want to install additional fonts (Maple Mono, Geist Mono)? (y/n)"; then
-    REQUIRED_CASKS=(
-        font-maple-mono-nf
-        font-geist-mono-nerd-font
-    )
-    if brew install --cask --force "${REQUIRED_CASKS[@]}"; then
-        success "Fonts installed."
-    else
-        warn "Font installation had issues."
-    fi
+  REQUIRED_CASKS=(
+    font-maple-mono-nf
+    font-geist-mono-nerd-font
+  )
+  if brew install --cask --force "${REQUIRED_CASKS[@]}"; then
+    success "Fonts installed."
+  else
+    warn "Font installation had issues."
+  fi
 fi
 
 info "Linking configuration files with stow..."
@@ -117,21 +118,21 @@ STOW_PACKAGES=(ghostty fish helix zellij mise karabiner btop git aichat)
 
 # Clean up existing config directories and stow packages
 for pkg in "${STOW_PACKAGES[@]}"; do
-    DIR="$HOME/.config/$pkg"
-    # Ensure any existing directory is either unlinked (if symlink) or backed up (if real dir).
-    # This guarantees stow creates a pure directory-level mapping to ~/dotfiles,
-    # ensuring locally generated files (like Karabiner/Btop UI saves) are tracked automatically.
-    if [ -L "$DIR" ]; then
-        warn "$DIR is a symlink, unlinking..."
-        unlink "$DIR"
-    elif [ -d "$DIR" ]; then
-        BACKUP_DIR="${DIR}.bak.$(date +%Y%m%d_%H%M%S)"
-        warn "Backing up existing real directory $DIR -> $BACKUP_DIR"
-        mv "$DIR" "$BACKUP_DIR"
-    fi
+  DIR="$HOME/.config/$pkg"
+  # Ensure any existing directory is either unlinked (if symlink) or backed up (if real dir).
+  # This guarantees stow creates a pure directory-level mapping to ~/dotfiles,
+  # ensuring locally generated files (like Karabiner/Btop UI saves) are tracked automatically.
+  if [ -L "$DIR" ]; then
+    warn "$DIR is a symlink, unlinking..."
+    unlink "$DIR"
+  elif [ -d "$DIR" ]; then
+    BACKUP_DIR="${DIR}.bak.$(date +%Y%m%d_%H%M%S)"
+    warn "Backing up existing real directory $DIR -> $BACKUP_DIR"
+    mv "$DIR" "$BACKUP_DIR"
+  fi
 
-    info "Stowing $pkg..."
-    stow --restow --target="$HOME" --dir="$DOTFILES_DIR" --dotfiles "$pkg"
+  info "Stowing $pkg..."
+  stow --restow --target="$HOME" --dir="$DOTFILES_DIR" --dotfiles "$pkg"
 done
 
 # Always stow bin for scripts, they are useful in CLI
@@ -142,55 +143,54 @@ info "Setting up local configuration overrides..."
 
 # --- 1. Git Local 基础信息模板 ---
 if [ ! -f "$HOME/.gitconfig.local" ]; then
-    cp "$DOTFILES_DIR/local/dot-gitconfig.local.example" "$HOME/.gitconfig.local"
-    info "  -> Created ~/.gitconfig.local (Please update it with your name/email)"
+  cp "$DOTFILES_DIR/local/dot-gitconfig.local.example" "$HOME/.gitconfig.local"
+  info "  -> Created ~/.gitconfig.local (Please update it with your name/email)"
 else
-    success "  -> ~/.gitconfig.local already exists, skipping."
+  success "  -> ~/.gitconfig.local already exists, skipping."
 fi
 
 # --- 2. Git 工作目录信息模板 ---
 if [ ! -f "$HOME/.gitconfig.work" ]; then
-    cp "$DOTFILES_DIR/local/dot-gitconfig.work.example" "$HOME/.gitconfig.work"
-    info "  -> Created ~/.gitconfig.work"
+  cp "$DOTFILES_DIR/local/dot-gitconfig.work.example" "$HOME/.gitconfig.work"
+  info "  -> Created ~/.gitconfig.work"
 else
-    success "  -> ~/.gitconfig.work already exists, skipping."
+  success "  -> ~/.gitconfig.work already exists, skipping."
 fi
-
 
 # --- 3. Fish 私有环境变量模板 ---
 FISH_LOCAL_CONF="$HOME/.config/fish/config.local.fish"
 if [ ! -f "$FISH_LOCAL_CONF" ]; then
-    cp "$DOTFILES_DIR/local/config.local.fish.example" "$FISH_LOCAL_CONF"
-    info "  -> Created $FISH_LOCAL_CONF (For private API keys and aliases)"
+  cp "$DOTFILES_DIR/local/config.local.fish.example" "$FISH_LOCAL_CONF"
+  info "  -> Created $FISH_LOCAL_CONF (For private API keys and aliases)"
 else
-    success "  -> $FISH_LOCAL_CONF already exists, skipping."
+  success "  -> $FISH_LOCAL_CONF already exists, skipping."
 fi
 
 # --- 4. Ghostty 私有配置模板 ---
 GHOSTTY_LOCAL_CONF="$HOME/.config/ghostty/config.local"
 if [ ! -f "$GHOSTTY_LOCAL_CONF" ]; then
-    mkdir -p "$HOME/.config/ghostty"
-    cp "$DOTFILES_DIR/local/ghostty.config.local.example" "$GHOSTTY_LOCAL_CONF"
-    info "  -> Created $GHOSTTY_LOCAL_CONF (For private shortcuts and overrides)"
+  mkdir -p "$HOME/.config/ghostty"
+  cp "$DOTFILES_DIR/local/ghostty.config.local.example" "$GHOSTTY_LOCAL_CONF"
+  info "  -> Created $GHOSTTY_LOCAL_CONF (For private shortcuts and overrides)"
 else
-    success "  -> $GHOSTTY_LOCAL_CONF already exists, skipping."
+  success "  -> $GHOSTTY_LOCAL_CONF already exists, skipping."
 fi
 
 if [[ "$SHELL" != *"fish"* ]]; then
-    if [ "$NON_INTERACTIVE" = true ]; then
-        info "Skipping default shell change in non-interactive mode."
-        info "Please run 'chsh -s $(which fish)' manually later if needed."
-    elif ask_yes_no "Do you want to set fish as your default shell? (y/n)"; then
-        FISH_PATH=$(which fish)
-        if ! grep -q "$FISH_PATH" /etc/shells; then
-            info "Adding $FISH_PATH to /etc/shells..."
-            echo "$FISH_PATH" | sudo tee -a /etc/shells
-        fi
-        info "Changing default shell to fish..."
-        chsh -s "$FISH_PATH"
+  if [ "$NON_INTERACTIVE" = true ]; then
+    info "Skipping default shell change in non-interactive mode."
+    info "Please run 'chsh -s $(which fish)' manually later if needed."
+  elif ask_yes_no "Do you want to set fish as your default shell? (y/n)"; then
+    FISH_PATH=$(which fish)
+    if ! grep -q "$FISH_PATH" /etc/shells; then
+      info "Adding $FISH_PATH to /etc/shells..."
+      echo "$FISH_PATH" | sudo tee -a /etc/shells
     fi
+    info "Changing default shell to fish..."
+    chsh -s "$FISH_PATH"
+  fi
 else
-    success "Fish is already the default shell."
+  success "Fish is already the default shell."
 fi
 
 info "Installing fisher and plugins..."
@@ -198,36 +198,36 @@ info "Installing fisher and plugins..."
 # 该目录存放第三方插件的 functions/completions/conf.d，残留旧数据可能导致安装冲突
 FISHER_DATA_DIR="$HOME/.local/share/fisher"
 if [ -d "$FISHER_DATA_DIR" ]; then
-    warn "Cleaning existing fisher data: $FISHER_DATA_DIR"
-    rm -rf "$FISHER_DATA_DIR"
+  warn "Cleaning existing fisher data: $FISHER_DATA_DIR"
+  rm -rf "$FISHER_DATA_DIR"
 fi
 
 if fish -c "type -q fisher" 2>/dev/null; then
-    success "Fisher already installed."
+  success "Fisher already installed."
 else
-    info "Installing fisher..."
-    FISHER_URL="https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish"
-    FISHER_TMP=$(mktemp)
+  info "Installing fisher..."
+  FISHER_URL="https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish"
+  FISHER_TMP=$(mktemp)
 
-    if curl -fsSL "$FISHER_URL" -o "$FISHER_TMP"; then
-        fish -c "source '$FISHER_TMP' && fisher install jorgebucaran/fisher"
-        rm -f "$FISHER_TMP"
-    else
-        rm -f "$FISHER_TMP"
-        error "Failed to download fisher. Check your network connection."
-        exit 1
-    fi
+  if curl -fsSL "$FISHER_URL" -o "$FISHER_TMP"; then
+    fish -c "source '$FISHER_TMP' && fisher install jorgebucaran/fisher"
+    rm -f "$FISHER_TMP"
+  else
+    rm -f "$FISHER_TMP"
+    error "Failed to download fisher. Check your network connection."
+    exit 1
+  fi
 fi
 
 if [ -f "$DOTFILES_DIR/fish/dot-config/fish/fish_plugins" ]; then
-    info "Updating plugins from fish_plugins..."
-    if fish -c "fisher update"; then
-        success "Fisher plugins updated."
-    else
-        warn "Fisher update had issues."
-    fi
+  info "Updating plugins from fish_plugins..."
+  if fish -c "fisher update"; then
+    success "Fisher plugins updated."
+  else
+    warn "Fisher update had issues."
+  fi
 else
-    warn "fish_plugins not found at $DOTFILES_DIR/fish/dot-config/fish/fish_plugins, skipping plugin installation."
+  warn "fish_plugins not found at $DOTFILES_DIR/fish/dot-config/fish/fish_plugins, skipping plugin installation."
 fi
 
 info "Configuring Fish Homebrew PATH..."
@@ -235,52 +235,52 @@ fish -c "fish_add_path (brew --prefix)/bin" 2>/dev/null || true
 
 # Migrate PATH from zsh to fish (for users switching from zsh)
 if command -v zsh &>/dev/null; then
-    info "Migrating PATH from zsh to fish (with 5-second timeout protection)..."
+  info "Migrating PATH from zsh to fish (with 5-second timeout protection)..."
 
-    if command -v perl &>/dev/null; then
-        ZSH_PATHS=$(perl -e 'alarm 5; exec @ARGV' /bin/zsh -l -c 'echo "$PATH"' 2>/dev/null | tr ':' '\n' || true)
+  if command -v perl &>/dev/null; then
+    ZSH_PATHS=$(perl -e 'alarm 5; exec @ARGV' /bin/zsh -l -c 'echo "$PATH"' 2>/dev/null | tr ':' '\n' || true)
+  else
+    ZSH_PATHS=$(/bin/zsh -l -c 'echo "$PATH"' 2>/dev/null | tr ':' '\n' || true)
+  fi
+
+  if [ -z "$ZSH_PATHS" ]; then
+    warn "Could not read legacy zsh PATH or timed out. Skipping migration."
+  else
+    FISH_PATHS=$(fish -l -c 'string join \n $PATH' 2>/dev/null)
+
+    MIGRATED=0
+    while IFS= read -r p; do
+      [ -z "$p" ] && continue
+      [ ! -d "$p" ] && continue
+
+      # Skip system/default paths (already handled)
+      case "$p" in
+      /usr/bin | /bin | /usr/sbin | /sbin | /usr/local/bin | /opt/homebrew/bin | /opt/homebrew/sbin) continue ;;
+      esac
+
+      # Check if path is already in fish
+      if ! echo "$FISH_PATHS" | grep -qxF "$p"; then
+        fish -c "fish_add_path --append '$p'" 2>/dev/null || true
+        info "  Added: $p"
+        MIGRATED=$((MIGRATED + 1))
+      fi
+    done <<<"$ZSH_PATHS"
+
+    if [ "$MIGRATED" -gt 0 ]; then
+      success "Migrated $MIGRATED PATH entries from zsh to fish."
     else
-        ZSH_PATHS=$(/bin/zsh -l -c 'echo "$PATH"' 2>/dev/null | tr ':' '\n' || true)
+      success "No additional PATH entries to migrate from zsh."
     fi
-
-    if [ -z "$ZSH_PATHS" ]; then
-        warn "Could not read legacy zsh PATH or timed out. Skipping migration."
-    else
-        FISH_PATHS=$(fish -l -c 'string join \n $PATH' 2>/dev/null)
-
-        MIGRATED=0
-        while IFS= read -r p; do
-            [ -z "$p" ] && continue
-            [ ! -d "$p" ] && continue
-
-            # Skip system/default paths (already handled)
-            case "$p" in
-                /usr/bin|/bin|/usr/sbin|/sbin|/usr/local/bin|/opt/homebrew/bin|/opt/homebrew/sbin) continue ;;
-            esac
-
-            # Check if path is already in fish
-            if ! echo "$FISH_PATHS" | grep -qxF "$p"; then
-                fish -c "fish_add_path --append '$p'" 2>/dev/null || true
-                info "  Added: $p"
-                MIGRATED=$((MIGRATED + 1))
-            fi
-        done <<< "$ZSH_PATHS"
-
-        if [ "$MIGRATED" -gt 0 ]; then
-            success "Migrated $MIGRATED PATH entries from zsh to fish."
-        else
-            success "No additional PATH entries to migrate from zsh."
-        fi
-    fi
+  fi
 else
-    info "zsh not found, skipping PATH migration."
+  info "zsh not found, skipping PATH migration."
 fi
 
 if [[ "$(uname)" == "Darwin" ]]; then
-    if ask_yes_no "Do you want to apply macOS system preferences (macos.sh)? (y/n)"; then
-        info "Applying macOS system preferences..."
-        bash "$DOTFILES_DIR/macos.sh"
-    fi
+  if ask_yes_no "Do you want to apply macOS system preferences (macos.sh)? (y/n)"; then
+    info "Applying macOS system preferences..."
+    bash "$DOTFILES_DIR/macos.sh"
+  fi
 
 fi
 
@@ -300,7 +300,7 @@ echo "       --icons='Many icons' \\"
 echo "       --transient=Yes"
 echo ""
 echo "3. Edit ~/.config/mise/config.toml to customize your language runtimes if needed, then run 'mise install node && mise install'."
-echo "4. IMPORTANT: Edit ~/.config/fish/config.local.fish to set private ENVs like AI_CMD and API keys."
+echo "4. IMPORTANT: Edit ~/.config/fish/config.local.fish to set private ENVs like AICHAT_MODEL and API keys."
 echo "5. IMPORTANT: Edit ~/.config/ghostty/config.local to set private shortcuts or machine-specific settings."
 echo "6. IMPORTANT: Edit ~/.gitconfig.local (and ~/.gitconfig.work if needed) to set your Git Identity."
 echo "7. IMPORTANT (macOS): Allow Ghostty in 'System Settings > Privacy & Security > Accessibility'."

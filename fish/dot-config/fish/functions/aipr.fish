@@ -3,10 +3,9 @@ function aipr -d "根据分支变更自动生成 Pull Request 描述"
     echo -e "\n🚀 [\e[1maipr\e[0m] \e[36mAI-Powered PR Description Tool\e[0m"
     echo -e "   \e[90mWorkflow: Analyze Branch Diff -> AI Gen PR Description -> Copy / Create PR\e[0m\n"
 
-    # 检查 AI 工具配置（已由 config.fish 初始化）
-    if test -z "$AI_CMD"
-        echo "❌ 未检测到可用的 AI 命令，请在 ~/.config/fish/config.local.fish 中配置 AI_CMD"
-        return 1
+    if not command -sq aichat
+        echo "❌ 未找到 aichat，请先安装并配置"
+        return 127
     end
 
     # 检查是否在 git 仓库中
@@ -149,23 +148,9 @@ $supplementary_info"
 $diff_content
 </diff>"
 
-        # 安全执行 AI_CMD（禁止 eval），避免 diff 中的特殊字符触发命令注入
-        # 兼容两种配置：
-        # 1) set -gx AI_CMD opencode run
-        # 2) set -gx AI_CMD "opencode run"
-        set -l ai_cmd_argv $AI_CMD
-        if test (count $ai_cmd_argv) -eq 1
-            set ai_cmd_argv (string split -n " " -- $ai_cmd_argv[1])
-        end
-
-        if test (count $ai_cmd_argv) -eq 0
-            echo "❌ AI_CMD 配置无效，请检查 ~/.config/fish/config.local.fish"
-            return 1
-        end
-
-        # 调用 AI 工具生成内容
+        # 调用 aichat 生成内容
         set msg_tmpfile (mktemp)
-        $ai_cmd_argv "$prompt_text" >$msg_tmpfile
+        aichat --no-stream "$prompt_text" >$msg_tmpfile
         set -l ai_exit_status $status
 
         # 捕捉在 AI 生成过程中被 Ctrl+C 中断的情况或者命令执行失败
@@ -193,7 +178,8 @@ $diff_content
             return 1
         end
 
-        # 清理响应: 移除外层 Markdown 块标记
+        # 清理响应: 移除模型思考与外层 Markdown 块标记
+        sed -i '' -e '/^<think>/,/^<\/think>/d' $msg_tmpfile
         sed -i '' -e '/^```\(markdown\|md\|text\)/d' -e '/^```$/d' $msg_tmpfile
         end
 

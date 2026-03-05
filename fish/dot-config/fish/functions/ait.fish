@@ -3,10 +3,9 @@ function ait -d "自动更新 Changelog 并提交打 Tag 发版 (AI Release)"
     echo -e "\n🚀 [\e[1mait\e[0m] \e[36mAI-Powered Release Tool\e[0m"
     echo -e "   \e[90mWorkflow: Analyze Commits -> AI Gen Changelog -> Commit CHANGELOG.md -> Tag\e[0m\n"
 
-    # 检查 AI 工具配置
-    if test -z "$AI_CMD"
-        echo "❌ 未检测到可用的 AI 命令，请在 ~/.config/fish/config.local.fish 中配置 AI_CMD"
-        return 1
+    if not command -sq aichat
+        echo "❌ 未找到 aichat，请先安装并配置"
+        return 127
     end
 
     # 1. 环境自检
@@ -88,7 +87,13 @@ $commit_logs
    第一部分：仅包含推断出的纯版本号（例如 1.2.0，不要带 v）
    第二部分：对应的 CHANGELOG 内容，格式遵循 Keep a Changelog 规范。二级标题必须为 ## [VERSION] - DATE。具体条目按 Added, Changed, Fixed 等归类，内容使用无序列表即可。
 
-4. 强制约束：绝对禁止输出任何解释、思考过程、分析意图或引导语！只返回以上两部分内容本身，严禁带 Markdown 代码块或其余口语化废话。"
+4. CHANGELOG 必须是多行 Markdown 结构，绝对禁止把所有内容压缩成单行。
+   - 标题 (##)、小节标题 (###) 和每个列表项 (-) 都必须各自占一行。
+   - 示例结构：
+     ## [1.2.0] - 2026-03-05
+     ### Added
+     - xxx
+5. 强制约束：绝对禁止输出任何解释、思考过程、分析意图或引导语！只返回以上两部分内容本身，严禁带 Markdown 代码块或其余口语化废话。"
 
         if test -n "$supplementary_info"
             set prompt "$prompt
@@ -97,26 +102,16 @@ $commit_logs
 $supplementary_info"
         end
 
-        # 安全执行 AI_CMD（禁止 eval），避免提交信息中的特殊字符触发命令注入
-        # 兼容两种配置：
-        # 1) set -gx AI_CMD opencode run
-        # 2) set -gx AI_CMD "opencode run"
-        set -l ai_cmd_argv $AI_CMD
-        if test (count $ai_cmd_argv) -eq 1
-            set ai_cmd_argv (string split -n " " -- $ai_cmd_argv[1])
-        end
-
-        if test (count $ai_cmd_argv) -eq 0
-            echo "❌ AI_CMD 配置无效，请检查 ~/.config/fish/config.local.fish"
-            return 1
-        end
-
-        set -l ai_output (command $ai_cmd_argv "$prompt" | string collect)
-        if test $status -ne 0
+        set -l ai_output (aichat --no-stream "$prompt" | string collect)
+        set -l ai_exit_status $pipestatus[1]
+        if test $ai_exit_status -ne 0
             echo ""
             echo "❌ AI 生成失败"
             return 1
         end
+
+        # 清理模型思考块（某些模型会输出 <think>...</think>）
+        set ai_output (string replace -ar '(?s)<think>.*?</think>\s*' '' -- "$ai_output")
 
         # 拆分版本号和内容
         set -l split_token "---VERSION_SPLIT---"
@@ -129,8 +124,19 @@ $supplementary_info"
         set -l parse_success 0
         if test (count $parts) -ge 2
             set new_version (string trim "$parts[1]")
-            # 按行分割为纯数组，同时去掉末尾可能会有的 \r 回车符
-            set release_lines (string split \n -- "$parts[2]" | string replace -r '\r$' '')
+            set -l release_text (string replace -ar '\r\n?' '\n' -- "$parts[2]" | string collect)
+
+            # 兜底修复：有些模型会把整个 CHANGELOG 压成一行，这里按 Markdown 结构强制补换行
+            if test (count (string split \n -- "$release_text")) -le 1
+                set release_text (string replace -ar '\s+(##\s)' '\n$1' -- "$release_text" | string collect)
+                set release_text (string replace -ar '\s+(###\s)' '\n\n$1' -- "$release_text" | string collect)
+                set release_text (string replace -ar '(### [^\n#]+?)\s+-\s+' '$1\n- ' -- "$release_text" | string collect)
+                set release_text (string replace -ar '(?<!\])\s+-\s+' '\n- ' -- "$release_text" | string collect)
+                set release_text (string replace -ar '\n{3,}' '\n\n' -- "$release_text" | string collect)
+            end
+
+            # 按行分割为纯数组
+            set release_lines (string split \n -- "$release_text")
             
             # 弹出开头和结尾的空行
             while test (count $release_lines) -gt 0; and test -z "$(string trim -- "$release_lines[1]")"
