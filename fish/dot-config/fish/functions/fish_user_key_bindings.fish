@@ -12,4 +12,8 @@ function fish_user_key_bindings
     # 在 vi 插入模式和默认模式都绑定，避免仅在单一 keymap 生效
     bind -M insert \cy _aichat_fish
     bind -M default \cy _aichat_fish
+
+    # ??：诊断上一条失败命令（避免 abbr 在 Enter 时“只展开不执行”，导致需要按两次回车）
+    bind -M insert \r __ai_enter_execute
+    bind -M default \r __ai_enter_execute
 end

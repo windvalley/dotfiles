@@ -110,6 +110,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 - `Ctrl+y`：命令解释/命令生成统一入口
   - 输入命令后按 `Ctrl+y`：输出解释（仅解释不执行；使用 bat 分页展示；第一行是原始命令）
   - 输入 `# <描述>` 后按 `Ctrl+y`：生成多条候选命令（fzf 选择后写回命令行；回车才执行）
+- `??`：将上一条失败命令及其输出发送给 AI 诊断（需要 Zellij 以便自动捕获 pane 输出）
 - `aic` / `aipr` / `ait`：分别用于生成提交信息、PR 描述、Release Notes（底座由 `$AI_CMD` 驱动）
 - `aip`：AI 指令库（交互选择常用指挥语并复制到剪贴板）
 - 可配置：在 `~/.config/fish/config.local.fish` 覆盖 `AI_CMD` / `AICHAT_MODEL`

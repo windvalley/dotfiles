@@ -180,6 +180,9 @@ if status is-interactive
     # 常用命令增强
     abbr -a -g mkdir 'mkdir -p' # 级联创建多级目录 (如果父目录不存在自动创建)
 
+    # AI: 诊断上一条失败命令（依赖 Zellij dump-screen 捕获输出）
+    abbr -a -g -- '??' ai_diag_last
+
     # 目录跳转
     abbr -a -g ... ../.. # 极速向父级两层目录跳转
     abbr -a -g .... ../../.. # 极速向父级三层目录跳转
@@ -189,6 +192,7 @@ if status is-interactive
     if type -q eza
         abbr -a -g ls eza # 现代版的文件列表显示
         abbr -a -g ll eza -l # 现代版文件列表附带详细权限尺寸等信息
+        abbr -a -g lls eza -l # 兼容手滑：lls -> ll
     end
 
     # =========================================================================

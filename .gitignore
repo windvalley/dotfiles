@@ -17,7 +17,6 @@ secret.*
 .env
 fish_variables*
 /fish/dot-config/fish/completions/
-/fish/dot-config/fish/conf.d/
 
 # === Build & Cache ===
 /helix/dot-config/helix/runtime/
