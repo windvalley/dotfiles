@@ -582,6 +582,7 @@ aichat hi
 | `backup <file/dir>` | 为敏感文件或目录极速创建带有精确时间戳的完整备份副本 |
 | `copy [file]` | 将文件内容或前一个命令的标准输出(`\| copy`)极速复制到 Mac 剪贴板 |
 | `f [query]` | 搜索文件并使用 Helix 打开。若关键字匹配唯一结果则直接打开 |
+| `t <text>` | 智能翻译/释义：中文转英文；英文单词返回美式音标与中英释义；英文短文翻译成中文 |
 | `aic` | 根据代码变更自动生成 Git 提交信息。底座为 `aichat`，支持重写/微调 |
 | `aipr` | 根据分支变更自动生成 Pull Request 描述。使用大模型分析 commit 和 diff |
 | `ait` | 自动根据 Git 变更历史生成 Changelog 并提交打 Tag |
