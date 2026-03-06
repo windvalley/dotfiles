@@ -13,11 +13,16 @@
 # --- 敏感环境变量 ---
 # 例如：设置 aichat (sigoden/aichat) 使用的全局 Model 及 API 密钥
 # 参阅：https://github.com/sigoden/aichat/wiki/Environment-Variables
+# Model
+# provider 前缀提示：Anthropic 用 claude:，Qwen 用 qianwen:，智谱用 zhipuai:
 # set -gx AICHAT_MODEL "gemini:gemini-3-flash"
+# APIKEY
 # set -gx OPENAI_API_KEY "sk-xxxxxxxxx"
 # set -gx GEMINI_API_KEY "AIzaSy..."
 # set -gx ANTHROPIC_API_KEY "sk-ant-..."
-# Moonshot/Kimi：国内用 platform.moonshot.cn 申请，国际用 platform.moonshot.ai；key 与 api_base 需对应
+# set -gx ZHIPUAI_API_KEY "xxxxxxxx"
+# set -gx MINIMAX_API_KEY "xxxxxxxx"
+# set -gx QIANWEN_API_KEY "sk-xxxxxxxx"
 # set -gx MOONSHOT_API_KEY "sk-xxxxxxxx"
 
 # 强烈建议配置，用于提升 mise/Homebrew 等工具调用 GitHub API 的频率限制

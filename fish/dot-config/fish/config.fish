@@ -177,7 +177,7 @@ if status is-interactive
     # 常用命令增强
     abbr -a -g mkdir 'mkdir -p' # 级联创建多级目录 (如果父目录不存在自动创建)
 
-    # AI: 诊断上一条失败命令（依赖 Zellij dump-screen 捕获输出）
+    # AI: 诊断上一条失败命令
     abbr -a -g -- '??' ai_diag_last
     # AI: 将自然语言快速转为可执行命令
     abbr -a -g -- '?' 'aichat -e'
