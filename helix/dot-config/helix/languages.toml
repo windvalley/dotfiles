@@ -13,55 +13,39 @@
 #      hx --health         # 查看所有语言
 #      hx --health go      # 查看特定语言
 #
-# 2. 安装所需的 LSP 服务器 (Helix 不会自动安装,需手动安装):
+# 2. 安装所需的 LSP 服务器与格式化工具:
 #
-#    # ---- Go ----
-#    go install golang.org/x/tools/gopls@latest
-#    go install golang.org/x/tools/cmd/goimports@latest  # 格式化
-#    go install github.com/go-delve/delve/cmd/dlv@latest  # 调试
-#    go install github.com/nametake/golangci-lint-langserver@latest  # lint LSP 适配器
-#    go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest  # lint 引擎
+#    本仓库的约定是:
+#    - 优先通过 `mise` 统一安装可跨项目复用的运行时、LSP 与格式化工具
+#    - 仅对和 macOS 深度绑定或通过 Homebrew 更稳定的工具使用 `brew`
+#    - 不建议使用 `npm i -g`、`pip install`、`go install` 这类会污染全局环境的方式
 #
-#    # ---- Python ----
-#    pip install ruff                 # ruff (内置 LSP + 格式化 + lint)
-#    pip install pyright              # pyright (类型检查)
+#    # ---- 首次安装 / 同步全局工具链（推荐）----
+#    mise install
 #
-#    # ---- Rust ----
-#    brew install rust-analyzer       # macOS
-#    # 或 rustup component add rust-analyzer
+#    # ---- 按需增补单个工具（示例）----
+#    mise use -g go@latest
+#    mise use -g npm:@vtsls/language-server@latest
+#    mise use -g npm:vscode-langservers-extracted@latest
+#    mise use -g npm:yaml-language-server@latest
+#    mise use -g npm:@tailwindcss/language-server@latest
+#    mise use -g npm:bash-language-server@latest
+#    mise use -g npm:dockerfile-language-server-nodejs@latest
+#    mise use -g npm:sql-language-server@latest
+#    mise use -g pipx:ruff@latest
+#    mise use -g npm:pyright@latest
+#    mise use -g cargo:taplo-cli@latest
 #
-#    # ---- TypeScript / JavaScript ----
-#    npm i -g @vtsls/language-server   # vtsls
+#    # ---- 仍建议用 Homebrew 的工具（平台相关 / 更稳定）----
+#    brew install llvm            # clangd / clang-format
+#    brew install rust-analyzer   # Rust LSP
+#    brew install shfmt           # Shell formatter
+#    brew install golangci-lint   # Go lint engine
+#    brew install buf             # Protobuf 工具链
 #
-#    # ---- HTML / CSS / JSON ----
-#    npm i -g vscode-langservers-extracted
-#
-#    # ---- YAML ----
-#    npm i -g yaml-language-server
-#
-#    # ---- Tailwind CSS ----
-#    npm i -g @tailwindcss/language-server
-#
-#    # ---- TOML ----
-#    cargo install taplo-cli --locked
-#    # 或 brew install taplo
-#
-#    # ---- Bash / Shell ----
-#    npm i -g bash-language-server
-#    brew install shfmt                # 格式化
-#
-#    # ---- Dockerfile ----
-#    npm i -g dockerfile-language-server-nodejs
-#
-#    # ---- C / C++ ----
-#    brew install llvm   # clangd 包含在其中
-#    # 或 brew install clang-format  # 仅格式化
-#
-#    # ---- SQL ----
-#    npm i -g sql-language-server
-#
-#    # ---- Protobuf ----
-#    # buf CLI 已内置 LSP, 安装: brew install bufbuild/buf/buf
+#    # ---- 说明 ----
+#    # `gopls`、`goimports`、`golangci-lint-langserver` 等如果已写入 mise 配置，
+#    # 直接执行 `mise install` 即可，无需单独全局安装。
 #
 # 3. 安装后重新检查:
 #      hx --health <语言名>

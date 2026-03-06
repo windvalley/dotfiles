@@ -16,6 +16,23 @@ warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1"; }
 export -f info success warn error
 
+fish_plugins_args() {
+  local fish_plugins_file="$1"
+  local plugins=()
+  local line=""
+
+  while IFS= read -r line || [ -n "$line" ]; do
+    line="${line#"${line%%[![:space:]]*}"}"
+    line="${line%"${line##*[![:space:]]}"}"
+    [ -z "$line" ] && continue
+    [[ "$line" =~ ^# ]] && continue
+    plugins+=("$line")
+  done <"$fish_plugins_file"
+
+  [ "${#plugins[@]}" -eq 0 ] && return 0
+  printf '%s\n' "${plugins[@]}"
+}
+
 # Parse arguments
 NON_INTERACTIVE=false
 while [[ "$#" -gt 0 ]]; do
@@ -233,11 +250,18 @@ else
 fi
 
 if [ -f "$DOTFILES_DIR/fish/dot-config/fish/fish_plugins" ]; then
-  info "Updating plugins from fish_plugins..."
-  if fish -c "fisher update"; then
-    success "Fisher plugins updated."
+  info "Installing plugins from fish_plugins..."
+  FISH_PLUGINS=()
+  while IFS= read -r plugin; do
+    [ -z "$plugin" ] && continue
+    FISH_PLUGINS+=("$plugin")
+  done < <(fish_plugins_args "$DOTFILES_DIR/fish/dot-config/fish/fish_plugins")
+  if [ "${#FISH_PLUGINS[@]}" -eq 0 ]; then
+    warn "fish_plugins is empty, skipping plugin installation."
+  elif fish -c "fisher install $(printf '%q ' "${FISH_PLUGINS[@]}")"; then
+    success "Fisher plugins synchronized."
   else
-    warn "Fisher update had issues."
+    warn "Fisher plugin synchronization had issues."
   fi
 else
   warn "fish_plugins not found at $DOTFILES_DIR/fish/dot-config/fish/fish_plugins, skipping plugin installation."

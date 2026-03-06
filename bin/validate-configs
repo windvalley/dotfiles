@@ -67,19 +67,45 @@ except Exception as e:
 # 验证 Fish 配置
 validate_fish() {
     info "验证 Fish 配置..."
-    local fish_config="$DOTFILES_DIR/fish/dot-config/fish/config.fish"
-    
-    if [ ! -f "$fish_config" ]; then
-        error "Fish 配置文件不存在: $fish_config"
-        return 1
-    fi
-    
+
     if command -v fish &>/dev/null; then
-        if fish -n "$fish_config" 2>/dev/null; then
-            success "Fish 配置语法正确"
-        else
-            error "Fish 配置存在语法错误"
+        local fish_dir="$DOTFILES_DIR/fish/dot-config/fish"
+        local fish_file=""
+        local fish_failures=0
+        local fish_files=()
+
+        if [ ! -d "$fish_dir" ]; then
+            error "Fish 配置目录不存在: $fish_dir"
             ERRORS=$((ERRORS + 1))
+            return 1
+        fi
+
+        shopt -s nullglob
+        fish_files=(
+            "$fish_dir/config.fish"
+            "$fish_dir"/functions/*.fish
+            "$fish_dir"/conf.d/*.fish
+            "$fish_dir"/completions/*.fish
+        )
+        shopt -u nullglob
+
+        if [ "${#fish_files[@]}" -eq 0 ]; then
+            error "Fish 配置目录为空: $fish_dir"
+            ERRORS=$((ERRORS + 1))
+            return 1
+        fi
+
+        for fish_file in "${fish_files[@]}"; do
+            if fish -n "$fish_file" 2>/dev/null; then
+                success "Fish 语法正确: $(basename "$fish_file")"
+            else
+                error "Fish 语法错误: $fish_file"
+                fish_failures=$((fish_failures + 1))
+            fi
+        done
+
+        if [ "$fish_failures" -gt 0 ]; then
+            ERRORS=$((ERRORS + fish_failures))
         fi
     else
         warn "Fish 未安装，跳过语法检查"
