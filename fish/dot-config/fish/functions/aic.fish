@@ -151,17 +151,11 @@ $diff
                 set loop_active false
                 
             case E e
-                set -l editor "hx"
-                if set -q EDITOR
-                    set editor $EDITOR
-                end
-                eval $editor $msg_tmpfile
-                
-                set -l edited (cat $msg_tmpfile | string collect)
-                if test -n "$edited"
-                    git commit -m "$edited" -e
+                # 直接以 AI 生成内容作为初始提交信息，进入 git commit 编辑界面继续修改
+                if not env | string match -qr '^GIT_EDITOR=.+'; and not env | string match -qr '^VISUAL=.+'; and not env | string match -qr '^EDITOR=.+'; and not git config --get core.editor >/dev/null 2>&1; and command -sq hx
+                    env GIT_EDITOR=hx git commit --edit --file=$msg_tmpfile
                 else
-                    echo "❌ 提交信息为空，已取消"
+                    git commit --edit --file=$msg_tmpfile
                 end
                 rm $msg_tmpfile
                 set loop_active false
