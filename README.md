@@ -52,6 +52,7 @@
   - [5.6 Git 配置用法](#56-git-%E9%85%8D%E7%BD%AE%E7%94%A8%E6%B3%95)
   - [5.7 stow 的用法说明](#57-stow-%E7%9A%84%E7%94%A8%E6%B3%95%E8%AF%B4%E6%98%8E)
   - [5.8 自定义命令（bin/）](#58-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%91%BD%E4%BB%A4bin)
+  - [5.9 OrbStack（可选）](#59-orbstack%E5%8F%AF%E9%80%89)
 - [6. 常用维护命令 (Makefile)](#6-%E5%B8%B8%E7%94%A8%E7%BB%B4%E6%8A%A4%E5%91%BD%E4%BB%A4-makefile)
 - [7. 与官方默认的关键差异](#7-%E4%B8%8E%E5%AE%98%E6%96%B9%E9%BB%98%E8%AE%A4%E7%9A%84%E5%85%B3%E9%94%AE%E5%B7%AE%E5%BC%82)
   - [🔑 Karabiner — 全局键位改造](#-karabiner--%E5%85%A8%E5%B1%80%E9%94%AE%E4%BD%8D%E6%94%B9%E9%80%A0)
@@ -834,6 +835,33 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 > - `font-size` / `opacity`：修改的是 Ghostty 配置文件，需按 `Cmd + Shift + ,` 重载配置后生效。
 
 ---
+### 5.9 OrbStack（可选）
+
+**定位**：本项目通过 Homebrew 安装 `OrbStack`，将其作为 macOS 上轻量、现代的容器与 Linux 开发环境。
+
+**当前边界**：本仓库目前**不托管** `OrbStack` 的 GUI 偏好、虚拟机参数、网络、卷、镜像源等应用内配置；这里只提供安装与终端侧兼容。
+
+**为什么和 SSH 有关系**：`OrbStack` 里的 Linux machine 可以被当成一台可通过 SSH 访问的本地 Linux 主机来使用；因此它和普通远程服务器在终端兼容性、连接方式、工具接入方式上基本是同一类问题。
+
+**已做集成**：
+- Fish 会自动将 `~/.orbstack/bin` 加入 `PATH`，因此安装完成后可直接使用 `docker`、`docker compose`、`orb` 等命令。
+- Fish 中的 `ssh` / `orb` 已做 `TERM=xterm-256color` 动态降级，避免从 Ghostty 进入 SSH / OrbStack 远端环境时出现 `unknown terminal type`。
+- `s` 命令现在会递归解析 `~/.ssh/config` 里的 `Include`，因此也能识别 `OrbStack` 自动生成的 SSH 主机配置。
+
+**如何接入 SSH**：
+- 首次安装后先手动打开一次 `OrbStack`，确认后台服务已启动。
+- 在 `~/.ssh/config` 中加入一行：`Include ~/.orbstack/ssh/config`
+- 完成后即可把 `OrbStack` 的 Linux machine 当成普通 SSH 主机使用，也可以直接通过本仓库的 `s` 命令进行选择连接。
+
+**最常见用法**：
+- 如果你主要跑容器，日常基本直接在终端中使用：`docker ps`、`docker compose up -d`、`docker exec -it <container> /bin/bash`。
+- 如果你需要一台完整的 Linux 开发机，可在 `OrbStack` 图形界面中新建一个 Linux machine（通常选 `Ubuntu` 即可）。
+- 创建完成后可直接进入该机器：`orb -m <machine_name>`；也可以走 SSH 方式，例如 `ssh <user>@<machine_name>@orb`。
+- 常见场景包括：本地复现更接近服务器的 Linux 环境、隔离旧项目依赖、在独立机器里跑数据库/服务端程序。
+- 需要查看容器、镜像、卷或 Linux 机器状态时，再打开 `OrbStack` 图形界面操作即可。
+
+---
+
 ## 6. 常用维护命令 (Makefile)
 
 本项目引入了 `Makefile` 来标准化日常维护任务，集成了安装、同步、验证和清理等操作。
