@@ -1,12 +1,43 @@
 function a -d "列出所有配置的缩写 (Abbreviations) 及其功能描述"
-    echo "📋 Dotfiles 缩写 (Abbreviations) 一览："
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    printf "  %-12s %-26s %s\n" "缩写" "展开为" "说明"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    set -l output_lines
+    set -l ansi_lines
 
     set -l config_file ~/.config/fish/config.fish
     set -l desc_keys
     set -l desc_values
+
+    set -l color_title ""
+    set -l color_header ""
+    set -l color_key ""
+    set -l color_cmd ""
+    set -l color_desc ""
+    set -l color_note ""
+    set -l color_divider ""
+    set -l color_reset ""
+
+    if isatty stdout
+        set color_title (set_color --bold brcyan)
+        set color_header (set_color --bold bryellow)
+        set color_key (set_color brgreen)
+        set color_cmd (set_color white)
+        set color_desc (set_color brmagenta)
+        set color_note (set_color cyan)
+        set color_divider (set_color brblack)
+        set color_reset (set_color normal)
+    end
+
+    set -l divider "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    set -l header_line (printf "  %-12s %-26s %s" "缩写" "展开为" "说明")
+
+    set -a output_lines "📋 Dotfiles 缩写 (Abbreviations) 一览："
+    set -a output_lines "$divider"
+    set -a output_lines "$header_line"
+    set -a output_lines "$divider"
+
+    set -a ansi_lines (printf "%s%s%s" "$color_title" "📋 Dotfiles 缩写 (Abbreviations) 一览：" "$color_reset")
+    set -a ansi_lines (printf "%s%s%s" "$color_divider" "$divider" "$color_reset")
+    set -a ansi_lines (printf "  %s%-12s%s %s%-26s%s %s%s%s" "$color_header" "缩写" "$color_reset" "$color_header" "展开为" "$color_reset" "$color_header" "说明" "$color_reset")
+    set -a ansi_lines (printf "%s%s%s" "$color_divider" "$divider" "$color_reset")
 
     # 从 config.fish 中提取注释说明，避免和运行态 abbr 定义耦合
     if test -f $config_file
@@ -62,7 +93,7 @@ function a -d "列出所有配置的缩写 (Abbreviations) 及其功能描述"
     end
 
     # 读取 Fish 当前真实已加载的缩写定义，保证输出与运行态一致
-    abbr --show | while read -l line
+    for line in (abbr --show)
         if not string match -qr '^\s*abbr\s+-a\s+--\s+' -- $line
             continue
         end
@@ -101,9 +132,25 @@ function a -d "列出所有配置的缩写 (Abbreviations) 及其功能描述"
             set idx (math $idx + 1)
         end
 
-        printf "  %-12s %-26s %s\n" "$abbr_name" "$abbr_cmd" "$abbr_desc"
+        set -a output_lines (printf "  %-12s %-26s %s" "$abbr_name" "$abbr_cmd" "$abbr_desc")
+
+        set -l abbr_name_pad (printf "%-12s" "$abbr_name")
+        set -l abbr_cmd_pad (printf "%-26s" "$abbr_cmd")
+        set -a ansi_lines (printf "  %s%s%s %s%s%s %s%s%s" "$color_key" "$abbr_name_pad" "$color_reset" "$color_cmd" "$abbr_cmd_pad" "$color_reset" "$color_desc" "$abbr_desc" "$color_reset")
     end
 
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "💡 提示: 输入缩写后敲击空格即可自动展开为完整命令"
+    set -l tip_line "💡 提示: 输入缩写后敲击空格即可自动展开为完整命令"
+    set -a output_lines "$divider"
+    set -a output_lines "$tip_line"
+
+    set -a ansi_lines (printf "%s%s%s" "$color_divider" "$divider" "$color_reset")
+    set -a ansi_lines (printf "%s%s%s" "$color_note" "$tip_line" "$color_reset")
+
+    if status --is-interactive; and command -sq less
+        printf '%s\n' $ansi_lines | less -R
+    else if isatty stdout
+        printf '%s\n' $ansi_lines
+    else
+        printf '%s\n' $output_lines
+    end
 end
