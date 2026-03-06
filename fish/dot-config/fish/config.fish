@@ -123,14 +123,10 @@ if status is-interactive
     end
 
     # ~/dotfiles/bin/ 下的自定义命令
-    # ghostty & helix & zellij 主题切换
-    abbr -a -g cs colorscheme # 详情见自定义命令 colorscheme
-    # ghostty 字体大小设置
-    abbr -a -g fs font-size # 详情见自定义命令 font-size
-    # ghostty 透明度设置
-    abbr -a -g o opacity # 详情见自定义命令 opacity
-    # 电脑音量设置以及渠道选择
-    abbr -a -g vol audio-volume # 详情见自定义命令 audio-volume
+    abbr -a -g cs colorscheme # 一键切换 Ghostty、Helix、Zellij、Btop、Bat、Delta 的配色主题
+    abbr -a -g fs font-size # 调整 Ghostty 终端字体大小
+    abbr -a -g o opacity # 调整 Ghostty 终端背景透明度
+    abbr -a -g vol audio-volume # 调整系统输出音量，或切换音频输出设备
 
     # 用 hx 替代 vi/vim
     abbr -a -g vi hx # 统一唤起 Helix 现代文本编辑器
@@ -177,10 +173,9 @@ if status is-interactive
     # 常用命令增强
     abbr -a -g mkdir 'mkdir -p' # 级联创建多级目录 (如果父目录不存在自动创建)
 
-    # AI: 诊断上一条失败命令
-    abbr -a -g -- '??' ai_diag_last
-    # AI: 将自然语言快速转为可执行命令
-    abbr -a -g -- '?' 'aichat -e'
+    # AI 相关命令
+    abbr -a -g -- '??' ai_diag_last # AI: 诊断上一条失败命令
+    abbr -a -g -- '?' 'aichat -e' # AI: 将自然语言快速转为可执行命令
 
     # 目录跳转
     abbr -a -g ... ../.. # 极速向父级两层目录跳转

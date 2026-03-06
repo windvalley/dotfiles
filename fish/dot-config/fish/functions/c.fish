@@ -20,8 +20,10 @@ function c -d "列出所有 dotfiles 自定义命令及其说明"
             continue
         end
 
-        # 直接从源文件中提取 -d 描述（最可靠的方式）
-        set -l desc (grep -m1 '^function ' $file | string replace -r '^function\s+\S+.*-d\s+["\x27]([^"\x27]+)["\x27].*' '$1')
+        # 只提取与文件同名函数的 -d 描述，避免同文件里的私有辅助函数串行。
+        set -l escaped_name (string escape --style=regex -- "$name")
+        set -l function_line (grep -m1 -E "^function[[:space:]]+"$escaped_name"[[:space:]]" $file)
+        set -l desc (string match -r --groups-only ".*-d\\s+[\"']([^\"']+)[\"'].*" -- "$function_line")
         if test -z "$desc"
             set desc "—"
         end
