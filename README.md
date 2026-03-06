@@ -11,6 +11,8 @@
 [![License](https://img.shields.io/github/license/windvalley/dotfiles)](https://github.com/windvalley/dotfiles/blob/main/LICENSE)
 
 
+[中文](README.md) | [English](README.en.md)
+
 本项目是一套 **现代、高效、开箱即用** 的 macOS 终端开发环境，所有配置集中版本控制，通过 GNU Stow 一键部署。
 
 核心工具栈：Ghostty（终端）+ Zellij（复用器）+ Fish（Shell）+ Helix（编辑器）+ Mise（版本管理）+ AIChat（AI 极客助手），视觉与交互风格全栈统一。

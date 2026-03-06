@@ -191,14 +191,14 @@ lint: ## 静态分析 Shell 脚本 (shellcheck)
 		exit 1; \
 	fi
 
-docs: ## 生成或更新 README 的目录 (TOC)
-	@echo "$(BLUE)📚 生成或更新 README.md 的目录结构...$(NC)"
+docs: ## 生成或更新 README 文档目录 (中英文 TOC)
+	@echo "$(BLUE)📚 生成或更新 README 中英文目录结构...$(NC)"
 	@if ! command -v npx > /dev/null 2>&1; then \
 		echo "$(RED)  ❌ npx 未安装，请先安装 Node.js$(NC)"; \
 		exit 1; \
 	fi
-	@npx --yes doctoc README.md --notitle --maxlevel 3
-	@echo "$(GREEN)✅ README.md 目录已更新$(NC)"
+	@npx --yes doctoc README.md README.en.md --notitle --maxlevel 3
+	@echo "$(GREEN)✅ README.md / README.en.md 目录已更新$(NC)"
 
 update: ## 更新 dotfiles 仓库与所有工具链
 	@echo "$(BLUE)🔄 更新 dotfiles 及相关工具链...$(NC)"

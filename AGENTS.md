@@ -22,7 +22,7 @@
 - **`make unstow`**：删除当前所有由 Stow 管理的软链接映射。
 - **`make lint`**：使用 `shellcheck` 对所有的 Shell 脚本（包括 `install.sh`, `bootstrap.sh`, `macos.sh` 以及 `bin/*` 下的所有命令）进行静态语法分析。（**这在本项目中等同于单元测试**）
 - **`make validate`**：运行 `./bin/validate-configs all`。该命令会利用各工具自身提供的健康检查/配置检查命令，验证所有核心配置文件（Fish/Git/Zellij/Helix/Mise 等）的语法合法性。（**等同于集成测试**）
-- **`make docs`**：使用 `doctoc` 重新生成 `README.md` 的目录结构。**如果在任何 PR 或提交中修改了 README 的标题（Markdown 标题层级），必须运行此命令**。
+- **`make docs`**：使用 `doctoc` 重新生成 `README.md` 与 `README.en.md` 的目录结构。**如果在任何 PR 或提交中修改了 README / README.en.md 的标题（Markdown 标题层级），必须运行此命令**。
 - **`make update`**：拉取最新的代码，并运行 `bin/dot-update` 更新底层工具链。
 - **`make macos`**：应用 macOS 偏好设置脚本 (`macos.sh`)。
 
@@ -91,6 +91,7 @@
 3. **Stow 软链映射的安全意识**：当需要修改配置时，务必注意文件所处的挂载状态。因为该环境可能已经执行过 `make stow`，很多 `~/.config/` 下的文件仅仅是软链接！
    - 你在修改配置时，**必须且只能**直接修改 dotfiles 仓库内（即 `/Users/xg/dotfiles/`）对应的原始源码文件。
 4. **提交变更前的闭环验证**：在你向用户宣称代码或配置修改完成前，确保自己已经在后台静默执行过对应的 `make lint` 或是具体的 `validate-configs` 验证。
-5. **任务完成后的用户引导**：请根据变更类型给出精确建议，而不是一律要求 `make restow`：
+5. **项目文档双语同步**：根目录项目文档默认以中文 `README.md` 为主，同时维护与之 1:1 对应的英文版 `README.en.md`。**凡是修改项目说明、安装步骤、功能列表、命令说明、章节结构等 README 内容时，必须同步更新中英文两份文档，禁止只改其中一份**。若变更涉及标题层级或 TOC，完成后必须运行 `make docs` 以同步刷新中英文目录。
+6. **任务完成后的用户引导**：请根据变更类型给出精确建议，而不是一律要求 `make restow`：
    - 若仅修改了已存在且已正确软链文件的内容：通常无需 `make restow`，提示用户按工具特性执行重载（如 `exec fish -l`、Ghostty 重载配置、重启对应进程）。
    - 若涉及新增/删除/重命名文件、包结构变更，或发现软链接异常：提示用户执行 `make restow` 重新应用映射。
