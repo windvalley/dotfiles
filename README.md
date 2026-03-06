@@ -106,19 +106,33 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 
 ## 2. AI 能力
 
-本项目把 AI 能力收敛到 **Fish 命令行编辑区** 与 **Git 工作流**，形成统一入口和可复用的工具链（而不是零散 alias）。
+本项目将 AI 大模型能力收敛到 **命令行编辑区**、**Git 工作流** 与 **日常效率工具**，形成统一入口和可复用的工具链（而不是零散 alias）。底座为 [AIChat](https://github.com/sigoden/aichat)，支持 OpenAI / Claude / Gemini / 通义千问 / 智谱 / Moonshot 等主流模型。
 
-- `Ctrl+y`：命令解释/命令生成统一入口
-  - 输入命令后按 `Ctrl+y`：输出解释（仅解释不执行；使用 bat 分页展示；第一行是原始命令）
-  - 输入 `# <描述>` 后按 `Ctrl+y`：生成多条候选命令（fzf 选择后写回命令行；回车才执行）
-- `?`：将自然语言快速交给 `aichat -e` 生成可执行命令
-- `??`：将上一条失败命令及其输出发送给 AI 诊断（需要 Zellij 以便自动捕获 pane 输出）
-- `aic` / `aipr` / `ait`：分别用于生成提交信息、PR 描述、Release Notes（底座为 `aichat`）
-- `aip`：AI 指令库（交互选择常用指挥语并复制到剪贴板）
-- 可配置：在 `~/.config/fish/config.local.fish` 配置 `AICHAT_MODEL` 及各模型 API Key
+**命令行智能体**：
 
-> [!TIP]
-> 生成命令会做 Fish 语法解析校验，并针对 macOS(BSD userland) 过滤/规避常见 GNU 参数差异（如 `ps --sort`）。
+| 入口 | 功能 | 说明 |
+|------|------|------|
+| `Ctrl+y` | 命令解释 | 输入命令后按下，bat 分页展示解释（仅解释不执行） |
+| `# <描述>` + `Ctrl+y` | 命令生成 | 自然语言描述意图，生成多条候选命令，fzf 选择后写回命令行 |
+| `?` | 快速生成 | 将自然语言交给 `aichat -e` 直接生成可执行命令 |
+| `??` | 故障诊断 | 自动捕获上一条失败命令及终端输出，交给 AI 诊断并给出修复建议（依赖 Zellij dump-screen） |
+
+**Git 工作流**：
+
+| 命令 | 功能 | 说明 |
+|------|------|------|
+| `aic` | 提交信息 | 分析暂存区 diff，生成 Conventional Commits 风格消息，支持重写/微调/中英切换 |
+| `aipr` | PR 描述 | 比较分支差异生成结构化 PR 描述，可复制到剪贴板或通过 `gh` 直接创建 PR |
+| `ait` | 发版日志 | 分析上次 tag 以来的 commit，生成版本号与 CHANGELOG.md，自动提交并打 tag |
+
+**日常效率**：
+
+| 命令 | 功能 | 说明 |
+|------|------|------|
+| `t <text>` | 智能翻译 | 自动识别：英文单词→词典释义（音标+中英解释）；中文短词→英文候选；段落→互译 |
+| `aip` | 指令库 | 交互式选择常用 AI 编程指挥语，支持 fzf 多选、按编号/关键词筛选，自动复制到剪贴板 |
+
+**配置**：在 `~/.config/fish/config.local.fish` 中设置模型与 API Key，详见 [4.8 配置 AIChat](#48-配置-aichat)。
 
 
 ## 3. 安装步骤
@@ -588,6 +602,7 @@ aichat hi
 | `ait` | 自动根据 Git 变更历史生成 Changelog 并提交打 Tag |
 | `aip` | AI 即插即用指令库。交互式选择常用开发指挥语并自动复制到剪贴板 |
 | `b [query]` | 搜索文件并使用 bat 查看。若关键字匹配唯一结果则直接打开 |
+| `s [query]` | 从 `~/.ssh/config` 中解析 Host 列表，通过 fzf 交互选择并建立 SSH 连接 |
 | `rec [name]` | 极简终端操作录屏工具 (基于 asciinema)，支持录制、回放(`rec play`)与网页分享(`rec upload`) |
 | `gtd <tag>` | 一键同时删除本地和远端的 Git Tag |
 
@@ -951,17 +966,16 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
 本项目的诞生离不开现代开源社区的繁荣生态，特别感谢以下卓越的项目构建了这套工作流的基石：
 
-- [Ghostty](https://ghostty.org/) 
-- [Zellij](https://zellij.dev/)
-- [Fish](https://fishshell.com/) / [Fisher](https://github.com/jorgebucaran/fisher) / [Tide](https://github.com/IlanCosman/tide)
-- [Helix](https://helix-editor.com/)
-- [Mise](https://mise.jdx.dev/)
-- [fzf](https://github.com/junegunn/fzf) / [zoxide](https://github.com/ajeetdsouza/zoxide) / [eza](https://github.com/eza-community/eza) / [bat](https://github.com/sharkdp/bat)
-- [ripgrep](https://github.com/BurntSushi/ripgrep) / [grc](https://github.com/garabik/grc) / [GNU Coreutils](https://www.gnu.org/software/coreutils/) / [shellcheck](https://github.com/koalaman/shellcheck)
-- [git-delta](https://github.com/dandavison/delta) / [glow](https://github.com/charmbracelet/glow) / [btop](https://github.com/aristocratos/btop) / [asciinema](https://github.com/asciinema/asciinema)
+- [Homebrew](https://brew.sh/) / [GNU Stow](https://www.gnu.org/software/stow/)
+- [Ghostty](https://ghostty.org/) / [Zellij](https://zellij.dev/)
+- [Fish](https://fishshell.com/) / [Fisher](https://github.com/jorgebucaran/fisher) / [Tide](https://github.com/IlanCosman/tide) / [fzf.fish](https://github.com/PatrickF1/fzf.fish)
+- [Helix](https://helix-editor.com/) / [Mise](https://mise.jdx.dev/)
+- [AIChat](https://github.com/sigoden/aichat) / [GitHub CLI](https://cli.github.com/)
+- [fzf](https://github.com/junegunn/fzf) / [fd](https://github.com/sharkdp/fd) / [zoxide](https://github.com/ajeetdsouza/zoxide) / [ripgrep](https://github.com/BurntSushi/ripgrep)
+- [bat](https://github.com/sharkdp/bat) / [eza](https://github.com/eza-community/eza) / [git-delta](https://github.com/dandavison/delta) / [glow](https://github.com/charmbracelet/glow)
+- [grc](https://github.com/garabik/grc) / [shellcheck](https://github.com/koalaman/shellcheck) / [btop](https://github.com/aristocratos/btop) / [asciinema](https://github.com/asciinema/asciinema)
 - [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono) / [Maple Mono](https://github.com/subframe7536/maple-font) / [Geist Mono](https://github.com/vercel/geist-font) / [Nerd Fonts](https://www.nerdfonts.com/)
-- [Karabiner-Elements](https://karabiner-elements.pqrs.org/) / [switchaudio-osx](https://github.com/deweller/switchaudio-osx)
-- [GNU Stow](https://www.gnu.org/software/stow/)
+- [Karabiner-Elements](https://karabiner-elements.pqrs.org/) / [OrbStack](https://orbstack.dev/) / [switchaudio-osx](https://github.com/deweller/switchaudio-osx)
 
 ---
 
