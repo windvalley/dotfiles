@@ -95,7 +95,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 - `karabiner/`: Karabiner（/ˌkær.əˈbiː.nər/，德语，登山扣）键盘映射（交换 Caps Lock 和 Left Control）
 - `git/`: Git 基础配置（别名、Delta 美化、全局忽略等）
 - `mise/`: Mise（/miːz/，源自法语 mise en place，就位准备）工具版本管理器配置
-- `aichat`: 终端 AI 客户端；Fish 中预置 `AICHAT_*` 环境变量与数据隔离，本地敏感项模板见 `local/config.local.fish.example`
+- `aichat/`: 终端 AI 客户端；Fish 中预置 `AICHAT_*` 环境变量与数据隔离，本地敏感项模板见 `local/config.local.fish.example`
 - `btop/`: btop 现代系统资源监控工具配置
 - `bin/`: 自定义命令脚本（自动链接到 `~/.local/bin`）
 - `local/`: 本地环境私有配置模板（用于 Fish 环境变量脱敏、Git 多账号隔离及 Ghostty 私有配置）
@@ -110,6 +110,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 - `Ctrl+y`：命令解释/命令生成统一入口
   - 输入命令后按 `Ctrl+y`：输出解释（仅解释不执行；使用 bat 分页展示；第一行是原始命令）
   - 输入 `# <描述>` 后按 `Ctrl+y`：生成多条候选命令（fzf 选择后写回命令行；回车才执行）
+- `?`：将自然语言快速交给 `aichat -e` 生成可执行命令
 - `??`：将上一条失败命令及其输出发送给 AI 诊断（需要 Zellij 以便自动捕获 pane 输出）
 - `aic` / `aipr` / `ait`：分别用于生成提交信息、PR 描述、Release Notes（底座为 `aichat`）
 - `aip`：AI 指令库（交互选择常用指挥语并复制到剪贴板）
@@ -565,6 +566,7 @@ echo "*.log" >> ~/.config/git/ignore
 | `...` / `....` | `../..` / `../../..` | 极速向下上级两层、三层目录跳转 |
 | `vi` / `vim` / `h` | `hx` | 统一唤起 Helix 现代文本编辑器 |
 | `cs`... | `colorscheme`... | 详情见自定义命令 `colorscheme`/`font-size`/`opacity`/`audio-volume` |
+| `?` / `??` | `aichat -e` / `ai_diag_last` | 自然语言快速转命令 / 诊断上一条失败命令（依赖 Zellij dump-screen 捕获输出） |
 | `g` | `git` | Git 基础命令调用入口 |
 | `ga` / `gs` | `git add` / `git status` | 添加文件到暂存区 / 查看工作区及合并状态 |
 | `gd` / `gds` | `git diff` / `git diff --staged` | 查看工作区尚未暂存的修改 / 查看暂存区里尚未提交的差异 |
@@ -574,7 +576,7 @@ echo "*.log" >> ~/.config/git/ignore
 | `gp` / `gpl` | `git push` / `git pull` | 推送代码到远程仓库 / 拉取远程代码 |
 | `gm` / `gms` | `git merge` / `git merge --squash` | 合并分支 / 将整条开发分支的多次提交合并压缩为一次改动 |
 | `grb` / `grbc` / `grbi` | `git rebase`... | 变基分支 / 解决冲突后继续跑变基 / 交互式手工挑选、压缩变基 |
-| `gco` | `git checkout` | 检出分支或文件 (传统方式) |
+| `gco` / `gcl` | `git checkout` / `git clean -fd` | 检出分支或文件 (传统方式) / 清理未跟踪文件和目录（危险操作，请确认后使用） |
 | `gsw` / `gswc` | `git switch` / `git switch -c` | 切换分支 / 创建并切换分支 (推荐的现代分支方式) |
 | `gr` / `grh` | `git reset` / `git reset HEAD` | 重置暂存区或 HEAD 状态 / 仅重置暂存区 (撤销 add) |
 | `gro` / `gros` | `git restore`... | 撤销工作区修改 / 撤销暂存区修改 (推荐的现代重置方式) |

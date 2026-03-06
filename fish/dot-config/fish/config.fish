@@ -158,6 +158,7 @@ if status is-interactive
     abbr -a -g grbc 'git rebase --continue' # 解决冲突后继续跑变基
     abbr -a -g grbi 'git rebase -i' # 交互式手工挑选、压缩变基
     abbr -a -g gco 'git checkout' # 检出分支或文件 (传统方式)
+    abbr -a -g gcl 'git clean -fd' # 清理未跟踪文件和目录（危险操作，请确认后使用）
     abbr -a -g gsw 'git switch' # 切换分支 (推荐的现代分支方式)
     abbr -a -g gswc 'git switch -c' # 创建并切换分支
     abbr -a -g gr 'git reset' # 重置暂存区或 HEAD 状态
@@ -178,6 +179,8 @@ if status is-interactive
 
     # AI: 诊断上一条失败命令（依赖 Zellij dump-screen 捕获输出）
     abbr -a -g -- '??' ai_diag_last
+    # AI: 将自然语言快速转为可执行命令
+    abbr -a -g -- '?' 'aichat -e'
 
     # 目录跳转
     abbr -a -g ... ../.. # 极速向父级两层目录跳转

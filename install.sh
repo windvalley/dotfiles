@@ -139,6 +139,19 @@ done
 info "Stowing bin..."
 stow --restow --target="$HOME/.local/bin" --dir="$DOTFILES_DIR" bin
 
+info "Installing core runtimes managed by Mise..."
+if command -v mise &>/dev/null; then
+  # 首次安装仅安装基础运行时，避免一次性拉取全部 LSP/工具链导致安装耗时过长
+  MISE_CORE_TOOLS=(go node bun python rust)
+  if mise install "${MISE_CORE_TOOLS[@]}"; then
+    success "Mise core runtimes installed."
+  else
+    warn "Mise core runtime installation had issues. You can rerun manually: mise install go node bun python rust"
+  fi
+else
+  warn "Mise not found, skipping runtime installation."
+fi
+
 info "Setting up local configuration overrides..."
 
 # --- 1. Git Local 基础信息模板 ---
@@ -299,7 +312,8 @@ echo "       --prompt_spacing=Sparse \\"
 echo "       --icons='Many icons' \\"
 echo "       --transient=Yes"
 echo ""
-echo "3. Edit ~/.config/mise/config.toml to customize your language runtimes if needed, then run 'mise install node && mise install'."
+echo "3. Core runtimes are auto-installed via mise (go/node/bun/python/rust)."
+echo "   If you also need all configured LSP/tooling packages, run: mise install"
 echo "4. IMPORTANT: Edit ~/.config/fish/config.local.fish to set private ENVs like AICHAT_MODEL and API keys."
 echo "5. IMPORTANT: Edit ~/.config/ghostty/config.local to set private shortcuts or machine-specific settings."
 echo "6. IMPORTANT: Edit ~/.gitconfig.local (and ~/.gitconfig.work if needed) to set your Git Identity."

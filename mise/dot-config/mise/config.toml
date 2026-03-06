@@ -48,6 +48,7 @@ NPM_CONFIG_LOGLEVEL = "error"
 # --- 基础语言运行时 ---
 go = "latest"
 node = "lts"
+bun = "latest"
 python = "latest"
 rust = "latest"
 
