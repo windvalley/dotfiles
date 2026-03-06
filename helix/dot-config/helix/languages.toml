@@ -126,7 +126,13 @@ rangeVariableTypes = true
 command = "golangci-lint-langserver"
 
 [language-server.golangci-lint-langserver.config]
-command = ["golangci-lint", "run", "--out-format", "json", "--issues-exit-code=1"]
+command = [
+  "golangci-lint",
+  "run",
+  "--out-format",
+  "json",
+  "--issues-exit-code=1",
+]
 
 # ============================================================
 # Python
@@ -220,7 +226,8 @@ args = ["lsp", "stdio"]
 # ============================================================
 [[language]]
 name = "yaml"
-auto-format = true
+# 目前有bug，自动格式化会超时导致退出helix卡住, 暂时关闭
+auto-format = false
 language-servers = ["yaml-language-server"]
 
 [language-server.yaml-language-server]
@@ -247,10 +254,21 @@ args = ["--stdio"]
 
 [language-server.vscode-json-language-server.config.json]
 schemas = [
-  { fileMatch = ["package.json"], url = "https://json.schemastore.org/package.json" },
-  { fileMatch = ["tsconfig.json", "tsconfig.*.json"], url = "https://json.schemastore.org/tsconfig.json" },
-  { fileMatch = [".eslintrc.json", ".eslintrc"], url = "https://json.schemastore.org/eslintrc.json" },
-  { fileMatch = [".prettierrc", ".prettierrc.json"], url = "https://json.schemastore.org/prettierrc.json" },
+  { fileMatch = [
+    "package.json",
+  ], url = "https://json.schemastore.org/package.json" },
+  { fileMatch = [
+    "tsconfig.json",
+    "tsconfig.*.json",
+  ], url = "https://json.schemastore.org/tsconfig.json" },
+  { fileMatch = [
+    ".eslintrc.json",
+    ".eslintrc",
+  ], url = "https://json.schemastore.org/eslintrc.json" },
+  { fileMatch = [
+    ".prettierrc",
+    ".prettierrc.json",
+  ], url = "https://json.schemastore.org/prettierrc.json" },
 ]
 
 # ============================================================
@@ -259,7 +277,10 @@ schemas = [
 [[language]]
 name = "html"
 auto-format = true
-language-servers = ["vscode-html-language-server", "tailwindcss-language-server"]
+language-servers = [
+  "vscode-html-language-server",
+  "tailwindcss-language-server",
+]
 
 [[language]]
 name = "css"

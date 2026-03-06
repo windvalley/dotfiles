@@ -13,10 +13,10 @@
 # --- 敏感环境变量 ---
 # 例如：设置 aichat (sigoden/aichat) 使用的全局 Model 及 API 密钥
 # 参阅：https://github.com/sigoden/aichat/wiki/Environment-Variables
-# Model
-# provider 前缀提示：Anthropic 用 claude:，Qwen 用 qianwen:，智谱用 zhipuai:
+# ChatAI Model:
+# provider 前缀提示：OpenAI 用 openai:，Gemini 用 gemini:，Anthropic 用 claude:，Qwen 用 qianwen:，智谱用 zhipuai:，MiniMax 用 minimax:，Moonshot 用 moonshot:，本地 Ollama（本仓库默认别名）用 local-llm:
 # set -gx AICHAT_MODEL "gemini:gemini-3-flash"
-# APIKEY
+# ChatAI APIKEY:
 # set -gx OPENAI_API_KEY "sk-xxxxxxxxx"
 # set -gx GEMINI_API_KEY "AIzaSy..."
 # set -gx ANTHROPIC_API_KEY "sk-ant-..."

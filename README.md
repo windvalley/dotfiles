@@ -42,6 +42,7 @@
   - [4.5 配置 tide](#45-%E9%85%8D%E7%BD%AE-tide)
   - [4.6 macOS 系统偏好 (macos.sh) (可选)](#46-macos-%E7%B3%BB%E7%BB%9F%E5%81%8F%E5%A5%BD-macossh-%E5%8F%AF%E9%80%89)
   - [4.7 配置 Git](#47-%E9%85%8D%E7%BD%AE-git)
+  - [4.8 配置 AIChat](#48-%E9%85%8D%E7%BD%AE-aichat)
 - [5. 使用方法](#5-%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95)
   - [5.1 Ghostty 终端](#51-ghostty-%E7%BB%88%E7%AB%AF)
   - [5.2 Zellij 终端复用器](#52-zellij-%E7%BB%88%E7%AB%AF%E5%A4%8D%E7%94%A8%E5%99%A8)
@@ -421,6 +422,46 @@ echo "*.log" >> ~/.config/git/ignore
 
 > [!TIP]
 > 上述修改会直接更新 `~/dotfiles/git/dot-config/git/ignore`，建议将这些变更提交到你自己的 dotfiles 仓库中。
+
+### 4.8 配置 AIChat
+
+本项目已内置 AIChat 配置包，Stow 后会映射到 `~/.config/aichat/config.yaml`。
+
+**1. 配置文件位置与职责**
+
+- 仓库源文件：`~/dotfiles/aichat/dot-config/aichat/config.yaml`
+- 生效路径：`~/.config/aichat/config.yaml`
+- 职责边界：
+  - `config.yaml` 负责行为策略（如 `stream`、`function_calling`、`save_session`、`keybindings` 等）
+  - API Key 与模型覆盖优先通过 Fish 本地私有文件注入（避免明文入库）
+
+**2. 在本地私有文件中注入模型与密钥（推荐）**
+
+```fish
+# ~/.config/fish/config.local.fish
+# provider 前缀示例：claude: / qianwen: / zhipuai: / moonshot: / openai: / gemini:
+set -gx AICHAT_MODEL "gemini:gemini-3-flash-preview"
+set -gx GEMINI_API_KEY "AIzaSy..."
+```
+
+> [!IMPORTANT]
+> 不要把任何 API Key 直接写入仓库中的 `aichat/dot-config/aichat/config.yaml`。私密信息只放 `~/.config/fish/config.local.fish`。
+
+**3. 验证配置是否生效**
+
+```fish
+# 重载 fish 环境变量
+exec fish
+
+# 检查 AIChat 目录与数据隔离路径（由 fish/config.fish 统一设置）
+aichat --info
+
+# 检查模型清单
+aichat --list-models
+
+# 检查是否可用
+aichat hi
+```
 
 ## 5. 使用方法
 
