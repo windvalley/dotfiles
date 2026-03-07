@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # validate-configs
 #
 # 验证 dotfiles 配置文件的语法和完整性
@@ -189,6 +189,7 @@ validate_helix() {
     # 如果 helix 已安装，运行健康检查
     if command -v hx &>/dev/null; then
         info "Helix 健康状态:"
+        warn "如果输出中出现 'Runtime directory does not exist'，通常只是可选用户 runtime 目录缺失，不影响当前配置通过验证。"
         hx --health 2>/dev/null | head -20 || true
     else
         warn "Helix 未安装，跳过健康检查"

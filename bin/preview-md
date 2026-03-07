@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Preview markdown file using glow in a floating zellij pane
 # Usage: preview-md <filename>
 

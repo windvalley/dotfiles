@@ -170,7 +170,7 @@ cd "$HOME/dotfiles"
 
 If you prefer to do everything manually, follow this order:
 
-#### 2.2.1 Install Dependencies
+#### 3.2.1 Install Dependencies
 
 ```sh
 # Symlink manager
@@ -219,7 +219,7 @@ brew install switchaudio-osx
 - `grc`: Generic Colouriser. Combined with Fish plugins, it adds colored output enhancements to commands like `ping`, `ls`, `docker`, and `diff`.
 - `glow`: Terminal Markdown reader used by Helix preview features.
 
-#### 2.2.2 Clone the Repository
+#### 3.2.2 Clone the Repository
 
 ```sh
 git clone --depth=1 https://github.com/windvalley/dotfiles.git "$HOME/dotfiles"
@@ -229,7 +229,7 @@ cd "$HOME/dotfiles"
 git pull --rebase
 ```
 
-#### 2.2.3 Link Configurations (`stow`)
+#### 3.2.3 Link Configurations (`stow`)
 
 > [!TIP]
 > If `make` is already installed on your system, you can run `make stow` to link everything in one command. That command and `install.sh` both include robust directory-protection logic, so using them directly is recommended.
@@ -323,19 +323,19 @@ To prevent those values from being tracked by Git and leaked into a public repos
    ```fish
    cp ~/dotfiles/local/config.local.fish.example ~/.config/fish/config.local.fish
    ```
-2. Put all your private settings into the newly created file:
+2. Put all your private settings into the newly created file. The model name, API key, and command below are placeholders only, so replace them with your own values and never commit real credentials back to the repository:
    ```fish
    # ~/.config/fish/config.local.fish
-    # set -gx AICHAT_MODEL "gemini:gemini-3-flash-preview"
-   set -gx OPENAI_API_KEY "sk-xxxxxxxxx"
-   abbr -a -g work-vpn "sudo launchctl restart com.corp.vpn"
+   # set -gx AICHAT_MODEL "gemini:gemini-3-flash-preview"
+   # set -gx OPENAI_API_KEY "sk-xxxxxxxxx"
+   # abbr -a -g work-vpn "sudo launchctl restart com.corp.vpn"
    ```
 
 #### Ghostty Local Config
 
 1. Copy the example template from this repository to the target location and remove the `.example` suffix:
    ```bash
-   cp ~/dotfiles/local/ghostty.config.local.example ~/dotfiles/ghostty/dot-config/ghostty/config.local
+   cp ~/dotfiles/local/ghostty.config.local.example ~/.config/ghostty/config.local
    ```
 2. Add your private or machine-specific config in the new file, such as keybindings or fonts:
    ```ini
@@ -449,6 +449,7 @@ This project already includes an AIChat config package. After Stow, it maps to `
 - Active path: `~/.config/aichat/config.yaml`
 - Responsibility boundary:
   - `config.yaml` controls behavior strategy such as `stream`, `function_calling`, `save_session`, and `keybindings`
+  - `install.sh` automatically runs `aichat --sync-models` after Stow, so models referenced by the default config are available in the local catalog and do not fail with “model not found” errors
   - API keys and model overrides should be injected through Fish local private files whenever possible, to avoid storing secrets in the repo
 
 **2. Inject model and secret locally through a private file (recommended)**
@@ -472,6 +473,9 @@ exec fish
 # Check AIChat directories and data isolation paths
 # (set centrally by fish/config.fish)
 aichat --info
+
+# Refresh the official model catalog manually
+aichat --sync-models
 
 # Inspect the model list
 aichat --list-models

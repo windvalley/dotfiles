@@ -175,7 +175,7 @@ cd "$HOME/dotfiles"
 
 如果你更倾向于手动操作，请按以下顺序执行：
 
-#### 2.2.1 安装依赖项
+#### 3.2.1 安装依赖项
 
 ```sh
 # 软链管理工具
@@ -224,7 +224,7 @@ brew install switchaudio-osx
 - `grc`: 通用彩色输出查看器 (Generic Colouriser)，配合 fish 插件为 `ping` / `ls` / `docker` / `diff` 等命令提供彩色输出增强。
 - `glow`: 终端 Markdown 阅读器，用于 Helix 预览功能。
 
-#### 2.2.2 拉取仓库
+#### 3.2.2 拉取仓库
 
 ```sh
 git clone --depth=1 https://github.com/windvalley/dotfiles.git "$HOME/dotfiles"
@@ -234,7 +234,7 @@ cd "$HOME/dotfiles"
 git pull --rebase
 ```
 
-#### 2.2.3 链接配置（stow）
+#### 3.2.3 链接配置（stow）
 
 > [!TIP]
 > 如果你的系统已安装 `make`，可以运行 `make stow` 一键链接，该命令及 `install.sh` 脚本均已内置了完善的目录保护机制，推荐直接使用，不用手动折腾。
@@ -324,19 +324,19 @@ fish_add_path ~/.local/bin
    ```fish
    cp ~/dotfiles/local/config.local.fish.example ~/.config/fish/config.local.fish
    ```
-2. 将你所有的私密配置写入新生成的文件：
+2. 将你所有的私密配置写入新生成的文件（下例中的模型名、API Key 和命令仅为占位示例，请替换为你自己的值，且不要把真实凭证提交回仓库）：
    ```fish
    # ~/.config/fish/config.local.fish
-    # set -gx AICHAT_MODEL "gemini:gemini-3-flash-preview"
-   set -gx OPENAI_API_KEY "sk-xxxxxxxxx"
-   abbr -a -g work-vpn "sudo launchctl restart com.corp.vpn"
+   # set -gx AICHAT_MODEL "gemini:gemini-3-flash-preview"
+   # set -gx OPENAI_API_KEY "sk-xxxxxxxxx"
+   # abbr -a -g work-vpn "sudo launchctl restart com.corp.vpn"
    ```
 
 #### Ghostty 终端本地配置
 
 1. 将本仓库中的示例模板复制到对应目录并去除 `.example` 后缀：
    ```bash
-   cp ~/dotfiles/local/ghostty.config.local.example ~/dotfiles/ghostty/dot-config/ghostty/config.local
+   cp ~/dotfiles/local/ghostty.config.local.example ~/.config/ghostty/config.local
    ```
 2. 在新生成的文件中添加你的私密或特定机器配置（如快捷键、字体等）：
    ```ini
@@ -450,6 +450,7 @@ echo "*.log" >> ~/.config/git/ignore
 - 生效路径：`~/.config/aichat/config.yaml`
 - 职责边界：
   - `config.yaml` 负责行为策略（如 `stream`、`function_calling`、`save_session`、`keybindings` 等）
+  - `install.sh` 会在 Stow 完成后自动执行一次 `aichat --sync-models`，避免默认配置引用的模型尚未同步到本地索引时出现“模型不存在”错误
   - API Key 与模型覆盖优先通过 Fish 本地私有文件注入（避免明文入库）
 
 **2. 在本地私有文件中注入模型与密钥（推荐）**
@@ -472,6 +473,9 @@ exec fish
 
 # 检查 AIChat 目录与数据隔离路径（由 fish/config.fish 统一设置）
 aichat --info
+
+# 手动刷新官方模型索引
+aichat --sync-models
 
 # 检查模型清单
 aichat --list-models

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Git clean filter for dotfiles colorscheme decoupling
 # This filter restores the "default" theme when git reads the file into the index,
 # preventing local colorscheme changes from dirtying the git working tree.

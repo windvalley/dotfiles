@@ -16,6 +16,40 @@ warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1"; }
 export -f info success warn error
 
+show_help() {
+  info "Usage: $0 [options]"
+  info "Options:"
+  info "  -y, --yes, --unattended    Run in non-interactive mode without prompting"
+  info "  -h, --help                 Show this help message"
+}
+
+show_next_steps() {
+  info "Next steps:"
+  cat <<'EOF'
+  1. Run 'exec fish -l' or restart your terminal.
+  2. Run 'tide configure' to set up your prompt, or use:
+     tide configure --auto \
+         --style=Lean \
+         --prompt_colors='16 colors' \
+         --show_time='24-hour format' \
+         --lean_prompt_height='Two lines' \
+         --prompt_connection=Disconnected \
+         --prompt_spacing=Sparse \
+         --icons='Many icons' \
+         --transient=Yes
+  3. Core runtimes are auto-installed via mise (go/node/bun/python/rust).
+     Run 'mise install' if you also want all configured LSP/tooling packages.
+EOF
+
+  info "Manual follow-up:"
+  cat <<'EOF'
+  - Edit ~/.config/fish/config.local.fish for private ENVs and API keys.
+  - Edit ~/.config/ghostty/config.local for machine-specific shortcuts or overrides.
+  - Edit ~/.gitconfig.local and ~/.gitconfig.work for Git identity.
+  - macOS: Allow Ghostty in 'System Settings > Privacy & Security > Accessibility'.
+EOF
+}
+
 fish_plugins_args() {
   local fish_plugins_file="$1"
   local plugins=()
@@ -39,10 +73,7 @@ while [[ "$#" -gt 0 ]]; do
   case $1 in
   -y | --yes | --unattended) NON_INTERACTIVE=true ;;
   -h | --help)
-    echo "Usage: $0 [options]"
-    echo "Options:"
-    echo "  -y, --yes, --unattended    Run in non-interactive mode without prompting"
-    echo "  -h, --help                 Show this help message"
+    show_help
     exit 0
     ;;
   *)
@@ -155,6 +186,17 @@ done
 # Always stow bin for scripts, they are useful in CLI
 info "Stowing bin..."
 stow --restow --target="$HOME/.local/bin" --dir="$DOTFILES_DIR" bin
+
+info "Synchronizing AIChat model catalog..."
+if command -v aichat &>/dev/null; then
+  if aichat --sync-models; then
+    success "AIChat model catalog synchronized."
+  else
+    warn "AIChat model sync had issues. You can rerun manually: aichat --sync-models"
+  fi
+else
+  warn "AIChat not found, skipping model sync. You can rerun manually after installation: aichat --sync-models"
+fi
 
 info "Installing core runtimes managed by Mise..."
 if command -v mise &>/dev/null; then
@@ -322,25 +364,5 @@ if [[ "$(uname)" == "Darwin" ]]; then
 fi
 
 success "Installation complete!"
-info "Next steps:"
-echo "1. Run 'exec fish -l' or restart your terminal."
-echo "2. Run 'tide configure' to set up your prompt (or use the auto-config as follows):"
-echo ""
-echo "   tide configure --auto \\"
-echo "       --style=Lean \\"
-echo "       --prompt_colors='16 colors' \\"
-echo "       --show_time='24-hour format' \\"
-echo "       --lean_prompt_height='Two lines' \\"
-echo "       --prompt_connection=Disconnected \\"
-echo "       --prompt_spacing=Sparse \\"
-echo "       --icons='Many icons' \\"
-echo "       --transient=Yes"
-echo ""
-echo "3. Core runtimes are auto-installed via mise (go/node/bun/python/rust)."
-echo "   If you also need all configured LSP/tooling packages, run: mise install"
-echo "4. IMPORTANT: Edit ~/.config/fish/config.local.fish to set private ENVs like AICHAT_MODEL and API keys."
-echo "5. IMPORTANT: Edit ~/.config/ghostty/config.local to set private shortcuts or machine-specific settings."
-echo "6. IMPORTANT: Edit ~/.gitconfig.local (and ~/.gitconfig.work if needed) to set your Git Identity."
-echo "7. IMPORTANT (macOS): Allow Ghostty in 'System Settings > Privacy & Security > Accessibility'."
-echo ""
+show_next_steps
 success "Enjoy your new setup!"

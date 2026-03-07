@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # colorscheme
 #
 # Switch colorscheme for Ghostty, Helix, Zellij, Btop, Bat and Delta simultaneously.

@@ -22,16 +22,13 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install doctoc
-        run: npm install -g doctoc
-
       - name: Run shell script linter (shellcheck)
         run: make lint
 
-      - name: Verify README.md TOC is up-to-date
+      - name: Verify README TOCs are up-to-date
         run: |
           make docs
-          git diff --exit-code README.md || (echo "❌ README.md generated TOC is out of sync. Please run 'make docs' locally and commit the changes." && exit 1)
+          git diff --exit-code -- README.md README.en.md || (echo "❌ README TOCs are out of sync. Please run 'make docs' locally and commit the changes." && exit 1)
 
   test-macos-install:
     runs-on: macos-latest

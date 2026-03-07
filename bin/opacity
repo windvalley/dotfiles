@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # opacity
 #
 # Ghostty terminal background transparency adjustment.
