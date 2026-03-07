@@ -618,9 +618,6 @@ aichat hi
 
 **Built-in Abbreviations**:
 
-> [!TIP]
-> Forgot an abbreviation? Just type **`a`** at any time to list all abbreviations plus their expanded commands and descriptions.
-
 Abbreviations **expand automatically** when you press space after typing them.
 
 | Abbreviation | Expands to | Meaning |
@@ -650,13 +647,16 @@ Abbreviations **expand automatically** when you press space after typing them.
 | `gl` | `git log --oneline --decorate --graph` | **High frequency** pretty log with branch graph and colored tree structure |
 | `glo` / `gls` | `git log --oneline` / `git log --stat` | Minimal one-line log / log with per-commit file change statistics |
 
+> [!TIP]
+> Forgot an abbreviation? Just type **`a`** at any time to list all abbreviations plus their expanded commands and descriptions.
+
 **Vi Mode**:
-Fish supports a Vi-style editing mode, and this configuration enables it by default.
+Fish supports a Vi-style editing mode, and this configuration enables it by default; the shortcuts below are split between normal mode and insert mode.
+
+Enter Vi normal mode: press `Esc` or `Ctrl+[`.
 
 | Shortcut | Function |
 |--------|------|
-| `Esc` | Enter Vi normal mode |
-| `Esc` | Enter Vi normal mode |
 | `i`/`a` | Enter insert mode (before / after cursor) |
 | `h`/`l` | Move cursor left / right |
 | `k`/`j` | Previous / next command history item, filtered by current input |
@@ -667,10 +667,22 @@ Fish supports a Vi-style editing mode, and this configuration enables it by defa
 | `<Space>y` | Explicitly copy the entire current command line to the macOS system clipboard |
 | `p` | Paste |
 | `u` | Undo |
-| `Ctrl+y` | AI assistant: if the line starts with `#`, generate candidate commands and write the selected one back; otherwise explain the current command without executing it |
-| `Ctrl+e` | In normal or insert mode, open the current command line in the default editor (`hx`) fullscreen |
+| `Ctrl+e` | In normal mode, open the current command line in the default editor (`hx`) fullscreen |
 
-All Vim-style editing motions are available in Vi normal mode.
+**Insert Mode**:
+
+| Shortcut | Function |
+|--------|------|
+| `Esc` / `Ctrl+[` | Return to Vi normal mode |
+| `Ctrl+a` | Jump to the beginning of the line |
+| `Ctrl+e` | Jump to the end of the line |
+| `Ctrl+f` / `Ctrl+b` | Move cursor right / left |
+| `Ctrl+n` / `Ctrl+p` | Next / previous command history item |
+| `Ctrl+h` / `Backspace` | Delete the character before the cursor |
+| `Ctrl+d` | Delete the character under the cursor |
+| `Ctrl+u` | Delete from the cursor back to the beginning of the line |
+| `Ctrl+k` | Delete from the cursor to the end of the line |
+| `Ctrl+w` | Delete the word before the cursor |
 
 ---
 
@@ -960,6 +972,43 @@ This project makes a series of intentional customizations on top of the default 
 | `<Space>y` (normal mode) | Explicitly copy the full command line to the macOS system clipboard without changing the default yank semantics |
 | Vi cursor shapes | `normal=block`, `insert=line`, `replace=underscore` |
 | Tide `vi_mode` indicator | `D` → `N` to align with Vim community usage of `N` for Normal |
+
+**Vi Mode**:
+
+Fish uses Vi-style editing by default in this setup. The keybindings below are grouped by normal mode and insert mode.
+
+**Normal Mode**:
+
+Enter Vi normal mode with `Esc` or `Ctrl+[`.
+
+| Keybinding | Action |
+|------|------|
+| `i` / `a` | Enter insert mode before / after the cursor |
+| `h` / `l` | Move left / right |
+| `k` / `j` | Previous / next history entry filtered by current input |
+| `w` / `b` | Next / previous word |
+| `0` / `$` | Start / end of line |
+| `d` | Delete with a motion, such as `dw` or `dd` |
+| `y` | Yank with a motion, such as `yw` or `yy` |
+| `<Space>y` | Copy the full current command line to the macOS system clipboard |
+| `p` | Paste |
+| `u` | Undo |
+| `Ctrl+e` | Open the current command line in Helix fullscreen |
+
+**Insert Mode**:
+
+| Keybinding | Action |
+|------|------|
+| `Esc` / `Ctrl+[` | Return to Vi normal mode |
+| `Ctrl+a` | Move to the start of the line |
+| `Ctrl+e` | Move to the end of the line |
+| `Ctrl+f` / `Ctrl+b` | Move right / left |
+| `Ctrl+n` / `Ctrl+p` | Next / previous history entry |
+| `Ctrl+h` / `Backspace` | Delete the previous character |
+| `Ctrl+d` | Delete the character under the cursor |
+| `Ctrl+u` | Delete from the cursor to the start of the line |
+| `Ctrl+k` | Delete from the cursor to the end of the line |
+| `Ctrl+w` | Delete the previous word |
 
 ### ✏️ Helix — Editor Keybindings and Display
 
