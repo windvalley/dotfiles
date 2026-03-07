@@ -664,6 +664,7 @@ Fish supports a Vi-style editing mode, and this configuration enables it by defa
 | `0`/`$` | Beginning / end of line |
 | `d` | Delete with a motion, such as `dw` or `dd` |
 | `y` | Yank with a motion, such as `yw` or `yy` |
+| `<Space>y` | Explicitly copy the entire current command line to the macOS system clipboard |
 | `p` | Paste |
 | `u` | Undo |
 | `Ctrl+y` | AI assistant: if the line starts with `#`, generate candidate commands and write the selected one back; otherwise explain the current command without executing it |
@@ -956,6 +957,7 @@ This project makes a series of intentional customizations on top of the default 
 | Change | Description |
 |------|------|
 | `Ctrl + e` (normal mode) | Use Helix to edit the current command line fullscreen |
+| `<Space>y` (normal mode) | Explicitly copy the full command line to the macOS system clipboard without changing the default yank semantics |
 | Vi cursor shapes | `normal=block`, `insert=line`, `replace=underscore` |
 | Tide `vi_mode` indicator | `D` → `N` to align with Vim community usage of `N` for Normal |
 

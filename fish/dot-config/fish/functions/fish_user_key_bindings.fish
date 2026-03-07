@@ -3,6 +3,10 @@ function fish_user_key_bindings
     # Ctrl-a/Ctrl-e/Ctrl-f/Ctrl-p 等在 insert 模式下全部可用
     fish_default_key_bindings -M insert
     fish_vi_key_bindings --no-erase insert
+
+    # <space>y: 在 vi normal 模式下显式复制整条命令行到 macOS 系统剪贴板
+    bind -M default " y" __copy_commandline_to_clipboard
+
     # Ctrl-e: normal 模式用 $EDITOR (hx) 编辑命令行
     # insert 模式保留 emacs 的 end-of-line
     bind \ce edit_command_buffer

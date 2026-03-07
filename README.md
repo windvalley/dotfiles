@@ -663,7 +663,8 @@ Fish 支持 Vi 风格编辑模式，本配置已默认启用。
 | `w`/`b` | 下一个/上一个单词 |
 | `0`/`$` | 行首/行尾 |
 | `d` | 删除 (配合移动命令，如 dw, dd) |
-| `y` | 复制 (配合移动命令，如 yw, yy) |
+| `y` | 复制 (配合移动命令，如 `yw`, `yy`) |
+| `<Space>y` | 显式复制整条当前命令行到 macOS 系统剪贴板 |
 | `p` | 粘贴 |
 | `u` | 撤销 |
 | `Ctrl+y` | AI 助手：`#` 开头生成候选命令（fzf 选择后写回命令行）；非 `#` 开头解释当前命令（仅解释不执行） |
@@ -954,6 +955,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | 改动 | 说明 |
 |------|------|
 | `Ctrl + e` (normal 模式) | 用 Helix 全屏编辑当前命令行 |
+| `<Space>y` (normal 模式) | 显式复制整条当前命令行到 macOS 系统剪贴板，避免污染默认 yank 语义 |
 | Vi 光标形状 | normal=block, insert=line, replace=underscore |
 | Tide vi_mode 标识 | `D` → `N`（对齐 Vim 社区的 Normal 缩写习惯） |
 
