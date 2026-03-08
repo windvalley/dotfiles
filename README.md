@@ -209,7 +209,7 @@ brew install btop
 brew install --cask font-jetbrains-mono-nerd-font
 
 # 常用工具
-brew install bat eza fzf zoxide grc gawk gnu-sed grep glow
+brew install bat eza fzf zoxide grc gawk gnu-sed grep glow gh ripgrep shellcheck
 
 # 音量控制
 brew install switchaudio-osx
@@ -237,7 +237,7 @@ git pull --rebase
 #### 3.2.3 链接配置（stow）
 
 > [!TIP]
-> 如果你的系统已安装 `make`，可以运行 `make stow` 一键链接，该命令及 `install.sh` 脚本均已内置了完善的目录保护机制，推荐直接使用，不用手动折腾。
+> 如果你的系统已安装 `make`，常规重同步可以直接运行 `make stow`。但首次安装，或 `~/.config/*` 下已存在真实目录时，优先使用 `install.sh`，因为目录备份与迁移保护逻辑在安装脚本中更完整。
 
 如果坚持手动链接配置，为了确保 stow 能为 GUI 应用（如 Btop、Karabiner）以及扩展性强的工具创建纯净的**目录级软链**，需要对所有目标配置目录进行防御性清理：
 
@@ -245,7 +245,7 @@ git pull --rebase
 # 如果目标工具的配置目录已经是真实目录（非软链），必须将其重命名或删除，切忌保留！
 # 目的：确保 stow 时发现目标目录"不存在"，从而直接把整个目录映射为一个【纯目录级软链】。
 # 否则 stow 会进入真实目录执行【文件级】软链，导致后续工具在本地新生成的文件脱离版本控制。
-for pkg in ghostty helix zellij mise karabiner btop fish git; do
+for pkg in ghostty helix zellij mise karabiner btop fish git aichat; do
     if [ -d ~/.config/$pkg ] && [ ! -L ~/.config/$pkg ]; then
         mv ~/.config/$pkg ~/.config/$pkg.bak
     elif [ -L ~/.config/$pkg ]; then
@@ -260,7 +260,7 @@ done
 cd "$HOME/dotfiles"
 
 # 统一链接所有标准配置包（全部遵循 XDG 规范，映射到 ~/.config/ 下）
-stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles ghostty helix zellij mise karabiner btop fish git
+stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles ghostty helix zellij mise karabiner btop fish git aichat
 
 # 单独链接需要特定前置结构的包（例如将自定义命令放置在 ~/.local/bin 下）
 mkdir -p "$HOME/.local/bin"
@@ -341,8 +341,8 @@ fish_add_path ~/.local/bin
 2. 在新生成的文件中添加你的私密或特定机器配置（如快捷键、字体等）：
    ```ini
    # ~/.config/ghostty/config.local
-   # 示例：按下 ctrl+backspace 自动键入密码并回车
-   keybind = ctrl+backspace=text:your_password\r
+   # 示例：按下 ctrl+backspace 自动输入占位文本并回车
+   keybind = ctrl+backspace=text:<your-secret>\r
    ```
 
 > [!NOTE]
@@ -394,7 +394,6 @@ tide configure
 - **访达 (Finder)**：显示所有文件扩展名、状态栏、路径栏，按名称排序时文件夹置顶，禁用 `.DS_Store` 在网络/USB驱动器上的生成。
 - **触控板/鼠标**：开启“轻点来点按”。
 - **程序坞 (Dock)**：开启自动隐藏，不显示最近使用的应用程序。
-- **Safari**：开启“开发”菜单和网页检查器。
 
 你可以随时通过运行以下命令来应用或重新应用这些设置：
 
@@ -404,7 +403,7 @@ make macos
 ```
 
 > [!WARNING]
-> 该脚本在执行前可能会要求输入管理员密码（`sudo -v`），且包含了高度个人主观偏好的系统设定。
+> 该脚本包含了高度个人主观偏好的系统设定。
 > **强烈建议你在执行前，先打开 `macos.sh` 快速浏览一遍带有详细中文解释的源码**。你可以轻松地注释掉任何与你习惯不符的 `defaults write` 命令。
 
 ### 4.7 配置 Git
@@ -459,7 +458,7 @@ echo "*.log" >> ~/.config/git/ignore
 # ~/.config/fish/config.local.fish
 # provider 前缀示例：claude: / qianwen: / zhipuai: / moonshot: / openai: / gemini:
 set -gx AICHAT_MODEL "gemini:gemini-3-flash-preview"
-set -gx GEMINI_API_KEY "AIzaSy..."
+set -gx GEMINI_API_KEY "YOUR_API_KEY_HERE"
 ```
 
 > [!IMPORTANT]
@@ -612,9 +611,6 @@ aichat hi
 | `s [query]` | 从 `~/.ssh/config` 中解析 Host 列表，通过 fzf 交互选择并建立 SSH 连接 |
 | `rec [name]` | 极简终端操作录屏工具 (基于 asciinema)，支持录制、回放(`rec play`)与网页分享(`rec upload`) |
 | `gtd <tag>` | 一键同时删除本地和远端的 Git Tag |
-
-> [!TIP]
-> 更多自定义命令（如 `colorscheme`、`font-size`、`opacity` 等）见 [5.8 自定义命令（bin/）](#58-自定义命令bin)。
 
 **内置缩写 (Abbreviations)**：
 
@@ -900,7 +896,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | `make plugins` | 更新 Fisher 插件 |
 | `make macos` | 配置 macOS 系统偏好设置 |
 | `make validate` | 运行完整的配置验证（包含工具检查） |
-| `make lint` | 静态分析 `bin/` 脚本（shellcheck） |
+| `make lint` | 静态分析仓库中的 Shell 脚本（含 `bootstrap.sh`、`install.sh`、`macos.sh` 和 `bin/*`） |
 | `make docs` | 生成或更新 README 的目录 (TOC) |
 | `make update` | 拉取远程代码并更新所有核心工具链体系 (`dot-update`) |
 | `make clean` | 清理临时文件 (`.bak`, `.tmp` 等) |

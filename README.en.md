@@ -204,7 +204,7 @@ brew install btop
 brew install --cask font-jetbrains-mono-nerd-font
 
 # Common tools
-brew install bat eza fzf zoxide grc gawk gnu-sed grep glow
+brew install bat eza fzf zoxide grc gawk gnu-sed grep glow gh ripgrep shellcheck
 
 # Volume control
 brew install switchaudio-osx
@@ -232,7 +232,7 @@ git pull --rebase
 #### 3.2.3 Link Configurations (`stow`)
 
 > [!TIP]
-> If `make` is already installed on your system, you can run `make stow` to link everything in one command. That command and `install.sh` both include robust directory-protection logic, so using them directly is recommended.
+> If `make` is already installed, you can use `make stow` for routine resyncs. For first-time setup, or when real directories already exist under `~/.config/*`, prefer `install.sh` because its backup and migration safeguards are more complete.
 
 If you still want to link configs manually, and want Stow to create clean **directory-level symlinks** for GUI apps such as Btop and Karabiner as well as tools with extensible config directories, you need to defensively clean the target config directories first:
 
@@ -243,7 +243,7 @@ If you still want to link configs manually, and want Stow to create clean **dire
 # directory as a pure directory-level symlink.
 # Otherwise stow will descend into the real directory and create file-level symlinks,
 # causing newly generated local files to drift out of version control.
-for pkg in ghostty helix zellij mise karabiner btop fish git; do
+for pkg in ghostty helix zellij mise karabiner btop fish git aichat; do
     if [ -d ~/.config/$pkg ] && [ ! -L ~/.config/$pkg ]; then
         mv ~/.config/$pkg ~/.config/$pkg.bak
     elif [ -L ~/.config/$pkg ]; then
@@ -258,7 +258,7 @@ Then apply all symlink mappings in one shot:
 cd "$HOME/dotfiles"
 
 # Link all standard config packages that follow XDG and map into ~/.config/
-stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles ghostty helix zellij mise karabiner btop fish git
+stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles ghostty helix zellij mise karabiner btop fish git aichat
 
 # Link packages that require a special target structure
 # (for example, custom commands placed under ~/.local/bin)
@@ -340,8 +340,8 @@ To prevent those values from being tracked by Git and leaked into a public repos
 2. Add your private or machine-specific config in the new file, such as keybindings or fonts:
    ```ini
    # ~/.config/ghostty/config.local
-   # Example: press ctrl+backspace to auto-type a password and hit Enter
-   keybind = ctrl+backspace=text:your_password\r
+   # Example: press ctrl+backspace to auto-type placeholder text and hit Enter
+   keybind = ctrl+backspace=text:<your-secret>\r
    ```
 
 > [!NOTE]
@@ -393,7 +393,6 @@ The repository root includes a `macos.sh` script that uses `defaults write` to a
 - **Finder**: Shows all filename extensions, status bar, and path bar; keeps folders on top when sorting by name; disables `.DS_Store` creation on network and USB drives.
 - **Trackpad / mouse**: Enables tap-to-click.
 - **Dock**: Enables auto-hide and hides recent applications.
-- **Safari**: Enables the Develop menu and Web Inspector.
 
 You can apply or reapply these preferences at any time with:
 
@@ -403,7 +402,7 @@ make macos
 ```
 
 > [!WARNING]
-> The script may ask for your administrator password before running (`sudo -v`), and it reflects strong personal preferences.
+> This script reflects strong personal preferences for system settings.
 > **It is strongly recommended that you open `macos.sh` and skim the source with its detailed Chinese explanations before executing it**. You can easily comment out any `defaults write` command that does not match your habits.
 
 ### 4.7 Configure Git
@@ -458,7 +457,7 @@ This project already includes an AIChat config package. After Stow, it maps to `
 # ~/.config/fish/config.local.fish
 # Provider prefix examples: claude: / qianwen: / zhipuai: / moonshot: / openai: / gemini:
 set -gx AICHAT_MODEL "gemini:gemini-3-flash-preview"
-set -gx GEMINI_API_KEY "AIzaSy..."
+set -gx GEMINI_API_KEY "YOUR_API_KEY_HERE"
 ```
 
 > [!IMPORTANT]
@@ -613,9 +612,6 @@ aichat hi
 | `rec [name]` | Minimal terminal screencast tool based on asciinema, supporting record, replay (`rec play`), and web upload (`rec upload`) |
 | `gtd <tag>` | Delete a Git tag locally and remotely in one command |
 
-> [!TIP]
-> More custom commands such as `colorscheme`, `font-size`, and `opacity` are listed in [5.8 Custom Commands (`bin/`)](#58-custom-commands-bin).
-
 **Built-in Abbreviations**:
 
 Abbreviations **expand automatically** when you press space after typing them.
@@ -652,6 +648,8 @@ Abbreviations **expand automatically** when you press space after typing them.
 
 **Vi Mode**:
 Fish supports a Vi-style editing mode, and this configuration enables it by default; the shortcuts below are split between normal mode and insert mode.
+
+**Normal Mode**:
 
 Enter Vi normal mode: press `Esc` or `Ctrl+[`.
 
@@ -899,7 +897,7 @@ This project introduces a `Makefile` to standardize daily maintenance tasks and 
 | `make plugins` | Update Fisher plugins |
 | `make macos` | Apply macOS system preferences |
 | `make validate` | Run full config validation, including tool checks |
-| `make lint` | Run static analysis on `bin/` scripts via shellcheck |
+| `make lint` | Run shellcheck on repository Shell scripts, including `bootstrap.sh`, `install.sh`, `macos.sh`, and `bin/*` |
 | `make docs` | Generate or update the README TOC |
 | `make update` | Pull remote code and update the entire core toolchain stack via `dot-update` |
 | `make clean` | Clean temporary files such as `.bak` and `.tmp` |
