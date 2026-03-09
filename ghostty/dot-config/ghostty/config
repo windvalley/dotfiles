@@ -1185,12 +1185,8 @@ command =
 # 可选值: 同 command
 # 默认值: 空
 #
-
-#
 # Zellij自动启动:
-# Zellij 启动逻辑已移到 fish config.fish，更灵活可控, 因此这里注释掉
-# initial-command = /bin/sh -l -c "exec fish -c \"zellij --layout dev-workspace\""
-initial-command =
+initial-command = /bin/sh -l -c "if command -v zellij >/dev/null 2>&1; then exec fish -c \"exec zellij\"; else exec fish -l; fi"
 
 # notify-on-command-finish
 # 控制何时发送命令完成通知。有三个选项：

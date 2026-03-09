@@ -66,22 +66,7 @@ set -gx AICHAT_SESSIONS_DIR "$HOME/.local/share/aichat/sessions"
 # 🚀 交互式会话专用配置区 (Interactive Session Only)
 if status is-interactive
     # =========================================================================
-    # 1. 【生命周期分水岭】：优先把复用器拦截判定放在这里！
-    # =========================================================================
-    # 自动启动 Zellij
-    # 跳过: 已在 zellij 中 / SSH / Quick Terminal / 禁用标志 / 未安装 / 非 Ghostty 运行时;
-    if not set -q ZELLIJ_SESSION_NAME; and not set -q SSH_CONNECTION; and not set -q GHOSTTY_QUICK_TERMINAL; and not set -q ZELLIJ_AUTO_DISABLE; and type -q zellij; and test "$GHOSTTY_RUNTIME" = 1
-        if zellij setup --check &>/dev/null
-            exec zellij
-        else
-            echo "⚠️ Zellij 配置检查失败，跳过自动启动。"
-            echo "   修复: 运行 'zellij setup --check' 查看详情"
-            echo "   禁用: 运行 'set -Ux ZELLIJ_AUTO_DISABLE 1' 永久关闭"
-        end
-    end
-
-    # =========================================================================
-    # 2. 【视觉 UI 层】：关闭欢迎语、设置快捷键、光标样式、Tide 提示符等
+    # 1. 【视觉 UI 层】：关闭欢迎语、设置快捷键、光标样式、Tide 提示符等
     # =========================================================================
     # 关闭默认欢迎语
     set -g fish_greeting ""
@@ -113,7 +98,7 @@ if status is-interactive
     end
 
     # =========================================================================
-    # 3. 【操作捷径重写层】：所有的 alias 和 abbr 大军在此集结
+    # 2. 【操作捷径重写层】：所有的 alias 和 abbr 大军在此集结
     # =========================================================================
     # 针对 Ghostty 的 xterm-ghostty 终端类型在远程机器缺失的问题
     # 在执行 ssh 或 orb 命令时动态降级 TERM 为 xterm-256color 以保证远程兼容性
@@ -190,7 +175,7 @@ if status is-interactive
     end
 
     # =========================================================================
-    # 4. 【交互环境加载工具层】：如 zoxide 跳转等吃性能且非界面不可用的命令
+    # 3. 【交互环境加载工具层】：如 zoxide 跳转等吃性能且非界面不可用的命令
     # =========================================================================
 
     # zoxide: 智能目录跳转 (z 替代传统的 cd)

@@ -496,6 +496,7 @@ aichat hi
 |--------|------|
 | `Cmd + Shift + ,` | 重载配置（修改配置文件后按此快捷键生效） |
 | `Cmd + ;` | 打开 Quick Terminal（自定义快捷键）|
+| `Cmd + n` | 新建窗口（纯 Fish 裸终端，不触发 Zellij 自动启动） |
 
 > [!NOTE]
 > 建议使用 Zellij 的标签页和面板功能替代 Ghostty 原生标签页和分屏功能，以获得更灵活的布局控制和跨会话保持能力。
@@ -506,15 +507,7 @@ aichat hi
 
 **配置文件**：`~/.config/zellij/config.kdl`
 
-**自动启动**：本配置在 fish 中集成了 Zellij 自动启动逻辑，打开新终端窗口时会自动启动或挂载到 Zellij 会话。以下情况会自动跳过：
-- 已在 Zellij 会话中
-- 通过 SSH 连接
-- 在 Ghostty 的 Quick Terminal 中
-- 设置了环境变量 `ZELLIJ_AUTO_DISABLE`
-- `zellij setup --check` 配置预检失败时（自动 fallback 到纯 fish 并提示修复方法）
-
-> [!TIP]
-> 如果 Zellij 出现问题导致终端无法正常打开，可在其他终端中执行 `set -Ux ZELLIJ_AUTO_DISABLE 1` 永久禁用自动启动。
+**自动启动**：本配置在 Ghostty 中（通过 `initial-command`）集成了 Zellij 启动逻辑，打开**首个**窗口时会自动启动或挂载到 Zellij 会话。若系统未安装 Zellij，则会自动 fallback 到纯 Fish 终端。通过 `Cmd + n` 新建的额外 Ghostty 窗口将保持为纯 Fish 裸终端，不会再次触发自动挂载，方便按需使用。
 
 **模式系统**：Zellij 有多个模式，按 `Ctrl + p/t/n/h/s/o/a` 直接进入对应模式，按 `Ctrl + g` 进入锁定模式（禁用所有快捷键）。
 
@@ -960,7 +953,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | 分页器 | 无 | `MANPAGER` 使用 bat 语法高亮 | Man 手册页更易读 |
 | Homebrew 自动更新 | 启用 | `HOMEBREW_NO_AUTO_UPDATE=1` | 避免每次安装包时卡在更新 |
 | Fisher 插件路径 | `~/.config/fish` | `~/.local/share/fisher` | 隔离第三方插件，保持配置目录纯净 |
-| Zellij 自动启动 | 不自动启动 | 在 Ghostty 中自动启动 | 无需手动 `zellij`，同时排除 SSH/Quick Terminal 等场景 |
+| Zellij 自动启动 | 不自动启动 | 在 Ghostty 中自动启动 | Ghostty 原生接管启动，无需手动输入 `zellij`，未安装时自动 fallback 到纯 Fish |
 
 **键位变更：**
 | 改动 | 说明 |

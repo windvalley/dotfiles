@@ -496,6 +496,7 @@ aichat hi
 |--------|------|
 | `Cmd + Shift + ,` | Reload config after editing |
 | `Cmd + ;` | Open Quick Terminal (custom shortcut) |
+| `Cmd + n` | Open a new window (plain Fish terminal, skips Zellij auto-start) |
 
 > [!NOTE]
 > It is recommended to use Zellij tabs and panes instead of Ghostty's native tabs and splits, so you get more flexible layout control and cross-session persistence.
@@ -506,15 +507,7 @@ aichat hi
 
 **Config file**: `~/.config/zellij/config.kdl`
 
-**Auto-start**: This setup integrates Zellij auto-start logic in Fish. Opening a new terminal window automatically starts or attaches to a Zellij session. It is skipped automatically in the following cases:
-- Already inside a Zellij session
-- Connected over SSH
-- In Ghostty Quick Terminal
-- Environment variable `ZELLIJ_AUTO_DISABLE` is set
-- `zellij setup --check` fails its config preflight (it automatically falls back to plain Fish and prints repair hints)
-
-> [!TIP]
-> If Zellij breaks and prevents the terminal from opening normally, run `set -Ux ZELLIJ_AUTO_DISABLE 1` in another terminal to disable auto-start permanently.
+**Auto-start**: This setup integrates Zellij auto-start logic directly in Ghostty (via `initial-command`). Opening the **first** terminal window automatically starts or attaches to a Zellij session. If Zellij is not installed, it automatically falls back to a plain Fish terminal. Any additional terminal windows opened via `Cmd + n` will remain as plain Fish terminals and will not trigger the auto-attach logic again, giving you the flexibility to use a raw shell when needed.
 
 **Mode system**: Zellij has multiple modes. Press `Ctrl + p/t/n/h/s/o/a` to enter the corresponding mode directly. Press `Ctrl + g` to enter locked mode, which disables all shortcuts.
 
@@ -961,7 +954,7 @@ This project makes a series of intentional customizations on top of the default 
 | Pager | None | `MANPAGER` uses bat syntax highlighting | Makes man pages easier to read |
 | Homebrew auto-update | Enabled | `HOMEBREW_NO_AUTO_UPDATE=1` | Avoid waiting on updates during every package install |
 | Fisher plugin path | `~/.config/fish` | `~/.local/share/fisher` | Isolate third-party plugins and keep the config directory clean |
-| Zellij auto-start | Disabled | Auto-start inside Ghostty | No need to launch `zellij` manually, while excluding SSH / Quick Terminal and similar cases |
+| Zellij auto-start | Disabled | Auto-start inside Ghostty | Ghostty handles auto-start natively; no need to manually type `zellij`, and falls back to Fish if uninstalled |
 
 **Keybinding changes:**
 | Change | Description |
