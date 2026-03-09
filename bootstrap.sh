@@ -19,7 +19,7 @@ if [ "$(uname -s)" != "Darwin" ]; then
     exit 1
 fi
 
-DOTFILES_DIR="$HOME/dotfiles"
+DEFAULT_DOTFILES_DIR="$HOME/dotfiles"
 REPO_URL="https://github.com/windvalley/dotfiles.git"
 
 if ! command -v git &> /dev/null; then
@@ -43,7 +43,7 @@ if ! command -v git &> /dev/null; then
 fi
 
 # Allow user to specify a custom target directory via DOTFILES_DIR environment variable
-TARGET_DIR="${DOTFILES_DIR:-$HOME/dotfiles}"
+TARGET_DIR="${DOTFILES_DIR:-$DEFAULT_DOTFILES_DIR}"
 
 if [ -d "$TARGET_DIR" ]; then
     error "Target directory already exists at $TARGET_DIR."
