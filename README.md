@@ -1027,6 +1027,18 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 如果在安装或使用过程中遇到问题，请先参考以下常见高频问题的解决办法：
 
 
+**Q: 如何脱离鼠标将命令行拷贝到 macOS 系统剪贴板？**
+> **A:** 在 Fish 交互式环境中（本项目已默认开启 Vi 模式），为你提供了以下极简的纯键盘方式：
+> - 按 `Esc`（或 `Ctrl+[`）进入 Normal 模式，然后按下 `<Space>y`（空格键后跟 y），当前整条命令行就会瞬间拷贝到 macOS 系统剪贴板，随后就可以通过 `Cmd+v` 进行粘贴了。
+
+**Q: 如何脱离鼠标拷贝 Zellij 面板 (pane) 中的指定内容？**
+> **A:** 在 Zellij 中，你可以通过以下纯键盘组合技完成精准拷贝：
+> 1. 按 `Ctrl + s` 进入 Scroll（滚动）模式。
+> 2. 按 `e` 将当前整个面板的输出缓冲区内容在 Helix 编辑器中打开。
+> 3. 在 Helix 中，使用 `v` 进入选择模式并配合方向键（或 `w/b`、`/` 搜索）精准选中所需内容。
+> 4. 按 `<Space>y` 将选中内容直接拷贝到 macOS 系统剪贴板。
+> 5. 按 `:q` 退出 Helix，即可无缝回到 Zellij 面板。
+
 **Q: 打开 VS Code 集成终端无法正常显示图标，看到一堆豆腐块/乱码/问号，如何解决？**
 > **A:** 这通常是因为 VS Code 没有正确配置支持完整图标的 Nerd Font 和连字。你可以在终端里执行 `hx ~/Library/Application\ Support/Code/User/settings.json`（或通过命令面板打开用户设置 JSON），在其中加入以下配置来解决：
 > ```json

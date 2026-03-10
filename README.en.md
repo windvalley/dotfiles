@@ -1028,6 +1028,18 @@ This project makes a series of intentional customizations on top of the default 
 If you encounter issues during installation or usage, please first refer to the solutions for these common high-frequency problems:
 
 
+**Q: How do I copy a command line to the macOS system clipboard without a mouse?**
+> **A:** In the Fish interactive environment (which has Vi mode enabled by default), you can use the following precise keyboard-driven methods:
+> - Press `Esc` (or `Ctrl+[`) to enter Normal mode, then press `<Space>y` (Space followed by y). The entire current command line will be instantly copied to the system clipboard, and you can paste it anywhere using `Cmd+v`.
+
+**Q: How do I copy specific content from a Zellij pane without using a mouse?**
+> **A:** In Zellij, you can achieve precise copying through the following keyboard combo:
+> 1. Press `Ctrl + s` to enter Scroll mode.
+> 2. Press `e` to open the entire scrollback buffer of the current pane in the Helix editor.
+> 3. Inside Helix, press `v` to enter select mode, then use motion keys (or `w/b`, `/` for search) to select the exact text you want.
+> 4. Press `<Space>y` to yank the selected text directly to the macOS system clipboard.
+> 5. Press `:q` to exit Helix and seamlessly return to your Zellij pane.
+
 **Q: The VS Code integrated terminal fails to display icons properly, showing a bunch of "tofu blocks" / garbled text / question marks. How can I fix this?**
 > **A:** This is usually because VS Code is not configured to use a Nerd Font with full icon support and ligatures. You can fix this by running `hx ~/Library/Application\ Support/Code/User/settings.json` in your terminal (or opening User Settings JSON from the Command Palette), and adding the following lines:
 > ```json
