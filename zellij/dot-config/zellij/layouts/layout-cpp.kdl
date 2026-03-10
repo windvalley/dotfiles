@@ -1,0 +1,30 @@
+layout {
+    default_tab_template {
+        pane size=1 borderless=true {
+            plugin location="zellij:compact-bar"
+        }
+        children
+        pane size=2 borderless=true {
+            plugin location="zellij:status-bar"
+        }
+    }
+
+    // ── Tab 1: Editor ──
+    tab name="code" focus=true {
+        pane name="editor" size="70%" focus=true
+        pane name="terminal" size="30%"
+    }
+
+    // ── Tab 2: Build & Debug ──
+    tab name="build" {
+        pane split_direction="vertical" {
+            pane name="make/cmake"
+            pane name="shell"
+        }
+    }
+
+    // ── Tab 3: Misc ──
+    tab name="misc" {
+        pane
+    }
+}

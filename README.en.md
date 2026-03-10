@@ -576,10 +576,10 @@ aichat hi
 | `Cmd + 1-9` | Switch to a specific tab |
 
 **Layout**:
-- **Default layout**: `dev-workspace`
-- **Layout definition**: `~/.config/zellij/layouts/dev-workspace.kdl`
-- **Modify layout**: edit that file to define your own panes and tab structure
-- **Load layout manually**: `zellij --layout <layout_name>`
+- **Default layout**: `dev-workspace` (defined at `~/.config/zellij/layouts/dev-workspace.kdl`)
+- **Built-in language-specific layouts**: Includes specialized workspace layouts such as `layout-go`, `layout-rust`, `layout-python`, `layout-node`, `layout-cpp`, and `layout-fullstack`, providing out-of-the-box tailored pane splits and functional tabs.
+- **Smart Launcher**: Use the custom `zj` command to launch Zellij from any directory. In a **bare terminal**, it auto-detects the project structure and smartly selects the tailored layout to create or reattach to a session. To prevent nesting, if executed from **inside an active Zellij session**, it intelligently pops up the Session Manager floating window for quick switching.
+- **Load layout manually**: `zellij --layout <layout_name>` (e.g., `zellij --layout layout-go`)
 
 ---
 
@@ -624,6 +624,7 @@ aichat hi
 | `s [query]` | Parse hosts from `~/.ssh/config`, choose one via fzf, then establish the SSH connection |
 | `rec [name]` | Minimal terminal screencast tool based on asciinema, supporting record, replay (`rec play`), and web upload (`rec upload`) |
 | `gtd <tag>` | Delete a Git tag locally and remotely in one command |
+| `zj` | Smart project-aware Zellij launcher. Auto-selects language layouts in bare terminals, or pops up the Session Manager if run inside an existing Zellij session |
 
 **Built-in Abbreviations**:
 

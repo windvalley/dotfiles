@@ -576,9 +576,9 @@ aichat hi
 | `Cmd + 1-9` | 切换到指定标签页 |
 
 **布局**：
-- **默认布局**：`dev-workspace`
-- **布局定义位置**：`~/.config/zellij/layouts/dev-workspace.kdl`
-- **修改布局**：编辑上述文件，定义自己的分屏和标签页结构
+- **默认布局**：`dev-workspace`（定义于 `~/.config/zellij/layouts/dev-workspace.kdl`）
+- **内置特定语言布局**：内置了 `layout-go`, `layout-rust`, `layout-python`, `layout-node`, `layout-cpp`, `layout-fullstack` 等专属工作区布局，提供开箱即用的分屏与功能标签页。
+- **智能启动器**：使用本套配置定制的 `zj` 命令可在任意目录一键启动。在**裸终端**（纯 Fish）环境中，它会自动探测当前目录项目特征并智能选择专属布局进行会话创建或挂载（已有同名会话则直接复用）。为防止嵌套冲突，若在**已有的 Zellij 会话内部**执行该命令，它将直接唤起控制台的“会话管理器 (Session Manager)”悬浮窗供你快速切换所需会话。
 - **手动加载布局**：`zellij --layout <布局名>`
 
 ---
@@ -624,6 +624,7 @@ aichat hi
 | `s [query]` | 从 `~/.ssh/config` 中解析 Host 列表，通过 fzf 交互选择并建立 SSH 连接 |
 | `rec [name]` | 极简终端操作录屏工具 (基于 asciinema)，支持录制、回放(`rec play`)与网页分享(`rec upload`) |
 | `gtd <tag>` | 一键同时删除本地和远端的 Git Tag |
+| `zj` | 智能项目感知型 Zellij 启动器。在裸终端中可根据目录特征自动选择对应语言布局；在 Zellij 内部执行则会唤起会话管理器悬浮窗 |
 
 **内置缩写 (Abbreviations)**：
 
