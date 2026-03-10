@@ -1,4 +1,12 @@
 function aic -d "根据代码变更自动生成 Git Commit 信息"
+    if test (count $argv) -gt 0; and contains -- $argv[1] -h --help
+        echo "AI-Powered Commit Tool"
+        echo ""
+        echo "Usage:"
+        echo "  aic                   Analyze staged changes and generate commit message"
+        echo "  aic -h | --help       Show this help message"
+        return 0
+    end
     # 打印工具简介
     echo -e "\n🚀 [\e[1maic\e[0m] \e[36mAI-Powered Commit Tool\e[0m"
     echo -e "   \e[90mWorkflow: Analyze Staged Changes -> AI Gen Commit Message -> Commit\e[0m\n"

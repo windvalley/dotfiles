@@ -1,5 +1,12 @@
 function proxy -d "开启终端代理 (HTTP/HTTPS/SOCKS5)"
-    # 根据你使用的代理客户端修改端口号，Clash 默认 7890，V2Ray 默认 10809
+    if test (count $argv) -gt 0; and contains -- $argv[1] -h --help
+        echo "Enable terminal proxy (HTTP/HTTPS/SOCKS5)"
+        echo ""
+        echo "Usage:"
+        echo "  proxy                 Enable proxy for the current session (127.0.0.1:7890)"
+        echo "  proxy -h | --help     Show this help message"
+        return 0
+    end
     set -gx http_proxy "http://127.0.0.1:7890"
     set -gx https_proxy "http://127.0.0.1:7890"
     set -gx all_proxy "socks5://127.0.0.1:7890"

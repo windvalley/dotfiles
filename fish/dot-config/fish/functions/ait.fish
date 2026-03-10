@@ -1,4 +1,12 @@
 function ait -d "自动更新 Changelog 并提交打 Tag 发版 (AI Release)"
+    if test (count $argv) -gt 0; and contains -- $argv[1] -h --help
+        echo "AI-Powered Release Tool"
+        echo ""
+        echo "Usage:"
+        echo "  ait                   Analyze commits since last tag and generate changelog"
+        echo "  ait -h | --help       Show this help message"
+        return 0
+    end
     # 打印工具简介
     echo -e "\n🚀 [\e[1mait\e[0m] \e[36mAI-Powered Release Tool\e[0m"
     echo -e "   \e[90mWorkflow: Analyze Commits -> AI Gen Changelog -> Commit CHANGELOG.md -> Tag\e[0m\n"

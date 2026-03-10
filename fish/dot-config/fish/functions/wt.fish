@@ -1,5 +1,17 @@
 function wt -d "查询天气预报 (支持指定城市或使用 all 参数查询所有热点城市)"
-    set -l city_arg "$argv[1]"
+    if test (count $argv) -gt 0; and contains -- $argv[1] -h --help
+        echo "Weather Forecast Tool"
+        echo ""
+        echo "Usage:"
+        echo "  wt [city]             Query weather for a specific city (default: Beijing)"
+        echo "  wt all                Query weather overview for all major cities"
+        echo "  wt -h | --help        Show this help message"
+        echo ""
+        echo "Supported Cities:"
+        echo "  Beijing, Shanghai, Guangzhou, Shenzhen, Hangzhou, Chengdu, Nanjing, "
+        echo "  Wuhan, Xi'an, Harbin, Sanya, Haikou, Beihai, Xishuangbanna"
+        return 0
+    end
 
     # 内部城市映射函数
     function __get_city_info

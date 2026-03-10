@@ -1,4 +1,12 @@
 function aipr -d "根据分支变更自动生成 Pull Request 描述"
+    if test (count $argv) -gt 0; and contains -- $argv[1] -h --help
+        echo "AI-Powered PR Description Tool"
+        echo ""
+        echo "Usage:"
+        echo "  aipr [target_branch]  Generate PR description against target_branch (default: main)"
+        echo "  aipr -h | --help      Show this help message"
+        return 0
+    end
     # 打印工具简介
     echo -e "\n🚀 [\e[1maipr\e[0m] \e[36mAI-Powered PR Description Tool\e[0m"
     echo -e "   \e[90mWorkflow: Analyze Branch Diff -> AI Gen PR Description -> Copy / Create PR\e[0m\n"

@@ -1,10 +1,14 @@
 function rec -d "极简终端录屏与回放 (基于 asciinema)"
-    # 用法:
-    # rec             -> 录制为 my_demo.cast
-    # rec demo2       -> 录制为 demo2.cast
-    # rec play        -> 回放 my_demo.cast
-    # rec play demo2  -> 回放 demo2.cast
-    # rec upload      -> 上传供网页分享
+    if test (count $argv) -gt 0; and contains -- $argv[1] -h --help help
+        echo "Run and playback terminal sessions (based on asciinema)"
+        echo ""
+        echo "Usage:"
+        echo "  rec [filename]        Record a new session to [filename].cast (default: my_demo.cast)"
+        echo "  rec play [filename]   Playback the specified or default session"
+        echo "  rec upload [filename] Upload the session to share via web"
+        echo "  rec help | -h         Show this help message"
+        return 0
+    end
     
     set -l act "$argv[1]"
     # 如果第一个参数是 play 或 upload，则真正的名字在第二个参数；否则直接是第一个参数
