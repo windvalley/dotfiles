@@ -36,6 +36,7 @@
 - [3. 安装步骤](#3-%E5%AE%89%E8%A3%85%E6%AD%A5%E9%AA%A4)
   - [3.1 一键安装 (推荐)](#31-%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85-%E6%8E%A8%E8%8D%90)
   - [3.2 手动安装步骤 (可选)](#32-%E6%89%8B%E5%8A%A8%E5%AE%89%E8%A3%85%E6%AD%A5%E9%AA%A4-%E5%8F%AF%E9%80%89)
+  - [3.3 卸载与恢复指南 (Uninstallation)](#33-%E5%8D%B8%E8%BD%BD%E4%B8%8E%E6%81%A2%E5%A4%8D%E6%8C%87%E5%8D%97-uninstallation)
 - [4. 配置指南](#4-%E9%85%8D%E7%BD%AE%E6%8C%87%E5%8D%97)
   - [4.1 配置 fish](#41-%E9%85%8D%E7%BD%AE-fish)
   - [4.2 从 zsh 迁移](#42-%E4%BB%8E-zsh-%E8%BF%81%E7%A7%BB)
@@ -63,8 +64,9 @@
   - [🐟 Fish — Shell 行为与键位](#-fish--shell-%E8%A1%8C%E4%B8%BA%E4%B8%8E%E9%94%AE%E4%BD%8D)
   - [✏️ Helix — 编辑器键位与显示](#-helix--%E7%BC%96%E8%BE%91%E5%99%A8%E9%94%AE%E4%BD%8D%E4%B8%8E%E6%98%BE%E7%A4%BA)
   - [🔧 Git — 工作流增强](#-git--%E5%B7%A5%E4%BD%9C%E6%B5%81%E5%A2%9E%E5%BC%BA)
-- [8. 致谢 (Acknowledgments)](#8-%E8%87%B4%E8%B0%A2-acknowledgments)
-- [9. 开源协议 (License)](#9-%E5%BC%80%E6%BA%90%E5%8D%8F%E8%AE%AE-license)
+- [8. 常见问题 (FAQ / Troubleshooting)](#8-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98-faq--troubleshooting)
+- [9. 致谢 (Acknowledgments)](#9-%E8%87%B4%E8%B0%A2-acknowledgments)
+- [10. 开源协议 (License)](#10-%E5%BC%80%E6%BA%90%E5%8D%8F%E8%AE%AE-license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -266,6 +268,24 @@ stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles ghostty helix z
 mkdir -p "$HOME/.local/bin"
 stow --restow --target="$HOME/.local/bin" --dir="$HOME/dotfiles" bin
 ```
+
+### 3.3 卸载与恢复指南 (Uninstallation)
+
+如果你在尝试后觉得本套配置不符合你的习惯，可通过以下步骤干净地卸载并恢复系统默认环境：
+
+1. **取消所有软链接**：
+   ```sh
+   cd ~/dotfiles
+   make unstow
+   ```
+2. **恢复系统默认 Shell**（例如改回 zsh）：
+   ```sh
+   chsh -s /bin/zsh
+   ```
+3. **还原备份的配置**：
+   在最初执行 `install.sh` 时，脚本会自动将你原有的配置目录重命名为 `*.bak`（例如 `~/.config/fish.bak`）。你可以找到它们并把后缀去掉，以恢复原状。
+
+---
 
 ## 4. 配置指南
 
@@ -1002,7 +1022,46 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | 用户信息 | 硬编码在配置中 | 通过 `include` 引入本地文件 | 防止敏感信息入库 |
 | 主题解耦 | 切换配色会导致仓库变脏 | 使用 Git Clean Filter 自动处理 | 确保 local 配色变更不产生 unstaged changes |
 
-## 8. 致谢 (Acknowledgments)
+## 8. 常见问题 (FAQ / Troubleshooting)
+
+如果在安装或使用过程中遇到问题，请先参考以下常见高频问题的解决办法：
+
+
+**Q: 打开 VS Code 集成终端无法正常显示图标，看到一堆豆腐块/乱码/问号，如何解决？**
+> **A:** 这通常是因为 VS Code 没有正确配置支持完整图标的 Nerd Font 和连字。你可以在终端里执行 `hx ~/Library/Application\ Support/Code/User/settings.json`（或通过命令面板打开用户设置 JSON），在其中加入以下配置来解决：
+> ```json
+> {
+>   "terminal.integrated.fontFamily": "'JetBrainsMono Nerd Font', 'FiraCode Nerd Font', monospace",
+>   "editor.fontFamily": "'JetBrainsMono Nerd Font', 'FiraCode Nerd Font', Menlo, Monaco, 'Courier New', monospace",
+>   "editor.fontLigatures": true
+> }
+> ```
+
+**Q: 在 VS Code 集成终端中执行 `zi` 命令（或任何 fzf 交互）时，按 `Ctrl + j/k/n/p` 无法上下选择，反而输出乱码怎么办？**
+> **A:** 这是因为 VS Code 默认拦截了这些控制键，没有直接传递给底层的 Shell 应用程序。你可以通过命令面板打开“用户设置 JSON”（或执行 `hx ~/Library/Application\ Support/Code/User/settings.json`），额外加入以下配置并重启 VS Code 即可解决：
+> ```json
+> {
+>   "terminal.integrated.sendKeybindingsToShell": false
+> }
+> ```
+
+**Q: 终端里的很多快捷键（如分屏、翻页）突然失效了，毫无反应？**
+> **A:** 这往往是因为不小心按下了 `Ctrl + g` 进入了 Zellij 的 **Locking 模式（锁定模式）**。在锁定模式下，Zellij 会拦截自身的所有快捷键绑定以便将其“透传”给内部程序。只需再次按下 `Ctrl + g` 即可解锁并恢复正常。
+
+**Q: 使用 `aichat` 的快捷键或者命令时，提示找不到模型或网络超时？**
+> **A:** 请检查两点：
+> 1. 请确认您在 `~/.config/fish/config.local.fish` 中正确配置了模型名称（如 `AICHAT_MODEL`）和对应的 API Key。配置后务必执行 `exec fish` 重新加载环境或重启终端。
+> 2. 如果您使用的模型 API 访问受限（如访问 OpenAI），您可能需要在终端开启全局代理。本配置内置了 `proxy` 和 `unproxy` 快捷指令来帮助你一键开关终端代理。
+
+**Q: 在 Helix 编辑器里写代码时，为什么没有语法提示或代码检查？**
+> **A:** Helix 依赖各种语言服务器（LSP）来提供智能补全能力。本项目通过 `mise` 统一管理 LSP：
+> - 请确保在终端里执行过 `mise install` 获取最新版本的 LSP 工具链。
+> - 在 Helix 内输入 `:log` 查阅日志，或在终端执行 `hx --health` 确认对应语言的 LSP 启动是否报错。
+> - 特定语言（如 C/C++ 或 Rust）的 LSP 推荐使用 brew 独立安装以获得最稳定支持（例如 `brew install llvm` 或 `brew install rust-analyzer`）。
+
+---
+
+## 9. 致谢 (Acknowledgments)
 
 本项目的诞生离不开现代开源社区的繁荣生态，特别感谢以下卓越的项目构建了这套工作流的基石：
 
@@ -1019,7 +1078,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
 ---
 
-## 9. 开源协议 (License)
+## 10. 开源协议 (License)
 
 本项目采用 [MIT License](LICENSE) 开源协议。
 

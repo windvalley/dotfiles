@@ -35,6 +35,7 @@ Core stack: Ghostty (terminal) + Zellij (multiplexer) + Fish (shell) + Helix (ed
 - [3. Installation](#3-installation)
   - [3.1 One-Shot Install (Recommended)](#31-one-shot-install-recommended)
   - [3.2 Manual Installation (Optional)](#32-manual-installation-optional)
+  - [3.3 Uninstallation & Recovery Guide](#33-uninstallation--recovery-guide)
 - [4. Configuration Guide](#4-configuration-guide)
   - [4.1 Configure Fish](#41-configure-fish)
   - [4.2 Migrate from Zsh](#42-migrate-from-zsh)
@@ -62,8 +63,9 @@ Core stack: Ghostty (terminal) + Zellij (multiplexer) + Fish (shell) + Helix (ed
   - [🐟 Fish — Shell Behavior and Keybindings](#-fish--shell-behavior-and-keybindings)
   - [✏️ Helix — Editor Keybindings and Display](#-helix--editor-keybindings-and-display)
   - [🔧 Git — Workflow Enhancements](#-git--workflow-enhancements)
-- [8. Acknowledgments](#8-acknowledgments)
-- [9. License](#9-license)
+- [8. FAQ / Troubleshooting](#8-faq--troubleshooting)
+- [9. Acknowledgments](#9-acknowledgments)
+- [10. License](#10-license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
@@ -265,6 +267,24 @@ stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles ghostty helix z
 mkdir -p "$HOME/.local/bin"
 stow --restow --target="$HOME/.local/bin" --dir="$HOME/dotfiles" bin
 ```
+
+### 3.3 Uninstallation & Recovery Guide
+
+If you find that this configuration doesn't suit your habits after trying it out, you can safely uninstall and explicitly revert your system to its default state through the following steps:
+
+1. **Remove all symlinks**:
+   ```sh
+   cd ~/dotfiles
+   make unstow
+   ```
+2. **Restore your system default Shell** (e.g., reverting to zsh):
+   ```sh
+   chsh -s /bin/zsh
+   ```
+3. **Restore your backed-up configurations**:
+   When you initially ran `install.sh`, the script automatically renamed your existing configuration directories to `*.bak` (e.g., `~/.config/fish.bak`). You can locate these directories, remove the `.bak` suffix, and overwrite the symlink to restore them to their original state.
+
+---
 
 ## 4. Configuration Guide
 
@@ -1003,7 +1023,46 @@ This project makes a series of intentional customizations on top of the default 
 | User identity | Hardcoded in config | Injected via `include` local files | Prevent sensitive identity data from entering the repo |
 | Theme decoupling | Changing themes dirties the repo | Handled through Git Clean Filter automatically | Ensure local theme switches do not produce unstaged changes |
 
-## 8. Acknowledgments
+## 8. FAQ / Troubleshooting
+
+If you encounter issues during installation or usage, please first refer to the solutions for these common high-frequency problems:
+
+
+**Q: The VS Code integrated terminal fails to display icons properly, showing a bunch of "tofu blocks" / garbled text / question marks. How can I fix this?**
+> **A:** This is usually because VS Code is not configured to use a Nerd Font with full icon support and ligatures. You can fix this by running `hx ~/Library/Application\ Support/Code/User/settings.json` in your terminal (or opening User Settings JSON from the Command Palette), and adding the following lines:
+> ```json
+> {
+>   "terminal.integrated.fontFamily": "'JetBrainsMono Nerd Font', 'FiraCode Nerd Font', monospace",
+>   "editor.fontFamily": "'JetBrainsMono Nerd Font', 'FiraCode Nerd Font', Menlo, Monaco, 'Courier New', monospace",
+>   "editor.fontLigatures": true
+> }
+> ```
+
+**Q: In the VS Code integrated terminal, when using the `zi` command (or any fzf interactive prompt), pressing `Ctrl + j/k/n/p` outputs garbled text instead of navigating up or down. How do I fix this?**
+> **A:** This happens because VS Code intercepts these control keys by default instead of passing them directly to the underlying shell applications. You can fix this by opening User Settings JSON from the Command Palette (or by running `hx ~/Library/Application\ Support/Code/User/settings.json`), adding the following configuration, and restarting VS Code:
+> ```json
+> {
+>   "terminal.integrated.sendKeybindingsToShell": false
+> }
+> ```
+
+**Q: Many shortcuts in the terminal (like split screen, paging) suddenly stopped working?**
+> **A:** This often happens because `Ctrl + g` was accidentally pressed, entering Zellij's **Locking Mode**. In locked mode, Zellij intercepts all of its own shortcut bindings to "pass them through" to internal programs without conflicts. Simply press `Ctrl + g` again to unlock and return to normal.
+
+**Q: When using `aichat` shortcuts or commands, it prompts that the model cannot be found or network timeout?**
+> **A:** Please check two things:
+> 1. Ensure you have correctly configured the model name (e.g., `AICHAT_MODEL`) and the corresponding API Key in `~/.config/fish/config.local.fish`. After configuring, be sure to run `exec fish` to reload the environment or restart the terminal.
+> 2. If the API of the model you are using is access-restricted (e.g., accessing OpenAI from certain regions), you may need to enable a global proxy in your terminal. This configuration has built-in `proxy` and `unproxy` shortcuts to help you toggle the terminal proxy with one click.
+
+**Q: While writing code in the Helix editor, why is there no syntax hinting or code checking?**
+> **A:** Helix relies on Language Servers (LSP) to provide intelligent completion capabilities. This project centrally manages LSPs via `mise`:
+> - Make sure you have run `mise install` in the terminal to fetch the latest LSP toolchain.
+> - Type `:log` in Helix to read the logs, or run `hx --health` in the terminal to verify if the LSP startup for the corresponding language reported any errors.
+> - LSPs for certain languages (like C/C++ or Rust) are recommended to be independently installed using brew for optimal stability (e.g., `brew install llvm` or `brew install rust-analyzer`).
+
+---
+
+## 9. Acknowledgments
 
 This project would not exist without the flourishing modern open-source ecosystem. Special thanks to the following outstanding projects that form the foundation of this workflow:
 
@@ -1020,7 +1079,7 @@ This project would not exist without the flourishing modern open-source ecosyste
 
 ---
 
-## 9. License
+## 10. License
 
 This project is released under the [MIT License](LICENSE).
 
