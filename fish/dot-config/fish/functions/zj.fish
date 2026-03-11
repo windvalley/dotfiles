@@ -15,21 +15,38 @@ function zj -d "项目感知型的 Zellij 启动器"
         echo "  -h, --help    显示此帮助信息并退出"
         echo ""
         echo "功能:"
-        echo "  1. 如果已在 Zellij 会话中，启动会话管理器。"
+        echo "  1. 如果已在 Zellij 会话中，通过新 Ghostty 窗口创建/连接会话。"
         echo "  2. 如果已存在同名会话，自动连接。"
         echo "  3. 自动检测全栈项目 (包含前后端目录)。"
         echo "  4. 自动检测单体项目 (Node, Go, Rust, Python, C++, etc.)。"
+        echo ""
+        echo "提示: 切换已有会话请使用 Ctrl+o w 打开会话管理器。"
         return 0
     end
 
-    # 如果已经在一个 Zellij 会话中，提供便捷切换建议
+    # 如果已经在一个 Zellij 会话中，通过 Ghostty AppleScript 在新窗口中创建/连接会话
+    # 新窗口中不存在 ZELLIJ 环境变量，zj 会正常走创建/attach 流程
     if set -q ZELLIJ
-        echo "Already inside a Zellij session."
-        echo "Tip: Press 'Ctrl + o' then 'w' to switch sessions interactively."
-        echo "Launching Session Manager..."
-        zellij action launch-or-focus-plugin zellij:session-manager --floating
+        # 动态获取当前 fish 的完整路径，兼容 Intel (/usr/local/bin) 和 Apple Silicon (/opt/homebrew/bin)
+        set -l fish_path (status fish-path)
+        echo "Opening new Ghostty window to create/attach Zellij session..."
+        osascript -e '
+tell application "Ghostty"
+    set cfg to new surface configuration
+    set initial working directory of cfg to "'"$PWD"'"
+    set command of cfg to "'"$fish_path"' -c \"zj\""
+    set win to new window with configuration cfg
+end tell
+' 2>/dev/null
+        if test $status -ne 0
+            echo "Error: Failed to open new Ghostty window via AppleScript."
+            echo "Please ensure Ghostty is running and AppleScript is enabled (macos-applescript = true)."
+            return 1
+        end
         return 0
     end
+
+    # 以下是裸终端中的正常创建/attach 逻辑
 
     # 生成当前基于目录的会话名 (移除非字母数字_-字符以防格式问题)
     set -l session_name (basename $PWD | string replace -a -r '[^a-zA-Z0-9_-]' '_')
@@ -62,7 +79,7 @@ function zj -d "项目感知型的 Zellij 启动器"
     if test $has_fe -eq 1; and test $has_be -eq 1
         set layout "layout-fullstack"
         echo "Detected fullstack workspace, starting layout '$layout' with fe='$fe_dir', be='$be_dir'"
-        
+
         set -l tmp_layout "/tmp/zellij_fullstack_"(random)".kdl"
         cat ~/.config/zellij/layouts/layout-fullstack.kdl | sed "s|{{fe_dir}}|$fe_dir|g" | sed "s|{{be_dir}}|$be_dir|g" > "$tmp_layout"
         zellij --layout "$tmp_layout" options --session-name "$session_name" --attach-to-session false

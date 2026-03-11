@@ -592,7 +592,7 @@ aichat hi
 **Layout**:
 - **Default layout**: `dev-workspace` (defined at `~/.config/zellij/layouts/dev-workspace.kdl`)
 - **Built-in language-specific layouts**: Includes specialized workspace layouts such as `layout-go`, `layout-rust`, `layout-python`, `layout-node`, `layout-cpp`, and `layout-fullstack`, providing out-of-the-box tailored pane splits and functional tabs.
-- **Smart Launcher**: Use the custom `zj` command to launch Zellij from any directory. In a **bare terminal**, it auto-detects the project structure and smartly selects the tailored layout to create or reattach to a session. To prevent nesting, if executed from **inside an active Zellij session**, it intelligently pops up the Session Manager floating window for quick switching.
+- **Smart Launcher**: Use the custom `zj` command to launch Zellij from any directory. It auto-detects the project structure and smartly selects a tailored layout. The command is **terminal-aware**: in a **bare terminal**, it starts directly; if run from **inside an active Zellij session**, it automatically **opens a new Ghostty window** via AppleScript to create or reattach to the session, elegantly avoiding nesting restrictions. Multiple Ghostty windows/sessions created this way can be quickly toggled using the `Ctrl + \`` shortcut.
 - **Load layout manually**: `zellij --layout <layout_name>` (e.g., `zellij --layout layout-go`)
 
 ---
@@ -641,7 +641,7 @@ aichat hi
 | `gtd <tag>` | Delete a Git tag locally and remotely in one command |
 | `gdoctor` | Git repository health diagnostic tool: detects interrupted operations, working tree status, remote sync, stale branches, loose objects, and data integrity, with actionable fix suggestions |
 | `lg` | Launch `lazygit` terminal UI |
-| `zj` | Smart project-aware Zellij launcher. Auto-selects language layouts in bare terminals, or pops up the Session Manager if run inside an existing Zellij session |
+| `zj` | Smart project-aware Zellij launcher. Unified behavior to "prepare a session for the current directory". Automatically opens a new window if run inside Zellij to avoid nesting conflicts |
 
 > [!TIP]
 > In non-terminal environments (e.g., browsers, messaging apps, IDEs), you can use Maccy's global shortcut `Cmd + Shift + C` to open the clipboard selection panel directly, without entering the terminal. The `p` command is an enhanced TUI version designed specifically for terminal power users.
