@@ -13,6 +13,11 @@ function wt -d "查询天气预报 (支持指定城市或使用 all 参数查询
         return 0
     end
 
+    set -l city_arg beijing
+    if test (count $argv) -gt 0
+        set city_arg $argv[1]
+    end
+
     # 内部城市映射函数
     function __get_city_info
         set -l input (string lower -- "$argv[1]")
