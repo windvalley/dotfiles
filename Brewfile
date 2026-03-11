@@ -61,3 +61,7 @@ cask "ghostty@tip"
 cask "font-jetbrains-mono-nerd-font"
 # 轻量级 Docker 容器与 Linux 虚拟机管理工具 (替代 Docker Desktop)
 cask "orbstack"
+# 剪贴板历史管理工具
+cask "maccy"
+# 终端高清晰度图像查看器 (支持 kitty protocol, 用于 fzf 预览)
+brew "chafa"

@@ -144,13 +144,15 @@ The repository root provides an `install.sh` script that automates almost the en
 
 **The script performs the following:**
 1. **Environment preparation**: Checks for and installs **Homebrew** automatically if it is not already installed.
-2. **Core dependencies**: Reads `Brewfile` and installs all CLI tools (stow, zellij, fish, helix, mise, gh, bat, eza, fzf, ripgrep, etc.) and GUI apps (Ghostty, OrbStack, JetBrains Mono font, etc.).
+2. **Core dependencies**: Reads `Brewfile` and installs all CLI tools (stow, zellij, fish, helix, mise, gh, bat, eza, fzf, ripgrep, chafa, etc.) and GUI apps (Ghostty, OrbStack, Maccy, JetBrains Mono font, etc.).
 3. **Font installation**: JetBrains Mono is installed through Brew by default, and the script **asks whether to install** other extended fonts (Maple Mono, Geist Mono).
 4. **Symlink setup**: Detects existing configs, backs them up automatically, then uses `stow` to symlink all configs, including the `bin` scripts, into the correct system locations.
-5. **Privacy template setup**: Automatically creates Git identity templates (`.gitconfig.local` / `.work`) and private environment variable templates (`config.local.fish`) in the user's home directory.
-6. **Shell initialization**: Sets **Fish** as the default shell and **automatically migrates PATH variables from your old Zsh setup** into Fish.
-7. **Plugin setup**: Installs the **Fisher** plugin manager and syncs all Fish plugins.
-8. **System optimization**: Prompts whether to apply **common macOS system preference tweaks** via `macos.sh`.
+5. **AI model sync**: Automatically runs `aichat --sync-models` to synchronize the default model catalog into the local index.
+6. **Runtime installation**: Installs core language runtimes via **Mise** (Go, Node, Bun, Python, Rust). LSP and other toolchains can be installed on demand later.
+7. **Privacy template setup**: Automatically creates Git identity templates (`.gitconfig.local` / `.work`), private environment variable templates (`config.local.fish`), and a Ghostty private config template (`config.local`) in the user's home directory.
+8. **Shell initialization**: Sets **Fish** as the default shell and **automatically migrates PATH variables from your old Zsh setup** into Fish.
+9. **Plugin setup**: Installs the **Fisher** plugin manager and syncs all Fish plugins.
+10. **System optimization**: Prompts whether to apply **common macOS system preference tweaks** via `macos.sh`.
 
 **Usage:**
 ```sh
@@ -202,11 +204,14 @@ brew install aichat
 # Modern cross-platform system resource monitor
 brew install btop
 
+# Clipboard history manager
+brew install --cask maccy
+
 # Fonts
 brew install --cask font-jetbrains-mono-nerd-font
 
 # Common tools
-brew install bat eza fzf zoxide grc gawk gnu-sed grep glow gh ripgrep shellcheck
+brew install bat eza fzf zoxide grc gawk gnu-sed grep glow gh ripgrep shellcheck chafa
 
 # Volume control
 brew install switchaudio-osx
@@ -220,6 +225,7 @@ brew install switchaudio-osx
 - `switchaudio-osx`: Provides `SwitchAudioSource`, used by `audio-volume`.
 - `grc`: Generic Colouriser. Combined with Fish plugins, it adds colored output enhancements to commands like `ping`, `ls`, `docker`, and `diff`.
 - `glow`: Terminal Markdown reader used by Helix preview features.
+- `chafa`: Terminal character image rendering utility, used for high-res image previews in the `p` (clipboard history) command.
 
 #### 3.2.2 Clone the Repository
 
@@ -621,10 +627,14 @@ aichat hi
 | `ait` | Auto-generate a changelog from Git history and create a tag |
 | `aip` | Plug-and-play AI prompt library. Interactively pick common development prompts and copy them to the clipboard automatically |
 | `b [query]` | Search for a file and preview it with bat. Opens directly if the query matches a single result |
+| `p [query]` | Preview and search macOS clipboard history via fzf, with native terminal image and text rendering. Auto-copies if the query matches a single result (depends on Maccy and chafa) |
 | `s [query]` | Parse hosts from `~/.ssh/config`, choose one via fzf, then establish the SSH connection |
 | `rec [name]` | Minimal terminal screencast tool based on asciinema, supporting record, replay (`rec play`), and web upload (`rec upload`) |
 | `gtd <tag>` | Delete a Git tag locally and remotely in one command |
 | `zj` | Smart project-aware Zellij launcher. Auto-selects language layouts in bare terminals, or pops up the Session Manager if run inside an existing Zellij session |
+
+> [!TIP]
+> In non-terminal environments (e.g., browsers, messaging apps, IDEs), you can use Maccy's global shortcut `Cmd + Shift + C` to open the clipboard selection panel directly, without entering the terminal. The `p` command is an enhanced TUI version designed specifically for terminal power users.
 
 **Built-in Abbreviations**:
 

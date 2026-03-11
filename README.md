@@ -148,13 +148,15 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 
 **该脚本将执行以下操作：**
 1. **环境准备**：检查并自动安装 **Homebrew**（如果尚未安装）。
-2. **核心依赖**：读取 `Brewfile`，安装所有 CLI 工具（stow, zellij, fish, helix, mise, gh, bat, eza, fzf, ripgrep 等）与 GUI 应用（Ghostty, OrbStack, JetBrains Mono 字体等）。
+2. **核心依赖**：读取 `Brewfile`，安装所有 CLI 工具（stow, zellij, fish, helix, mise, gh, bat, eza, fzf, ripgrep, chafa 等）与 GUI 应用（Ghostty, OrbStack, Maccy, JetBrains Mono 字体等）。
 3. **字体安装**：默认已通过 Brew 安装 JetBrains Mono，并**询问是否安装**其他扩展字体（Maple Mono, Geist Mono）。
 4. **软链配置**：自动识别已存在的配置并备份，然后使用 `stow` 将所有配置（含 `bin` 脚本）软链到对应的系统目录。
-5. **隐私配置模板**：自动在用户目录创建 Git 信息模板（`.gitconfig.local`/`.work`）和私密环境变量模板（`config.local.fish`）。
-6. **Shell 初始化**：将 **Fish** 设为默认 Shell，并**自动迁移原 Zsh 的 PATH 环境变量**到 Fish 中。
-7. **插件配置**：安装 **Fisher** 插件管理器并同步所有 Fish 插件。
-8. **系统优化**：提示是否应用 **macOS 常用系统偏好设置**（通过 `macos.sh`）。
+5. **AI 模型同步**：自动执行 `aichat --sync-models`，将默认配置引用的模型同步到本地索引。
+6. **运行时安装**：通过 **Mise** 安装核心语言运行时（Go, Node, Bun, Python, Rust），LSP 等工具链可稍后按需安装。
+7. **隐私配置模板**：自动在用户目录创建 Git 信息模板（`.gitconfig.local`/`.work`）、私密环境变量模板（`config.local.fish`）和 Ghostty 私有配置模板（`config.local`）。
+8. **Shell 初始化**：将 **Fish** 设为默认 Shell，并**自动迁移原 Zsh 的 PATH 环境变量**到 Fish 中。
+9. **插件配置**：安装 **Fisher** 插件管理器并同步所有 Fish 插件。
+10. **系统优化**：提示是否应用 **macOS 常用系统偏好设置**（通过 `macos.sh`）。
 
 **使用方法：**
 ```sh
@@ -207,11 +209,14 @@ brew install aichat
 # 现代、跨平台的系统资源监控工具
 brew install btop
 
+# 剪贴板历史管理工具
+brew install --cask maccy
+
 # 字体
 brew install --cask font-jetbrains-mono-nerd-font
 
 # 常用工具
-brew install bat eza fzf zoxide grc gawk gnu-sed grep glow gh ripgrep shellcheck
+brew install bat eza fzf zoxide grc gawk gnu-sed grep glow gh ripgrep shellcheck chafa
 
 # 音量控制
 brew install switchaudio-osx
@@ -225,6 +230,7 @@ brew install switchaudio-osx
 - `switchaudio-osx`: 提供 `SwitchAudioSource`，用于 `audio-volume`。
 - `grc`: 通用彩色输出查看器 (Generic Colouriser)，配合 fish 插件为 `ping` / `ls` / `docker` / `diff` 等命令提供彩色输出增强。
 - `glow`: 终端 Markdown 阅读器，用于 Helix 预览功能。
+- `chafa`: 终端图像字符渲染工具，用于 `p` (剪贴板历史) 命令中的高清图片预览。
 
 #### 3.2.2 拉取仓库
 
@@ -621,10 +627,14 @@ aichat hi
 | `ait` | 自动根据 Git 变更历史生成 Changelog 并提交打 Tag |
 | `aip` | AI 即插即用指令库。交互式选择常用开发指挥语并自动复制到剪贴板 |
 | `b [query]` | 搜索文件并使用 bat 查看。若关键字匹配唯一结果则直接打开 |
+| `p [query]` | 基于 fzf 预览和搜索 macOS 剪贴板历史，支持终端原生渲染图片与富文本。若关键字匹配唯一结果则直接拷贝 (依赖 Maccy 与 chafa) |
 | `s [query]` | 从 `~/.ssh/config` 中解析 Host 列表，通过 fzf 交互选择并建立 SSH 连接 |
 | `rec [name]` | 极简终端操作录屏工具 (基于 asciinema)，支持录制、回放(`rec play`)与网页分享(`rec upload`) |
 | `gtd <tag>` | 一键同时删除本地和远端的 Git Tag |
 | `zj` | 智能项目感知型 Zellij 启动器。在裸终端中可根据目录特征自动选择对应语言布局；在 Zellij 内部执行则会唤起会话管理器悬浮窗 |
+
+> [!TIP]
+> 在非终端环境（如浏览器、微信、IDE 等）中，可以直接使用 Maccy 的全局快捷键 `Cmd + Shift + C` 调出剪贴板选择面板，无需进入终端。`p` 命令是专为终端重度用户设计的 TUI 增强版。
 
 **内置缩写 (Abbreviations)**：
 
