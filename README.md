@@ -631,6 +631,7 @@ aichat hi
 | `s [query]` | 从 `~/.ssh/config` 中解析 Host 列表，通过 fzf 交互选择并建立 SSH 连接 |
 | `rec [name]` | 极简终端操作录屏工具 (基于 asciinema)，支持录制、回放(`rec play`)与网页分享(`rec upload`) |
 | `gtd <tag>` | 一键同时删除本地和远端的 Git Tag |
+| `gdoctor` | Git 仓库健康诊断工具：检测中断操作、工作区状态、远程同步、冗余分支、松散对象及数据完整性，并给出修复建议 |
 | `zj` | 智能项目感知型 Zellij 启动器。在裸终端中可根据目录特征自动选择对应语言布局；在 Zellij 内部执行则会唤起会话管理器悬浮窗 |
 
 > [!TIP]

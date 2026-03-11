@@ -631,6 +631,7 @@ aichat hi
 | `s [query]` | Parse hosts from `~/.ssh/config`, choose one via fzf, then establish the SSH connection |
 | `rec [name]` | Minimal terminal screencast tool based on asciinema, supporting record, replay (`rec play`), and web upload (`rec upload`) |
 | `gtd <tag>` | Delete a Git tag locally and remotely in one command |
+| `gdoctor` | Git repository health diagnostic tool: detects interrupted operations, working tree status, remote sync, stale branches, loose objects, and data integrity, with actionable fix suggestions |
 | `zj` | Smart project-aware Zellij launcher. Auto-selects language layouts in bare terminals, or pops up the Session Manager if run inside an existing Zellij session |
 
 > [!TIP]
