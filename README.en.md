@@ -149,7 +149,7 @@ The repository root provides an `install.sh` script that automates almost the en
 3. **Font installation**: JetBrains Mono is installed through Brew by default, and the script **asks whether to install** other extended fonts (Maple Mono, Geist Mono).
 4. **Symlink setup**: Detects existing configs, backs them up automatically, then uses `stow` to symlink all configs, including the `bin` scripts, into the correct system locations.
 5. **AI model sync**: Automatically runs `aichat --sync-models` to synchronize the default model catalog into the local index.
-6. **Runtime installation**: Installs core language runtimes via **Mise** (Go, Node, Bun, Python, Rust) along with out-of-the-box CLI tools (gh, bat, eza, ripgrep, glow, shellcheck, etc.). LSP and other toolchains can be installed on demand later.
+6. **Runtime installation**: Installs core language runtimes via **Mise** (Go, Node, Bun, Python, Rust) along with out-of-the-box CLI tools (gh, bat, eza, fd, ripgrep, glow, shellcheck, etc.). LSP and other toolchains can be installed on demand later.
 7. **Privacy template setup**: Automatically creates Git identity templates (`.gitconfig.local` / `.work`), private environment variable templates (`config.local.fish`), and a Ghostty private config template (`config.local`) in the user's home directory.
 8. **Shell initialization**: Sets **Fish** as the default shell and **automatically migrates PATH variables from your old Zsh setup** into Fish.
 9. **Plugin setup**: Installs the **Fisher** plugin manager and syncs all Fish plugins.
@@ -642,6 +642,9 @@ aichat hi
 | `gdoctor` | Git repository health diagnostic tool: detects interrupted operations, working tree status, remote sync, stale branches, loose objects, and data integrity, with actionable fix suggestions |
 | `lg` | Launch `lazygit` terminal UI |
 | `zj` | Smart project-aware Zellij launcher. Unified behavior to "prepare a session for the current directory". Automatically opens a new window if run inside Zellij to avoid nesting conflicts |
+
+> [!TIP]
+> **FZF Performance Boost**: This project integrates `fd` as the default search backend for `fzf`. This means interactive commands like `zi` are not only lightning fast but also automatically respect `.gitignore` rules.
 
 > [!TIP]
 > In non-terminal environments (e.g., browsers, messaging apps, IDEs), you can use Maccy's global shortcut `Cmd + Shift + C` to open the clipboard selection panel directly, without entering the terminal. The `p` command is an enhanced TUI version designed specifically for terminal power users.

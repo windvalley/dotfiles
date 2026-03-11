@@ -106,6 +106,8 @@ eza = "latest"        # 现代化 ls 替代品
 ripgrep = "latest"    # 极速正则搜索工具 (替代 grep)
 glow = "latest"       # 终端 Markdown 阅读器
 shellcheck = "latest" # Shell 脚本静态分析工具
+# fd: 现代化 find 替代品。由于 GitHub Release 长期缺失 macOS x86 二进制包 (aqua backend 报错)，此处改用 cargo 后端
+"cargo:fd-find" = "latest"
 
 # --- AI 工具链 ---
 "npm:opencode-ai" = "latest"

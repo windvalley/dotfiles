@@ -153,7 +153,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 3. **字体安装**：默认已通过 Brew 安装 JetBrains Mono，并**询问是否安装**其他扩展字体（Maple Mono, Geist Mono）。
 4. **软链配置**：自动识别已存在的配置并备份，然后使用 `stow` 将所有配置（含 `bin` 脚本）软链到对应的系统目录。
 5. **AI 模型同步**：自动执行 `aichat --sync-models`，将默认配置引用的模型同步到本地索引。
-6. **运行时安装**：通过 **Mise** 安装核心语言运行时（Go, Node, Bun, Python, Rust）及开箱即用的基础 CLI 工具（gh, bat, eza, ripgrep, glow, shellcheck 等），LSP 等工具链可稍后按需安装。
+6. **运行时安装**：通过 **Mise** 安装核心语言运行时（Go, Node, Bun, Python, Rust）及开箱即用的基础 CLI 工具（gh, bat, eza, fd, ripgrep, glow, shellcheck 等），LSP 等工具链可稍后按需安装。
 7. **隐私配置模板**：自动在用户目录创建 Git 信息模板（`.gitconfig.local`/`.work`）、私密环境变量模板（`config.local.fish`）和 Ghostty 私有配置模板（`config.local`）。
 8. **Shell 初始化**：将 **Fish** 设为默认 Shell，并**自动迁移原 Zsh 的 PATH 环境变量**到 Fish 中。
 9. **插件配置**：安装 **Fisher** 插件管理器并同步所有 Fish 插件。
@@ -642,6 +642,9 @@ aichat hi
 | `gdoctor` | Git 仓库健康诊断工具：检测中断操作、工作区状态、远程同步、冗余分支、松散对象及数据完整性，并给出修复建议 |
 | `lg` | 开启 `lazygit` 终端交互式管理器 |
 | `zj` | 智能项目感知型 Zellij 启动器。无论在何处运行，均统一为“为当前目录准备会话”。在 Zellij 内部运行时会自动打开新窗口以避开嵌套冲突 |
+
+> [!TIP]
+> **FZF 性能优化**：本项目已将 `fd` 集成为 `fzf` 的默认搜索后端。这意味着使用 `zi` 跳转或模糊搜索时不仅速度极快，且会自动遵循 `.gitignore` 规则。
 
 > [!TIP]
 > 在非终端环境（如浏览器、微信、IDE 等）中，可以直接使用 Maccy 的全局快捷键 `Cmd + Shift + C` 调出剪贴板选择面板，无需进入终端。`p` 命令是专为终端重度用户设计的 TUI 增强版。
