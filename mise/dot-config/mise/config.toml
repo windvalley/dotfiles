@@ -72,6 +72,8 @@ rust = "latest"
 "npm:vscode-langservers-extracted" = "latest"
 "npm:yaml-language-server" = "latest"
 "npm:@tailwindcss/language-server" = "latest"
+"npm:@vue/language-server" = "latest"
+"npm:@vue/typescript-plugin" = "latest"
 
 # --- Rust 生态 ---
 # taplo: 仅有 aqua/cargo 两个 backend；aqua 无法正确解析 @latest，cargo 为官方推荐，首次编译后有缓存
@@ -89,6 +91,8 @@ rust = "latest"
 
 # --- Shell / 基础设施 / 数据库 ---
 "npm:bash-language-server" = "latest"
+"npm:fish-lsp" = "latest"
+"npm:@microsoft/compose-language-service" = "latest"
 "npm:dockerfile-language-server-nodejs" = "latest"
 "npm:sql-language-server" = "latest"
 

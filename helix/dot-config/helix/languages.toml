@@ -285,6 +285,18 @@ command = "bash-language-server"
 args = ["start"]
 
 # ============================================================
+# Fish
+# ============================================================
+[[language]]
+name = "fish"
+auto-format = true
+language-servers = ["fish-lsp"]
+
+[language-server.fish-lsp]
+command = "fish-lsp"
+args = ["start"]
+
+# ============================================================
 # Markdown
 # ============================================================
 # 移除 marksman，因为对于纯文本编辑过于臃肿且缺乏实际必要性。
@@ -299,6 +311,10 @@ language-servers = ["docker-langserver"]
 
 [language-server.docker-langserver]
 command = "docker-langserver"
+args = ["--stdio"]
+
+[language-server.docker-compose-langserver]
+command = "docker-compose-langserver"
 args = ["--stdio"]
 
 # ============================================================
@@ -318,6 +334,22 @@ language-servers = ["sql-language-server"]
 [language-server.sql-language-server]
 command = "sql-language-server"
 args = ["up", "--method", "stdio"]
+
+# ============================================================
+# Vue
+# ============================================================
+[[language]]
+name = "vue"
+auto-format = true
+language-servers = ["vue-language-server", "tailwindcss-language-server"]
+
+[language-server.vue-language-server]
+command = "vue-language-server"
+args = ["--stdio"]
+
+[language-server.vue-language-server.config]
+# 启用 TypeScript 插件支持 (Hybrid Mode)
+typescript = { tsdk = "node_modules/typescript/lib" }
 
 # ============================================================
 # Tailwind CSS
