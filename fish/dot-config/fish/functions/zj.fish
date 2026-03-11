@@ -7,20 +7,21 @@ function zj -d "项目感知型的 Zellij 启动器"
     or return
 
     if set -q _flag_help
-        echo "用法: zj [选项]"
+        printf "Usage: %szj%s [Options]\n\n" (set_color -o green) (set_color normal)
+        echo "项目感知型的 Zellij 终端环境启动器。"
+        echo "根据当前目录自动选择合适的布局启动会话，并实现深度终端感知与隔离。"
         echo ""
-        echo "项目感知型的 Zellij 启动器。根据当前目录的内容自动选择合适的布局启动 Zellij 会话。"
-        echo ""
-        echo "选项:"
+        echo "Options:"
         echo "  -h, --help    显示此帮助信息并退出"
         echo ""
-        echo "功能:"
-        echo "  1. 如果已在 Zellij 会话中，通过新 Ghostty 窗口创建/连接会话。"
-        echo "  2. 如果已存在同名会话，自动连接。"
-        echo "  3. 自动检测全栈项目 (包含前后端目录)。"
-        echo "  4. 自动检测单体项目 (Node, Go, Rust, Python, C++, etc.)。"
+        echo "Features:"
+        echo "  1. (Smart Aware) 在裸终端运行直接启动，在 Zellij 内部运行则自动打开新窗口避开嵌套。"
+        echo "  2. (Auto Attach) 如果已存在基于当前目录的会话，自动连接而非重复创建。"
+        echo "  3. (Language Support) 自动检测 Go, Rust, Python, Node, C++, 全栈及普通项目布局。"
         echo ""
-        echo "提示: 切换已有会话请使用 Ctrl+o w 打开会话管理器。"
+        echo "Shortcuts & Tips:"
+        echo "  - 窗口内切会话:  Ctrl + o w (Zellij Session Manager)"
+        echo "  - 跨窗口切会话:  Ctrl + ` (Ghostty Toggle)"
         return 0
     end
 
