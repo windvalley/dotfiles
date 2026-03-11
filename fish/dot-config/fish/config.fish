@@ -120,6 +120,7 @@ if status is-interactive
 
     # Git 缩写
     abbr -a -g g git # Git 基础命令调用入口
+    abbr -a -g lg lazygit # 终端 Git 交互式管理器
     abbr -a -g ga 'git add' # 添加文件到暂存区
     abbr -a -g gs 'git status' # 查看工作区及合并状态
     abbr -a -g gd 'git diff' # 查看工作区尚未暂存的修改

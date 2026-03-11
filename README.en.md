@@ -98,6 +98,7 @@ This repository contains the following config packages and core files:
 - `helix/`: Helix (/ˈhiː.lɪks/, helix) modern modal editor, ready out of the box
 - `karabiner/`: Karabiner (/ˌkær.əˈbiː.nər/, German, carabiner) keyboard remapping (swaps Caps Lock and Left Control)
 - `git/`: Base Git configuration (aliases, Delta styling, global ignores, etc.)
+- `lazygit`: Terminal Git UI (managed by `mise`)
 - `mise/`: Mise (/miːz/, from the French phrase *mise en place*) tool version manager config
 - `aichat/`: Terminal AI client; Fish predefines `AICHAT_*` environment variables and data isolation, with local sensitive templates in `local/config.local.fish.example`
 - `btop/`: btop config for modern system resource monitoring
@@ -144,11 +145,11 @@ The repository root provides an `install.sh` script that automates almost the en
 
 **The script performs the following:**
 1. **Environment preparation**: Checks for and installs **Homebrew** automatically if it is not already installed.
-2. **Core dependencies**: Reads `Brewfile` and installs all CLI tools (stow, zellij, fish, helix, mise, gh, bat, eza, fzf, ripgrep, chafa, etc.) and GUI apps (Ghostty, OrbStack, Maccy, JetBrains Mono font, etc.).
+2. **Core dependencies**: Reads `Brewfile` and installs all CLI tools (stow, zellij, fish, helix, mise, fzf, chafa, etc.) and GUI apps (Ghostty, OrbStack, Maccy, JetBrains Mono font, etc.).
 3. **Font installation**: JetBrains Mono is installed through Brew by default, and the script **asks whether to install** other extended fonts (Maple Mono, Geist Mono).
 4. **Symlink setup**: Detects existing configs, backs them up automatically, then uses `stow` to symlink all configs, including the `bin` scripts, into the correct system locations.
 5. **AI model sync**: Automatically runs `aichat --sync-models` to synchronize the default model catalog into the local index.
-6. **Runtime installation**: Installs core language runtimes via **Mise** (Go, Node, Bun, Python, Rust). LSP and other toolchains can be installed on demand later.
+6. **Runtime installation**: Installs core language runtimes via **Mise** (Go, Node, Bun, Python, Rust) along with out-of-the-box CLI tools (gh, bat, eza, ripgrep, glow, shellcheck, etc.). LSP and other toolchains can be installed on demand later.
 7. **Privacy template setup**: Automatically creates Git identity templates (`.gitconfig.local` / `.work`), private environment variable templates (`config.local.fish`), and a Ghostty private config template (`config.local`) in the user's home directory.
 8. **Shell initialization**: Sets **Fish** as the default shell and **automatically migrates PATH variables from your old Zsh setup** into Fish.
 9. **Plugin setup**: Installs the **Fisher** plugin manager and syncs all Fish plugins.
@@ -211,7 +212,7 @@ brew install --cask maccy
 brew install --cask font-jetbrains-mono-nerd-font
 
 # Common tools
-brew install bat eza fzf zoxide grc gawk gnu-sed grep glow gh ripgrep shellcheck chafa
+brew install fzf zoxide grc gawk gnu-sed grep chafa
 
 # Volume control
 brew install switchaudio-osx
@@ -219,12 +220,10 @@ brew install switchaudio-osx
 
 **Notes:**
 - `aichat`: A native terminal client for large language models, supporting multimodal and local/cloud models. This config provides `Ctrl+y` for one-key command explanation/generation. A leading `#` means “describe intent -> generate command”.
-- `gh`: GitHub's official CLI for PR creation, issue management, and other GitHub interactions (`aipr` depends on it).
 - `zoxide`: Smart directory jumping, a modern replacement for `cd`. Usage: `z <keyword>` to jump directly, `zi <keyword>` for interactive selection (requires `fzf`).
 - `gnu-sed`: Provides `gsed`, used by scripts such as `colorscheme`, `font-size`, and `opacity`.
 - `switchaudio-osx`: Provides `SwitchAudioSource`, used by `audio-volume`.
 - `grc`: Generic Colouriser. Combined with Fish plugins, it adds colored output enhancements to commands like `ping`, `ls`, `docker`, and `diff`.
-- `glow`: Terminal Markdown reader used by Helix preview features.
 - `chafa`: Terminal character image rendering utility, used for high-res image previews in the `p` (clipboard history) command.
 
 #### 3.2.2 Clone the Repository
@@ -272,6 +271,15 @@ stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles ghostty helix z
 # (for example, custom commands placed under ~/.local/bin)
 mkdir -p "$HOME/.local/bin"
 stow --restow --target="$HOME/.local/bin" --dir="$HOME/dotfiles" bin
+```
+
+#### 3.2.4 Install Runtimes and CLI Tools (Mise)
+
+Once configurations are linked, use `mise` to automatically fetch all configured toolchains:
+
+```sh
+# Automatically reads ~/.config/mise/config.toml and installs all tools
+mise install
 ```
 
 ### 3.3 Uninstallation & Recovery Guide
@@ -632,6 +640,7 @@ aichat hi
 | `rec [name]` | Minimal terminal screencast tool based on asciinema, supporting record, replay (`rec play`), and web upload (`rec upload`) |
 | `gtd <tag>` | Delete a Git tag locally and remotely in one command |
 | `gdoctor` | Git repository health diagnostic tool: detects interrupted operations, working tree status, remote sync, stale branches, loose objects, and data integrity, with actionable fix suggestions |
+| `lg` | Launch `lazygit` terminal UI |
 | `zj` | Smart project-aware Zellij launcher. Auto-selects language layouts in bare terminals, or pops up the Session Manager if run inside an existing Zellij session |
 
 > [!TIP]
@@ -650,6 +659,7 @@ Abbreviations **expand automatically** when you press space after typing them.
 | `cs`... | `colorscheme`... | See the custom commands `colorscheme` / `font-size` / `opacity` / `audio-volume` |
 | `?` / `??` | `aichat -e` / `ai_diag_last` | Natural-language to command generation / diagnose the previous failed command (depends on Zellij dump-screen capture) |
 | `g` | `git` | Entry point for basic Git commands |
+| `lg` | `lazygit` | Launch `lazygit` terminal UI |
 | `ga` / `gs` | `git add` / `git status` | Stage files / show working tree and merge status |
 | `gd` / `gds` | `git diff` / `git diff --staged` | Show unstaged changes / show staged but uncommitted changes |
 | `gb` / `gba` / `gbd` | `git branch`... | Show local branches / show all branches including remotes / force-delete a branch |

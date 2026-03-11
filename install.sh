@@ -37,8 +37,8 @@ show_next_steps() {
          --prompt_spacing=Sparse \
          --icons='Many icons' \
          --transient=Yes
-  3. Core runtimes are auto-installed via mise (go/node/bun/python/rust).
-     Run 'mise install' if you also want all configured LSP/tooling packages.
+  3. All language runtimes, LSPs, and CLI tools have been auto-installed via mise.
+     (Check 'mise ls' to see the managed tools).
 EOF
 
   info "Manual follow-up:"
@@ -198,17 +198,16 @@ else
   warn "AIChat not found, skipping model sync. You can rerun manually after installation: aichat --sync-models"
 fi
 
-info "Installing core runtimes managed by Mise..."
+info "Installing all runtimes and CLI tools managed by Mise..."
 if command -v mise &>/dev/null; then
-  # 首次安装仅安装基础运行时，避免一次性拉取全部 LSP/工具链导致安装耗时过长
-  MISE_CORE_TOOLS=(go node bun python rust)
-  if mise install "${MISE_CORE_TOOLS[@]}"; then
-    success "Mise core runtimes installed."
+  # 根据 ~/.config/mise/config.toml 声明，一键全量安装所有运行时、LSP 和 CLI 工具
+  if mise install --yes; then
+    success "Mise tools and runtimes installed."
   else
-    warn "Mise core runtime installation had issues. You can rerun manually: mise install go node bun python rust"
+    warn "Mise installation had issues. You can rerun manually: mise install"
   fi
 else
-  warn "Mise not found, skipping runtime installation."
+  warn "Mise not found, skipping tool installation."
 fi
 
 info "Setting up local configuration overrides..."

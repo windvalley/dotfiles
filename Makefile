@@ -169,7 +169,7 @@ validate: ## 验证所有配置文件语法
 lint: ## 静态分析 Shell 脚本 (shellcheck)
 	@echo "$(BLUE)🔍 运行 shellcheck 静态分析...$(NC)"
 	@if ! command -v shellcheck > /dev/null 2>&1; then \
-		echo "$(RED)  ❌ shellcheck 未安装，请运行 'brew install shellcheck'$(NC)"; \
+		echo "$(RED)  ❌ shellcheck 未安装，请运行 'mise install shellcheck'$(NC)"; \
 		exit 1; \
 	fi
 	@errors=0; \

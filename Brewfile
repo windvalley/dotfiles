@@ -27,22 +27,12 @@ brew "helix"
 # === CLI Enhancements (命令行增强) ===
 # All-in-one LLM CLI tool (内建终端 AI 助手)
 brew "aichat"
-# GitHub 官方 CLI (用于 PR 创建等 GitHub 交互)
-brew "gh"
 # Git diff 语法高亮与美化工具
 brew "git-delta"
-# 带语法高亮和 Git 集成的 cat 替代品
-brew "bat"
-# 现代化 ls 替代品，支持图标和 Git 状态
-brew "eza"
 # 通用日志/输出着色器
 brew "grc"
-# 终端 Markdown 阅读器
-brew "glow"
-# 极速正则搜索工具 (替代 grep，与 Helix picker 配合)
-brew "ripgrep"
-# Shell 脚本静态分析工具
-brew "shellcheck"
+# 终端高清晰度图像查看器 (支持 kitty protocol, 用于 fzf 预览)
+brew "chafa"
 
 # --- System Utilities (系统工具) ---
 # GNU 版本的 awk, sed, grep (macOS 自带的是 BSD 版本，功能较弱)
@@ -63,5 +53,3 @@ cask "font-jetbrains-mono-nerd-font"
 cask "orbstack"
 # 剪贴板历史管理工具
 cask "maccy"
-# 终端高清晰度图像查看器 (支持 kitty protocol, 用于 fzf 预览)
-brew "chafa"

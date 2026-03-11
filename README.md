@@ -100,6 +100,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 - `helix/`: Helix（/ˈhiː.lɪks/，螺旋）现代模态编辑器，开箱即用
 - `karabiner/`: Karabiner（/ˌkær.əˈbiː.nər/，德语，登山扣）键盘映射（交换 Caps Lock 和 Left Control）
 - `git/`: Git 基础配置（别名、Delta 美化、全局忽略等）
+- `lazygit`: 终端 Git 交互式管理器（由 `mise` 管理）
 - `mise/`: Mise（/miːz/，源自法语 mise en place，就位准备）工具版本管理器配置
 - `aichat/`: 终端 AI 客户端；Fish 中预置 `AICHAT_*` 环境变量与数据隔离，本地敏感项模板见 `local/config.local.fish.example`
 - `btop/`: btop 现代系统资源监控工具配置
@@ -148,11 +149,11 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 
 **该脚本将执行以下操作：**
 1. **环境准备**：检查并自动安装 **Homebrew**（如果尚未安装）。
-2. **核心依赖**：读取 `Brewfile`，安装所有 CLI 工具（stow, zellij, fish, helix, mise, gh, bat, eza, fzf, ripgrep, chafa 等）与 GUI 应用（Ghostty, OrbStack, Maccy, JetBrains Mono 字体等）。
+2. **核心依赖**：读取 `Brewfile`，安装所有 CLI 工具（stow, zellij, fish, helix, mise, fzf, chafa 等）与 GUI 应用（Ghostty, OrbStack, Maccy, JetBrains Mono 字体等）。
 3. **字体安装**：默认已通过 Brew 安装 JetBrains Mono，并**询问是否安装**其他扩展字体（Maple Mono, Geist Mono）。
 4. **软链配置**：自动识别已存在的配置并备份，然后使用 `stow` 将所有配置（含 `bin` 脚本）软链到对应的系统目录。
 5. **AI 模型同步**：自动执行 `aichat --sync-models`，将默认配置引用的模型同步到本地索引。
-6. **运行时安装**：通过 **Mise** 安装核心语言运行时（Go, Node, Bun, Python, Rust），LSP 等工具链可稍后按需安装。
+6. **运行时安装**：通过 **Mise** 安装核心语言运行时（Go, Node, Bun, Python, Rust）及开箱即用的基础 CLI 工具（gh, bat, eza, ripgrep, glow, shellcheck 等），LSP 等工具链可稍后按需安装。
 7. **隐私配置模板**：自动在用户目录创建 Git 信息模板（`.gitconfig.local`/`.work`）、私密环境变量模板（`config.local.fish`）和 Ghostty 私有配置模板（`config.local`）。
 8. **Shell 初始化**：将 **Fish** 设为默认 Shell，并**自动迁移原 Zsh 的 PATH 环境变量**到 Fish 中。
 9. **插件配置**：安装 **Fisher** 插件管理器并同步所有 Fish 插件。
@@ -216,7 +217,7 @@ brew install --cask maccy
 brew install --cask font-jetbrains-mono-nerd-font
 
 # 常用工具
-brew install bat eza fzf zoxide grc gawk gnu-sed grep glow gh ripgrep shellcheck chafa
+brew install fzf zoxide grc gawk gnu-sed grep chafa
 
 # 音量控制
 brew install switchaudio-osx
@@ -224,12 +225,10 @@ brew install switchaudio-osx
 
 **说明：**
 - `aichat`: 终端上的大模型原生客户端，支持多模态及本地/云端模型。本配置提供 `Ctrl+y` 一键解释/生成命令（以 `#` 开头表示“描述 -> 生成命令”）。
-- `gh`: GitHub 官方命令行工具，用于 PR 创建、Issue 管理等 GitHub 交互（`aipr` 命令依赖）。
 - `zoxide`: 智能目录跳转工具，替代传统的 `cd`。用法：`z <关键词>` 跳转目录，`zi <关键词>` 交互式选择（需 fzf）。
 - `gnu-sed`: 提供 `gsed`，用于 `colorscheme` / `font-size` / `opacity` 等脚本。
 - `switchaudio-osx`: 提供 `SwitchAudioSource`，用于 `audio-volume`。
 - `grc`: 通用彩色输出查看器 (Generic Colouriser)，配合 fish 插件为 `ping` / `ls` / `docker` / `diff` 等命令提供彩色输出增强。
-- `glow`: 终端 Markdown 阅读器，用于 Helix 预览功能。
 - `chafa`: 终端图像字符渲染工具，用于 `p` (剪贴板历史) 命令中的高清图片预览。
 
 #### 3.2.2 拉取仓库
@@ -273,6 +272,15 @@ stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles ghostty helix z
 # 单独链接需要特定前置结构的包（例如将自定义命令放置在 ~/.local/bin 下）
 mkdir -p "$HOME/.local/bin"
 stow --restow --target="$HOME/.local/bin" --dir="$HOME/dotfiles" bin
+```
+
+#### 3.2.4 安装运行时与 CLI 工具（Mise）
+
+依赖链接完成后，通过 `mise` 统一拉取所有配置好的工具链：
+
+```sh
+# 自动读取 ~/.config/mise/config.toml 并安装全部工具
+mise install
 ```
 
 ### 3.3 卸载与恢复指南 (Uninstallation)
@@ -632,6 +640,7 @@ aichat hi
 | `rec [name]` | 极简终端操作录屏工具 (基于 asciinema)，支持录制、回放(`rec play`)与网页分享(`rec upload`) |
 | `gtd <tag>` | 一键同时删除本地和远端的 Git Tag |
 | `gdoctor` | Git 仓库健康诊断工具：检测中断操作、工作区状态、远程同步、冗余分支、松散对象及数据完整性，并给出修复建议 |
+| `lg` | 开启 `lazygit` 终端交互式管理器 |
 | `zj` | 智能项目感知型 Zellij 启动器。在裸终端中可根据目录特征自动选择对应语言布局；在 Zellij 内部执行则会唤起会话管理器悬浮窗 |
 
 > [!TIP]
@@ -650,6 +659,7 @@ aichat hi
 | `cs`... | `colorscheme`... | 详情见自定义命令 `colorscheme`/`font-size`/`opacity`/`audio-volume` |
 | `?` / `??` | `aichat -e` / `ai_diag_last` | 自然语言快速转命令 / 诊断上一条失败命令（依赖 Zellij dump-screen 捕获输出） |
 | `g` | `git` | Git 基础命令调用入口 |
+| `lg` | `lazygit` | 开启 `lazygit` 终端交互式管理器 |
 | `ga` / `gs` | `git add` / `git status` | 添加文件到暂存区 / 查看工作区及合并状态 |
 | `gd` / `gds` | `git diff` / `git diff --staged` | 查看工作区尚未暂存的修改 / 查看暂存区里尚未提交的差异 |
 | `gb` / `gba` / `gbd` | `git branch`... | 查看本地分支 / 查看全部(含远程)分支 / 强制删除分支 |

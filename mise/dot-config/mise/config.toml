@@ -96,5 +96,16 @@ rust = "latest"
 "npm:dockerfile-language-server-nodejs" = "latest"
 "npm:sql-language-server" = "latest"
 
+# === CLI 增强工具 ===
+# 以下工具均为纯二进制 CLI，通过 mise 的 aqua backend 从 GitHub Release 直接下载，
+# 安装速度远快于 brew，且支持精确的版本锁定。
+lazygit = "latest"    # 终端 Git 交互式管理器
+gh = "latest"         # GitHub 官方 CLI
+bat = "latest"        # 带语法高亮的 cat 替代品
+eza = "latest"        # 现代化 ls 替代品
+ripgrep = "latest"    # 极速正则搜索工具 (替代 grep)
+glow = "latest"       # 终端 Markdown 阅读器
+shellcheck = "latest" # Shell 脚本静态分析工具
+
 # --- AI 工具链 ---
 "npm:opencode-ai" = "latest"
