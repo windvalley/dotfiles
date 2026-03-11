@@ -284,7 +284,7 @@ function s -d "SSH 主机管理与快速连接 (基于 fzf)"
     end
 
     # Common fzf parameters for interactive selection
-    set -l fzf_opts --height=80% --layout=reverse --border --tiebreak=index \
+    set -l fzf_opts --height=80% --layout=reverse --border --tiebreak=index --select-1 \
         --preview="set -l host (echo {} | sed -E 's/^[ ⭐0-9]*//' | awk '{print \$1}'); \
                    set -l count (awk -v h=\"\$host\" '\$2 == h {print \$1}' $history_file); \
                    if test -z \"\$count\"; set count 0; end; \
@@ -296,9 +296,16 @@ function s -d "SSH 主机管理与快速连接 (基于 fzf)"
         set subcommand $argv[1]
         if not contains -- "$subcommand" copy ping tunnel jump add
             # If not a known subcommand, it's a search term for default ssh
-            set fzf_query "'$subcommand"
+            set fzf_query "'$argv"
             set subcommand ""
+        else if test (count $argv) -gt 1
+            set -l query_args $argv[2..-1]
+            set fzf_query "'$query_args"
         end
+    end
+
+    if test -n "$fzf_query"
+        set -a fzf_opts --query="$fzf_query"
     end
 
     if test "$subcommand" = "copy"
@@ -388,7 +395,7 @@ function s -d "SSH 主机管理与快速连接 (基于 fzf)"
         echo "✅ 配置已追加至 $ssh_config !"
         return 0
     end
-    set -l selected (printf '%s\n' $sorted_entries | fzf $fzf_opts --query="$fzf_query" --prompt="🔐 SSH Host > ")
+    set -l selected (printf '%s\n' $sorted_entries | fzf $fzf_opts --prompt="🔐 SSH Host > ")
     if test -z "$selected"
         return 0
     end
