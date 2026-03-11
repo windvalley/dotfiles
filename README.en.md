@@ -712,7 +712,7 @@ Enter Vi normal mode: press `Esc` or `Ctrl+[`.
 | `Ctrl+f` / `Ctrl+b` | Move cursor right / left |
 | `Ctrl+n` / `Ctrl+p` | Next / previous command history item |
 | `Ctrl+h` / `Backspace` | Delete the character before the cursor |
-| `Ctrl+d` | Delete the character under the cursor |
+| `Ctrl+d` | When the command line has content, deletes the character under the cursor; when empty, triggers a double-tap exit confirmation (press again within 500ms to actually exit, preventing accidental terminal or Zellij pane closure) |
 | `Ctrl+u` | Delete from the cursor back to the beginning of the line |
 | `Ctrl+k` | Delete from the cursor to the end of the line |
 | `Ctrl+w` | Delete the word before the cursor |
@@ -1001,6 +1001,7 @@ This project makes a series of intentional customizations on top of the default 
 **Keybinding changes:**
 | Change | Description |
 |------|------|
+| `Ctrl + d` (insert/normal) | When the command line is empty, requires a double-tap within 500ms to exit, preventing accidental terminal or Zellij pane closure; when the command line has content, retains the default delete-char behavior |
 | `Ctrl + e` (normal mode) | Use Helix to edit the current command line fullscreen |
 | `<Space>y` (normal mode) | Explicitly copy the full command line to the macOS system clipboard without changing the default yank semantics |
 | Vi cursor shapes | `normal=block`, `insert=line`, `replace=underscore` |

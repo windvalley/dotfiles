@@ -713,7 +713,7 @@ Fish 支持 Vi 风格编辑模式，本配置已默认启用；以下按 normal 
 | `Ctrl+f` / `Ctrl+b` | 光标右移 / 左移 |
 | `Ctrl+n` / `Ctrl+p` | 下一条 / 上一条命令历史 |
 | `Ctrl+h` / `Backspace` | 删除光标前一个字符 |
-| `Ctrl+d` | 删除光标所在字符 |
+| `Ctrl+d` | 命令行有内容时删除光标所在字符；命令行为空时触发双击确认退出（500ms 内再按一次才退出，防止误关终端或 Zellij 面板） |
 | `Ctrl+u` | 删除从光标到行首的内容 |
 | `Ctrl+k` | 删除从光标到行尾的内容 |
 | `Ctrl+w` | 删除光标前一个单词 |
@@ -1000,8 +1000,9 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 **键位变更：**
 | 改动 | 说明 |
 |------|------|
-| `Ctrl + e` (normal 模式) | 用 Helix 全屏编辑当前命令行 |
-| `<Space>y` (normal 模式) | 显式复制整条当前命令行到 macOS 系统剪贴板，避免污染默认 yank 语义 |
+| `Ctrl + d` (insert/normal) | 命令行为空时双击确认退出（500ms 内再按一次才退出），防止误关终端或 Zellij 面板；命令行有内容时保持 delete-char |
+| `Ctrl + e` (normal mode) | 用 Helix 全屏编辑当前命令行 |
+| `<Space>y` (normal mode) | 显式复制整条当前命令行到 macOS 系统剪贴板，避免污染默认 yank 语义 |
 | Vi 光标形状 | normal=block, insert=line, replace=underscore |
 | Tide vi_mode 标识 | `D` → `N`（对齐 Vim 社区的 Normal 缩写习惯） |
 

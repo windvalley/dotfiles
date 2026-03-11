@@ -17,7 +17,11 @@ function fish_user_key_bindings
     bind -M insert \cy _aichat_fish
     bind -M default \cy _aichat_fish
 
-    # ??：诊断上一条失败命令（避免 abbr 在 Enter 时“只展开不执行”，导致需要按两次回车）
+    # ??：诊断上一条失败命令（避免 abbr 在 Enter 时"只展开不执行"，导致需要按两次回车）
     bind -M insert \r __ai_enter_execute
     bind -M default \r __ai_enter_execute
+
+    # Ctrl-d: 增强退出行为。如果命令行不为空则删除字符；如果为空且在 Zellij 中则双击确认退出
+    bind -M insert \cd __confirm_exit
+    bind -M default \cd __confirm_exit
 end
