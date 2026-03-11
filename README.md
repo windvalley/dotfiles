@@ -58,12 +58,12 @@
   - [5.9 OrbStack（可选）](#59-orbstack%E5%8F%AF%E9%80%89)
 - [6. 常用维护命令 (Makefile)](#6-%E5%B8%B8%E7%94%A8%E7%BB%B4%E6%8A%A4%E5%91%BD%E4%BB%A4-makefile)
 - [7. 与官方默认的关键差异](#7-%E4%B8%8E%E5%AE%98%E6%96%B9%E9%BB%98%E8%AE%A4%E7%9A%84%E5%85%B3%E9%94%AE%E5%B7%AE%E5%BC%82)
-  - [🔑 Karabiner — 全局键位改造](#-karabiner--%E5%85%A8%E5%B1%80%E9%94%AE%E4%BD%8D%E6%94%B9%E9%80%A0)
-  - [🖥️ Ghostty — 终端行为与键位](#-ghostty--%E7%BB%88%E7%AB%AF%E8%A1%8C%E4%B8%BA%E4%B8%8E%E9%94%AE%E4%BD%8D)
-  - [🧩 Zellij — 快捷键与会话架构](#-zellij--%E5%BF%AB%E6%8D%B7%E9%94%AE%E4%B8%8E%E4%BC%9A%E8%AF%9D%E6%9E%B6%E6%9E%84)
-  - [🐟 Fish — Shell 行为与键位](#-fish--shell-%E8%A1%8C%E4%B8%BA%E4%B8%8E%E9%94%AE%E4%BD%8D)
-  - [✏️ Helix — 编辑器键位与显示](#-helix--%E7%BC%96%E8%BE%91%E5%99%A8%E9%94%AE%E4%BD%8D%E4%B8%8E%E6%98%BE%E7%A4%BA)
-  - [🔧 Git — 工作流增强](#-git--%E5%B7%A5%E4%BD%9C%E6%B5%81%E5%A2%9E%E5%BC%BA)
+  - [7.1 Karabiner 全局键位改造](#71-karabiner-%E5%85%A8%E5%B1%80%E9%94%AE%E4%BD%8D%E6%94%B9%E9%80%A0)
+  - [7.2 Ghostty 终端行为与键位](#72-ghostty-%E7%BB%88%E7%AB%AF%E8%A1%8C%E4%B8%BA%E4%B8%8E%E9%94%AE%E4%BD%8D)
+  - [7.3 Zellij 快捷键与会话架构](#73-zellij-%E5%BF%AB%E6%8D%B7%E9%94%AE%E4%B8%8E%E4%BC%9A%E8%AF%9D%E6%9E%B6%E6%9E%84)
+  - [7.4 Fish Shell 行为与键位](#74-fish-shell-%E8%A1%8C%E4%B8%BA%E4%B8%8E%E9%94%AE%E4%BD%8D)
+  - [7.5 Helix 编辑器键位与显示](#75-helix-%E7%BC%96%E8%BE%91%E5%99%A8%E9%94%AE%E4%BD%8D%E4%B8%8E%E6%98%BE%E7%A4%BA)
+  - [7.6 Git 工作流增强](#76-git-%E5%B7%A5%E4%BD%9C%E6%B5%81%E5%A2%9E%E5%BC%BA)
 - [8. 常见问题 (FAQ / Troubleshooting)](#8-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98-faq--troubleshooting)
 - [9. 致谢 (Acknowledgments)](#9-%E8%87%B4%E8%B0%A2-acknowledgments)
 - [10. 开源协议 (License)](#10-%E5%BC%80%E6%BA%90%E5%8D%8F%E8%AE%AE-license)
@@ -931,13 +931,13 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
 本项目对各工具的默认配置做了若干有意识的定制。以下是**所有偏离官方默认值的关键改动**，帮助你快速了解本 dotfiles 的"个性化"部分。
 
-### 🔑 Karabiner — 全局键位改造
+### 7.1 Karabiner 全局键位改造
 
 | 改动 | 官方默认 | 本项目 | 原因 |
 |------|----------|--------|------|
 | Caps Lock ↔ Left Control 互换 | 保持原位置 | 交换位置（已排除 HHKB 键位的键盘）| Caps Lock 位置更适合高频的 Ctrl 操作（Emacs/Zellij/Helix/Vim 等均重度依赖 Ctrl） |
 
-### 🖥️ Ghostty — 终端行为与键位
+### 7.2 Ghostty 终端行为与键位
 
 **键位变更：**
 | 改动 | 官方默认 | 本项目 | 原因 |
@@ -955,7 +955,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | 未聚焦分屏不透明度 | `0.7` | `unfocused-split-opacity = 0.3` | 更明显区分聚焦/非聚焦面板 |
 | 环境变量 | 无 | `env = GHOSTTY_RUNTIME=1` | 供 Fish 判断是否在 Ghostty 中运行 |
 
-### 🧩 Zellij — 快捷键与会话架构
+### 7.3 Zellij 快捷键与会话架构
 
 **架构变更：**
 | 改动 | 官方默认 | 本项目 | 原因 |
@@ -973,7 +973,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | 所有模式添加 `h/j/k/l` 导航 | 面板/标签页/调整大小/移动/滚动均支持 Vim 风格 |
 | `Ctrl + a` 进入 tmux 兼容模式 | 为 tmux 用户提供肌肉记忆兼容层 |
 
-### 🐟 Fish — Shell 行为与键位
+### 7.4 Fish Shell 行为与键位
 
 **行为变更：**
 | 改动 | 官方默认 | 本项目 | 原因 |
@@ -994,7 +994,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | Vi 光标形状 | normal=block, insert=line, replace=underscore |
 | Tide vi_mode 标识 | `D` → `N`（对齐 Vim 社区的 Normal 缩写习惯） |
 
-### ✏️ Helix — 编辑器键位与显示
+### 7.5 Helix 编辑器键位与显示
 
 **键位变更：**
 | 改动 | 官方默认 | 本项目 | 原因 |
@@ -1019,7 +1019,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | 保存时清理 | 均关闭 | `trim-final-newlines` / `trim-trailing-whitespace = true` | 保持文件整洁 |
 | 软换行 | 关闭 | `soft-wrap.enable = true` | 长行自动换行 |
 
-### 🔧 Git — 工作流增强
+### 7.6 Git 工作流增强
 
 | 改动 | 官方默认 | 本项目 | 原因 |
 |------|----------|--------|------|

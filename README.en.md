@@ -57,12 +57,12 @@ Core stack: Ghostty (terminal) + Zellij (multiplexer) + Fish (shell) + Helix (ed
   - [5.9 OrbStack (Optional)](#59-orbstack-optional)
 - [6. Common Maintenance Commands (Makefile)](#6-common-maintenance-commands-makefile)
 - [7. Key Differences from Official Defaults](#7-key-differences-from-official-defaults)
-  - [🔑 Karabiner — Global Key Remapping](#-karabiner--global-key-remapping)
-  - [🖥️ Ghostty — Terminal Behavior and Keybindings](#-ghostty--terminal-behavior-and-keybindings)
-  - [🧩 Zellij — Shortcuts and Session Architecture](#-zellij--shortcuts-and-session-architecture)
-  - [🐟 Fish — Shell Behavior and Keybindings](#-fish--shell-behavior-and-keybindings)
-  - [✏️ Helix — Editor Keybindings and Display](#-helix--editor-keybindings-and-display)
-  - [🔧 Git — Workflow Enhancements](#-git--workflow-enhancements)
+  - [7.1 Karabiner Global Key Remapping](#71-karabiner-global-key-remapping)
+  - [7.2 Ghostty Terminal Behavior and Keybindings](#72-ghostty-terminal-behavior-and-keybindings)
+  - [7.3 Zellij Shortcuts and Session Architecture](#73-zellij-shortcuts-and-session-architecture)
+  - [7.4 Fish Shell Behavior and Keybindings](#74-fish-shell-behavior-and-keybindings)
+  - [7.5 Helix Editor Keybindings and Display](#75-helix-editor-keybindings-and-display)
+  - [7.6 Git Workflow Enhancements](#76-git-workflow-enhancements)
 - [8. FAQ / Troubleshooting](#8-faq--troubleshooting)
 - [9. Acknowledgments](#9-acknowledgments)
 - [10. License](#10-license)
@@ -932,13 +932,13 @@ This project introduces a `Makefile` to standardize daily maintenance tasks and 
 
 This project makes a series of intentional customizations on top of the default configuration of each tool. The table below summarizes **all key deviations from official defaults**, so you can quickly understand what is opinionated in these dotfiles.
 
-### 🔑 Karabiner — Global Key Remapping
+### 7.1 Karabiner Global Key Remapping
 
 | Change | Official default | This project | Why |
 |------|----------|--------|------|
 | Swap Caps Lock ↔ Left Control | Keep original positions | Swap them (excluding HHKB-layout keyboards) | Caps Lock is in a better position for frequent Ctrl usage; Emacs, Zellij, Helix, and Vim all rely heavily on Ctrl |
 
-### 🖥️ Ghostty — Terminal Behavior and Keybindings
+### 7.2 Ghostty Terminal Behavior and Keybindings
 
 **Keybinding changes:**
 | Change | Official default | This project | Why |
@@ -956,7 +956,7 @@ This project makes a series of intentional customizations on top of the default 
 | Unfocused split opacity | `0.7` | `unfocused-split-opacity = 0.3` | More obvious distinction between focused and unfocused panes |
 | Environment variable | None | `env = GHOSTTY_RUNTIME=1` | Lets Fish detect whether it is running inside Ghostty |
 
-### 🧩 Zellij — Shortcuts and Session Architecture
+### 7.3 Zellij Shortcuts and Session Architecture
 
 **Architecture changes:**
 | Change | Official default | This project | Why |
@@ -974,7 +974,7 @@ This project makes a series of intentional customizations on top of the default 
 | Add `h/j/k/l` navigation in all modes | Panes, tabs, resize, move, and scroll all support Vim-style navigation |
 | `Ctrl + a` enters tmux compatibility mode | Gives tmux users a muscle-memory compatibility layer |
 
-### 🐟 Fish — Shell Behavior and Keybindings
+### 7.4 Fish Shell Behavior and Keybindings
 
 **Behavior changes:**
 | Change | Official default | This project | Why |
@@ -995,7 +995,7 @@ This project makes a series of intentional customizations on top of the default 
 | Vi cursor shapes | `normal=block`, `insert=line`, `replace=underscore` |
 | Tide `vi_mode` indicator | `D` → `N` to align with Vim community usage of `N` for Normal |
 
-### ✏️ Helix — Editor Keybindings and Display
+### 7.5 Helix Editor Keybindings and Display
 
 **Keybinding changes:**
 | Change | Official default | This project | Why |
@@ -1020,7 +1020,7 @@ This project makes a series of intentional customizations on top of the default 
 | Cleanup on save | Both disabled | `trim-final-newlines` / `trim-trailing-whitespace = true` | Keep files tidy |
 | Soft wrap | Disabled | `soft-wrap.enable = true` | Automatically wrap long lines |
 
-### 🔧 Git — Workflow Enhancements
+### 7.6 Git Workflow Enhancements
 
 | Change | Official default | This project | Why |
 |------|----------|--------|------|
