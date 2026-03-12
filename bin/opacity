@@ -32,15 +32,11 @@ if [ "$#" -ne 1 ]; then
     exit 0
 fi
 
-if ! echo "$to_opacity" | grep -qE '^[0-1]?\.[0-9]+$|^1$|^0$'; then
+if ! echo "$to_opacity" | grep -qE '^(0(\.[0-9]+)?|1(\.0+)?|\.[0-9]+)$'; then
     echo "opacity must between 0 and 1"
     exit 1
 fi
 
-if [ "$to_opacity" -lt 0 ] || [ "$to_opacity" -gt 1 ]; then
-    echo "opacity must between 0 and 1"
-    exit 1
-fi
 
 change_ghostty_opacity() {
     if [ ! -f "$ghostty_config" ]; then
