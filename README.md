@@ -701,7 +701,7 @@ aichat hi
 | `?` / `??` | `aichat -e` / `ai_diag_last` | 自然语言快速转命令 / 诊断上一条失败命令（依赖 Zellij dump-screen 捕获输出） |
 | `g` | `git` | Git 基础命令调用入口 |
 | `lg` | `lazygit` | 开启 `lazygit` 终端交互式管理器 |
-| `ga` / `gs` | `git add` / `git status` | 添加文件到暂存区 / 查看工作区及合并状态 |
+| `ga` / `gs` | `git add` / `git_status_stats` | 添加文件到暂存区 / 查看状态并附带暂存区与未暂存区增删统计 |
 | `gd` / `gds` | `git diff` / `git diff --staged` | 查看工作区尚未暂存的修改 / 查看暂存区里尚未提交的差异 |
 | `gb` / `gba` / `gbd` | `git branch`... | 查看本地分支 / 查看全部(含远程)分支 / 强制删除分支 |
 | `gc` / `gca` | `git commit` / `git commit --amend` | 提交代码 / 追加或修改最后一次提交 |

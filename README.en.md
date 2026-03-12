@@ -703,7 +703,7 @@ Abbreviations **expand automatically** when you press space after typing them.
 | `?` / `??` | `aichat -e` / `ai_diag_last` | Natural-language to command generation / diagnose the previous failed command (depends on Zellij dump-screen capture) |
 | `g` | `git` | Entry point for basic Git commands |
 | `lg` | `lazygit` | Launch `lazygit` terminal UI |
-| `ga` / `gs` | `git add` / `git status` | Stage files / show working tree and merge status |
+| `ga` / `gs` | `git add` / `git_status_stats` | Stage files / show status with staged and unstaged line-count stats |
 | `gd` / `gds` | `git diff` / `git diff --staged` | Show unstaged changes / show staged but uncommitted changes |
 | `gb` / `gba` / `gbd` | `git branch`... | Show local branches / show all branches including remotes / force-delete a branch |
 | `gc` / `gca` | `git commit` / `git commit --amend` | Commit code / amend the last commit |
