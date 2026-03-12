@@ -79,6 +79,60 @@ sync_ghostty_config_to_index() {
     fi
 }
 
+reload_ghostty_if_running() {
+    local reload_result=""
+
+    if [ "$(uname -s)" != "Darwin" ]; then
+        return 0
+    fi
+
+    if ! command -v osascript &>/dev/null; then
+        return 0
+    fi
+
+    # 不能依赖 pgrep 判断 GUI App 是否在运行：
+    # Ghostty 的实际进程名可能因宿主形态或大小写差异而变化，容易误判。
+    # 这里改用 macOS 原生 AppleScript 查询应用进程，再直接触发 `reload_config`。
+    if reload_result="$(osascript 2>/dev/null <<'EOF'
+tell application "System Events"
+    set ghostty_running to (exists application process "Ghostty") or (exists application process "ghostty")
+end tell
+
+if not ghostty_running then
+    return "not-running"
+end if
+
+using terms from application "Ghostty"
+    tell application "Ghostty"
+        if (count of every terminal) is 0 then
+            return "no-terminals"
+        end if
+
+        perform action "reload_config" on first terminal
+        return "reloaded"
+    end tell
+end using terms from
+EOF
+)"; then
+        case "$reload_result" in
+            reloaded)
+                success "Ghostty config reloaded automatically"
+                ;;
+            not-running)
+                info "Ghostty is not running; the new font size will apply on next launch."
+                ;;
+            no-terminals)
+                warn "Ghostty is running without open terminals; reload skipped"
+                ;;
+            *)
+                warn "Ghostty auto-reload returned an unexpected result: $reload_result"
+                ;;
+        esac
+    else
+        warn "Ghostty auto-reload failed; press Cmd + Shift + , manually."
+    fi
+}
+
 get_current_font_size() {
     if [ -f "$ghostty_config" ]; then
         grep -E '^font-size\s*=' "$ghostty_config" | "$SED_BIN" -E 's/^font-size\s*=\s*//' | head -1
@@ -121,3 +175,4 @@ if dotfiles_repo_root="$(detect_dotfiles_repo_root)"; then
     sync_ghostty_config_to_index
 fi
 success "Ghostty font size: ${old_font_size:-not set} -> $to_font_size"
+reload_ghostty_if_running
