@@ -46,8 +46,14 @@ case "$file" in
     *btop/btop.conf)
         "$SED_BIN" -E 's/^color_theme\s*=\s*".*"/color_theme = "dracula"/'
         ;;
+    *bat/config)
+        "$SED_BIN" -E 's/^--theme=.*/--theme="Dracula"/'
+        ;;
     *git/config)
-        "$SED_BIN" -E 's/^(\s+)syntax-theme\s*=\s*.+/\1syntax-theme = Dracula/'
+        "$SED_BIN" -E '/^\[delta\]/,/^\[/ {
+            s/^(\s+)syntax-theme\s*=\s*.+/\1syntax-theme = Dracula/
+            /^\s+features\s*=.*/d
+        }'
         ;;
     *)
         cat

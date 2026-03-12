@@ -16,7 +16,7 @@ HOME_DIR := $(HOME)
 BIN_DIR := $(HOME)/.local/bin
 
 # 标准包（通过 --dotfiles 选项处理）
-STOW_PACKAGES := ghostty helix zellij mise git karabiner btop aichat
+STOW_PACKAGES := ghostty helix zellij mise git karabiner bat btop aichat
 # Fish 需要特殊处理
 FISH_PACKAGE := fish
 # Bin 目录特殊目标

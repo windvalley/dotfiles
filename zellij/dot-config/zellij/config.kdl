@@ -639,6 +639,126 @@ themes {
             player_10 0
         }
     }
+    // NOTE: Zellij 暂无内置 Rose Pine 主题，这里补一个完整 UI 组件版本，
+    // 确保 `colorscheme rose-pine` 时 Zellij 也能与 Ghostty / Helix 保持一致。
+    rose-pine {
+        text_unselected {
+            base 224 222 244         // #E0DEF4
+            background 25 23 36      // #191724
+            emphasis_0 246 193 119   // #F6C177
+            emphasis_1 156 207 216   // #9CCFD8
+            emphasis_2 49 116 143    // #31748F
+            emphasis_3 196 167 231   // #C4A7E7
+        }
+        text_selected {
+            base 224 222 244         // #E0DEF4
+            background 64 61 82      // #403D52
+            emphasis_0 246 193 119   // #F6C177
+            emphasis_1 156 207 216   // #9CCFD8
+            emphasis_2 49 116 143    // #31748F
+            emphasis_3 196 167 231   // #C4A7E7
+        }
+        ribbon_selected {
+            base 25 23 36            // #191724
+            background 156 207 216   // #9CCFD8
+            emphasis_0 235 111 146   // #EB6F92
+            emphasis_1 246 193 119   // #F6C177
+            emphasis_2 196 167 231   // #C4A7E7
+            emphasis_3 49 116 143    // #31748F
+        }
+        ribbon_unselected {
+            base 25 23 36            // #191724
+            background 224 222 244   // #E0DEF4
+            emphasis_0 235 111 146   // #EB6F92
+            emphasis_1 144 140 170   // #908CAA
+            emphasis_2 49 116 143    // #31748F
+            emphasis_3 196 167 231   // #C4A7E7
+        }
+        table_title {
+            base 156 207 216         // #9CCFD8
+            background 0
+            emphasis_0 246 193 119   // #F6C177
+            emphasis_1 196 167 231   // #C4A7E7
+            emphasis_2 49 116 143    // #31748F
+            emphasis_3 235 111 146   // #EB6F92
+        }
+        table_cell_selected {
+            base 224 222 244
+            background 25 23 36      // #191724
+            emphasis_0 246 193 119
+            emphasis_1 156 207 216
+            emphasis_2 49 116 143
+            emphasis_3 196 167 231
+        }
+        table_cell_unselected {
+            base 224 222 244
+            background 0 0 0
+            emphasis_0 246 193 119
+            emphasis_1 156 207 216
+            emphasis_2 49 116 143
+            emphasis_3 196 167 231
+        }
+        list_selected {
+            base 224 222 244
+            background 25 23 36
+            emphasis_0 246 193 119
+            emphasis_1 156 207 216
+            emphasis_2 49 116 143
+            emphasis_3 196 167 231
+        }
+        list_unselected {
+            base 224 222 244
+            background 0 0 0
+            emphasis_0 246 193 119
+            emphasis_1 156 207 216
+            emphasis_2 49 116 143
+            emphasis_3 196 167 231
+        }
+        frame_selected {
+            base 156 207 216         // #9CCFD8
+            background 0
+            emphasis_0 246 193 119
+            emphasis_1 196 167 231
+            emphasis_2 49 116 143
+            emphasis_3 0
+        }
+        frame_highlight {
+            base 246 193 119         // #F6C177
+            background 0
+            emphasis_0 235 111 146
+            emphasis_1 246 193 119
+            emphasis_2 246 193 119
+            emphasis_3 246 193 119
+        }
+        exit_code_success {
+            base 49 116 143          // #31748F
+            background 0
+            emphasis_0 156 207 216
+            emphasis_1 0 0 0
+            emphasis_2 196 167 231
+            emphasis_3 144 140 170   // #908CAA
+        }
+        exit_code_error {
+            base 235 111 146         // #EB6F92
+            background 0
+            emphasis_0 246 193 119
+            emphasis_1 0
+            emphasis_2 0
+            emphasis_3 0
+        }
+        multiplayer_user_colors {
+            player_1 196 167 231     // #C4A7E7
+            player_2 49 116 143      // #31748F
+            player_3 0
+            player_4 246 193 119     // #F6C177
+            player_5 156 207 216     // #9CCFD8
+            player_6 0
+            player_7 235 111 146     // #EB6F92
+            player_8 0
+            player_9 0
+            player_10 0
+        }
+    }
 }
 
 // ===== 以下是所有可用的全局配置选项 (已注释) =====
@@ -656,7 +776,7 @@ themes {
 // 内置亮色主题:
 //   catppuccin-latte, gruvbox-light, solarized-light, tokyo-night-light,
 //   ayu_light, everforest-light, dayfox
-// 自定义主题：dracula-pro
+// 自定义主题：dracula-pro, rose-pine
 theme "dracula-pro"
 
 // 启动时的默认模式 (normal/locked 等) (默认值: "normal")

@@ -167,7 +167,7 @@ info "Linking configuration files with stow..."
 
 mkdir -p "$HOME/.local/bin"
 
-STOW_PACKAGES=(ghostty fish helix zellij mise karabiner btop git aichat)
+STOW_PACKAGES=(ghostty fish helix zellij mise karabiner bat btop git aichat)
 
 # Clean up existing config directories and stow packages
 for pkg in "${STOW_PACKAGES[@]}"; do

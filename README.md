@@ -102,6 +102,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 - `git/`: Git 基础配置（包含高频别名、Delta 现代 Diff 美化、全局忽略、以及多账号隔离架构）。
 - `mise/`: [Mise](https://mise.jdx.dev/)（/miːz/，源自法语 mise en place，就位准备）工具版本管理器配置（统一管理 Go, Node, Python, Rust 运行时及对应的 LSP）。
 - `aichat/`: [AIChat](https://github.com/sigoden/aichat) 终端 AI 客户端（集成多模型支持、命令生成/排错及工作流增强）。
+- `bat/`: [bat](https://github.com/sharkdp/bat) 语法高亮分页器的自定义主题资源（供 `colorscheme` 同步 Bat / Delta 的 syntect 主题）。
 - `btop/`: [btop](https://github.com/aristocratos/btop) 现代系统资源监控配置。
 - `bin/`: 自定义命令脚本（自动链接到 `~/.local/bin`）
 - `local/`: 本地环境私有配置模板（用于 Fish 环境变量脱敏、Git 多账号隔离及 Ghostty 私有配置）
@@ -251,7 +252,7 @@ git pull --rebase
 # 如果目标工具的配置目录已经是真实目录（非软链），必须将其重命名或删除，切忌保留！
 # 目的：确保 stow 时发现目标目录"不存在"，从而直接把整个目录映射为一个【纯目录级软链】。
 # 否则 stow 会进入真实目录执行【文件级】软链，导致后续工具在本地新生成的文件脱离版本控制。
-for pkg in ghostty helix zellij mise karabiner btop fish git aichat; do
+for pkg in ghostty helix zellij mise karabiner bat btop fish git aichat; do
     if [ -d ~/.config/$pkg ] && [ ! -L ~/.config/$pkg ]; then
         mv ~/.config/$pkg ~/.config/$pkg.bak
     elif [ -L ~/.config/$pkg ]; then
@@ -266,7 +267,7 @@ done
 cd "$HOME/dotfiles"
 
 # 统一链接所有标准配置包（全部遵循 XDG 规范，映射到 ~/.config/ 下）
-stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles ghostty helix zellij mise karabiner btop fish git aichat
+stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles ghostty helix zellij mise karabiner bat btop fish git aichat
 
 # 单独链接需要特定前置结构的包（例如将自定义命令放置在 ~/.local/bin 下）
 mkdir -p "$HOME/.local/bin"
@@ -912,7 +913,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
 这些命令会在 stow `bin` 后出现在 `~/.local/bin`：
 
-- `colorscheme [name]`: 同步切换 Ghostty、Helix、Zellij、Btop、Bat 和 Delta 主题。无参数时显示当前主题和可用主题列表，内置 8 个预设（dracula / tokyonight / gruvbox / kanagawa / nord / solarized-dark / one-dark / everforest），也支持直接传入工具原生主题名；额外支持 `--current`、`--list`、`--help`。**配合 Git Clean Filter，切换主题不会导致仓库变脏。**
+- `colorscheme [name]`: 同步切换 Ghostty、Helix、Zellij、Btop、Bat 和 Delta 主题。无参数时显示当前主题和可用主题列表，内置 12 个预设（dracula / catppuccin / rose-pine / tokyonight / gruvbox / gruvbox-light / kanagawa / nord / solarized-dark / solarized-light / one-dark / everforest）；其中 `catppuccin` 统一映射到 `Macchiato` 变体，`rose-pine` 使用同名深色变体，`tokyonight` 会为 Bat 使用仓库内置的自定义 syntect 主题，并为 Delta 启用官方 Tokyo Night feature。也支持直接传入工具原生主题名；额外支持 `--current`、`--list`、`--help`。**配合 Git Clean Filter，切换主题不会导致仓库变脏。**
 - `dot-theme-filter`: **Git 内部过滤器（非直接执行）**。配合 `.gitattributes` 使用，在 `git add` 时自动将主题、Ghostty 字体大小、Ghostty 背景透明度等本地显示偏好还原为默认值，实现配置文件的“逻辑解耦”。
 - `font-size <1-200>`: 设置 Ghostty 字体大小；配合 Git Clean Filter 不会让 dotfiles 仓库变脏
 - `opacity <0.0-1.0>`: 设置 Ghostty 背景透明度；配合 Git Clean Filter 不会让 dotfiles 仓库变脏
@@ -925,7 +926,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
 > [!TIP]
 > **变更生效方式：**
-> - `colorscheme`：Zellij 实时生效；Ghostty 需按 `Cmd + Shift + ,` 重载配置；Helix 需执行 `:config-reload` 使已打开的 buffer 生效；Btop、Bat 与 Delta 下次执行命令时生效。注：Bat 与 Delta 不支持 tokyonight / kanagawa / one-dark / everforest，切换到这些主题时会自动跳过。
+> - `colorscheme`：Zellij 实时生效；Ghostty 需按 `Cmd + Shift + ,` 重载配置；Helix 需执行 `:config-reload` 使已打开的 buffer 生效；Btop、Bat 与 Delta 下次执行命令时生效。首次切换到仓库内置的自定义 syntect 主题（当前为 `tokyonight`）时，脚本会自动执行 `bat cache --build`；Delta 对 `tokyonight` 则会启用官方 Tokyo Night feature。注：Bat 与 Delta 仍不支持 kanagawa / rose-pine / one-dark / everforest，切换到这些主题时会自动跳过。
 > - `font-size` / `opacity`：修改的是 Ghostty 配置文件，需按 `Cmd + Shift + ,` 重载配置后生效；配合 Git Clean Filter，这些本地显示偏好不会让 dotfiles 仓库变脏。
 
 ---

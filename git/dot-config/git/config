@@ -36,6 +36,34 @@
     # 语法高亮主题（与 bat 共享 syntect 库，由 colorscheme 脚本管理）
     syntax-theme = Dracula
 
+[delta "tokyonight-moon"]
+    # Tokyo Night 官方 Delta 主题特性。
+    # colorscheme 切到 `tokyonight` 时会自动在 [delta] 节中启用：
+    #   features = tokyonight-moon
+    true-color = always
+    commit-decoration-style = blue ol
+    commit-style = raw
+    file-style = omit
+    hunk-header-decoration-style = blue box
+    hunk-header-file-style = red
+    hunk-header-line-number-style = "#ff757f"
+    hunk-header-style = file line-number syntax
+    line-numbers = true
+    line-numbers-left-format = "{nm:>4}┊"
+    line-numbers-left-style = blue
+    line-numbers-minus-style = "#e26a75"
+    line-numbers-plus-style = "#65c6a8"
+    line-numbers-right-format = "{np:>4}│"
+    line-numbers-right-style = blue
+    line-numbers-zero-style = "#3b4261"
+    minus-emph-style = normal "#602d35"
+    minus-style = normal "#37222c"
+    minus-non-emph-style = normal "#37222c"
+    plus-emph-style = normal "#1c4732"
+    plus-style = normal "#20303b"
+    plus-non-emph-style = normal "#20303b"
+    syntax-theme = none
+
 [merge]
     # 冲突显示风格：同时显示本地、远程和基准代码（diff3），方便合并
     conflictstyle = diff3

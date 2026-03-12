@@ -100,6 +100,7 @@ This repository contains the following config packages and core files:
 - `git/`: Git base configuration (includes high-frequency aliases, Delta modern diff styling, global ignores, and a multi-account isolation architecture)
 - `mise/`: [Mise](https://mise.jdx.dev/) (/miːz/, from French mise en place) tool version manager config (Unified management of Go, Node, Python, and Rust runtimes along with LSPs)
 - `aichat/`: [AIChat](https://github.com/sigoden/aichat) terminal AI client (Integrates multiple models, command generation/troubleshooting, and workflow enhancements)
+- `bat/`: [bat](https://github.com/sharkdp/bat) custom theme assets for the syntax-highlighting pager, used by `colorscheme` to keep Bat / Delta syntect themes in sync.
 - `btop/`: [btop](https://github.com/aristocratos/btop) modern system resource monitoring config.
 - `bin/`: High-frequency custom scripts (includes the `zj` project launcher, `gdoctor` diagnostic tool, `aic/aipr` AI-enhancement tools, etc., automatically linked to `~/.local/bin`)
 - `local/`: Private local config templates (for Fish environment variable redaction, Git multi-account isolation, and private Ghostty config)
@@ -249,7 +250,7 @@ If you still want to link configs manually, and want Stow to create clean **dire
 # directory as a pure directory-level symlink.
 # Otherwise stow will descend into the real directory and create file-level symlinks,
 # causing newly generated local files to drift out of version control.
-for pkg in ghostty helix zellij mise karabiner btop fish git aichat; do
+for pkg in ghostty helix zellij mise karabiner bat btop fish git aichat; do
     if [ -d ~/.config/$pkg ] && [ ! -L ~/.config/$pkg ]; then
         mv ~/.config/$pkg ~/.config/$pkg.bak
     elif [ -L ~/.config/$pkg ]; then
@@ -264,7 +265,7 @@ Then apply all symlink mappings in one shot:
 cd "$HOME/dotfiles"
 
 # Link all standard config packages that follow XDG and map into ~/.config/
-stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles ghostty helix zellij mise karabiner btop fish git aichat
+stow --restow --target="$HOME" --dir="$HOME/dotfiles" --dotfiles ghostty helix zellij mise karabiner bat btop fish git aichat
 
 # Link packages that require a special target structure
 # (for example, custom commands placed under ~/.local/bin)
@@ -914,7 +915,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
 These commands appear in `~/.local/bin` after the `bin` package is stowed:
 
-- `colorscheme [name]`: Switch themes for Ghostty, Helix, Zellij, Btop, Bat, and Delta together. Without arguments, it shows the current theme and all available themes. Eight presets are built in (`dracula`, `tokyonight`, `gruvbox`, `kanagawa`, `nord`, `solarized-dark`, `one-dark`, `everforest`), and you can also pass native theme names directly; `--current`, `--list`, and `--help` are also supported. **With the Git Clean Filter, switching themes does not dirty the repository.**
+- `colorscheme [name]`: Switch themes for Ghostty, Helix, Zellij, Btop, Bat, and Delta together. Without arguments, it shows the current theme and all available themes. Twelve presets are built in (`dracula`, `catppuccin`, `rose-pine`, `tokyonight`, `gruvbox`, `gruvbox-light`, `kanagawa`, `nord`, `solarized-dark`, `solarized-light`, `one-dark`, `everforest`); `catppuccin` is mapped consistently to the `Macchiato` variant, `rose-pine` uses the base dark variant, and `tokyonight` uses a repo-bundled custom syntect theme for Bat plus the official Tokyo Night Delta feature. You can also pass native theme names directly; `--current`, `--list`, and `--help` are also supported. **With the Git Clean Filter, switching themes does not dirty the repository.**
 - `dot-theme-filter`: **Git internal filter, not for direct execution**. Used with `.gitattributes` to automatically restore theme settings, Ghostty font size, Ghostty background opacity, and other local visual preferences to defaults during `git add`, decoupling those UI choices from tracked config state.
 - `font-size <1-200>`: Set Ghostty font size; with the Git Clean Filter this does not dirty the dotfiles repository
 - `opacity <0.0-1.0>`: Set Ghostty background opacity; with the Git Clean Filter this does not dirty the dotfiles repository
@@ -927,7 +928,7 @@ These commands appear in `~/.local/bin` after the `bin` package is stowed:
 
 > [!TIP]
 > **How changes take effect:**
-> - `colorscheme`: Zellij updates in real time; Ghostty needs `Cmd + Shift + ,` to reload config; Helix requires `:config-reload` for already opened buffers; Btop, Bat, and Delta take effect on the next run. Note: Bat and Delta do not support `tokyonight`, `kanagawa`, `one-dark`, or `everforest`, so those tools are skipped automatically when switching to such themes.
+> - `colorscheme`: Zellij updates in real time; Ghostty needs `Cmd + Shift + ,` to reload config; Helix requires `:config-reload` for already opened buffers; Btop, Bat, and Delta take effect on the next run. The first switch to a repo-bundled custom syntect theme (currently `tokyonight`) triggers `bat cache --build` automatically; for Delta, `tokyonight` enables the official Tokyo Night feature. Note: Bat and Delta still do not support `kanagawa`, `rose-pine`, `one-dark`, or `everforest`, so those tools are skipped automatically when switching to such themes.
 > - `font-size` / `opacity`: These modify the Ghostty config file. Press `Cmd + Shift + ,` to reload Ghostty after the change; with the Git Clean Filter, these local visual preferences do not dirty the dotfiles repository.
 
 ---

@@ -34,15 +34,23 @@ error() { echo -e "${RED}[ERROR]${NC} $1"; }
 # Helix theme names:   run `hx --health` or check ~/.config/helix/runtime/themes/.
 # Zellij theme names:  check built-in themes in zellij docs.
 # Btop theme names:    check ~/.config/btop/themes/ or btop built-in themes.
-# Bat theme names:     run `bat --list-themes` (only built-in themes; '-' = unsupported).
+# Bat theme names:     run `bat --list-themes`; custom `.tmTheme` themes under
+#                      `~/.config/bat/themes/` are supported after `bat cache --build`.
+# Delta syntax themes: most presets reuse Bat's syntect theme, but Delta-specific
+#                      features may be applied for themes that cannot reuse custom
+#                      Bat themes directly (for example `tokyonight`).
 # ============================================
 THEMES=(
     "dracula|Dracula|=|dracula-pro|=|Dracula"
-    "tokyonight|TokyoNight Moon|tokyonight_moon|tokyo-night|tokyo-night|-"
+    "catppuccin|Catppuccin Macchiato|catppuccin_macchiato|catppuccin-macchiato|catppuccin-macchiato|Catppuccin Macchiato"
+    "rose-pine|Rose Pine|rose_pine|rose-pine|rose-pine|-"
+    "tokyonight|TokyoNight Moon|tokyonight_moon|tokyo-night|tokyo-night|tokyonight_moon"
     "gruvbox|Gruvbox Material Dark|gruvbox_dark_hard|=|gruvbox_material_dark|gruvbox-dark"
+    "gruvbox-light|Gruvbox Light|gruvbox_light|gruvbox-light|gruvbox_light|gruvbox-light"
     "kanagawa|Kanagawa Wave|kanagawa|=|kanagawa-wave|-"
     "nord|Nord|nord|nord|=|Nord"
     "solarized-dark|Solarized Dark Higher Contrast|solarized_dark|=|solarized_dark|Solarized (dark)"
+    "solarized-light|iTerm2 Solarized Light|solarized_light|solarized-light|solarized_light|Solarized (light)"
     "one-dark|Atom One Dark|one_dark|=|onedark|-"
     "everforest|Everforest Dark Hard|everforest_dark|=|everforest-dark-hard|-"
 )
@@ -60,6 +68,7 @@ ghostty_config="$config_home/ghostty/config"
 helix_config="$config_home/helix/config.toml"
 zellij_config="$config_home/zellij/config.kdl"
 btop_config="$config_home/btop/btop.conf"
+bat_config="$config_home/bat/config"
 gitconfig="$config_home/git/config"
 dotfiles_repo_root=""
 
@@ -149,15 +158,90 @@ get_btop_theme() {
 }
 
 get_bat_theme() {
-    if command -v fish &>/dev/null; then
-        fish --no-config -c 'echo $BAT_THEME' 2>/dev/null
+    if [ -f "$bat_config" ]; then
+        "$SED_BIN" -n -E 's/^--theme="?([^"]+)"?$/\1/p' "$bat_config" | head -1
     fi
 }
 
 get_delta_theme() {
     if [ -f "$gitconfig" ]; then
-        grep -E '^\s+syntax-theme\s*=' "$gitconfig" | "$SED_BIN" -E 's/^\s+syntax-theme\s*=\s*(.*)$/\1/' | head -1
+        awk '
+            $0 == "[delta]" { in_delta=1; next }
+            /^\[/ { in_delta=0 }
+            in_delta && /^[[:space:]]+syntax-theme[[:space:]]*=/ {
+                sub(/^[[:space:]]+syntax-theme[[:space:]]*=[[:space:]]*/, "", $0)
+                print
+                exit
+            }
+        ' "$gitconfig"
     fi
+}
+
+get_delta_feature() {
+    if [ -f "$gitconfig" ]; then
+        awk '
+            $0 == "[delta]" { in_delta=1; next }
+            /^\[/ { in_delta=0 }
+            in_delta && /^[[:space:]]+features[[:space:]]*=/ {
+                sub(/^[[:space:]]+features[[:space:]]*=[[:space:]]*/, "", $0)
+                print
+                exit
+            }
+        ' "$gitconfig"
+    fi
+}
+
+get_delta_display_theme() {
+    local feature=""
+    feature="$(get_delta_feature)"
+    if [ -n "$feature" ]; then
+        printf '%s\n' "$feature"
+    else
+        get_delta_theme
+    fi
+}
+
+bat_has_theme() {
+    local theme="$1"
+    if ! command -v bat &>/dev/null; then
+        return 1
+    fi
+    bat --list-themes --paging=never --color=never 2>/dev/null | grep -Fx "$theme" >/dev/null
+}
+
+ensure_bat_theme_available() {
+    local theme="$1"
+    local theme_file=""
+
+    if [ "$theme" = "-" ]; then
+        return 0
+    fi
+
+    if bat_has_theme "$theme"; then
+        return 0
+    fi
+
+    if ! command -v bat &>/dev/null; then
+        return 0
+    fi
+
+    theme_file="$config_home/bat/themes/$theme.tmTheme"
+    if [ ! -f "$theme_file" ]; then
+        return 0
+    fi
+
+    info "Building bat theme cache for $theme..."
+    if ! bat cache --build >/dev/null 2>&1; then
+        error "failed to build bat cache for theme: $theme"
+        return 1
+    fi
+
+    if ! bat_has_theme "$theme"; then
+        error "bat theme still unavailable after cache build: $theme"
+        return 1
+    fi
+
+    success "Bat theme cache updated: $theme"
 }
 
 print_current_theme() {
@@ -188,7 +272,7 @@ show_current() {
     print_current_theme "Zellij" "$(get_zellij_theme)"
     print_current_theme "Btop" "$(get_btop_theme)"
     print_current_theme "Bat" "$(get_bat_theme)"
-    print_current_theme "Delta" "$(get_delta_theme)"
+    print_current_theme "Delta" "$(get_delta_display_theme)"
 }
 
 # List available themes
@@ -209,8 +293,7 @@ show_overview() {
 }
 
 # Lookup theme name for a specific tool.
-# $1 = shortname, $2 = field index (1=ghostty, 2=helix, 3=zellij, 4=btop, 5=bat/delta)
-# Note: bat and delta share the same syntect theme library, so field 5 is reused for both.
+# $1 = shortname, $2 = field index (1=ghostty, 2=helix, 3=zellij, 4=btop, 5=bat)
 lookup_theme() {
     local name="$1" field="$2"
     for entry in "${THEMES[@]}"; do
@@ -358,41 +441,62 @@ btop_cs_change() {
 bat_cs_change() {
     local old_theme=""
     local theme
-    local fish_output=""
     old_theme="$(get_bat_theme)"
     theme=$(lookup_theme "$colorscheme" 5)
     if [ "$theme" = "-" ]; then
         print_unchanged_warning "Bat theme" "$old_theme" "preset unsupported"
         return 0
     fi
-    if ! command -v fish &>/dev/null; then
-        error "fish not found, cannot set BAT_THEME"
+    if [ ! -f "$bat_config" ]; then
+        error "bat config not found: $bat_config"
         return 1
     fi
-    if ! fish_output=$(fish --no-config -c "set -Ux BAT_THEME '$theme'" 2>&1); then
-        error "failed to set BAT_THEME via fish"
-        [ -n "$fish_output" ] && printf '%s\n' "$fish_output" | sed 's/^/    /'
-        return 1
+    ensure_bat_theme_available "$theme"
+    if grep -Eq '^--theme=' "$bat_config"; then
+        "$SED_BIN" -i -E 's/^--theme=.*/--theme="'"$theme"'"/' "$bat_config"
+    elif grep -Eq '^#--theme=' "$bat_config"; then
+        "$SED_BIN" -i -E 's/^#--theme=.*/--theme="'"$theme"'"/' "$bat_config"
+    else
+        printf '\n--theme="%s"\n' "$theme" >> "$bat_config"
     fi
     print_change "Bat theme" "$old_theme" "$theme"
 }
 
 delta_cs_change() {
     local old_theme=""
+    local new_theme=""
+    local syntax_theme=""
+    local delta_feature=""
     if [ ! -f "$gitconfig" ]; then
         error "gitconfig not found: $gitconfig"
         return 1
     fi
 
-    old_theme="$(get_delta_theme)"
-    local theme
-    theme=$(lookup_theme "$colorscheme" 5)  # shares syntect themes with bat
-    if [ "$theme" = "-" ]; then
+    old_theme="$(get_delta_display_theme)"
+    syntax_theme=$(lookup_theme "$colorscheme" 5)
+    if [ "$syntax_theme" = "-" ]; then
         print_unchanged_warning "Delta theme" "$old_theme" "preset unsupported"
         return 0
     fi
-    "$SED_BIN" -i -E "s/^(\s+)syntax-theme\s*=.*/\1syntax-theme = $theme/" "$gitconfig"
-    print_change "Delta theme" "$old_theme" "$theme"
+
+    if [ "$colorscheme" = "tokyonight" ]; then
+        # Delta cannot consume Bat's custom Tokyo Night syntect theme directly.
+        # Use the official Tokyo Night Delta feature instead.
+        syntax_theme="Dracula"
+        delta_feature="tokyonight-moon"
+    fi
+
+    "$SED_BIN" -i -E '/^\[delta\]/,/^\[/ s/^(\s+)syntax-theme\s*=.*/\1syntax-theme = '"$syntax_theme"'/' "$gitconfig"
+
+    if [ -n "$delta_feature" ]; then
+        git config --file="$gitconfig" delta.features "$delta_feature"
+        new_theme="$delta_feature"
+    else
+        git config --file="$gitconfig" --unset-all delta.features >/dev/null 2>&1 || true
+        new_theme="$syntax_theme"
+    fi
+
+    print_change "Delta theme" "$old_theme" "$new_theme"
 }
 
 main() {
@@ -445,6 +549,7 @@ main() {
             helix/dot-config/helix/config.toml \
             zellij/dot-config/zellij/config.kdl \
             btop/dot-config/btop/btop.conf \
+            bat/dot-config/bat/config \
             git/dot-config/git/config 2>/dev/null || true
     fi
 }
