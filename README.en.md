@@ -108,7 +108,7 @@ This repository contains the following config packages and core files:
 
 ## 2. AI Capabilities
 
-This project consolidates AI large-model capabilities into the **command-line editing area**, **Git workflow**, and **daily productivity tools**, forming a unified entry point and reusable toolchain rather than scattered aliases. The foundation is [AIChat](https://github.com/sigoden/aichat), supporting mainstream models such as OpenAI, Claude, Gemini, Tongyi Qianwen, Zhipu, and Moonshot.
+This project consolidates AI large-model capabilities into the **command-line editing area**, **Git workflow**, and **daily productivity tools**, forming a unified entry point and reusable toolchain rather than scattered aliases. The foundation is [AIChat](https://github.com/sigoden/aichat), supporting mainstream models such as OpenAI, Claude, Gemini, Tongyi Qianwen, Zhipu, and Moonshot, and also local models through Ollama.
 
 **Command-line agent:**
 
@@ -503,7 +503,7 @@ This project already includes an AIChat config package. After Stow, it maps to `
 
 ```fish
 # ~/.config/fish/config.local.fish
-# Provider prefix examples: claude: / qianwen: / zhipuai: / moonshot: / openai: / gemini:
+# Provider prefix examples: claude: / qianwen: / zhipuai: / moonshot: / openai: / gemini: / local-llm:
 set -gx AICHAT_MODEL "gemini:gemini-3-flash-preview"
 set -gx GEMINI_API_KEY "YOUR_API_KEY_HERE"
 ```
@@ -511,7 +511,30 @@ set -gx GEMINI_API_KEY "YOUR_API_KEY_HERE"
 > [!IMPORTANT]
 > Do not write any API key directly into `aichat/dot-config/aichat/config.yaml` in the repository. Secrets belong only in `~/.config/fish/config.local.fish`.
 
-**3. Verify that the configuration is active**
+**3. Use Ollama as the local backend (optional)**
+
+This repository exposes Ollama as the `local-llm:` provider while still routing everything through `aichat`, so workflows such as `?`, `??`, `aic`, `aipr`, and `ait` do not need a separate command path.
+
+```bash
+# Install and start Ollama
+# The project does not force-install it by default, so local-model dependencies
+# remain optional instead of being imposed on every user.
+brew install ollama
+brew services start ollama
+
+# Pull one local model
+ollama pull llama3.2
+```
+
+```fish
+# ~/.config/fish/config.local.fish
+# Local Ollama does not require an API key
+set -gx AICHAT_MODEL "local-llm:llama3.2"
+```
+
+If you pull a different model, run `ollama list` first to get the exact name. If that model is not included in the repository's built-in `local-llm.models` list, append it to `~/.config/aichat/config.yaml` using the same format.
+
+**4. Verify that the configuration is active**
 
 ```fish
 # Reload Fish environment variables
@@ -526,6 +549,9 @@ aichat --sync-models
 
 # Inspect the model list
 aichat --list-models
+
+# If you use local Ollama, also verify the local service and pulled models
+ollama list
 
 # Check whether it works
 aichat hi
@@ -1104,7 +1130,8 @@ If you encounter issues during installation or usage, please first refer to the 
 **Q: When using `aichat` shortcuts or commands, it prompts that the model cannot be found or network timeout?**
 > **A:** Please check two things:
 > 1. Ensure you have correctly configured the model name (e.g., `AICHAT_MODEL`) and the corresponding API Key in `~/.config/fish/config.local.fish`. After configuring, be sure to run `exec fish` to reload the environment or restart the terminal.
-> 2. If the API of the model you are using is access-restricted (e.g., accessing OpenAI from certain regions), you may need to enable a global proxy in your terminal. This configuration has built-in `proxy` and `unproxy` shortcuts to help you toggle the terminal proxy with one click.
+> 2. If you are using local Ollama, make sure `ollama serve` is running, the target model has been downloaded with `ollama pull <model>`, and the model name is included in `local-llm.models` inside `~/.config/aichat/config.yaml`.
+> 3. If the API of the model you are using is access-restricted (e.g., accessing OpenAI from certain regions), you may need to enable a global proxy in your terminal. This configuration has built-in `proxy` and `unproxy` shortcuts to help you toggle the terminal proxy with one click.
 
 **Q: While writing code in the Helix editor, why is there no syntax hinting or code checking?**
 > **A:** Helix relies on Language Servers (LSP) to provide intelligent completion capabilities. This project centrally manages LSPs via `mise`:

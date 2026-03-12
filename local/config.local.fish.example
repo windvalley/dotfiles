@@ -16,6 +16,11 @@
 # ChatAI Model:
 # provider 前缀提示：OpenAI 用 openai:，Gemini 用 gemini:，Anthropic 用 claude:，Qwen 用 qianwen:，智谱用 zhipuai:，MiniMax 用 minimax:，Moonshot 用 moonshot:，本地 Ollama（本仓库默认别名）用 local-llm:
 # set -gx AICHAT_MODEL "gemini:gemini-3-flash-preview"
+# 如果使用本地 Ollama（无需 API Key）：
+# 1) 安装并启动 Ollama 服务（brew install ollama && brew services start ollama）
+# 2) 拉取一个本地模型（ollama pull llama3.2）
+# 3) 若使用自定义模型名，请以 `ollama list` 的 NAME 列为准，并同步更新 ~/.config/aichat/config.yaml 中 local-llm.models 列表
+# set -gx AICHAT_MODEL "local-llm:llama3.2"
 # ChatAI APIKEY:
 # set -gx OPENAI_API_KEY "sk-xxxxxxxxx"
 # set -gx GEMINI_API_KEY "AIzaSy..."

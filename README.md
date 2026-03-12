@@ -111,7 +111,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 
 ## 2. AI 能力
 
-本项目将 AI 大模型能力收敛到 **命令行编辑区**、**Git 工作流** 与 **日常效率工具**，形成统一入口和可复用的工具链（而不是零散 alias）。底座为 [AIChat](https://github.com/sigoden/aichat)，支持 OpenAI / Claude / Gemini / 通义千问 / 智谱 / Moonshot 等主流模型。
+本项目将 AI 大模型能力收敛到 **命令行编辑区**、**Git 工作流** 与 **日常效率工具**，形成统一入口和可复用的工具链（而不是零散 alias）。底座为 [AIChat](https://github.com/sigoden/aichat)，支持 OpenAI / Claude / Gemini / 通义千问 / 智谱 / Moonshot 等主流模型，也支持通过 Ollama 接入本地模型。
 
 **命令行智能体**：
 
@@ -504,7 +504,7 @@ echo "*.log" >> ~/.config/git/ignore
 
 ```fish
 # ~/.config/fish/config.local.fish
-# provider 前缀示例：claude: / qianwen: / zhipuai: / moonshot: / openai: / gemini:
+# provider 前缀示例：claude: / qianwen: / zhipuai: / moonshot: / openai: / gemini: / local-llm:
 set -gx AICHAT_MODEL "gemini:gemini-3-flash-preview"
 set -gx GEMINI_API_KEY "YOUR_API_KEY_HERE"
 ```
@@ -512,7 +512,28 @@ set -gx GEMINI_API_KEY "YOUR_API_KEY_HERE"
 > [!IMPORTANT]
 > 不要把任何 API Key 直接写入仓库中的 `aichat/dot-config/aichat/config.yaml`。私密信息只放 `~/.config/fish/config.local.fish`。
 
-**3. 验证配置是否生效**
+**3. 使用 Ollama 作为本地后端（可选）**
+
+仓库默认把 Ollama 映射为 `local-llm:` provider，仍然统一走 `aichat` 入口，因此 `?`、`??`、`aic`、`aipr`、`ait` 等工作流无需额外改动。
+
+```bash
+# 安装并启动 Ollama（本项目默认不强制安装，避免把大体积本地模型依赖强加给所有用户）
+brew install ollama
+brew services start ollama
+
+# 拉取一个本地模型
+ollama pull llama3.2
+```
+
+```fish
+# ~/.config/fish/config.local.fish
+# 本地 Ollama 无需 API Key
+set -gx AICHAT_MODEL "local-llm:llama3.2"
+```
+
+如果你拉取的是其他模型，请先执行 `ollama list` 查看准确名称；若模型名不在仓库内置的 `local-llm.models` 列表中，请按相同格式追加到 `~/.config/aichat/config.yaml`。
+
+**4. 验证配置是否生效**
 
 ```fish
 # 重载 fish 环境变量
@@ -526,6 +547,9 @@ aichat --sync-models
 
 # 检查模型清单
 aichat --list-models
+
+# 如果使用本地 Ollama，顺手确认本地服务与模型状态
+ollama list
 
 # 检查是否可用
 aichat hi
@@ -1103,7 +1127,8 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 **Q: 使用 `aichat` 的快捷键或者命令时，提示找不到模型或网络超时？**
 > **A:** 请检查两点：
 > 1. 请确认您在 `~/.config/fish/config.local.fish` 中正确配置了模型名称（如 `AICHAT_MODEL`）和对应的 API Key。配置后务必执行 `exec fish` 重新加载环境或重启终端。
-> 2. 如果您使用的模型 API 访问受限（如访问 OpenAI），您可能需要在终端开启全局代理。本配置内置了 `proxy` 和 `unproxy` 快捷指令来帮助你一键开关终端代理。
+> 2. 如果您使用的是本地 Ollama，请确认 `ollama serve` 已启动、目标模型已通过 `ollama pull <model>` 下载，且模型名已包含在 `~/.config/aichat/config.yaml` 的 `local-llm.models` 列表中。
+> 3. 如果您使用的模型 API 访问受限（如访问 OpenAI），您可能需要在终端开启全局代理。本配置内置了 `proxy` 和 `unproxy` 快捷指令来帮助你一键开关终端代理。
 
 **Q: 在 Helix 编辑器里写代码时，为什么没有语法提示或代码检查？**
 > **A:** Helix 依赖各种语言服务器（LSP）来提供智能补全能力。本项目通过 `mise` 统一管理 LSP：

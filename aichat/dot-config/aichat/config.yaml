@@ -171,8 +171,19 @@ clients:
   - type: openai-compatible
     name: moonshot
     api_base: https://api.moonshot.cn/v1
-  # 本地模型通过 Ollama 配置
-  - type: ollama
+  # 本地模型通过 Ollama 的 OpenAI-Compatible API 接入
+  # 注意：AIChat v0.21+ 已将原生 type: ollama 合并到 openai-compatible
+  - type: openai-compatible
     name: local-llm
-    api_base: http://localhost:11434/v1
-    model: llama3:8b
+    api_base: http://127.0.0.1:11434/v1
+    # 可选：在这里显式列出模型名后，AIChat 会把它们注册为 local-llm provider 的可用模型，
+    # 这会影响 `aichat --list-models`，并让 `-m local-llm:<model>`、`model: local-llm` 这类依赖本地模型表的用法可用。
+    # 如果你始终通过 `AICHAT_MODEL="local-llm:<model>"` 指定完整模型名，实测在 aichat v0.30.0 下可以不写这里。
+    # 模型名称应以 `ollama list` 输出的 NAME 列为准；`ollama ps` 只显示当前运行中的模型，不适合作为配置来源。
+    # 对于 Ollama，本机仍需先执行 `ollama pull <model>` 下载模型，并确保服务已启动，否则即使模型名写在这里，也无法实际调用。
+    models:
+      - name: qwen3.5
+      - name: gpt-oss
+      - name: llama3.2
+      - name: glm-4.7-flash
+      - name: deepseek-r1

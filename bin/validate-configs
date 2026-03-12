@@ -2,7 +2,7 @@
 # validate-configs
 #
 # 验证 dotfiles 配置文件的语法和完整性
-# 用法: validate-configs [fish|git|zellij|helix|all]
+# 用法: validate-configs [fish|git|zellij|helix|mise|ghostty|karabiner|aichat|all]
 
 set -euo pipefail
 
@@ -275,6 +275,53 @@ validate_karabiner() {
     fi
 }
 
+# 验证 AIChat / Ollama 配置
+validate_aichat() {
+    info "验证 AIChat 配置..."
+    local aichat_dir="$DOTFILES_DIR/aichat/dot-config/aichat"
+    local aichat_config="$aichat_dir/config.yaml"
+    local model_list=""
+
+    if [ ! -f "$aichat_config" ]; then
+        error "AIChat 配置文件不存在: $aichat_config"
+        ERRORS=$((ERRORS + 1))
+        return 1
+    fi
+
+    if command -v aichat &>/dev/null; then
+        if env -u AICHAT_MODEL -u AICHAT_CONFIG_DIR AICHAT_CONFIG_DIR="$aichat_dir" aichat --info >/dev/null 2>&1; then
+            success "AIChat 配置可正常读取"
+        else
+            error "AIChat 配置读取失败"
+            ERRORS=$((ERRORS + 1))
+            return 1
+        fi
+
+        if model_list=$(env -u AICHAT_MODEL -u AICHAT_CONFIG_DIR AICHAT_CONFIG_DIR="$aichat_dir" aichat --list-models 2>/dev/null); then
+            if printf '%s\n' "$model_list" | grep -q '^local-llm:'; then
+                success "AIChat 已注册本地 Ollama provider (local-llm)"
+            else
+                warn "AIChat 模型列表中未检测到 local-llm provider"
+            fi
+        else
+            warn "无法读取 AIChat 模型列表"
+        fi
+    else
+        warn "AIChat 未安装，跳过配置检查"
+        return 0
+    fi
+
+    if command -v ollama &>/dev/null; then
+        if ollama list >/dev/null 2>&1; then
+            success "Ollama 本地服务可访问"
+        else
+            warn "检测到 Ollama 已安装，但本地服务不可访问；如需本地模型，请执行 'brew services start ollama' 或手动运行 'ollama serve'"
+        fi
+    else
+        warn "Ollama 未安装；如需本地模型，请先安装并启动 Ollama"
+    fi
+}
+
 # 验证自定义脚本
 validate_bin_scripts() {
     info "验证自定义脚本..."
@@ -326,6 +373,9 @@ main() {
         karabiner)
             validate_karabiner
             ;;
+        aichat)
+            validate_aichat
+            ;;
         all)
             validate_fish
             validate_git
@@ -334,10 +384,11 @@ main() {
             validate_mise
             validate_ghostty
             validate_karabiner
+            validate_aichat
             validate_bin_scripts
             ;;
         *)
-            echo "用法: validate-configs [fish|git|zellij|helix|mise|ghostty|karabiner|all]"
+            echo "用法: validate-configs [fish|git|zellij|helix|mise|ghostty|karabiner|aichat|all]"
             exit 1
             ;;
     esac
