@@ -49,7 +49,7 @@ THEMES=(
     "gruvbox-light|Gruvbox Light|gruvbox_light|gruvbox-light|gruvbox_light|gruvbox-light"
     "kanagawa|Kanagawa Wave|kanagawa|=|kanagawa-wave|-"
     "nord|Nord|nord|nord|=|Nord"
-    "solarized-dark|Solarized Dark Higher Contrast|solarized_dark|=|solarized_dark|Solarized (dark)"
+    "solarized|Solarized Dark Higher Contrast|solarized_dark|solarized-dark|solarized_dark|Solarized (dark)"
     "solarized-light|iTerm2 Solarized Light|solarized_light|solarized-light|solarized_light|Solarized (light)"
     "one-dark|Atom One Dark|one_dark|=|onedark|-"
     "everforest|Everforest Dark Hard|everforest_dark|=|everforest-dark-hard|-"
@@ -71,6 +71,7 @@ btop_config="$config_home/btop/btop.conf"
 bat_config="$config_home/bat/config"
 gitconfig="$config_home/git/config"
 dotfiles_repo_root=""
+error_output_mode="usage"
 
 print_heading() {
     printf '%s\n' "$1"
@@ -128,8 +129,7 @@ Options:
   -h, --help        Show this help message
 
 Note:
-  Names not in the preset list are passed through directly to each tool.
-  Use `colorscheme -- "<raw-name>"` if the theme name starts with `-`.
+  Only built-in themes from `colorscheme --list` are supported.
 EOF
 }
 
@@ -346,6 +346,19 @@ show_overview() {
     show_usage
 }
 
+theme_exists() {
+    local name="$1"
+
+    for entry in "${THEMES[@]}"; do
+        IFS='|' read -r entry_name _ <<<"$entry"
+        if [ "$entry_name" = "$name" ]; then
+            return 0
+        fi
+    done
+
+    return 1
+}
+
 # Lookup theme name for a specific tool.
 # $1 = shortname, $2 = field index (1=ghostty, 2=helix, 3=zellij, 4=btop, 5=bat)
 lookup_theme() {
@@ -364,8 +377,9 @@ lookup_theme() {
             return
         fi
     done
-    # Not found in registry, passthrough as-is
-    echo "$name"
+
+    error "Unsupported theme: $name"
+    return 1
 }
 
 parse_args() {
@@ -373,6 +387,7 @@ parse_args() {
 
     colorscheme=""
     mode="apply"
+    error_output_mode="usage"
 
     if [ "$#" -eq 0 ]; then
         mode="overview"
@@ -430,6 +445,12 @@ parse_args() {
 
     if [ -z "$colorscheme" ]; then
         error "Missing theme name."
+        return 1
+    fi
+
+    if ! theme_exists "$colorscheme"; then
+        error "Unsupported theme: $colorscheme. Run 'colorscheme --list' to see allowed themes."
+        error_output_mode="themes"
         return 1
     fi
 
@@ -571,7 +592,14 @@ main() {
 
     parse_args "$@" || {
         printf '\n'
-        show_usage
+        case "$error_output_mode" in
+            themes)
+                list_themes
+                ;;
+            *)
+                show_usage
+                ;;
+        esac
         exit 1
     }
 
