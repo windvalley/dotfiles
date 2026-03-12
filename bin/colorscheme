@@ -124,39 +124,71 @@ Note:
 EOF
 }
 
+get_ghostty_theme() {
+    if [ -f "$ghostty_config" ]; then
+        grep -E '^theme\s*=' "$ghostty_config" | "$SED_BIN" -E 's/^theme\s*=\s*"?([^"]*)"?\s*$/\1/' | head -1
+    fi
+}
+
+get_helix_theme() {
+    if [ -f "$helix_config" ]; then
+        grep -E '^theme\s*=' "$helix_config" | "$SED_BIN" -E 's/^theme\s*=\s*"?([^"]*)"?\s*$/\1/' | head -1
+    fi
+}
+
+get_zellij_theme() {
+    if [ -f "$zellij_config" ]; then
+        grep -E '^theme\s' "$zellij_config" | "$SED_BIN" -E 's/^theme\s+"?([^"]*)"?\s*$/\1/' | head -1
+    fi
+}
+
+get_btop_theme() {
+    if [ -f "$btop_config" ]; then
+        grep -E '^color_theme\s*=' "$btop_config" | "$SED_BIN" -E 's/^color_theme\s*=\s*"?([^"]*)"?\s*$/\1/' | head -1
+    fi
+}
+
+get_bat_theme() {
+    if command -v fish &>/dev/null; then
+        fish --no-config -c 'echo $BAT_THEME' 2>/dev/null
+    fi
+}
+
+get_delta_theme() {
+    if [ -f "$gitconfig" ]; then
+        grep -E '^\s+syntax-theme\s*=' "$gitconfig" | "$SED_BIN" -E 's/^\s+syntax-theme\s*=\s*(.*)$/\1/' | head -1
+    fi
+}
+
+print_current_theme() {
+    local label="$1"
+    local value="$2"
+    printf '  %-8s: %s\n' "$label" "${value:-not set}"
+}
+
+print_change() {
+    local label="$1"
+    local old_value="$2"
+    local new_value="$3"
+    success "$label: ${old_value:-not set} -> ${new_value:-not set}"
+}
+
+print_unchanged_warning() {
+    local label="$1"
+    local current_value="$2"
+    local reason="$3"
+    warn "$label: ${current_value:-not set} (unchanged, $reason)"
+}
+
 # Show current theme from config files
 show_current() {
     print_heading "Current theme:"
-    if [ -f "$ghostty_config" ]; then
-        local gt
-        gt=$(grep -E '^theme\s*=' "$ghostty_config" | "$SED_BIN" -E 's/^theme\s*=\s*"?([^"]*)"?\s*$/\1/' | head -1)
-        printf '  Ghostty : %s\n' "${gt:-not set}"
-    fi
-    if [ -f "$helix_config" ]; then
-        local ht
-        ht=$(grep -E '^theme\s*=' "$helix_config" | "$SED_BIN" -E 's/^theme\s*=\s*"?([^"]*)"?\s*$/\1/' | head -1)
-        printf '  Helix   : %s\n' "${ht:-not set}"
-    fi
-    if [ -f "$zellij_config" ]; then
-        local zt
-        zt=$(grep -E '^theme\s' "$zellij_config" | "$SED_BIN" -E 's/^theme\s+"?([^"]*)"?\s*$/\1/' | head -1)
-        printf '  Zellij  : %s\n' "${zt:-not set}"
-    fi
-    if [ -f "$btop_config" ]; then
-        local bt
-        bt=$(grep -E '^color_theme\s*=' "$btop_config" | "$SED_BIN" -E 's/^color_theme\s*=\s*"?([^"]*)"?\s*$/\1/' | head -1)
-        printf '  Btop    : %s\n' "${bt:-not set}"
-    fi
-    if command -v fish &>/dev/null; then
-        local bat_theme
-        bat_theme=$(fish --no-config -c 'echo $BAT_THEME' 2>/dev/null)
-        printf '  Bat     : %s\n' "${bat_theme:-not set}"
-    fi
-    if [ -f "$gitconfig" ]; then
-        local dt
-        dt=$(grep -E '^\s+syntax-theme\s*=' "$gitconfig" | "$SED_BIN" -E 's/^\s+syntax-theme\s*=\s*(.*)$/\1/' | head -1)
-        printf '  Delta   : %s\n' "${dt:-not set}"
-    fi
+    print_current_theme "Ghostty" "$(get_ghostty_theme)"
+    print_current_theme "Helix" "$(get_helix_theme)"
+    print_current_theme "Zellij" "$(get_zellij_theme)"
+    print_current_theme "Btop" "$(get_btop_theme)"
+    print_current_theme "Bat" "$(get_bat_theme)"
+    print_current_theme "Delta" "$(get_delta_theme)"
 }
 
 # List available themes
@@ -268,59 +300,69 @@ parse_args() {
 }
 
 ghostty_cs_change() {
+    local old_theme=""
     if [ ! -f "$ghostty_config" ]; then
         error "ghostty config not found: $ghostty_config"
         return 1
     fi
 
+    old_theme="$(get_ghostty_theme)"
     local theme
     theme=$(lookup_theme "$colorscheme" 1)
     "$SED_BIN" -i -E "s/^theme\s*=.*/theme = \"$theme\"/" "$ghostty_config"
-    success "Ghostty theme -> $theme"
+    print_change "Ghostty theme" "$old_theme" "$theme"
 }
 
 helix_cs_change() {
+    local old_theme=""
     if [ ! -f "$helix_config" ]; then
         error "helix config not found: $helix_config"
         return 1
     fi
 
+    old_theme="$(get_helix_theme)"
     local theme
     theme=$(lookup_theme "$colorscheme" 2)
     "$SED_BIN" -i -E "s/^theme\s*=.*/theme = \"$theme\"/" "$helix_config"
-    success "Helix  theme -> $theme"
+    print_change "Helix theme" "$old_theme" "$theme"
 }
 
 zellij_cs_change() {
+    local old_theme=""
     if [ ! -f "$zellij_config" ]; then
         error "zellij config not found: $zellij_config"
         return 1
     fi
 
+    old_theme="$(get_zellij_theme)"
     local theme
     theme=$(lookup_theme "$colorscheme" 3)
     "$SED_BIN" -i -E "s/^theme\s+\"[^\"]*\"/theme \"$theme\"/" "$zellij_config"
-    success "Zellij theme -> $theme"
+    print_change "Zellij theme" "$old_theme" "$theme"
 }
 
 btop_cs_change() {
+    local old_theme=""
     if [ ! -f "$btop_config" ]; then
         error "btop config not found: $btop_config"
         return 1
     fi
 
+    old_theme="$(get_btop_theme)"
     local theme
     theme=$(lookup_theme "$colorscheme" 4)
     "$SED_BIN" -i -E "s/^color_theme\s*=.*/color_theme = \"$theme\"/" "$btop_config"
-    success "Btop   theme -> $theme"
+    print_change "Btop theme" "$old_theme" "$theme"
 }
 
 bat_cs_change() {
+    local old_theme=""
     local theme
     local fish_output=""
+    old_theme="$(get_bat_theme)"
     theme=$(lookup_theme "$colorscheme" 5)
     if [ "$theme" = "-" ]; then
-        warn "Bat    theme -> (not supported, skipped)"
+        print_unchanged_warning "Bat theme" "$old_theme" "preset unsupported"
         return 0
     fi
     if ! command -v fish &>/dev/null; then
@@ -332,23 +374,25 @@ bat_cs_change() {
         [ -n "$fish_output" ] && printf '%s\n' "$fish_output" | sed 's/^/    /'
         return 1
     fi
-    success "Bat    theme -> $theme"
+    print_change "Bat theme" "$old_theme" "$theme"
 }
 
 delta_cs_change() {
+    local old_theme=""
     if [ ! -f "$gitconfig" ]; then
         error "gitconfig not found: $gitconfig"
         return 1
     fi
 
+    old_theme="$(get_delta_theme)"
     local theme
     theme=$(lookup_theme "$colorscheme" 5)  # shares syntect themes with bat
     if [ "$theme" = "-" ]; then
-        warn "Delta  theme -> (not supported, skipped)"
+        print_unchanged_warning "Delta theme" "$old_theme" "preset unsupported"
         return 0
     fi
     "$SED_BIN" -i -E "s/^(\s+)syntax-theme\s*=.*/\1syntax-theme = $theme/" "$gitconfig"
-    success "Delta  theme -> $theme"
+    print_change "Delta theme" "$old_theme" "$theme"
 }
 
 main() {

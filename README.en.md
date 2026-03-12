@@ -915,9 +915,9 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 These commands appear in `~/.local/bin` after the `bin` package is stowed:
 
 - `colorscheme [name]`: Switch themes for Ghostty, Helix, Zellij, Btop, Bat, and Delta together. Without arguments, it shows the current theme and all available themes. Eight presets are built in (`dracula`, `tokyonight`, `gruvbox`, `kanagawa`, `nord`, `solarized-dark`, `one-dark`, `everforest`), and you can also pass native theme names directly; `--current`, `--list`, and `--help` are also supported. **With the Git Clean Filter, switching themes does not dirty the repository.**
-- `dot-theme-filter`: **Git internal filter, not for direct execution**. Used with `.gitattributes` to automatically restore theme configs to defaults during `git add`, decoupling theme choices from tracked config state.
-- `font-size <1-200>`: Set Ghostty font size
-- `opacity <0.0-1.0>`: Set Ghostty background opacity
+- `dot-theme-filter`: **Git internal filter, not for direct execution**. Used with `.gitattributes` to automatically restore theme settings, Ghostty font size, Ghostty background opacity, and other local visual preferences to defaults during `git add`, decoupling those UI choices from tracked config state.
+- `font-size <1-200>`: Set Ghostty font size; with the Git Clean Filter this does not dirty the dotfiles repository
+- `opacity <0.0-1.0>`: Set Ghostty background opacity; with the Git Clean Filter this does not dirty the dotfiles repository
 - `audio-volume`: Volume control and output device switching (requires `switchaudio-osx`)
 - `preview-md <file>`: Preview a Markdown file in a floating Zellij pane (requires `glow`)
 - `colors-print`: Print the terminal 256-color palette
@@ -928,7 +928,7 @@ These commands appear in `~/.local/bin` after the `bin` package is stowed:
 > [!TIP]
 > **How changes take effect:**
 > - `colorscheme`: Zellij updates in real time; Ghostty needs `Cmd + Shift + ,` to reload config; Helix requires `:config-reload` for already opened buffers; Btop, Bat, and Delta take effect on the next run. Note: Bat and Delta do not support `tokyonight`, `kanagawa`, `one-dark`, or `everforest`, so those tools are skipped automatically when switching to such themes.
-> - `font-size` / `opacity`: These modify the Ghostty config file. Press `Cmd + Shift + ,` to reload Ghostty after the change.
+> - `font-size` / `opacity`: These modify the Ghostty config file. Press `Cmd + Shift + ,` to reload Ghostty after the change; with the Git Clean Filter, these local visual preferences do not dirty the dotfiles repository.
 
 ---
 

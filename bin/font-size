@@ -33,12 +33,61 @@ to_font_size=${1:-}
 
 config_home=${XDG_CONFIG_HOME:-"$HOME/.config"}
 ghostty_config="$config_home/ghostty/config"
+dotfiles_repo_root=""
+
+resolve_script_path() {
+    local source_path="${BASH_SOURCE[0]}"
+    local source_dir=""
+    local target_path=""
+
+    if [[ "$source_path" != */* ]]; then
+        source_path="$(command -v "$source_path")"
+    fi
+
+    while [ -L "$source_path" ]; do
+        source_dir="$(cd -P "$(dirname "$source_path")" && pwd)"
+        target_path="$(readlink "$source_path")"
+        if [[ "$target_path" = /* ]]; then
+            source_path="$target_path"
+        else
+            source_path="$source_dir/$target_path"
+        fi
+    done
+
+    source_dir="$(cd -P "$(dirname "$source_path")" && pwd)"
+    printf '%s/%s\n' "$source_dir" "$(basename "$source_path")"
+}
+
+detect_dotfiles_repo_root() {
+    local script_path=""
+    local script_dir=""
+
+    script_path="$(resolve_script_path)"
+    script_dir="$(cd -P "$(dirname "$script_path")" && pwd)"
+
+    if git -C "$script_dir/.." rev-parse --show-toplevel >/dev/null 2>&1; then
+        git -C "$script_dir/.." rev-parse --show-toplevel
+        return 0
+    fi
+
+    return 1
+}
+
+sync_ghostty_config_to_index() {
+    if [ -n "$dotfiles_repo_root" ]; then
+        git -C "$dotfiles_repo_root" add ghostty/dot-config/ghostty/config 2>/dev/null || true
+    fi
+}
+
+get_current_font_size() {
+    if [ -f "$ghostty_config" ]; then
+        grep -E '^font-size\s*=' "$ghostty_config" | "$SED_BIN" -E 's/^font-size\s*=\s*//' | head -1
+    fi
+}
 
 if [ "$#" -ne 1 ]; then
-    if [ -f "$ghostty_config" ]; then
-        current=$(grep -E '^font-size\s*=' "$ghostty_config" | "$SED_BIN" -E 's/^font-size\s*=\s*//' | head -1)
-        printf 'Current font size: %s\n' "${current:-not set}"
-    fi
+    current="$(get_current_font_size)"
+    printf 'Current font size: %s\n' "${current:-not set}"
     printf 'Usage: font-size <1-200>\n'
     exit 0
 fi
@@ -66,5 +115,9 @@ change_ghostty_font_size() {
     fi
 }
 
+old_font_size="$(get_current_font_size)"
 change_ghostty_font_size
-success "Ghostty font size updated to $to_font_size."
+if dotfiles_repo_root="$(detect_dotfiles_repo_root)"; then
+    sync_ghostty_config_to_index
+fi
+success "Ghostty font size: ${old_font_size:-not set} -> $to_font_size"

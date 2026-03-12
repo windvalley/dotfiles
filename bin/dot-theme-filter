@@ -1,7 +1,7 @@
 #!/bin/bash
-# Git clean filter for dotfiles colorscheme decoupling
-# This filter restores the "default" theme when git reads the file into the index,
-# preventing local colorscheme changes from dirtying the git working tree.
+# Git clean filter for dotfiles local visual preference decoupling
+# This filter restores tracked defaults when git reads selected files into the index,
+# preventing local theme/font-size/opacity changes from dirtying the git working tree.
 
 set -euo pipefail
 
@@ -32,7 +32,10 @@ fi
 
 case "$file" in
     *ghostty/config)
-        "$SED_BIN" -E 's/^theme\s*=\s*".*"/theme = "Dracula"/'
+        "$SED_BIN" -E \
+            -e 's/^theme\s*=\s*".*"/theme = "Dracula"/' \
+            -e 's/^font-size\s*=\s*.*/font-size = 15/' \
+            -e 's/^background-opacity\s*=\s*.*/background-opacity = 1/'
         ;;
     *helix/config.toml)
         "$SED_BIN" -E 's/^theme\s*=\s*".*"/theme = "dracula"/'
