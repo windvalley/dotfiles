@@ -61,9 +61,48 @@ helix_config="$config_home/helix/config.toml"
 zellij_config="$config_home/zellij/config.kdl"
 btop_config="$config_home/btop/btop.conf"
 gitconfig="$config_home/git/config"
+dotfiles_repo_root=""
 
 print_heading() {
     printf '%s\n' "$1"
+}
+
+resolve_script_path() {
+    local source_path="${BASH_SOURCE[0]}"
+    local source_dir=""
+    local target_path=""
+
+    if [[ "$source_path" != */* ]]; then
+        source_path="$(command -v "$source_path")"
+    fi
+
+    while [ -L "$source_path" ]; do
+        source_dir="$(cd -P "$(dirname "$source_path")" && pwd)"
+        target_path="$(readlink "$source_path")"
+        if [[ "$target_path" = /* ]]; then
+            source_path="$target_path"
+        else
+            source_path="$source_dir/$target_path"
+        fi
+    done
+
+    source_dir="$(cd -P "$(dirname "$source_path")" && pwd)"
+    printf '%s/%s\n' "$source_dir" "$(basename "$source_path")"
+}
+
+detect_dotfiles_repo_root() {
+    local script_path=""
+    local script_dir=""
+
+    script_path="$(resolve_script_path)"
+    script_dir="$(cd -P "$(dirname "$script_path")" && pwd)"
+
+    if git -C "$script_dir/.." rev-parse --show-toplevel >/dev/null 2>&1; then
+        git -C "$script_dir/.." rev-parse --show-toplevel
+        return 0
+    fi
+
+    return 1
 }
 
 show_usage() {
@@ -313,6 +352,12 @@ delta_cs_change() {
 }
 
 main() {
+    if dotfiles_repo_root="$(detect_dotfiles_repo_root)"; then
+        :
+    else
+        dotfiles_repo_root=""
+    fi
+
     parse_args "$@" || {
         printf '\n'
         show_usage
@@ -348,14 +393,15 @@ main() {
     # --- Git Clean Filter Integration ---
     # After modifying files, run git add to trigger the clean filter.
     # This keeps 'git status' clean by syncing the index with the masked default values.
-    if git rev-parse --is-inside-work-tree &>/dev/null; then
+    if [ -n "$dotfiles_repo_root" ]; then
         # We must use relative paths within the repo for 'git add' to work reliably
         # even when the files are symlinked to ~/.config
-        git add ghostty/dot-config/ghostty/config \
-                helix/dot-config/helix/config.toml \
-                zellij/dot-config/zellij/config.kdl \
-                btop/dot-config/btop/btop.conf \
-                git/dot-config/git/config 2>/dev/null || true
+        git -C "$dotfiles_repo_root" add \
+            ghostty/dot-config/ghostty/config \
+            helix/dot-config/helix/config.toml \
+            zellij/dot-config/zellij/config.kdl \
+            btop/dot-config/btop/btop.conf \
+            git/dot-config/git/config 2>/dev/null || true
     fi
 }
 
