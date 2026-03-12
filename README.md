@@ -56,14 +56,14 @@
   - [5.7 stow 的用法说明](#57-stow-%E7%9A%84%E7%94%A8%E6%B3%95%E8%AF%B4%E6%98%8E)
   - [5.8 自定义命令（bin/）](#58-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%91%BD%E4%BB%A4bin)
   - [5.9 OrbStack（可选）](#59-orbstack%E5%8F%AF%E9%80%89)
-- [6. 常用维护命令 (Makefile)](#6-%E5%B8%B8%E7%94%A8%E7%BB%B4%E6%8A%A4%E5%91%BD%E4%BB%A4-makefile)
-- [7. 与官方默认的关键差异](#7-%E4%B8%8E%E5%AE%98%E6%96%B9%E9%BB%98%E8%AE%A4%E7%9A%84%E5%85%B3%E9%94%AE%E5%B7%AE%E5%BC%82)
-  - [7.1 Karabiner 全局键位改造](#71-karabiner-%E5%85%A8%E5%B1%80%E9%94%AE%E4%BD%8D%E6%94%B9%E9%80%A0)
-  - [7.2 Ghostty 终端行为与键位](#72-ghostty-%E7%BB%88%E7%AB%AF%E8%A1%8C%E4%B8%BA%E4%B8%8E%E9%94%AE%E4%BD%8D)
-  - [7.3 Zellij 快捷键与会话架构](#73-zellij-%E5%BF%AB%E6%8D%B7%E9%94%AE%E4%B8%8E%E4%BC%9A%E8%AF%9D%E6%9E%B6%E6%9E%84)
-  - [7.4 Fish Shell 行为与键位](#74-fish-shell-%E8%A1%8C%E4%B8%BA%E4%B8%8E%E9%94%AE%E4%BD%8D)
-  - [7.5 Helix 编辑器键位与显示](#75-helix-%E7%BC%96%E8%BE%91%E5%99%A8%E9%94%AE%E4%BD%8D%E4%B8%8E%E6%98%BE%E7%A4%BA)
-  - [7.6 Git 工作流增强](#76-git-%E5%B7%A5%E4%BD%9C%E6%B5%81%E5%A2%9E%E5%BC%BA)
+- [6. 与官方默认的关键差异](#6-%E4%B8%8E%E5%AE%98%E6%96%B9%E9%BB%98%E8%AE%A4%E7%9A%84%E5%85%B3%E9%94%AE%E5%B7%AE%E5%BC%82)
+  - [6.1 Karabiner 全局键位改造](#61-karabiner-%E5%85%A8%E5%B1%80%E9%94%AE%E4%BD%8D%E6%94%B9%E9%80%A0)
+  - [6.2 Ghostty 终端行为与键位](#62-ghostty-%E7%BB%88%E7%AB%AF%E8%A1%8C%E4%B8%BA%E4%B8%8E%E9%94%AE%E4%BD%8D)
+  - [6.3 Zellij 快捷键与会话架构](#63-zellij-%E5%BF%AB%E6%8D%B7%E9%94%AE%E4%B8%8E%E4%BC%9A%E8%AF%9D%E6%9E%B6%E6%9E%84)
+  - [6.4 Fish Shell 行为与键位](#64-fish-shell-%E8%A1%8C%E4%B8%BA%E4%B8%8E%E9%94%AE%E4%BD%8D)
+  - [6.5 Helix 编辑器键位与显示](#65-helix-%E7%BC%96%E8%BE%91%E5%99%A8%E9%94%AE%E4%BD%8D%E4%B8%8E%E6%98%BE%E7%A4%BA)
+  - [6.6 Git 工作流增强](#66-git-%E5%B7%A5%E4%BD%9C%E6%B5%81%E5%A2%9E%E5%BC%BA)
+- [7. 常用维护命令 (Makefile)](#7-%E5%B8%B8%E7%94%A8%E7%BB%B4%E6%8A%A4%E5%91%BD%E4%BB%A4-makefile)
 - [8. 常见问题 (FAQ / Troubleshooting)](#8-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98-faq--troubleshooting)
 - [9. 致谢 (Acknowledgments)](#9-%E8%87%B4%E8%B0%A2-acknowledgments)
 - [10. 开源协议 (License)](#10-%E5%BC%80%E6%BA%90%E5%8D%8F%E8%AE%AE-license)
@@ -94,16 +94,15 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 
 本仓库包含以下配置包及核心文件：
 
-- `ghostty/`: Ghostty（/ˈɡoʊs.ti/，Ghost + ty）终端配置
-- `fish/`: Fish（/fɪʃ/，**F**riendly **I**nteractive **SH**ell）shell 配置
-- `zellij/`: Zellij（/ˈzɛl.ɪdʒ/，源自阿拉伯语，马赛克瓷砖拼贴艺术）终端复用器，易于配置
-- `helix/`: Helix（/ˈhiː.lɪks/，螺旋）现代模态编辑器，开箱即用
-- `karabiner/`: Karabiner（/ˌkær.əˈbiː.nər/，德语，登山扣）键盘映射（交换 Caps Lock 和 Left Control）
-- `git/`: Git 基础配置（别名、Delta 美化、全局忽略等）
-- `lazygit`: 终端 Git 交互式管理器（由 `mise` 管理）
-- `mise/`: Mise（/miːz/，源自法语 mise en place，就位准备）工具版本管理器配置
-- `aichat/`: 终端 AI 客户端；Fish 中预置 `AICHAT_*` 环境变量与数据隔离，本地敏感项模板见 `local/config.local.fish.example`
-- `btop/`: btop 现代系统资源监控工具配置
+- `ghostty/`: [Ghostty](https://ghostty.org/)（/ˈɡoʊs.ti/，Ghost + ty）终端配置（现代、快速、GPU 加速）。
+- `fish/`: [Fish](https://fishshell.com/)（/fɪʃ/，**F**riendly **I**nteractive **SH**ell）Shell 配置（友好、交互式、开箱即用）。
+- `zellij/`: [Zellij](https://zellij.dev/)（/ˈzɛl.ɪdʒ/，源自阿拉伯语，马赛克瓷砖拼贴艺术）终端复用器配置（易于配置，支持多种布局）。
+- `helix/`: [Helix](https://helix-editor.com/)（/ˈhiː.lɪks/，螺旋）现代模态编辑器配置（基于 Rust，极致响应，内置 LSP 支持）。
+- `karabiner/`: [Karabiner-Elements](https://karabiner-elements.pqrs.org/)（/ˌkær.əˈbiː.nər/，德语，登山扣）键位映射（交换 Caps Lock 与 Left Control）。
+- `git/`: Git 基础配置（包含高频别名、Delta 现代 Diff 美化、全局忽略、以及多账号隔离架构）。
+- `mise/`: [Mise](https://mise.jdx.dev/)（/miːz/，源自法语 mise en place，就位准备）工具版本管理器配置（统一管理 Go, Node, Python, Rust 运行时及对应的 LSP）。
+- `aichat/`: [AIChat](https://github.com/sigoden/aichat) 终端 AI 客户端（集成多模型支持、命令生成/排错及工作流增强）。
+- `btop/`: [btop](https://github.com/aristocratos/btop) 现代系统资源监控配置。
 - `bin/`: 自定义命令脚本（自动链接到 `~/.local/bin`）
 - `local/`: 本地环境私有配置模板（用于 Fish 环境变量脱敏、Git 多账号隔离及 Ghostty 私有配置）
 - `Makefile`: 自动化构建与维护脚本
@@ -377,6 +376,21 @@ fish_add_path ~/.local/bin
    # ~/.config/ghostty/config.local
    # 示例：按下 ctrl+backspace 自动输入占位文本并回车
    keybind = ctrl+backspace=text:<your-secret>\r
+   ```
+
+#### Git 本地多账号隔离配置
+
+本项目 Git 配置采用“基础+本地覆盖”模式，通过 `include` 指令在不污染主仓库的前提下支持多身份：
+
+1. **设置个人全局身份**：
+   ```bash
+   cp ~/dotfiles/local/dot-gitconfig.local.example ~/.gitconfig.local
+   # 编辑 ~/.gitconfig.local 填入你的常用 Name 和 Email
+   ```
+2. **设置工作/特定目录身份**（可选）：
+   ```bash
+   cp ~/dotfiles/local/dot-gitconfig.work.example ~/.gitconfig.work
+   # 编辑 ~/.gitconfig.work 填入工作邮箱，该配置仅对 ~/work/ 下的仓库生效
    ```
 
 > [!NOTE]
@@ -918,40 +932,17 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
 ---
 
-## 6. 常用维护命令 (Makefile)
-
-本项目引入了 `Makefile` 来标准化日常维护任务，集成了安装、同步、验证和清理等操作。
-
-| 命令 | 说明 |
-|------|------|
-| `make help` | 显示帮助菜单（默认） |
-| `make install` | 运行 `install.sh` 安装脚本 |
-| `make stow` | 建立所有配置文件的软链接 |
-| `make unstow` | 删除所有软链接（卸载配置） |
-| `make restow` | 修复/重建所有软链接 |
-| `make stow-<package>` | 仅同步指定包 (如 `make stow-fish`, `make stow-ghostty`) |
-| `make fish` | 将 Fish 设置为默认 Shell |
-| `make plugins` | 更新 Fisher 插件 |
-| `make macos` | 配置 macOS 系统偏好设置 |
-| `make validate` | 运行完整的配置验证（包含工具检查） |
-| `make lint` | 静态分析仓库中的 Shell 脚本（含 `bootstrap.sh`、`install.sh`、`macos.sh` 和 `bin/*`） |
-| `make docs` | 生成或更新 README 的目录 (TOC) |
-| `make update` | 拉取远程代码并更新所有核心工具链体系 (`dot-update`) |
-| `make clean` | 清理临时文件 (`.bak`, `.tmp` 等) |
-
----
-
-## 7. 与官方默认的关键差异
+## 6. 与官方默认的关键差异
 
 本项目对各工具的默认配置做了若干有意识的定制。以下是**所有偏离官方默认值的关键改动**，帮助你快速了解本 dotfiles 的"个性化"部分。
 
-### 7.1 Karabiner 全局键位改造
+### 6.1 Karabiner 全局键位改造
 
 | 改动 | 官方默认 | 本项目 | 原因 |
 |------|----------|--------|------|
 | Caps Lock ↔ Left Control 互换 | 保持原位置 | 交换位置（已排除 HHKB 键位的键盘）| Caps Lock 位置更适合高频的 Ctrl 操作（Emacs/Zellij/Helix/Vim 等均重度依赖 Ctrl） |
 
-### 7.2 Ghostty 终端行为与键位
+### 6.2 Ghostty 终端行为与键位
 
 **键位变更：**
 | 改动 | 官方默认 | 本项目 | 原因 |
@@ -969,7 +960,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | 未聚焦分屏不透明度 | `0.7` | `unfocused-split-opacity = 0.3` | 更明显区分聚焦/非聚焦面板 |
 | 环境变量 | 无 | `env = GHOSTTY_RUNTIME=1` | 供 Fish 判断是否在 Ghostty 中运行 |
 
-### 7.3 Zellij 快捷键与会话架构
+### 6.3 Zellij 快捷键与会话架构
 
 **架构变更：**
 | 改动 | 官方默认 | 本项目 | 原因 |
@@ -987,7 +978,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | 所有模式添加 `h/j/k/l` 导航 | 面板/标签页/调整大小/移动/滚动均支持 Vim 风格 |
 | `Ctrl + a` 进入 tmux 兼容模式 | 为 tmux 用户提供肌肉记忆兼容层 |
 
-### 7.4 Fish Shell 行为与键位
+### 6.4 Fish Shell 行为与键位
 
 **行为变更：**
 | 改动 | 官方默认 | 本项目 | 原因 |
@@ -1009,7 +1000,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | Vi 光标形状 | normal=block, insert=line, replace=underscore |
 | Tide vi_mode 标识 | `D` → `N`（对齐 Vim 社区的 Normal 缩写习惯） |
 
-### 7.5 Helix 编辑器键位与显示
+### 6.5 Helix 编辑器键位与显示
 
 **键位变更：**
 | 改动 | 官方默认 | 本项目 | 原因 |
@@ -1034,7 +1025,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | 保存时清理 | 均关闭 | `trim-final-newlines` / `trim-trailing-whitespace = true` | 保持文件整洁 |
 | 软换行 | 关闭 | `soft-wrap.enable = true` | 长行自动换行 |
 
-### 7.6 Git 工作流增强
+### 6.6 Git 工作流增强
 
 | 改动 | 官方默认 | 本项目 | 原因 |
 |------|----------|--------|------|
@@ -1047,6 +1038,29 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | 重用冲突解决 | 关闭 | `rerere.enabled = true` | 自动记忆冲突解决方案 |
 | 用户信息 | 硬编码在配置中 | 通过 `include` 引入本地文件 | 防止敏感信息入库 |
 | 主题解耦 | 切换配色会导致仓库变脏 | 使用 Git Clean Filter 自动处理 | 确保 local 配色变更不产生 unstaged changes |
+
+---
+
+## 7. 常用维护命令 (Makefile)
+
+本项目引入了 `Makefile` 来标准化日常维护任务，集成了安装、同步、验证和清理等操作。
+
+| 命令 | 说明 |
+|------|------|
+| `make help` | 显示帮助菜单（默认） |
+| `make install` | 运行 `install.sh` 安装脚本 |
+| `make stow` | 建立所有配置文件的软链接 |
+| `make unstow` | 删除所有软链接（卸载配置） |
+| `make restow` | 修复/重建所有软链接 |
+| `make stow-<package>` | 仅同步指定包 (如 `make stow-fish`, `make stow-ghostty`) |
+| `make fish` | 将 Fish 设置为默认 Shell |
+| `make plugins` | 更新 Fisher 插件 |
+| `make macos` | 配置 macOS 系统偏好设置 |
+| `make validate` | 运行完整的配置验证（包含工具检查） |
+| `make lint` | 静态分析仓库中的 Shell 脚本（含 `bootstrap.sh`、`install.sh`、`macos.sh` 和 `bin/*`） |
+| `make docs` | 生成或更新 README 的目录 (TOC) |
+| `make update` | 拉取远程代码并更新所有核心工具链体系 (`dot-update`) |
+| `make clean` | 清理临时文件 (`.bak`, `.tmp` 等) |
 
 ## 8. 常见问题 (FAQ / Troubleshooting)
 

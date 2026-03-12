@@ -55,14 +55,14 @@ Core stack: Ghostty (terminal) + Zellij (multiplexer) + Fish (shell) + Helix (ed
   - [5.7 Stow Usage Notes](#57-stow-usage-notes)
   - [5.8 Custom Commands (`bin/`)](#58-custom-commands-bin)
   - [5.9 OrbStack (Optional)](#59-orbstack-optional)
-- [6. Common Maintenance Commands (Makefile)](#6-common-maintenance-commands-makefile)
-- [7. Key Differences from Official Defaults](#7-key-differences-from-official-defaults)
-  - [7.1 Karabiner Global Key Remapping](#71-karabiner-global-key-remapping)
-  - [7.2 Ghostty Terminal Behavior and Keybindings](#72-ghostty-terminal-behavior-and-keybindings)
-  - [7.3 Zellij Shortcuts and Session Architecture](#73-zellij-shortcuts-and-session-architecture)
-  - [7.4 Fish Shell Behavior and Keybindings](#74-fish-shell-behavior-and-keybindings)
-  - [7.5 Helix Editor Keybindings and Display](#75-helix-editor-keybindings-and-display)
-  - [7.6 Git Workflow Enhancements](#76-git-workflow-enhancements)
+- [6. Key Differences from Official Defaults](#6-key-differences-from-official-defaults)
+  - [6.1 Karabiner Global Key Remapping](#61-karabiner-global-key-remapping)
+  - [6.2 Ghostty Terminal Behavior and Keybindings](#62-ghostty-terminal-behavior-and-keybindings)
+  - [6.3 Zellij Shortcuts and Session Architecture](#63-zellij-shortcuts-and-session-architecture)
+  - [6.4 Fish Shell Behavior and Keybindings](#64-fish-shell-behavior-and-keybindings)
+  - [6.5 Helix Editor Keybindings and Display](#65-helix-editor-keybindings-and-display)
+  - [6.6 Git Workflow Enhancements](#66-git-workflow-enhancements)
+- [7. Common Maintenance Commands (Makefile)](#7-common-maintenance-commands-makefile)
 - [8. FAQ / Troubleshooting](#8-faq--troubleshooting)
 - [9. Acknowledgments](#9-acknowledgments)
 - [10. License](#10-license)
@@ -92,17 +92,16 @@ This script automatically installs Homebrew (if missing), Ghostty, Fish, Zellij,
 
 This repository contains the following config packages and core files:
 
-- `ghostty/`: Ghostty (/ˈɡoʊs.ti/, Ghost + ty) terminal config
-- `fish/`: Fish (/fɪʃ/, **F**riendly **I**nteractive **SH**ell) shell config
-- `zellij/`: Zellij (/ˈzɛl.ɪdʒ/, from Arabic mosaic tile art), an easy-to-configure terminal multiplexer
-- `helix/`: Helix (/ˈhiː.lɪks/, helix) modern modal editor, ready out of the box
-- `karabiner/`: Karabiner (/ˌkær.əˈbiː.nər/, German, carabiner) keyboard remapping (swaps Caps Lock and Left Control)
-- `git/`: Base Git configuration (aliases, Delta styling, global ignores, etc.)
-- `lazygit`: Terminal Git UI (managed by `mise`)
-- `mise/`: Mise (/miːz/, from the French phrase *mise en place*) tool version manager config
-- `aichat/`: Terminal AI client; Fish predefines `AICHAT_*` environment variables and data isolation, with local sensitive templates in `local/config.local.fish.example`
-- `btop/`: btop config for modern system resource monitoring
-- `bin/`: Custom command scripts (automatically linked to `~/.local/bin`)
+- `ghostty/`: [Ghostty](https://ghostty.org/) (/ˈɡoʊs.ti/, Ghost + ty) terminal config (modern, fast, GPU-accelerated)
+- `fish/`: [Fish](https://fishshell.com/) (/fɪʃ/, **F**riendly **I**nteractive **SH**ell) shell config (friendly, interactive, ready out of the box)
+- `zellij/`: [Zellij](https://zellij.dev/) (/ˈzɛl.ɪdʒ/, from Arabic mosaic tile art) terminal multiplexer config (easy to configure, multi-layout support)
+- `helix/`: [Helix](https://helix-editor.com/) (/ˈhiː.lɪks/, helix) modern modal editor config (Rust-based, ultra-responsive, built-in LSP support)
+- `karabiner/`: [Karabiner-Elements](https://karabiner-elements.pqrs.org/) (/ˌkær.əˈbiː.nər/, German for carabiner) keyboard mapping (swaps Caps Lock and Left Control)
+- `git/`: Git base configuration (includes high-frequency aliases, Delta modern diff styling, global ignores, and a multi-account isolation architecture)
+- `mise/`: [Mise](https://mise.jdx.dev/) (/miːz/, from French mise en place) tool version manager config (Unified management of Go, Node, Python, and Rust runtimes along with LSPs)
+- `aichat/`: [AIChat](https://github.com/sigoden/aichat) terminal AI client (Integrates multiple models, command generation/troubleshooting, and workflow enhancements)
+- `btop/`: [btop](https://github.com/aristocratos/btop) modern system resource monitoring config.
+- `bin/`: High-frequency custom scripts (includes the `zj` project launcher, `gdoctor` diagnostic tool, `aic/aipr` AI-enhancement tools, etc., automatically linked to `~/.local/bin`)
 - `local/`: Private local config templates (for Fish environment variable redaction, Git multi-account isolation, and private Ghostty config)
 - `Makefile`: Automation for build and maintenance tasks
 - `.editorconfig`: Cross-editor formatting rules. It includes strict formatting controls such as indentation mode, forced LF line endings, and final newline protection to keep the codebase clean and avoid cross-platform/editor formatting issues.
@@ -376,6 +375,21 @@ To prevent those values from being tracked by Git and leaked into a public repos
    # ~/.config/ghostty/config.local
    # Example: press ctrl+backspace to auto-type placeholder text and hit Enter
    keybind = ctrl+backspace=text:<your-secret>\r
+   ```
+
+#### Git Local multi-account isolation
+
+This project's Git configuration adopts a "base + local override" pattern, supporting multiple identities through the `include` directive without polluting the main repository:
+
+1. **Set your personal global identity**:
+   ```bash
+   cp ~/dotfiles/local/dot-gitconfig.local.example ~/.gitconfig.local
+   # Edit ~/.gitconfig.local and fill in your common Name and Email
+   ```
+2. **Set a separate work/directory identity** (optional):
+   ```bash
+   cp ~/dotfiles/local/dot-gitconfig.work.example ~/.gitconfig.work
+   # Edit ~/.gitconfig.work and fill in your company email; this config only applies to repositories inside ~/work/
    ```
 
 > [!NOTE]
@@ -915,44 +929,21 @@ These commands appear in `~/.local/bin` after the `bin` package is stowed:
 - If you need a full Linux development machine, create one in the OrbStack GUI, usually with `Ubuntu`.
 - After creation, you can enter it directly with `orb -m <machine_name>` or via SSH, for example `ssh <user>@<machine_name>@orb`.
 - Common scenarios include reproducing a more server-like Linux environment locally, isolating legacy project dependencies, or running databases and backend services inside an isolated machine.
-- When you need to inspect containers, images, volumes, or Linux machine state, open the OrbStack GUI again.
+- When you need to inspect containers, images, volumes, or Linux machine state, simply open the OrbStack GUI.
 
 ---
 
-## 6. Common Maintenance Commands (Makefile)
-
-This project introduces a `Makefile` to standardize daily maintenance tasks and integrate installation, synchronization, validation, and cleanup.
-
-| Command | Description |
-|------|------|
-| `make help` | Show the help menu (default) |
-| `make install` | Run the `install.sh` installer |
-| `make stow` | Create symlinks for all config files |
-| `make unstow` | Remove all symlinks (uninstall configs) |
-| `make restow` | Repair / rebuild all symlinks |
-| `make stow-<package>` | Sync only one package, such as `make stow-fish` or `make stow-ghostty` |
-| `make fish` | Set Fish as the default shell |
-| `make plugins` | Update Fisher plugins |
-| `make macos` | Apply macOS system preferences |
-| `make validate` | Run full config validation, including tool checks |
-| `make lint` | Run shellcheck on repository Shell scripts, including `bootstrap.sh`, `install.sh`, `macos.sh`, and `bin/*` |
-| `make docs` | Generate or update the README TOC |
-| `make update` | Pull remote code and update the entire core toolchain stack via `dot-update` |
-| `make clean` | Clean temporary files such as `.bak` and `.tmp` |
-
----
-
-## 7. Key Differences from Official Defaults
+## 6. Key Differences from Official Defaults
 
 This project makes a series of intentional customizations on top of the default configuration of each tool. The table below summarizes **all key deviations from official defaults**, so you can quickly understand what is opinionated in these dotfiles.
 
-### 7.1 Karabiner Global Key Remapping
+### 6.1 Karabiner Global Key Remapping
 
 | Change | Official default | This project | Why |
 |------|----------|--------|------|
 | Swap Caps Lock ↔ Left Control | Keep original positions | Swap them (excluding HHKB-layout keyboards) | Caps Lock is in a better position for frequent Ctrl usage; Emacs, Zellij, Helix, and Vim all rely heavily on Ctrl |
 
-### 7.2 Ghostty Terminal Behavior and Keybindings
+### 6.2 Ghostty Terminal Behavior and Keybindings
 
 **Keybinding changes:**
 | Change | Official default | This project | Why |
@@ -970,7 +961,7 @@ This project makes a series of intentional customizations on top of the default 
 | Unfocused split opacity | `0.7` | `unfocused-split-opacity = 0.3` | More obvious distinction between focused and unfocused panes |
 | Environment variable | None | `env = GHOSTTY_RUNTIME=1` | Lets Fish detect whether it is running inside Ghostty |
 
-### 7.3 Zellij Shortcuts and Session Architecture
+### 6.3 Zellij Shortcuts and Session Architecture
 
 **Architecture changes:**
 | Change | Official default | This project | Why |
@@ -988,7 +979,7 @@ This project makes a series of intentional customizations on top of the default 
 | Add `h/j/k/l` navigation in all modes | Panes, tabs, resize, move, and scroll all support Vim-style navigation |
 | `Ctrl + a` enters tmux compatibility mode | Gives tmux users a muscle-memory compatibility layer |
 
-### 7.4 Fish Shell Behavior and Keybindings
+### 6.4 Fish Shell Behavior and Keybindings
 
 **Behavior changes:**
 | Change | Official default | This project | Why |
@@ -1010,7 +1001,7 @@ This project makes a series of intentional customizations on top of the default 
 | Vi cursor shapes | `normal=block`, `insert=line`, `replace=underscore` |
 | Tide `vi_mode` indicator | `D` → `N` to align with Vim community usage of `N` for Normal |
 
-### 7.5 Helix Editor Keybindings and Display
+### 6.5 Helix Editor Keybindings and Display
 
 **Keybinding changes:**
 | Change | Official default | This project | Why |
@@ -1019,7 +1010,7 @@ This project makes a series of intentional customizations on top of the default 
 | `Space + m` | Unbound | Preview Markdown with glow | Render Markdown in a floating window |
 | `Space + o/i` | Unbound | `expand_selection` / `shrink_selection` | Replaces `Alt-o/i` to avoid Alt key conflicts |
 | Insert mode `Ctrl + f/b/n/p/a/e` | Unbound | Emacs-style cursor movement | Move quickly without leaving insert mode |
-| `j` / `k` | Move by visual line | Move by physical line (`move_line_down/up`) | Works better with soft wrapping and line-number jumps, avoiding cases where `6j` lands in the wrong place |
+| `j` / `k` | Move by visual line | Move by physical line (`move_line_down/up`) | Works better with soft wrapping and line-number jumps, avoiding cases where `6j` land in the wrong place |
 | `gj` / `gk` | Move by physical line | Move by visual line (`move_visual_line_down/up`) | Use these when you really want to move line by line visually |
 
 **Display changes:**
@@ -1035,7 +1026,7 @@ This project makes a series of intentional customizations on top of the default 
 | Cleanup on save | Both disabled | `trim-final-newlines` / `trim-trailing-whitespace = true` | Keep files tidy |
 | Soft wrap | Disabled | `soft-wrap.enable = true` | Automatically wrap long lines |
 
-### 7.6 Git Workflow Enhancements
+### 6.6 Git Workflow Enhancements
 
 | Change | Official default | This project | Why |
 |------|----------|--------|------|
@@ -1048,6 +1039,29 @@ This project makes a series of intentional customizations on top of the default 
 | Reuse recorded conflict resolution | Disabled | `rerere.enabled = true` | Remember conflict resolutions automatically |
 | User identity | Hardcoded in config | Injected via `include` local files | Prevent sensitive identity data from entering the repo |
 | Theme decoupling | Changing themes dirties the repo | Handled through Git Clean Filter automatically | Ensure local theme switches do not produce unstaged changes |
+
+---
+
+## 7. Common Maintenance Commands (Makefile)
+
+This project introduces a `Makefile` to standardize daily maintenance tasks and integrate installation, synchronization, validation, and cleanup.
+
+| Command | Description |
+|------|------|
+| `make help` | Show the help menu (default) |
+| `make install` | Run the `install.sh` installer |
+| `make stow` | Create symlinks for all config files |
+| `make unstow` | Remove all symlinks (uninstall configs) |
+| `make restow` | Repair / rebuild all symlinks |
+| `make stow-<package>` | Sync only one package, such as `make stow-fish` or `make stow-ghostty` |
+| `make fish` | Set Fish as the default shell |
+| `make plugins` | Update Fisher plugins |
+| `make macos` | Apply macOS system preferences |
+| `make validate` | Run full config validation, including tool checks |
+| `make lint` | Run shellcheck on repository Shell scripts, including `bootstrap.sh`, `install.sh`, `macos.sh`, and `bin/*` |
+| `make docs` | Generate or update the README TOC |
+| `make update` | Pull remote code and update the entire core toolchain stack via `dot-update` |
+| `make clean` | Clean temporary files such as `.bak` and `.tmp` |e switches do not produce unstaged changes |
 
 ## 8. FAQ / Troubleshooting
 
