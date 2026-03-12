@@ -2,4 +2,4 @@
 # 主题由 `colorscheme` 脚本统一管理；不要手动在 shell 环境里长期导出 BAT_THEME，
 # 否则会覆盖这里的配置，导致当前会话里 bat 主题看起来没有切换。
 
---theme="Dracula"
+--theme="rose-pine"

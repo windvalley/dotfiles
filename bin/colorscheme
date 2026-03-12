@@ -38,12 +38,12 @@ error() { echo -e "${RED}[ERROR]${NC} $1"; }
 #                      `~/.config/bat/themes/` are supported after `bat cache --build`.
 # Delta syntax themes: most presets reuse Bat's syntect theme, but Delta-specific
 #                      features may be applied for themes that cannot reuse custom
-#                      Bat themes directly (for example `tokyonight`).
+#                      Bat themes directly (for example `tokyonight` / `rose-pine`).
 # ============================================
 THEMES=(
     "dracula|Dracula|=|dracula-pro|=|Dracula"
     "catppuccin|Catppuccin Macchiato|catppuccin_macchiato|catppuccin-macchiato|catppuccin-macchiato|Catppuccin Macchiato"
-    "rose-pine|Rose Pine|rose_pine|rose-pine|rose-pine|-"
+    "rose-pine|Rose Pine|rose_pine|rose-pine|rose-pine|rose-pine"
     "tokyonight|TokyoNight Moon|tokyonight_moon|tokyo-night|tokyo-night|tokyonight_moon"
     "gruvbox|Gruvbox Material Dark|gruvbox_dark_hard|=|gruvbox_material_dark|gruvbox-dark"
     "gruvbox-light|Gruvbox Light|gruvbox_light|gruvbox-light|gruvbox_light|gruvbox-light"
@@ -479,12 +479,21 @@ delta_cs_change() {
         return 0
     fi
 
-    if [ "$colorscheme" = "tokyonight" ]; then
-        # Delta cannot consume Bat's custom Tokyo Night syntect theme directly.
-        # Use the official Tokyo Night Delta feature instead.
-        syntax_theme="Dracula"
-        delta_feature="tokyonight-moon"
-    fi
+    case "$colorscheme" in
+        tokyonight)
+            # Delta cannot consume Bat's custom Tokyo Night syntect theme directly.
+            # Use the official Tokyo Night Delta feature instead.
+            syntax_theme="Dracula"
+            delta_feature="tokyonight-moon"
+            ;;
+        rose-pine)
+            # Delta also cannot reuse Bat's custom Rose Pine syntect theme directly.
+            # Keep syntax-theme on a safe built-in fallback and switch to a custom
+            # Delta feature that recreates the Rose Pine diff palette.
+            syntax_theme="Dracula"
+            delta_feature="rose-pine"
+            ;;
+    esac
 
     "$SED_BIN" -i -E '/^\[delta\]/,/^\[/ s/^(\s+)syntax-theme\s*=.*/\1syntax-theme = '"$syntax_theme"'/' "$gitconfig"
 

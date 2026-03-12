@@ -64,6 +64,34 @@
     plus-non-emph-style = normal "#20303b"
     syntax-theme = none
 
+[delta "rose-pine"]
+    # 自定义 Rose Pine Delta 主题。
+    # colorscheme 切到 `rose-pine` 时会自动在 [delta] 节中启用：
+    #   features = rose-pine
+    true-color = always
+    commit-decoration-style = "#31748f" ol
+    commit-style = raw
+    file-style = omit
+    hunk-header-decoration-style = "#31748f" box
+    hunk-header-file-style = "#eb6f92"
+    hunk-header-line-number-style = "#f6c177"
+    hunk-header-style = file line-number syntax
+    line-numbers = true
+    line-numbers-left-format = "{nm:>4}┊"
+    line-numbers-left-style = "#908caa"
+    line-numbers-minus-style = "#eb6f92"
+    line-numbers-plus-style = "#9ccfd8"
+    line-numbers-right-format = "{np:>4}│"
+    line-numbers-right-style = "#908caa"
+    line-numbers-zero-style = "#6e6a86"
+    minus-emph-style = normal "#5f2d44"
+    minus-style = normal "#2a1f33"
+    minus-non-emph-style = normal "#2a1f33"
+    plus-emph-style = normal "#213d48"
+    plus-style = normal "#1f2b3b"
+    plus-non-emph-style = normal "#1f2b3b"
+    syntax-theme = none
+
 [merge]
     # 冲突显示风格：同时显示本地、远程和基准代码（diff3），方便合并
     conflictstyle = diff3
