@@ -5,18 +5,28 @@ function git_status_stats -d "显示 Git 状态并附带暂存区和未暂存区
 
     set -l staged_stats (command git diff --staged --shortstat | string collect | string trim)
     set -l unstaged_stats (command git diff --shortstat | string collect | string trim)
+    set -l has_staged 0
+    set -l has_unstaged 0
 
-    printf "\nstaged stats:\n"
     if test -n "$staged_stats"
-        printf "  %s\n" "$staged_stats"
-    else
-        printf "  (none)\n"
+        set has_staged 1
     end
 
-    printf "\nnot staged stats:\n"
     if test -n "$unstaged_stats"
+        set has_unstaged 1
+    end
+
+    if test $has_staged -eq 1
+        printf "staged stats:\n"
+        printf "  %s\n" "$staged_stats"
+    end
+
+    if test $has_staged -eq 1 -a $has_unstaged -eq 1
+        printf "\n"
+    end
+
+    if test $has_unstaged -eq 1
+        printf "not staged stats:\n"
         printf "  %s\n" "$unstaged_stats"
-    else
-        printf "  (none)\n"
     end
 end
