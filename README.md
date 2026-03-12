@@ -913,7 +913,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
 这些命令会在 stow `bin` 后出现在 `~/.local/bin`：
 
-- `colorscheme [name]`: 同步切换 Ghostty、Helix、Zellij、Btop、Bat 和 Delta 主题。无参数时显示当前主题和可用主题列表，内置 12 个预设（dracula / catppuccin / rose-pine / tokyonight / gruvbox / gruvbox-light / kanagawa / nord / solarized / solarized-light / one-dark / everforest）；其中 `catppuccin` 统一映射到 `Macchiato` 变体，`rose-pine` 使用同名深色变体，并为 Bat / Delta 启用仓库内置主题资源；`tokyonight` 会为 Bat 使用仓库内置的自定义 syntect 主题，并为 Delta 启用官方 Tokyo Night feature；`solarized` 预设会统一映射到各工具对应的深色 Solarized 变体。仅支持上述允许列表内的主题名；额外支持 `--current`、`--list`、`--help`。**配合 Git Clean Filter，切换主题不会导致仓库变脏。**
+- `colorscheme [name]`: 同步切换 Ghostty、Helix、Zellij、Btop、Bat 和 Delta 主题。无参数时显示当前主题和可用主题列表，内置 11 个预设（dracula / catppuccin / rose-pine / tokyonight / gruvbox / gruvbox-light / kanagawa / nord / solarized / one-dark / everforest）；其中 `catppuccin` 统一映射到 `Macchiato` 变体，`rose-pine` 使用同名深色变体，并为 Bat / Delta 启用仓库内置主题资源；`tokyonight` 会为 Bat 使用仓库内置的自定义 syntect 主题，并为 Delta 启用官方 Tokyo Night feature；`solarized` 预设会统一映射到各工具对应的深色 Solarized 变体。仅支持上述允许列表内的主题名；额外支持 `--current`、`--list`、`--help`。**配合 Git Clean Filter，切换主题不会导致仓库变脏。**
 - `dot-theme-filter`: **Git 内部过滤器（非直接执行）**。配合 `.gitattributes` 使用，在 `git add` 时自动将主题、Ghostty 字体大小、Ghostty 背景透明度等本地显示偏好还原为默认值，实现配置文件的“逻辑解耦”。
 - `font-size <1-200>`: 设置 Ghostty 字体大小；配合 Git Clean Filter 不会让 dotfiles 仓库变脏
 - `opacity <0.0-1.0>`: 设置 Ghostty 背景透明度；配合 Git Clean Filter 不会让 dotfiles 仓库变脏

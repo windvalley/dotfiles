@@ -50,7 +50,6 @@ THEMES=(
     "kanagawa|Kanagawa Wave|kanagawa|=|kanagawa-wave|-"
     "nord|Nord|nord|nord|=|Nord"
     "solarized|Solarized Dark Higher Contrast|solarized_dark|solarized-dark|solarized_dark|Solarized (dark)"
-    "solarized-light|iTerm2 Solarized Light|solarized_light|solarized-light|solarized_light|Solarized (light)"
     "one-dark|Atom One Dark|one_dark|=|onedark|-"
     "everforest|Everforest Dark Hard|everforest_dark|=|everforest-dark-hard|-"
 )
