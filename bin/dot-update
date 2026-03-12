@@ -10,6 +10,7 @@ NC='\033[0m'
 
 info() { echo -e "${BLUE}[INFO]${NC} $1"; }
 success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
+warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
 info "Updating dotfiles..."
@@ -25,10 +26,10 @@ if command -v brew &> /dev/null; then
     if [ -z "$OUTDATED" ]; then
         success "Homebrew: 所有包已是最新版本。"
     else
-        echo ""
-        echo "以下 Homebrew 包将被升级："
-        echo "$OUTDATED" | sed 's/^/  /'
-        echo ""
+        printf '\n'
+        info "以下 Homebrew 包将被升级："
+        printf '%s\n' "$OUTDATED" | sed 's/^/  /'
+        printf '\n'
         read -r -p "确认升级以上包？[y/N] " confirm
         if [[ "$confirm" =~ ^[Yy]$ ]]; then
             brew upgrade
@@ -38,7 +39,7 @@ if command -v brew &> /dev/null; then
         fi
     fi
 else
-    error "Homebrew not found, skipping."
+    warn "Homebrew not found, skipping."
 fi
 
 info "2/4: Updating Mise and its managed tools..."
@@ -46,7 +47,7 @@ if command -v mise &> /dev/null; then
     mise upgrade
     success "Mise updated."
 else
-    error "Mise not found, skipping."
+    warn "Mise not found, skipping."
 fi
 
 info "3/4: Updating Fisher and its plugins..."
@@ -55,10 +56,10 @@ if command -v fish &> /dev/null; then
         fish -c "fisher update"
         success "Fisher updated."
     else
-        error "Fisher not installed in fish, skipping."
+        warn "Fisher not installed in fish, skipping."
     fi
 else
-    error "Fish not found, skipping."
+    warn "Fish not found, skipping."
 fi
 
 info "4/4: Updating Tree-sitter grammars for Helix..."
@@ -67,7 +68,7 @@ if command -v hx &> /dev/null; then
     hx --grammar build
     success "Helix grammars updated."
 else
-    error "Helix not found, skipping."
+    warn "Helix not found, skipping."
 fi
 
 success "Dotfiles and tools updated successfully!"

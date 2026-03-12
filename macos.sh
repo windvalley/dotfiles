@@ -3,10 +3,16 @@
 set -euo pipefail
 
 # Fallback logging functions when run standalone (not via install.sh)
-if ! declare -f warn > /dev/null 2>&1; then
+if ! declare -f info > /dev/null 2>&1; then
+    RED='\033[0;31m'
+    GREEN='\033[0;32m'
+    BLUE='\033[0;34m'
     YELLOW='\033[1;33m'
     NC='\033[0m'
+    info() { echo -e "${BLUE}[INFO]${NC} $1"; }
+    success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
     warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
+    error() { echo -e "${RED}[ERROR]${NC} $1"; }
 fi
 
 # ==============================================================================
@@ -20,7 +26,7 @@ fi
 osascript -e 'tell application "System Settings" to quit' 2>/dev/null || true
 osascript -e 'tell application "System Preferences" to quit' 2>/dev/null || true
 
-echo "Configuring macOS..."
+info "Configuring macOS..."
 
 ###############################################################################
 # 通用界面与用户体验                                                          #
@@ -175,5 +181,5 @@ for app in "Activity Monitor" \
 	killall "${app}" &> /dev/null || true
 done
 
-echo "Done."
+success "Done."
 warn "Some changes will only take effect after restarting your Mac."

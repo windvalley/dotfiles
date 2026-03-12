@@ -17,15 +17,19 @@ error() { echo -e "${RED}[ERROR]${NC} $1"; }
 export -f info success warn error
 
 show_help() {
-  info "Usage: $0 [options]"
-  info "Options:"
-  info "  -y, --yes, --unattended    Run in non-interactive mode without prompting"
-  info "  -h, --help                 Show this help message"
+  cat <<EOF
+Usage:
+  $0 [options]
+
+Options:
+  -y, --yes, --unattended    Run in non-interactive mode without prompting
+  -h, --help                 Show this help message
+EOF
 }
 
 show_next_steps() {
-  info "Next steps:"
   cat <<'EOF'
+Next steps:
   1. Run 'exec fish -l' or restart your terminal.
   2. Run 'tide configure' to set up your prompt, or use:
      tide configure --auto \
@@ -41,8 +45,9 @@ show_next_steps() {
      (Check 'mise ls' to see the managed tools).
 EOF
 
-  info "Manual follow-up:"
   cat <<'EOF'
+
+Manual follow-up:
   - Edit ~/.config/fish/config.local.fish for private ENVs and API keys.
   - Edit ~/.config/ghostty/config.local for machine-specific shortcuts or overrides.
   - Edit ~/.gitconfig.local and ~/.gitconfig.work for Git identity.

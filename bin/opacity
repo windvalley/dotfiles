@@ -8,13 +8,24 @@
 
 set -euo pipefail
 
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+info() { echo -e "${BLUE}[INFO]${NC} $1"; }
+success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
+warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
+error() { echo -e "${RED}[ERROR]${NC} $1"; }
+
 # Check for gsed (GNU sed)
 if command -v gsed &>/dev/null; then
-    SED="gsed"
+    SED_BIN="gsed"
 elif command -v sed &>/dev/null; then
-    SED="sed"
+    SED_BIN="sed"
 else
-    echo "Error: sed not found" >&2
+    error "sed not found"
     exit 1
 fi
 
@@ -25,32 +36,31 @@ ghostty_config="$config_home/ghostty/config"
 
 if [ "$#" -ne 1 ]; then
     if [ -f "$ghostty_config" ]; then
-        current=$(grep -E '^background-opacity\s*=' "$ghostty_config" | $SED -E 's/^background-opacity\s*=\s*//' | head -1)
-        echo "Current opacity: ${current:-1.0 (default, fully opaque)}"
+        current=$(grep -E '^background-opacity\s*=' "$ghostty_config" | "$SED_BIN" -E 's/^background-opacity\s*=\s*//' | head -1)
+        printf 'Current opacity: %s\n' "${current:-1.0 (default, fully opaque)}"
     fi
-    echo "Usage: opacity <0.0-1.0>"
+    printf 'Usage: opacity <0.0-1.0>\n'
     exit 0
 fi
 
 if ! echo "$to_opacity" | grep -qE '^(0(\.[0-9]+)?|1(\.0+)?|\.[0-9]+)$'; then
-    echo "opacity must between 0 and 1"
+    error "opacity must be between 0 and 1"
     exit 1
 fi
 
 
 change_ghostty_opacity() {
     if [ ! -f "$ghostty_config" ]; then
-        echo "ghostty config not found: $ghostty_config" >&2
+        error "ghostty config not found: $ghostty_config"
         return 1
     fi
 
     if grep -qE '^background-opacity\s*=' "$ghostty_config"; then
-        $SED -i -E "s/^background-opacity\s*=\s*.*/background-opacity = $to_opacity/" "$ghostty_config"
+        "$SED_BIN" -i -E "s/^background-opacity\s*=\s*.*/background-opacity = $to_opacity/" "$ghostty_config"
     else
         printf '\nbackground-opacity = %s\n' "$to_opacity" >> "$ghostty_config"
     fi
 }
 
 change_ghostty_opacity
-
-exit 0
+success "Ghostty opacity updated to $to_opacity."

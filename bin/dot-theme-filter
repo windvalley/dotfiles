@@ -3,30 +3,48 @@
 # This filter restores the "default" theme when git reads the file into the index,
 # preventing local colorscheme changes from dirtying the git working tree.
 
-file="$1"
+set -euo pipefail
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+info() { echo -e "${BLUE}[INFO]${NC} $1"; }
+success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
+warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
+error() { echo -e "${RED}[ERROR]${NC} $1"; }
+
+file="${1:-}"
+
+if [ -z "$file" ]; then
+    error "Missing target file path."
+    exit 1
+fi
 
 # Check for gsed (GNU sed) - macOS default sed doesn't support some -E features uniformly
 if command -v gsed &>/dev/null; then
-    SED="gsed"
+    SED_BIN="gsed"
 else
-    SED="sed"
+    SED_BIN="sed"
 fi
 
 case "$file" in
     *ghostty/config)
-        $SED -E 's/^theme\s*=\s*".*"/theme = "Dracula"/'
+        "$SED_BIN" -E 's/^theme\s*=\s*".*"/theme = "Dracula"/'
         ;;
     *helix/config.toml)
-        $SED -E 's/^theme\s*=\s*".*"/theme = "dracula"/'
+        "$SED_BIN" -E 's/^theme\s*=\s*".*"/theme = "dracula"/'
         ;;
     *zellij/config.kdl)
-        $SED -E 's/^theme\s+".+"/theme "dracula-pro"/'
+        "$SED_BIN" -E 's/^theme\s+".+"/theme "dracula-pro"/'
         ;;
     *btop/btop.conf)
-        $SED -E 's/^color_theme\s*=\s*".*"/color_theme = "dracula"/'
+        "$SED_BIN" -E 's/^color_theme\s*=\s*".*"/color_theme = "dracula"/'
         ;;
     *git/config)
-        $SED -E 's/^(\s+)syntax-theme\s*=\s*.+/\1syntax-theme = Dracula/'
+        "$SED_BIN" -E 's/^(\s+)syntax-theme\s*=\s*.+/\1syntax-theme = Dracula/'
         ;;
     *)
         cat

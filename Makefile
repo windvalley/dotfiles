@@ -47,7 +47,7 @@ help: ## 显示帮助信息
 	@echo ""
 	@echo "$(GREEN)维护:$(NC)"
 	@echo "  $(YELLOW)make validate$(NC)   验证所有配置文件语法"
-	@echo "  $(YELLOW)make lint$(NC)       静态分析 bin/ 脚本 (shellcheck)"
+	@echo "  $(YELLOW)make lint$(NC)       运行 shellcheck + Bash 基线检查"
 	@echo "  $(YELLOW)make docs$(NC)       生成或更新 README 的目录 (TOC)"
 	@echo "  $(YELLOW)make update$(NC)     更新 dotfiles 仓库与所有工具链"
 	@echo "  $(YELLOW)make clean$(NC)      清理临时文件"
@@ -166,7 +166,7 @@ validate: ## 验证所有配置文件语法
 	@./bin/validate-configs all 2>&1 || exit 1
 	@echo "$(GREEN)✅ 所有配置文件验证通过$(NC)"
 
-lint: ## 静态分析 Shell 脚本 (shellcheck)
+lint: ## 静态分析 Shell 脚本并检查 Bash 基线
 	@echo "$(BLUE)🔍 运行 shellcheck 静态分析...$(NC)"
 	@if ! command -v shellcheck > /dev/null 2>&1; then \
 		echo "$(RED)  ❌ shellcheck 未安装，请运行 'mise install shellcheck'$(NC)"; \
@@ -190,6 +190,7 @@ lint: ## 静态分析 Shell 脚本 (shellcheck)
 		echo "$(RED)❌ $$errors 个脚本存在问题$(NC)"; \
 		exit 1; \
 	fi
+	@./bin/check-shell-baseline
 
 docs: ## 生成或更新 README 文档目录 (中英文 TOC)
 	@echo "$(BLUE)📚 生成或更新 README 中英文目录结构...$(NC)"

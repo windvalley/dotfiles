@@ -912,7 +912,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
 这些命令会在 stow `bin` 后出现在 `~/.local/bin`：
 
-- `colorscheme [name]`: 同步切换 Ghostty、Helix、Zellij、Btop、Bat 和 Delta 主题。无参数时显示当前主题和可用主题列表，内置 8 个预设（dracula / tokyonight / gruvbox / kanagawa / nord / solarized-dark / one-dark / everforest），也支持直接传入工具原生主题名。**配合 Git Clean Filter，切换主题不会导致仓库变脏。**
+- `colorscheme [name]`: 同步切换 Ghostty、Helix、Zellij、Btop、Bat 和 Delta 主题。无参数时显示当前主题和可用主题列表，内置 8 个预设（dracula / tokyonight / gruvbox / kanagawa / nord / solarized-dark / one-dark / everforest），也支持直接传入工具原生主题名；额外支持 `--current`、`--list`、`--help`。**配合 Git Clean Filter，切换主题不会导致仓库变脏。**
 - `dot-theme-filter`: **Git 内部过滤器（非直接执行）**。配合 `.gitattributes` 使用，在 `git add` 时自动将主题配置还原为默认值，实现配置文件的“逻辑解耦”。
 - `font-size <1-200>`: 设置 Ghostty 字体大小
 - `opacity <0.0-1.0>`: 设置 Ghostty 背景透明度

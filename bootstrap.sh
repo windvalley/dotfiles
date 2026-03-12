@@ -12,6 +12,7 @@ NC='\033[0m'
 
 info() { echo -e "${BLUE}[INFO]${NC} $1"; }
 success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
+warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
 if [ "$(uname -s)" != "Darwin" ]; then
@@ -48,10 +49,10 @@ TARGET_DIR="${DOTFILES_DIR:-$DEFAULT_DOTFILES_DIR}"
 if [ -d "$TARGET_DIR" ]; then
     error "Target directory already exists at $TARGET_DIR."
     error "The bootstrap script is designed for first-time installation only."
-    echo -e "${YELLOW}[WARN]${NC} If you want to reinstall, please backup or remove the existing directory:"
-    echo "       mv $TARGET_DIR ${TARGET_DIR}.bak"
-    echo -e "${YELLOW}[WARN]${NC} Or specify a different location by running:"
-    echo "       export DOTFILES_DIR=~/some_other_path; curl ... | bash"
+    warn "If you want to reinstall, please backup or remove the existing directory:"
+    printf '       mv %s %s.bak\n' "$TARGET_DIR" "$TARGET_DIR"
+    warn "Or specify a different location by running:"
+    printf '       export DOTFILES_DIR=~/some_other_path; curl ... | bash\n'
     exit 1
 fi
 

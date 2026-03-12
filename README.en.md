@@ -914,7 +914,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
 These commands appear in `~/.local/bin` after the `bin` package is stowed:
 
-- `colorscheme [name]`: Switch themes for Ghostty, Helix, Zellij, Btop, Bat, and Delta together. Without arguments, it shows the current theme and all available themes. Eight presets are built in (`dracula`, `tokyonight`, `gruvbox`, `kanagawa`, `nord`, `solarized-dark`, `one-dark`, `everforest`), and you can also pass native theme names directly. **With the Git Clean Filter, switching themes does not dirty the repository.**
+- `colorscheme [name]`: Switch themes for Ghostty, Helix, Zellij, Btop, Bat, and Delta together. Without arguments, it shows the current theme and all available themes. Eight presets are built in (`dracula`, `tokyonight`, `gruvbox`, `kanagawa`, `nord`, `solarized-dark`, `one-dark`, `everforest`), and you can also pass native theme names directly; `--current`, `--list`, and `--help` are also supported. **With the Git Clean Filter, switching themes does not dirty the repository.**
 - `dot-theme-filter`: **Git internal filter, not for direct execution**. Used with `.gitattributes` to automatically restore theme configs to defaults during `git add`, decoupling theme choices from tracked config state.
 - `font-size <1-200>`: Set Ghostty font size
 - `opacity <0.0-1.0>`: Set Ghostty background opacity

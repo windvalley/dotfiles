@@ -8,13 +8,24 @@
 
 set -euo pipefail
 
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+info() { echo -e "${BLUE}[INFO]${NC} $1"; }
+success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
+warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
+error() { echo -e "${RED}[ERROR]${NC} $1"; }
+
 # Check for gsed (GNU sed)
 if command -v gsed &>/dev/null; then
-    SED="gsed"
+    SED_BIN="gsed"
 elif command -v sed &>/dev/null; then
-    SED="sed"
+    SED_BIN="sed"
 else
-    echo "Error: sed not found" >&2
+    error "sed not found"
     exit 1
 fi
 
@@ -25,31 +36,35 @@ ghostty_config="$config_home/ghostty/config"
 
 if [ "$#" -ne 1 ]; then
     if [ -f "$ghostty_config" ]; then
-        current=$(grep -E '^font-size\s*=' "$ghostty_config" | $SED -E 's/^font-size\s*=\s*//' | head -1)
-        echo "Current font size: ${current:-not set}"
+        current=$(grep -E '^font-size\s*=' "$ghostty_config" | "$SED_BIN" -E 's/^font-size\s*=\s*//' | head -1)
+        printf 'Current font size: %s\n' "${current:-not set}"
     fi
-    echo "Usage: font-size <1-200>"
+    printf 'Usage: font-size <1-200>\n'
     exit 0
 fi
 
+if ! [[ "$to_font_size" =~ ^[0-9]+$ ]]; then
+    error "font size must be an integer between 1 and 200"
+    exit 1
+fi
+
 if [ "$to_font_size" -lt 1 ] || [ "$to_font_size" -gt 200 ]; then
-    echo "font size must between 1 and 200"
+    error "font size must be between 1 and 200"
     exit 1
 fi
 
 change_ghostty_font_size() {
     if [ ! -f "$ghostty_config" ]; then
-        echo "ghostty config not found: $ghostty_config" >&2
+        error "ghostty config not found: $ghostty_config"
         return 1
     fi
 
     if grep -qE '^font-size\s*=' "$ghostty_config"; then
-        $SED -i -E "s/^font-size\s*=\s*.*/font-size = $to_font_size/" "$ghostty_config"
+        "$SED_BIN" -i -E "s/^font-size\s*=\s*.*/font-size = $to_font_size/" "$ghostty_config"
     else
         printf '\nfont-size = %s\n' "$to_font_size" >> "$ghostty_config"
     fi
 }
 
 change_ghostty_font_size
-
-exit 0
+success "Ghostty font size updated to $to_font_size."
