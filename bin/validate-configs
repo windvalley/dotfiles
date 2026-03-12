@@ -17,6 +17,11 @@ success() { echo -e "${GREEN}[✓]${NC} $1"; }
 warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 error() { echo -e "${RED}[✗]${NC} $1"; }
 
+record_error() {
+    error "$1"
+    ERRORS=$((ERRORS + 1))
+}
+
 # 尝试多种方式获取 dotfiles 目录
 # 1. 环境变量（优先级最高）
 # 2. 从脚本位置推断（bin/validate-configs -> dotfiles/）
@@ -64,51 +69,167 @@ except Exception as e:
     return 0
 }
 
+validate_yaml_file() {
+    local file="$1"
+
+    if [ ! -f "$file" ]; then
+        return 0
+    fi
+
+    if ! command -v ruby &>/dev/null; then
+        return 2
+    fi
+
+    ruby -e '
+require "yaml"
+YAML.load_file(ARGV[0])
+' "$file" >/dev/null 2>&1 || return 1
+
+    return 0
+}
+
+validate_ghostty_file_static() {
+    local ghostty_file="$1"
+
+    if ! command -v python3 &>/dev/null; then
+        return 2
+    fi
+
+    python3 - "$ghostty_file" <<'PY'
+import re
+import sys
+from pathlib import Path
+
+
+ASSIGNMENT_RE = re.compile(r"^[a-z0-9-]+$")
+QUOTED_VALUE_RE = re.compile(r'^"(?:[^"\\]|\\.)*"$')
+
+
+def parse_value(raw_value, path, lineno):
+    value = raw_value.strip()
+    if not value:
+        return "", False
+    if value.startswith('"'):
+        if not QUOTED_VALUE_RE.fullmatch(value):
+            raise ValueError(f"{path}:{lineno}: 双引号未闭合: {raw_value.strip()}")
+        return value[1:-1], True
+    return value, False
+
+
+def validate_file(path, visited, stack, errors):
+    resolved = path.resolve()
+    if resolved in stack:
+        errors.append(f"{resolved}: 检测到 config-file 循环引用")
+        return
+    if resolved in visited:
+        return
+    if not resolved.is_file():
+        errors.append(f"{resolved}: 配置文件不存在")
+        return
+
+    visited.add(resolved)
+    stack.add(resolved)
+
+    for lineno, raw_line in enumerate(resolved.read_text(encoding="utf-8").splitlines(), start=1):
+        stripped = raw_line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if "=" not in stripped:
+            errors.append(f"{resolved}:{lineno}: 缺少 '=': {stripped}")
+            continue
+
+        key_part, value_part = stripped.split("=", 1)
+        key = key_part.strip()
+        if not key:
+            errors.append(f"{resolved}:{lineno}: 配置键为空")
+            continue
+        if not ASSIGNMENT_RE.fullmatch(key):
+            errors.append(f"{resolved}:{lineno}: 非法配置键: {key}")
+            continue
+
+        try:
+            value, quoted = parse_value(value_part, resolved, lineno)
+        except ValueError as exc:
+            errors.append(str(exc))
+            continue
+
+        if key != "config-file":
+            continue
+
+        include_path = value
+        optional = False
+        if include_path and not quoted and include_path.startswith("?"):
+            optional = True
+            include_path = include_path[1:]
+
+        if not include_path:
+            continue
+
+        nested = Path(include_path)
+        if not nested.is_absolute():
+            nested = (resolved.parent / nested).resolve()
+
+        if nested.exists():
+            validate_file(nested, visited, stack, errors)
+        elif not optional:
+            errors.append(f"{resolved}:{lineno}: 引用的配置文件不存在: {nested}")
+
+    stack.remove(resolved)
+
+
+errors = []
+validate_file(Path(sys.argv[1]), set(), set(), errors)
+if errors:
+    for item in errors:
+        print(item)
+    sys.exit(1)
+PY
+}
+
 # 验证 Fish 配置
 validate_fish() {
     info "验证 Fish 配置..."
+    local fish_dir="$DOTFILES_DIR/fish/dot-config/fish"
+    local fish_file=""
+    local fish_failures=0
+    local fish_files=()
 
-    if command -v fish &>/dev/null; then
-        local fish_dir="$DOTFILES_DIR/fish/dot-config/fish"
-        local fish_file=""
-        local fish_failures=0
-        local fish_files=()
+    if [ ! -d "$fish_dir" ]; then
+        record_error "Fish 配置目录不存在: $fish_dir"
+        return 0
+    fi
 
-        if [ ! -d "$fish_dir" ]; then
-            error "Fish 配置目录不存在: $fish_dir"
-            ERRORS=$((ERRORS + 1))
-            return 1
+    shopt -s nullglob
+    fish_files=(
+        "$fish_dir/config.fish"
+        "$fish_dir"/functions/*.fish
+        "$fish_dir"/conf.d/*.fish
+        "$fish_dir"/completions/*.fish
+    )
+    shopt -u nullglob
+
+    if [ "${#fish_files[@]}" -eq 0 ]; then
+        record_error "Fish 配置目录为空: $fish_dir"
+        return 0
+    fi
+
+    # Fish 本身是唯一可靠的语法校验器；缺失时必须让验证失败，避免“未验证却通过”。
+    if ! command -v fish &>/dev/null; then
+        record_error "Fish 未安装，无法可靠验证 Fish 语法"
+        return 0
+    fi
+
+    for fish_file in "${fish_files[@]}"; do
+        if fish -n "$fish_file" 2>/dev/null; then
+            success "Fish 语法正确: $(basename "$fish_file")"
+        else
+            error "Fish 语法错误: $fish_file"
+            fish_failures=$((fish_failures + 1))
         fi
+    done
 
-        shopt -s nullglob
-        fish_files=(
-            "$fish_dir/config.fish"
-            "$fish_dir"/functions/*.fish
-            "$fish_dir"/conf.d/*.fish
-            "$fish_dir"/completions/*.fish
-        )
-        shopt -u nullglob
-
-        if [ "${#fish_files[@]}" -eq 0 ]; then
-            error "Fish 配置目录为空: $fish_dir"
-            ERRORS=$((ERRORS + 1))
-            return 1
-        fi
-
-        for fish_file in "${fish_files[@]}"; do
-            if fish -n "$fish_file" 2>/dev/null; then
-                success "Fish 语法正确: $(basename "$fish_file")"
-            else
-                error "Fish 语法错误: $fish_file"
-                fish_failures=$((fish_failures + 1))
-            fi
-        done
-
-        if [ "$fish_failures" -gt 0 ]; then
-            ERRORS=$((ERRORS + fish_failures))
-        fi
-    else
-        warn "Fish 未安装，跳过语法检查"
+    if [ "$fish_failures" -gt 0 ]; then
+        ERRORS=$((ERRORS + fish_failures))
     fi
 }
 
@@ -141,18 +262,19 @@ validate_zellij() {
         return 1
     fi
 
-    # 静态 KDL 语法检查（通过 zellij 解析自身配置文件）
-    if command -v zellij &>/dev/null; then
-        local parse_output
-        if parse_output=$(zellij --config "$zellij_config" setup --dump-config 2>&1 >/dev/null); then
-            success "Zellij 配置语法正确 (KDL)"
-        else
-            error "Zellij 配置 KDL 语法错误:"
-            echo "$parse_output" | sed 's/^/    /'
-            ERRORS=$((ERRORS + 1))
-        fi
+    # Zellij 配置语义依赖其自身 KDL 解析器；缺失 CLI 时不能把“未验证”当成“通过”。
+    if ! command -v zellij &>/dev/null; then
+        record_error "Zellij 未安装，无法可靠验证配置"
+        return 0
+    fi
+
+    local parse_output
+    if parse_output=$(zellij --config "$zellij_config" setup --check 2>&1 >/dev/null); then
+        success "Zellij 配置语法正确 (KDL)"
     else
-        warn "Zellij 未安装，跳过配置检查"
+        error "Zellij 配置 KDL 语法错误:"
+        echo "$parse_output" | sed 's/^/    /'
+        ERRORS=$((ERRORS + 1))
     fi
 }
 
@@ -229,6 +351,8 @@ validate_mise() {
 validate_ghostty() {
     info "验证 Ghostty 配置..."
     local ghostty_config="$DOTFILES_DIR/ghostty/dot-config/ghostty/config"
+    local output=""
+    local static_status=0
     
     if [ ! -f "$ghostty_config" ]; then
         error "Ghostty 配置文件不存在: $ghostty_config"
@@ -246,12 +370,17 @@ validate_ghostty() {
             ERRORS=$((ERRORS + 1))
         fi
     else
-        # 降级方案：简单的 grep 检查
-        warn "Ghostty CLI 未找到，使用基础检查..."
-        if grep -q "^font-family" "$ghostty_config" && grep -q "^theme" "$ghostty_config"; then
-            success "Ghostty 配置文件包含必要配置项"
+        warn "Ghostty CLI 未找到，执行离线静态语法检查..."
+        if output=$(validate_ghostty_file_static "$ghostty_config" 2>&1); then
+            success "Ghostty 配置语法正确 (离线静态检查)"
         else
-            warn "Ghostty 配置可能缺少关键配置项"
+            static_status=$?
+            if [ "$static_status" -eq 2 ]; then
+                output="缺少 python3，无法执行 Ghostty 离线静态校验"
+            fi
+            error "Ghostty 配置静态检查失败:"
+            echo "$output" | sed 's/^/    /'
+            ERRORS=$((ERRORS + 1))
         fi
     fi
 }
@@ -281,11 +410,24 @@ validate_aichat() {
     local aichat_dir="$DOTFILES_DIR/aichat/dot-config/aichat"
     local aichat_config="$aichat_dir/config.yaml"
     local model_list=""
+    local yaml_status=0
 
     if [ ! -f "$aichat_config" ]; then
         error "AIChat 配置文件不存在: $aichat_config"
         ERRORS=$((ERRORS + 1))
         return 1
+    fi
+
+    if validate_yaml_file "$aichat_config"; then
+        success "AIChat 配置语法正确 (YAML)"
+    else
+        yaml_status=$?
+        if [ "$yaml_status" -eq 2 ]; then
+            record_error "缺少 Ruby，无法执行 AIChat YAML 静态校验"
+        else
+            record_error "AIChat 配置 YAML 语法错误"
+        fi
+        return 0
     fi
 
     if command -v aichat &>/dev/null; then
@@ -307,7 +449,7 @@ validate_aichat() {
             warn "无法读取 AIChat 模型列表"
         fi
     else
-        warn "AIChat 未安装，跳过配置检查"
+        warn "AIChat 未安装，已跳过运行时配置检查，仅完成 YAML 静态校验"
         return 0
     fi
 
