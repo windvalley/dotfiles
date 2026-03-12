@@ -926,7 +926,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
 > [!TIP]
 > **变更生效方式：**
-> - `colorscheme`：Zellij 实时生效；Ghostty 需按 `Cmd + Shift + ,` 重载配置；Helix 需执行 `:config-reload` 使已打开的 buffer 生效；Btop、Bat 与 Delta 下次执行命令时生效。首次切换到仓库内置的自定义 syntect 主题（当前为 `tokyonight` 和 `rose-pine`）时，脚本会自动执行 `bat cache --build`；Delta 对 `tokyonight` 会启用官方 Tokyo Night feature，对 `rose-pine` 会启用仓库内置的 Delta feature。注：Bat 与 Delta 仍不支持 kanagawa / one-dark / everforest，切换到这些主题时会自动跳过。
+> - `colorscheme`：Zellij 实时生效；如果 Ghostty 正在运行，脚本会在切换后自动触发配置重载，使主题立即生效；若 Ghostty 未运行，则会在下次启动时生效。Helix 仍需执行 `:config-reload` 使已打开的 buffer 生效；Btop、Bat 与 Delta 下次执行命令时生效。首次切换到仓库内置的自定义 syntect 主题（当前为 `tokyonight` 和 `rose-pine`）时，脚本会自动执行 `bat cache --build`；Delta 对 `tokyonight` 会启用官方 Tokyo Night feature，对 `rose-pine` 会启用仓库内置的 Delta feature。注：Bat 与 Delta 仍不支持 kanagawa / one-dark / everforest，切换到这些主题时会自动跳过；若 Ghostty 自动重载失败，再手动按 `Cmd + Shift + ,` 即可。
 > - `font-size` / `opacity`：修改的是 Ghostty 配置文件，需按 `Cmd + Shift + ,` 重载配置后生效；配合 Git Clean Filter，这些本地显示偏好不会让 dotfiles 仓库变脏。
 
 ---
