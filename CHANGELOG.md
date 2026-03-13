@@ -8,6 +8,28 @@
 
 ## [Unreleased]
 
+## [0.23.0] - 2026-03-13
+
+### Added
+- 全新的配色管理系统，支持交互式主题选择器，并深度集成至 Ghostty, Bat, Delta 及 Zellij。
+- 丰富的预设主题库，新增 Catppuccin, Everforest, Dayfox, Kanagawa, One-dark, Rose-pine 等多套配色方案。
+- 引入本地 AI 能力，通过集成 Ollama 为 AI PR 差异采样和 aichat 功能提供本地模型支持。
+- Ghostty 终端增强功能，实现字体大小、透明度调节及主题变更的实时自动重载。
+- Fish Shell 体验优化，增强 `gs` 别名以支持 Git 变更行数统计，并改进了主机提示信息。
+- 自动化安装流程增强，新增对 `fd-find` 和 `karabiner-elements` 等工具的支持。
+
+### Changed
+- 架构重构：将本地配置文件统一迁移至 Home 根目录，提升配置的可移植性。
+- 环境解耦：使 Zellij 工作区配置与具体路径无关，并标准化了所有 Shell 脚本的执行基准。
+- 脚本强化：全面升级 `validate-configs` 验证脚本，确保配置的一致性与正确性。
+- 文档体系重组：重构 README 结构，更新安装指南，并增加 AI 助手相关的软链接指引。
+
+### Fixed
+- 修复了 Gruvbox 主题在 Zellij 环境下的显示兼容性问题。
+- 优化了配色方案的过滤机制，解决 Bat 与 Delta 在配置切换时的冲突。
+- 修复了透明度数值验证逻辑及 Git 仓库根目录的检测算法。
+
+
 ## [0.22.0] - 2026-03-11
 
 ### Added
