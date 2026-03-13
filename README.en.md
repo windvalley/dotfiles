@@ -980,6 +980,26 @@ This project makes a series of intentional customizations on top of the default 
 | Change | Official default | This project | Why |
 |------|----------|--------|------|
 | Swap Caps Lock ↔ Left Control | Keep original positions | Swap them (excluding HHKB-layout keyboards) | Caps Lock is in a better position for frequent Ctrl usage; Emacs, Zellij, Helix, and Vim all rely heavily on Ctrl |
+| `Right Command + a` | Unbound | Area screenshot (mapped to `Cmd + Shift + 4`) | Uses the right-side Command key as a screenshot prefix without polluting high-frequency Ctrl / Alt terminal combos |
+| `Right Command + f` | Unbound | Full-screen screenshot (mapped to `Cmd + Shift + 3`) | Keeps full-screen capture in the same mental model and avoids memorizing the native macOS combo |
+| `Right Command + r` | Unbound | Open screenshot / recording toolbar (mapped to `Cmd + Shift + 5`) | Reuses one entrypoint for both capture and recording and covers more of the built-in macOS workflow |
+| `Right Command + c` | Unbound | Area screenshot to clipboard (mapped to `Ctrl + Cmd + Shift + 4`) | Sends captures straight to the clipboard for chat, docs, and multimodal AI input flows |
+| `Right Command + s` | Unbound | Stop the built-in screen recording flow (mapped to `Ctrl + Cmd + Esc`) | Adds a more ergonomic and consistent stop action for native macOS recording |
+
+**How to use these shortcuts:**
+- `Right Command + a`: After pressing it, the pointer turns into crosshairs. Drag to select an area, then release to capture it. Press `Esc` to cancel.
+- Window screenshot: press `Right Command + a`, then press `Space` once to switch into window mode. Move the pointer onto the target window and click when it is highlighted.
+- `Right Command + f`: Captures the screen immediately.
+- `Right Command + r`: Opens the native macOS screenshot / recording toolbar. From there you can switch between area, window, or full-screen capture, full-screen or selected-area recording, and configure save location, timer, and mouse-pointer behavior.
+- Start recording: after choosing either full-screen recording or selected-portion recording in the toolbar, click `Record` to begin. For full-screen recording, Apple also documents clicking the screen to begin recording. In practice, pressing `Enter` also starts recording, which is convenient for keyboard-driven use.
+- Stop recording: click the stop button in the menu bar, or press `Right Command + s`. This maps to the native stop shortcut `Control + Command + Esc`.
+- `Right Command + c`: Starts area-to-clipboard capture. Drag and release to capture, then paste directly into chat apps, documents, or multimodal AI inputs. No file is written by default.
+
+**What happens after a screenshot:**
+- If screenshot thumbnails are enabled in macOS, a temporary thumbnail appears in the lower-right corner. Click it to annotate, crop, share, or delete immediately.
+- If you ignore the thumbnail, macOS auto-saves the screenshot to the current configured location, usually the Desktop unless you changed it in the `Cmd + Shift + 5` toolbar.
+- To change the save location, disable the floating thumbnail, or adjust the timer, open the toolbar with `Right Command + r` and use `Options`.
+- After a recording stops, macOS shows a similar thumbnail. Click it to preview, trim, or share; otherwise the `.mov` file is saved automatically.
 
 ### 6.2 Ghostty Terminal Behavior and Keybindings
 
