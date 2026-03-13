@@ -9,6 +9,11 @@ function rec -d "极简终端录屏与回放 (基于 asciinema)"
         echo "  rec help | -h         Show this help message"
         return 0
     end
+
+    if not command -q asciinema
+        echo "❌ 未检测到 asciinema，请先运行 'mise install' 安装当前仓库声明的工具链。"
+        return 1
+    end
     
     set -l act "$argv[1]"
     # 如果第一个参数是 play 或 upload，则真正的名字在第二个参数；否则直接是第一个参数

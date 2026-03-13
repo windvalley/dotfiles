@@ -102,6 +102,8 @@ rust = "latest"
 lazygit = "latest"    # 终端 Git 交互式管理器
 gh = "latest"         # GitHub 官方 CLI
 bat = "latest"        # 带语法高亮的 cat 替代品
+# asciinema: mise 默认注册表里没有该工具，这里显式使用 aqua 源以供 `rec` 录制/回放终端会话
+"aqua:asciinema/asciinema" = "latest"
 eza = "latest"        # 现代化 ls 替代品
 ripgrep = "latest"    # 极速正则搜索工具 (替代 grep)
 glow = "latest"       # 终端 Markdown 阅读器
