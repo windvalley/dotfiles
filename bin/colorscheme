@@ -39,11 +39,13 @@ error() { echo -e "${RED}[ERROR]${NC} $1"; }
 # Delta syntax themes: most presets reuse Bat's syntect theme, but Delta-specific
 #                      features may be applied for themes that cannot reuse custom
 #                      Bat themes directly (for example `tokyonight` / `rose-pine` /
-#                      `kanagawa` / `one-dark` / `everforest` / `dayfox`).
+#                      `kanagawa` / `one-dark` / `everforest` / `everforest-light` /
+#                      `dayfox`).
 # ============================================
 THEMES=(
     "dracula|Dracula|=|dracula-pro|=|Dracula"
     "catppuccin|Catppuccin Macchiato|catppuccin_macchiato|catppuccin-macchiato|catppuccin-macchiato|Catppuccin Macchiato"
+    "catppuccin-latte|Catppuccin Latte|catppuccin_latte|catppuccin-latte|catppuccin-latte|Catppuccin Latte"
     "rose-pine|Rose Pine|rose_pine|rose-pine|rose-pine|rose-pine"
     "tokyonight|TokyoNight Moon|tokyonight_moon|tokyo-night|tokyo-night|tokyonight_moon"
     "gruvbox|Gruvbox Material Dark|gruvbox_dark_hard|=|gruvbox_material_dark|gruvbox-dark"
@@ -53,6 +55,7 @@ THEMES=(
     "solarized|Solarized Dark Higher Contrast|solarized_dark|solarized-dark|solarized_dark|Solarized (dark)"
     "one-dark|Atom One Dark|one_dark|onedark|onedark|one-dark"
     "everforest|Everforest Dark Hard|everforest_dark|everforest-dark|everforest-dark-hard|everforest"
+    "everforest-light|Everforest Light Med|everforest_light|everforest-light|everforest-light-medium|everforest-light"
     "dayfox|Dayfox|dayfox|dayfox|dayfox|dayfox"
 )
 
@@ -204,7 +207,7 @@ get_delta_display_theme() {
 
 theme_prefers_light_mode() {
     case "$1" in
-        gruvbox-light|dayfox)
+        catppuccin-latte|gruvbox-light|everforest-light|dayfox)
             return 0
             ;;
         *)
@@ -623,6 +626,13 @@ delta_cs_change() {
             # Delta feature that recreates the Everforest diff palette.
             syntax_theme="Dracula"
             delta_feature="everforest"
+            ;;
+        everforest-light)
+            # Delta cannot reuse Bat's custom Everforest Light syntect theme directly.
+            # Keep syntax-theme on a safe built-in fallback and switch to a custom
+            # Delta feature that recreates the Everforest Light diff palette.
+            syntax_theme="Dracula"
+            delta_feature="everforest-light"
             ;;
         dayfox)
             # Delta cannot reuse Bat's custom Dayfox syntect theme directly.

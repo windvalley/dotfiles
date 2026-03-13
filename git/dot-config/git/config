@@ -176,6 +176,34 @@
     plus-non-emph-style = normal "#303B35"
     syntax-theme = none
 
+[delta "everforest-light"]
+    # 自定义 Everforest Light Delta 主题。
+    # colorscheme 切到 `everforest-light` 时会自动在 [delta] 节中启用：
+    #   features = everforest-light
+    true-color = always
+    commit-decoration-style = "#3A94C5" ol
+    commit-style = raw
+    file-style = omit
+    hunk-header-decoration-style = "#3A94C5" box
+    hunk-header-file-style = "#F85552"
+    hunk-header-line-number-style = "#DFA000"
+    hunk-header-style = file line-number syntax
+    line-numbers = true
+    line-numbers-left-format = "{nm:>4}┊"
+    line-numbers-left-style = "#939F91"
+    line-numbers-minus-style = "#F85552"
+    line-numbers-plus-style = "#8DA101"
+    line-numbers-right-format = "{np:>4}│"
+    line-numbers-right-style = "#939F91"
+    line-numbers-zero-style = "#829181"
+    minus-emph-style = normal "#FCC6B7"
+    minus-style = normal "#FCD6C6"
+    minus-non-emph-style = normal "#FCD6C6"
+    plus-emph-style = normal "#DBDC9F"
+    plus-style = normal "#E7E5B6"
+    plus-non-emph-style = normal "#E7E5B6"
+    syntax-theme = none
+
 [delta "dayfox"]
     # 自定义 Dayfox Delta 主题。
     # colorscheme 切到 `dayfox` 时会自动在 [delta] 节中启用：
