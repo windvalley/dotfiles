@@ -769,7 +769,7 @@ themes {
 
 // 主题名称 (需要在 themes 目录中定义，或使用内置主题) (默认值: "default")
 // 内置暗色主题:
-//   dracula, nord, gruvbox-dark, onedark, solarized-dark,
+//   dracula, nord, gruvbox-dark, onedark, solarized-dark, everforest-dark,
 //   catppuccin-frappe, catppuccin-macchiato, catppuccin-mocha,
 //   tokyo-night, tokyo-night-storm, kanagawa, nightfox, ayu_dark, ayu_mirage,
 //   cyber-noir, blade-runner, retro-wave, vesper, iceberg-dark

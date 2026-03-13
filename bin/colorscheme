@@ -38,7 +38,8 @@ error() { echo -e "${RED}[ERROR]${NC} $1"; }
 #                      `~/.config/bat/themes/` are supported after `bat cache --build`.
 # Delta syntax themes: most presets reuse Bat's syntect theme, but Delta-specific
 #                      features may be applied for themes that cannot reuse custom
-#                      Bat themes directly (for example `tokyonight` / `rose-pine`).
+#                      Bat themes directly (for example `tokyonight` / `rose-pine` /
+#                      `kanagawa` / `one-dark` / `everforest`).
 # ============================================
 THEMES=(
     "dracula|Dracula|=|dracula-pro|=|Dracula"
@@ -47,11 +48,11 @@ THEMES=(
     "tokyonight|TokyoNight Moon|tokyonight_moon|tokyo-night|tokyo-night|tokyonight_moon"
     "gruvbox|Gruvbox Material Dark|gruvbox_dark_hard|=|gruvbox_material_dark|gruvbox-dark"
     "gruvbox-light|Gruvbox Light|gruvbox_light|gruvbox-light|gruvbox_light|gruvbox-light"
-    "kanagawa|Kanagawa Wave|kanagawa|=|kanagawa-wave|-"
+    "kanagawa|Kanagawa Wave|kanagawa|=|kanagawa-wave|kanagawa"
     "nord|Nord|nord|nord|=|Nord"
     "solarized|Solarized Dark Higher Contrast|solarized_dark|solarized-dark|solarized_dark|Solarized (dark)"
-    "one-dark|Atom One Dark|one_dark|=|onedark|-"
-    "everforest|Everforest Dark Hard|everforest_dark|=|everforest-dark-hard|-"
+    "one-dark|Atom One Dark|one_dark|onedark|onedark|one-dark"
+    "everforest|Everforest Dark Hard|everforest_dark|everforest-dark|everforest-dark-hard|everforest"
 )
 
 # Check for gsed (GNU sed)
@@ -566,6 +567,27 @@ delta_cs_change() {
             # Delta feature that recreates the Rose Pine diff palette.
             syntax_theme="Dracula"
             delta_feature="rose-pine"
+            ;;
+        kanagawa)
+            # Delta cannot reuse Bat's custom Kanagawa syntect theme directly.
+            # Keep syntax-theme on a safe built-in fallback and switch to a custom
+            # Delta feature that recreates the Kanagawa diff palette.
+            syntax_theme="Dracula"
+            delta_feature="kanagawa"
+            ;;
+        one-dark)
+            # Delta cannot reuse Bat's custom One Dark syntect theme directly.
+            # Keep syntax-theme on a safe built-in fallback and switch to a custom
+            # Delta feature that recreates the One Dark diff palette.
+            syntax_theme="Dracula"
+            delta_feature="one-dark"
+            ;;
+        everforest)
+            # Delta cannot reuse Bat's custom Everforest syntect theme directly.
+            # Keep syntax-theme on a safe built-in fallback and switch to a custom
+            # Delta feature that recreates the Everforest diff palette.
+            syntax_theme="Dracula"
+            delta_feature="everforest"
             ;;
     esac
 

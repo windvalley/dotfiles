@@ -92,6 +92,90 @@
     plus-non-emph-style = normal "#1f2b3b"
     syntax-theme = none
 
+[delta "kanagawa"]
+    # 自定义 Kanagawa Delta 主题。
+    # colorscheme 切到 `kanagawa` 时会自动在 [delta] 节中启用：
+    #   features = kanagawa
+    true-color = always
+    commit-decoration-style = "#7E9CD8" ol
+    commit-style = raw
+    file-style = omit
+    hunk-header-decoration-style = "#7E9CD8" box
+    hunk-header-file-style = "#E46876"
+    hunk-header-line-number-style = "#E6C384"
+    hunk-header-style = file line-number syntax
+    line-numbers = true
+    line-numbers-left-format = "{nm:>4}┊"
+    line-numbers-left-style = "#727169"
+    line-numbers-minus-style = "#E46876"
+    line-numbers-plus-style = "#98BB6C"
+    line-numbers-right-format = "{np:>4}│"
+    line-numbers-right-style = "#727169"
+    line-numbers-zero-style = "#54546D"
+    minus-emph-style = normal "#43242B"
+    minus-style = normal "#2A1F24"
+    minus-non-emph-style = normal "#2A1F24"
+    plus-emph-style = normal "#2B3328"
+    plus-style = normal "#1F2A22"
+    plus-non-emph-style = normal "#1F2A22"
+    syntax-theme = none
+
+[delta "one-dark"]
+    # 自定义 One Dark Delta 主题。
+    # colorscheme 切到 `one-dark` 时会自动在 [delta] 节中启用：
+    #   features = one-dark
+    true-color = always
+    commit-decoration-style = "#61AFEF" ol
+    commit-style = raw
+    file-style = omit
+    hunk-header-decoration-style = "#61AFEF" box
+    hunk-header-file-style = "#E06C75"
+    hunk-header-line-number-style = "#E5C07B"
+    hunk-header-style = file line-number syntax
+    line-numbers = true
+    line-numbers-left-format = "{nm:>4}┊"
+    line-numbers-left-style = "#5C6370"
+    line-numbers-minus-style = "#E06C75"
+    line-numbers-plus-style = "#98C379"
+    line-numbers-right-format = "{np:>4}│"
+    line-numbers-right-style = "#5C6370"
+    line-numbers-zero-style = "#4B5263"
+    minus-emph-style = normal "#4A252C"
+    minus-style = normal "#2F2227"
+    minus-non-emph-style = normal "#2F2227"
+    plus-emph-style = normal "#253A2C"
+    plus-style = normal "#222D24"
+    plus-non-emph-style = normal "#222D24"
+    syntax-theme = none
+
+[delta "everforest"]
+    # 自定义 Everforest Delta 主题。
+    # colorscheme 切到 `everforest` 时会自动在 [delta] 节中启用：
+    #   features = everforest
+    true-color = always
+    commit-decoration-style = "#7FBBB3" ol
+    commit-style = raw
+    file-style = omit
+    hunk-header-decoration-style = "#7FBBB3" box
+    hunk-header-file-style = "#E67E80"
+    hunk-header-line-number-style = "#DBBC7F"
+    hunk-header-style = file line-number syntax
+    line-numbers = true
+    line-numbers-left-format = "{nm:>4}┊"
+    line-numbers-left-style = "#859289"
+    line-numbers-minus-style = "#E67E80"
+    line-numbers-plus-style = "#A7C080"
+    line-numbers-right-format = "{np:>4}│"
+    line-numbers-right-style = "#859289"
+    line-numbers-zero-style = "#7A8478"
+    minus-emph-style = normal "#514045"
+    minus-style = normal "#403238"
+    minus-non-emph-style = normal "#403238"
+    plus-emph-style = normal "#425047"
+    plus-style = normal "#303B35"
+    plus-non-emph-style = normal "#303B35"
+    syntax-theme = none
+
 [merge]
     # 冲突显示风格：同时显示本地、远程和基准代码（diff3），方便合并
     conflictstyle = diff3
