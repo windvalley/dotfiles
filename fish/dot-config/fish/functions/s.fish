@@ -87,11 +87,47 @@ function __s_parse_ssh_config -a config_file -d "Recursively parse SSH config (i
     end < "$config_file"
 end
 
+function __s_print_bootstrap_hint -a ssh_config -d "Print next-step hints when SSH config is missing"
+    echo "💡 可以先运行以下命令初始化 SSH 主机配置：" >&2
+    echo "   s add   新增可直连主机（推荐，适合新机器首次使用）" >&2
+    echo "   s jump  基于已有跳板机新增主机" >&2
+    echo "   s edit  手动编辑 $ssh_config" >&2
+end
+
+function __s_print_empty_hosts_hint -a subcommand -d "Print next-step hints when no usable hosts are found"
+    echo "⚠️ No usable Host aliases found in ~/.ssh/config" >&2
+
+    if test "$subcommand" = "jump"
+        echo "💡 当前还没有可用的跳板机，请先运行: s add" >&2
+        return 0
+    end
+
+    echo "💡 请先运行: s add" >&2
+    echo "   或手动执行: s edit" >&2
+end
+
+function __s_ensure_ssh_config -a ssh_config -d "Create ~/.ssh/config on first use so s add can bootstrap a new machine"
+    set -l ssh_dir (path dirname "$ssh_config")
+
+    if not test -d "$ssh_dir"
+        command mkdir -p "$ssh_dir"
+        or return 1
+        command chmod 700 "$ssh_dir" 2>/dev/null
+    end
+
+    if not test -f "$ssh_config"
+        command touch "$ssh_config"
+        or return 1
+        command chmod 600 "$ssh_config" 2>/dev/null
+    end
+end
+
 function s -d "SSH 主机管理与快速连接 (基于 fzf)"
     set -l ssh_config "$HOME/.ssh/config"
+    set -l subcommand ""
 
     if test (count $argv) -gt 0
-        set -l subcommand $argv[1]
+        set subcommand $argv[1]
         switch "$subcommand"
             case edit
                 hx "$ssh_config"
@@ -116,8 +152,17 @@ function s -d "SSH 主机管理与快速连接 (基于 fzf)"
     end
 
     if not test -f "$ssh_config"
-        echo "⚠️ SSH config file not found: $ssh_config" >&2
-        return 1
+        if test "$subcommand" = "add"
+            __s_ensure_ssh_config "$ssh_config"
+            or begin
+                echo "❌ Failed to initialize SSH config: $ssh_config" >&2
+                return 1
+            end
+        else
+            echo "⚠️ SSH config file not found: $ssh_config" >&2
+            __s_print_bootstrap_hint "$ssh_config"
+            return 1
+        end
     end
 
     set -g __s_seen_config_files
@@ -236,10 +281,9 @@ function s -d "SSH 主机管理与快速连接 (基于 fzf)"
     end
     # Subcommands that don't need fzf first
     if test (count $argv) -gt 0
-        set -l subcommand $argv[1]
         if test "$subcommand" = "ls"
             if test (count $hosts) -eq 0
-                echo "⚠️ No usable Host aliases found in ~/.ssh/config" >&2
+                __s_print_empty_hosts_hint "$subcommand"
                 return 1
             end
             printf '%s\n' $sorted_entries
@@ -279,7 +323,7 @@ function s -d "SSH 主机管理与快速连接 (基于 fzf)"
     end
 
     if test (count $hosts) -eq 0
-        echo "⚠️ No usable Host aliases found in ~/.ssh/config" >&2
+        __s_print_empty_hosts_hint "$subcommand"
         return 1
     end
 
@@ -290,7 +334,6 @@ function s -d "SSH 主机管理与快速连接 (基于 fzf)"
                    if test -z \"\$count\"; set count 0; end; \
                    echo {} | sed -E 's/^[ ⭐0-9]*//' | awk -v c=\"\$count\" -F '[][@| ]+' '{printf \"Host: %s\\nUser: %s\\nHostname: %s\\nJumpHost: %s\\nVisits: %s\\n\", \$1, \$2, \$3, \$4, c}'"
 
-    set -l subcommand ""
     set -l fzf_query ""
     if test (count $argv) -gt 0
         set subcommand $argv[1]
