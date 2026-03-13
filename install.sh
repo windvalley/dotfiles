@@ -131,19 +131,43 @@ else
 fi
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BREW_BUNDLE_CASK_SKIP=""
+SKIPPED_PRIVILEGED_CASKS=""
 
 info "Checking current status..."
 if [ -f "$DOTFILES_DIR/Brewfile" ]; then
-  if ! brew bundle check --file="$DOTFILES_DIR/Brewfile" >/dev/null 2>&1; then
+  # `karabiner-elements` 通过 pkg 安装，Homebrew 可能触发 sudo。
+  # 在 -y / --unattended 模式下，如果当前没有可复用的 sudo 凭证，就跳过它，
+  # 避免整个安装流程卡死在密码提示。
+  if [ "$NON_INTERACTIVE" = true ] && ! sudo -n true >/dev/null 2>&1; then
+    SKIPPED_PRIVILEGED_CASKS="karabiner-elements"
+    BREW_BUNDLE_CASK_SKIP="$SKIPPED_PRIVILEGED_CASKS"
+    warn "Non-interactive mode detected without cached sudo credentials."
+    warn "Skipping privileged casks for now: $SKIPPED_PRIVILEGED_CASKS"
+  fi
+
+  if [ -n "$BREW_BUNDLE_CASK_SKIP" ]; then
+    BREW_BUNDLE_CHECK_CMD=(env "HOMEBREW_BUNDLE_CASK_SKIP=$BREW_BUNDLE_CASK_SKIP" brew bundle check --file="$DOTFILES_DIR/Brewfile")
+    BREW_BUNDLE_INSTALL_CMD=(env "HOMEBREW_BUNDLE_CASK_SKIP=$BREW_BUNDLE_CASK_SKIP" brew bundle install --file="$DOTFILES_DIR/Brewfile")
+  else
+    BREW_BUNDLE_CHECK_CMD=(brew bundle check --file="$DOTFILES_DIR/Brewfile")
+    BREW_BUNDLE_INSTALL_CMD=(brew bundle install --file="$DOTFILES_DIR/Brewfile")
+  fi
+
+  if ! "${BREW_BUNDLE_CHECK_CMD[@]}" >/dev/null 2>&1; then
     info "Installing/Updating dependencies..."
-    if brew bundle install --file="$DOTFILES_DIR/Brewfile"; then
+    if "${BREW_BUNDLE_INSTALL_CMD[@]}"; then
       success "Brew dependencies installed."
     else
       error "Brew bundle install failed."
       exit 1
     fi
   else
-    success "All Brew dependencies are already satisfied."
+    if [ -n "$SKIPPED_PRIVILEGED_CASKS" ]; then
+      success "All non-privileged Brew dependencies are already satisfied."
+    else
+      success "All Brew dependencies are already satisfied."
+    fi
   fi
 else
   error "Brewfile not found at $DOTFILES_DIR/Brewfile"
@@ -369,4 +393,8 @@ fi
 
 success "Installation complete!"
 show_next_steps
+if [ -n "$SKIPPED_PRIVILEGED_CASKS" ]; then
+  warn "Skipped privileged casks in non-interactive mode: $SKIPPED_PRIVILEGED_CASKS"
+  info "Install them later in an interactive shell: brew install --cask $SKIPPED_PRIVILEGED_CASKS"
+fi
 success "Enjoy your new setup!"

@@ -163,6 +163,8 @@ cd "$HOME/dotfiles"
 
 > [!TIP]
 > **Non-interactive mode**: In automation environments such as CI/CD, append `-y` or `--unattended` to skip all confirmations and install automatically: `./install.sh -y`
+>
+> If the current session does not have reusable `sudo` credentials, `karabiner-elements` will be skipped automatically in `-y` mode so Homebrew does not block on a password prompt. You can install it later from an interactive shell with `brew install --cask karabiner-elements`
 
 **Installation notes:**
 - If Homebrew is missing, the script **asks whether to install it**.
@@ -207,6 +209,9 @@ brew install btop
 
 # Clipboard history manager
 brew install --cask maccy
+
+# Global key remapping tool
+brew install --cask karabiner-elements
 
 # Fonts
 brew install --cask font-jetbrains-mono-nerd-font
