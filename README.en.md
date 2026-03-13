@@ -149,11 +149,12 @@ The repository root provides an `install.sh` script that automates almost the en
 3. **Font installation**: JetBrains Mono is installed through Brew by default, and the script **asks whether to install** other extended fonts (Maple Mono, Geist Mono).
 4. **Symlink setup**: Detects existing configs, backs them up automatically, then uses `stow` to symlink all configs, including the `bin` scripts, into the correct system locations.
 5. **AI model sync**: Automatically runs `aichat --sync-models` to synchronize the default model catalog into the local index.
-6. **Runtime installation**: Installs core language runtimes via **Mise** (Go, Node, Bun, Python, Rust) along with out-of-the-box CLI tools (gh, bat, eza, fd, ripgrep, glow, shellcheck, etc.). LSP and other toolchains can be installed on demand later.
-7. **Privacy template setup**: Automatically creates Git identity templates (`.gitconfig.local` / `.work`), private environment variable templates (`config.local.fish`), and a Ghostty private config template (`config.local`) in the user's home directory.
-8. **Shell initialization**: Sets **Fish** as the default shell and **automatically migrates PATH variables from your old Zsh setup** into Fish.
-9. **Plugin setup**: Installs the **Fisher** plugin manager and syncs all Fish plugins.
-10. **System optimization**: Prompts whether to apply **common macOS system preference tweaks** via `macos.sh`.
+6. **Local model backend (optional)**: In interactive installs, the script **asks whether to install and start** `Ollama`; in non-interactive mode it is skipped by default unless you pass `--with-ollama`. The script does not pull any local model automatically.
+7. **Runtime installation**: Installs core language runtimes via **Mise** (Go, Node, Bun, Python, Rust) along with out-of-the-box CLI tools (gh, bat, eza, fd, ripgrep, glow, shellcheck, etc.). LSP and other toolchains can be installed on demand later.
+8. **Privacy template setup**: Automatically creates Git identity templates (`.gitconfig.local` / `.work`), private environment variable templates (`config.local.fish`), and a Ghostty private config template (`config.local`) in the user's home directory.
+9. **Shell initialization**: Sets **Fish** as the default shell and **automatically migrates PATH variables from your old Zsh setup** into Fish.
+10. **Plugin setup**: Installs the **Fisher** plugin manager and syncs all Fish plugins.
+11. **System optimization**: Prompts whether to apply **common macOS system preference tweaks** via `macos.sh`.
 
 **Usage:**
 ```sh
@@ -163,6 +164,8 @@ cd "$HOME/dotfiles"
 
 > [!TIP]
 > **Non-interactive mode**: In automation environments such as CI/CD, append `-y` or `--unattended` to skip all confirmations and install automatically: `./install.sh -y`
+>
+> If you also want the local-model backend in non-interactive mode, append `--with-ollama`: `./install.sh -y --with-ollama`
 >
 > If the current session does not have reusable `sudo` credentials, `karabiner-elements` will be skipped automatically in `-y` mode so Homebrew does not block on a password prompt. You can install it later from an interactive shell with `brew install --cask karabiner-elements`
 
@@ -522,13 +525,15 @@ set -gx GEMINI_API_KEY "YOUR_API_KEY_HERE"
 This repository exposes Ollama as the `local-llm:` provider while still routing everything through `aichat`, so workflows such as `?`, `??`, `aic`, `aipr`, and `ait` do not need a separate command path.
 
 ```bash
-# Install and start Ollama
-# The project does not force-install it by default, so local-model dependencies
-# remain optional instead of being imposed on every user.
+# In interactive installs the script asks whether to enable Ollama;
+# for unattended installs, turn it on explicitly:
+./install.sh -y --with-ollama
+
+# If you prefer to install it manually instead:
 brew install ollama
 brew services start ollama
 
-# Pull one local model
+# After installation, pull a local model when you actually need one
 ollama pull llama3.2
 ```
 

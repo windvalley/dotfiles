@@ -23,6 +23,7 @@ Usage:
 
 Options:
   -y, --yes, --unattended    Run in non-interactive mode without prompting
+  --with-ollama              Install Ollama and start its background service
   -h, --help                 Show this help message
 EOF
 }
@@ -44,6 +45,16 @@ Next steps:
   3. All language runtimes, LSPs, and CLI tools have been auto-installed via mise.
      (Check 'mise ls' to see the managed tools).
 EOF
+
+  if [ "${SHOW_OLLAMA_NEXT_STEPS:-false}" = true ]; then
+    cat <<'EOF'
+
+Optional local LLM:
+  - Pull at least one Ollama model, for example: ollama pull llama3.2
+  - Set ~/.config/fish/config.local.fish:
+      set -gx AICHAT_MODEL "local-llm:llama3.2"
+EOF
+  fi
 
   cat <<'EOF'
 
@@ -74,9 +85,15 @@ fish_plugins_args() {
 
 # Parse arguments
 NON_INTERACTIVE=false
+INSTALL_OLLAMA=false
+START_OLLAMA_SERVICE=false
 while [[ "$#" -gt 0 ]]; do
   case $1 in
   -y | --yes | --unattended) NON_INTERACTIVE=true ;;
+  --with-ollama)
+    INSTALL_OLLAMA=true
+    START_OLLAMA_SERVICE=true
+    ;;
   -h | --help)
     show_help
     exit 0
@@ -91,19 +108,112 @@ done
 
 ask_yes_no() {
   local prompt="$1"
+  local default_answer="${2:-n}"
+  local prompt_suffix=""
+  local reply=""
+
+  case "$default_answer" in
+  y | Y)
+    default_answer="y"
+    prompt_suffix="[Y/n]"
+    ;;
+  n | N)
+    default_answer="n"
+    prompt_suffix="[y/N]"
+    ;;
+  *)
+    error "ask_yes_no received invalid default answer: $default_answer"
+    exit 1
+    ;;
+  esac
+
   if [ "$NON_INTERACTIVE" = true ]; then
-    info "${prompt} (auto-yes)"
+    info "${prompt} ${prompt_suffix} (auto-yes)"
     return 0
-  else
+  fi
+
+  while true; do
     # 从 /dev/tty 直接读取终端输入，避免上一步命令（brew/zsh/fish 等）
-    # 向 stdin 写入残留字节导致 read 跳过用户输入的问题
-    read -p "$prompt " -n 1 -r REPLY </dev/tty
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-      return 0
-    else
-      return 1
+    # 向 stdin 写入残留字节导致 read 跳过用户输入的问题。
+    read -r -p "$prompt $prompt_suffix " reply </dev/tty
+
+    if [ -z "$reply" ]; then
+      reply="$default_answer"
     fi
+
+    case "$reply" in
+    [Yy]) return 0 ;;
+    [Nn]) return 1 ;;
+    *)
+      warn "Please answer y or n."
+      ;;
+    esac
+  done
+}
+
+resolve_ollama_install_plan() {
+  if [ "$INSTALL_OLLAMA" = true ]; then
+    info "Ollama optional install enabled via CLI flag."
+    return 0
+  fi
+
+  if [ "$NON_INTERACTIVE" = true ]; then
+    info "Non-interactive mode detected, skipping optional Ollama installation by default."
+    return 0
+  fi
+
+  # Ollama 体积和后续模型下载成本都明显高于普通 CLI，因此仅在交互安装时按需启用。
+  if ask_yes_no "Do you want to install Ollama for local models?" "n"; then
+    INSTALL_OLLAMA=true
+    if ask_yes_no "Do you want to start Ollama service now?" "y"; then
+      START_OLLAMA_SERVICE=true
+    else
+      info "Skipping Ollama service startup. You can run 'brew services start ollama' later."
+    fi
+  fi
+}
+
+install_optional_ollama() {
+  local ollama_available=false
+  local ollama_managed_by_brew=false
+
+  [ "$INSTALL_OLLAMA" = true ] || return 0
+
+  if command -v ollama &>/dev/null; then
+    success "Ollama is already available."
+    ollama_available=true
+  else
+    info "Installing Ollama..."
+    if brew install ollama; then
+      success "Ollama installed."
+      ollama_available=true
+    else
+      warn "Ollama installation had issues. You can rerun manually: brew install ollama"
+      return 0
+    fi
+  fi
+
+  if brew list --formula ollama >/dev/null 2>&1; then
+    ollama_managed_by_brew=true
+  fi
+
+  if [ "$START_OLLAMA_SERVICE" = true ]; then
+    if [ "$ollama_managed_by_brew" = true ]; then
+      info "Starting Ollama service..."
+      if brew services start ollama; then
+        success "Ollama service started."
+      else
+        warn "Failed to start Ollama service automatically. You can rerun manually: brew services start ollama"
+      fi
+    else
+      warn "Ollama is not managed by Homebrew on this machine. Please start it manually with 'ollama serve' if needed."
+    fi
+  else
+    info "Skipping Ollama service startup. Run 'brew services start ollama' when you need local models."
+  fi
+
+  if [ "$ollama_available" = true ]; then
+    SHOW_OLLAMA_NEXT_STEPS=true
   fi
 }
 
@@ -116,7 +226,7 @@ info "Starting dotfiles installation..."
 
 if ! command -v brew &>/dev/null; then
   warn "Homebrew not found."
-  if ask_yes_no "Install Homebrew from official source? (y/n)"; then
+  if ask_yes_no "Install Homebrew from official source?" "y"; then
     info "Installing Homebrew..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
@@ -175,7 +285,7 @@ else
 fi
 
 info "Installing additional Fonts..."
-if ask_yes_no "Do you want to install additional fonts (Maple Mono, Geist Mono)? (y/n)"; then
+if ask_yes_no "Do you want to install additional fonts (Maple Mono, Geist Mono)?" "n"; then
   REQUIRED_CASKS=(
     font-maple-mono-nf
     font-geist-mono-nerd-font
@@ -186,6 +296,9 @@ if ask_yes_no "Do you want to install additional fonts (Maple Mono, Geist Mono)?
     warn "Font installation had issues."
   fi
 fi
+
+resolve_ollama_install_plan
+install_optional_ollama
 
 info "Linking configuration files with stow..."
 
@@ -280,7 +393,7 @@ if [[ "$SHELL" != *"fish"* ]]; then
   if [ "$NON_INTERACTIVE" = true ]; then
     info "Skipping default shell change in non-interactive mode."
     info "Please run 'chsh -s $(which fish)' manually later if needed."
-  elif ask_yes_no "Do you want to set fish as your default shell? (y/n)"; then
+  elif ask_yes_no "Do you want to set fish as your default shell?" "y"; then
     FISH_PATH=$(which fish)
     if ! grep -q "$FISH_PATH" /etc/shells; then
       info "Adding $FISH_PATH to /etc/shells..."
@@ -384,7 +497,7 @@ else
 fi
 
 if [[ "$(uname)" == "Darwin" ]]; then
-  if ask_yes_no "Do you want to apply macOS system preferences (macos.sh)? (y/n)"; then
+  if ask_yes_no "Do you want to apply macOS system preferences (macos.sh)?" "n"; then
     info "Applying macOS system preferences..."
     bash "$DOTFILES_DIR/macos.sh"
   fi

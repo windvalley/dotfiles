@@ -153,11 +153,12 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 3. **字体安装**：默认已通过 Brew 安装 JetBrains Mono，并**询问是否安装**其他扩展字体（Maple Mono, Geist Mono）。
 4. **软链配置**：自动识别已存在的配置并备份，然后使用 `stow` 将所有配置（含 `bin` 脚本）软链到对应的系统目录。
 5. **AI 模型同步**：自动执行 `aichat --sync-models`，将默认配置引用的模型同步到本地索引。
-6. **运行时安装**：通过 **Mise** 安装核心语言运行时（Go, Node, Bun, Python, Rust）及开箱即用的基础 CLI 工具（gh, bat, eza, fd, ripgrep, glow, shellcheck 等），LSP 等工具链可稍后按需安装。
-7. **隐私配置模板**：自动在用户目录创建 Git 信息模板（`.gitconfig.local`/`.work`）、私密环境变量模板（`config.local.fish`）和 Ghostty 私有配置模板（`config.local`）。
-8. **Shell 初始化**：将 **Fish** 设为默认 Shell，并**自动迁移原 Zsh 的 PATH 环境变量**到 Fish 中。
-9. **插件配置**：安装 **Fisher** 插件管理器并同步所有 Fish 插件。
-10. **系统优化**：提示是否应用 **macOS 常用系统偏好设置**（通过 `macos.sh`）。
+6. **本地模型后端（可选）**：交互安装时会**询问是否安装并启动** `Ollama`；非交互模式默认跳过，可通过 `--with-ollama` 显式开启。脚本不会自动拉取任何本地模型。
+7. **运行时安装**：通过 **Mise** 安装核心语言运行时（Go, Node, Bun, Python, Rust）及开箱即用的基础 CLI 工具（gh, bat, eza, fd, ripgrep, glow, shellcheck 等），LSP 等工具链可稍后按需安装。
+8. **隐私配置模板**：自动在用户目录创建 Git 信息模板（`.gitconfig.local`/`.work`）、私密环境变量模板（`config.local.fish`）和 Ghostty 私有配置模板（`config.local`）。
+9. **Shell 初始化**：将 **Fish** 设为默认 Shell，并**自动迁移原 Zsh 的 PATH 环境变量**到 Fish 中。
+10. **插件配置**：安装 **Fisher** 插件管理器并同步所有 Fish 插件。
+11. **系统优化**：提示是否应用 **macOS 常用系统偏好设置**（通过 `macos.sh`）。
 
 **使用方法：**
 ```sh
@@ -167,6 +168,8 @@ cd "$HOME/dotfiles"
 
 > [!TIP]
 > **非交互模式**：如果在自动化环境（如 CI/CD 等）中执行，可追加 `-y` 或 `--unattended` 标志跳过所有确认自动安装：`./install.sh -y`
+>
+> 如需在非交互模式下同时安装本地模型后端，可显式追加 `--with-ollama`：`./install.sh -y --with-ollama`
 >
 > 若当前会话没有可复用的 `sudo` 凭证，`karabiner-elements` 会在 `-y` 模式下被自动跳过，以避免 Homebrew 的密码提示卡住安装流程；后续可在交互式终端中手动执行：`brew install --cask karabiner-elements`
 
@@ -523,11 +526,15 @@ set -gx GEMINI_API_KEY "YOUR_API_KEY_HERE"
 仓库默认把 Ollama 映射为 `local-llm:` provider，仍然统一走 `aichat` 入口，因此 `?`、`??`、`aic`、`aipr`、`ait` 等工作流无需额外改动。
 
 ```bash
-# 安装并启动 Ollama（本项目默认不强制安装，避免把大体积本地模型依赖强加给所有用户）
+# 交互安装时脚本会询问是否启用 Ollama；
+# 无人值守安装可显式打开：
+./install.sh -y --with-ollama
+
+# 若只想单独手动安装，也可以直接执行：
 brew install ollama
 brew services start ollama
 
-# 拉取一个本地模型
+# 安装完成后，再按需拉取一个本地模型
 ollama pull llama3.2
 ```
 
