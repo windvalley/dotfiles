@@ -61,7 +61,7 @@ THEMES=(
     "catppuccin-latte|Catppuccin Latte|catppuccin_latte|catppuccin-latte|catppuccin-latte|Catppuccin Latte"
     "rose-pine|Rose Pine|rose_pine|rose-pine|rose-pine|rose-pine"
     "tokyonight|TokyoNight Moon|tokyonight_moon|tokyo-night|tokyo-night|tokyonight_moon"
-    "gruvbox|Gruvbox Material Dark|gruvbox_dark_hard|=|gruvbox_material_dark|gruvbox-dark"
+    "gruvbox|Gruvbox Material Dark|gruvbox_dark_hard|gruvbox-dark|gruvbox_material_dark|gruvbox-dark"
     "gruvbox-light|Gruvbox Light|gruvbox_light|gruvbox-light|gruvbox_light|gruvbox-light"
     "kanagawa|Kanagawa Wave|kanagawa|=|kanagawa-wave|kanagawa"
     "nord|Nord|nord|nord|=|Nord"
