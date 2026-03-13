@@ -641,7 +641,7 @@ aichat hi
 | `Cmd + 1-9` | Switch to a specific tab |
 
 **Layout**:
-- **Default layout**: `dev-workspace` (defined at `~/.config/zellij/layouts/dev-workspace.kdl`)
+- **Default layout**: `dev-workspace` (defined at `~/.config/zellij/layouts/dev-workspace.kdl`), path-agnostic by default, so all panes inherit the current directory used to launch Zellij.
 - **Built-in language-specific layouts**: Includes specialized workspace layouts such as `layout-go`, `layout-rust`, `layout-python`, `layout-node`, `layout-cpp`, and `layout-fullstack`, providing out-of-the-box tailored pane splits and functional tabs.
 - **Smart Launcher**: Use the custom `zj` command to launch Zellij from any directory. It auto-detects the project structure and smartly selects a tailored layout. The command is **terminal-aware**: in a **bare terminal**, it starts directly; if run from **inside an active Zellij session**, it automatically **opens a new Ghostty window** via AppleScript to create or reattach to the session, elegantly avoiding nesting restrictions. Multiple Ghostty windows/sessions created this way can be quickly toggled using the `Ctrl + \`` shortcut.
 - **Load layout manually**: `zellij --layout <layout_name>` (e.g., `zellij --layout layout-go`)
@@ -1004,7 +1004,7 @@ This project makes a series of intentional customizations on top of the default 
 | Change | Official default | This project | Why |
 |------|----------|--------|------|
 | Keybinding system | Built-in defaults | `keybinds clear-defaults=true` rebuilt from scratch | Streamline and unify Vim-style navigation, remove unused bindings |
-| Default layout | `default` | `default_layout "dev-workspace"` | Use a custom development workspace layout |
+| Default layout | `default` | `default_layout "dev-workspace"` | Use a custom general-purpose development workspace layout that inherits the launch directory |
 | Session name | Random | `session_name "main"` | Fixed session name for easy attach |
 | Auto attach | `false` | `attach_to_session true` | Opening a new terminal attaches to the existing session automatically |
 | Theme | `default` | `theme "dracula-pro"` | Custom Dracula variant that fixes selection color compatibility |

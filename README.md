@@ -641,7 +641,7 @@ aichat hi
 | `Cmd + 1-9` | 切换到指定标签页 |
 
 **布局**：
-- **默认布局**：`dev-workspace`（定义于 `~/.config/zellij/layouts/dev-workspace.kdl`）
+- **默认布局**：`dev-workspace`（定义于 `~/.config/zellij/layouts/dev-workspace.kdl`），不绑定固定仓库路径，所有 pane 默认继承启动 Zellij 时的当前目录。
 - **内置特定语言布局**：内置了 `layout-go`, `layout-rust`, `layout-python`, `layout-node`, `layout-cpp`, `layout-fullstack` 等专属工作区布局，提供开箱即用的分屏与功能标签页。
 - **智能启动器**：使用本套配置定制的 `zj` 命令可在任意目录一键启动。它会自动探测当前目录特征并智能选择专属布局进行会话创建或挂载。本命令已实现**深度终端感知**：在**裸终端**中直接启动；在**已有的 Zellij 会话内部**执行时，它会自动通过 Ghostty AppleScript API **打开一个全新的终端窗口**并在其中完成创建/挂载，优雅地避开了会话嵌套限制。通过此方式创建的多个 Ghostty 窗口/会话，可以使用 `Ctrl + \`` 快捷键进行快速来回切换。
 - **手动加载布局**：`zellij --layout <布局名>`
@@ -1003,7 +1003,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | 改动 | 官方默认 | 本项目 | 原因 |
 |------|----------|--------|------|
 | 快捷键体系 | 内置默认快捷键 | `keybinds clear-defaults=true` 全部重建 | 精简并统一 Vim 风格导航，移除未使用的绑定 |
-| 默认布局 | `default` | `default_layout "dev-workspace"` | 使用自定义的开发工作区布局 |
+| 默认布局 | `default` | `default_layout "dev-workspace"` | 使用自定义的通用开发工作区布局，并继承启动目录 |
 | 会话名 | 随机生成 | `session_name "main"` | 固定会话名，方便 attach |
 | 自动附加 | `false` | `attach_to_session true` | 打开新终端自动连接已有会话 |
 | 主题 | `default` | `theme "dracula-pro"` | 自定义 Dracula 变体，修复文本选中色的兼容问题 |
