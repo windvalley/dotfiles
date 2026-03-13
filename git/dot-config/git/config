@@ -176,6 +176,34 @@
     plus-non-emph-style = normal "#303B35"
     syntax-theme = none
 
+[delta "dayfox"]
+    # 自定义 Dayfox Delta 主题。
+    # colorscheme 切到 `dayfox` 时会自动在 [delta] 节中启用：
+    #   features = dayfox
+    true-color = always
+    commit-decoration-style = "#2848A9" ol
+    commit-style = raw
+    file-style = omit
+    hunk-header-decoration-style = "#2848A9" box
+    hunk-header-file-style = "#A5222F"
+    hunk-header-line-number-style = "#AC5402"
+    hunk-header-style = file line-number syntax
+    line-numbers = true
+    line-numbers-left-format = "{nm:>4}┊"
+    line-numbers-left-style = "#824D5B"
+    line-numbers-minus-style = "#A5222F"
+    line-numbers-plus-style = "#396847"
+    line-numbers-right-format = "{np:>4}│"
+    line-numbers-right-style = "#824D5B"
+    line-numbers-zero-style = "#837A72"
+    minus-emph-style = normal "#DEB4B5"
+    minus-style = normal "#E6C8C8"
+    minus-non-emph-style = normal "#E6C8C8"
+    plus-emph-style = normal "#BDC9BC"
+    plus-style = normal "#D0D6CD"
+    plus-non-emph-style = normal "#D0D6CD"
+    syntax-theme = none
+
 [merge]
     # 冲突显示风格：同时显示本地、远程和基准代码（diff3），方便合并
     conflictstyle = diff3

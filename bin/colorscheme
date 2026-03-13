@@ -39,7 +39,7 @@ error() { echo -e "${RED}[ERROR]${NC} $1"; }
 # Delta syntax themes: most presets reuse Bat's syntect theme, but Delta-specific
 #                      features may be applied for themes that cannot reuse custom
 #                      Bat themes directly (for example `tokyonight` / `rose-pine` /
-#                      `kanagawa` / `one-dark` / `everforest`).
+#                      `kanagawa` / `one-dark` / `everforest` / `dayfox`).
 # ============================================
 THEMES=(
     "dracula|Dracula|=|dracula-pro|=|Dracula"
@@ -53,6 +53,7 @@ THEMES=(
     "solarized|Solarized Dark Higher Contrast|solarized_dark|solarized-dark|solarized_dark|Solarized (dark)"
     "one-dark|Atom One Dark|one_dark|onedark|onedark|one-dark"
     "everforest|Everforest Dark Hard|everforest_dark|everforest-dark|everforest-dark-hard|everforest"
+    "dayfox|Dayfox|dayfox|dayfox|dayfox|dayfox"
 )
 
 # Check for gsed (GNU sed)
@@ -201,15 +202,19 @@ get_delta_display_theme() {
     fi
 }
 
-delta_prefers_light_mode() {
+theme_prefers_light_mode() {
     case "$1" in
-        gruvbox-light)
+        gruvbox-light|dayfox)
             return 0
             ;;
         *)
             return 1
             ;;
     esac
+}
+
+delta_prefers_light_mode() {
+    theme_prefers_light_mode "$1"
 }
 
 bat_has_theme() {
@@ -342,10 +347,24 @@ show_current() {
 
 # List available themes
 list_themes() {
+    local name=""
+
     print_heading "Available themes:"
+
+    printf '  Dark themes:\n'
     for entry in "${THEMES[@]}"; do
         IFS='|' read -r name _ _ _ <<<"$entry"
-        printf '  %s\n' "$name"
+        if ! theme_prefers_light_mode "$name"; then
+            printf '    %s\n' "$name"
+        fi
+    done
+
+    printf '  Light themes:\n'
+    for entry in "${THEMES[@]}"; do
+        IFS='|' read -r name _ _ _ <<<"$entry"
+        if theme_prefers_light_mode "$name"; then
+            printf '    %s\n' "$name"
+        fi
     done
 }
 
@@ -604,6 +623,13 @@ delta_cs_change() {
             # Delta feature that recreates the Everforest diff palette.
             syntax_theme="Dracula"
             delta_feature="everforest"
+            ;;
+        dayfox)
+            # Delta cannot reuse Bat's custom Dayfox syntect theme directly.
+            # Keep syntax-theme on a safe built-in fallback and switch to a custom
+            # Delta feature that recreates the Dayfox diff palette.
+            syntax_theme="Dracula"
+            delta_feature="dayfox"
             ;;
     esac
 
