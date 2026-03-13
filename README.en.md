@@ -158,6 +158,7 @@ The repository root provides an `install.sh` script that automates almost the en
 
 **Usage:**
 ```sh
+git clone --depth=1 https://github.com/windvalley/dotfiles.git "$HOME/dotfiles"
 cd "$HOME/dotfiles"
 ./install.sh
 ```

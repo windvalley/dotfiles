@@ -162,6 +162,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 
 **使用方法：**
 ```sh
+git clone --depth=1 https://github.com/windvalley/dotfiles.git "$HOME/dotfiles"
 cd "$HOME/dotfiles"
 ./install.sh
 ```

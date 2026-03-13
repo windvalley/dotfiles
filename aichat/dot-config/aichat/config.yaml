@@ -5,7 +5,7 @@
 # LLM (大语言模型设置)
 # ==========================================
 # 默认开启的模型。
-# 【强烈建议】：不要在此文件内直接写入明文 API Key，而是通过在 ~/.config/fish/config.local.fish 末尾导出的环境变量配置。
+# 【强烈建议】：不要在此文件内直接写入明文 API Key，而是通过在 ~/.fish.local.fish 末尾导出的环境变量配置。
 # - 设置 API 密钥：set -gx OPENAI_API_KEY "sk-..." 或 set -gx GEMINI_API_KEY "AIzaSy..."
 # - 覆盖此处的默认模型设定：set -gx AICHAT_MODEL "anthropic:claude-3-5-sonnet-20240620"
 # 示例：openai:gpt-4o, anthropic:claude-3-5-sonnet-20240620, gemini:gemini-2.5-flash
@@ -146,28 +146,28 @@ sync_models_url: https://raw.githubusercontent.com/sigoden/aichat/refs/heads/mai
 # aichat --list-models
 # ==========================================
 clients:
-  # API Key 通过环境变量 GEMINI_API_KEY 注入 (在 config.local.fish 中配置)
+  # API Key 通过环境变量 GEMINI_API_KEY 注入 (在 ~/.fish.local.fish 中配置)
   - type: gemini
-  # API Key 通过环境变量 OPENAI_API_KEY 注入 (在 config.local.fish 中配置)
+  # API Key 通过环境变量 OPENAI_API_KEY 注入 (在 ~/.fish.local.fish 中配置)
   - type: openai
-  # API Key 通过环境变量 ANTHROPIC_API_KEY 注入 (在 config.local.fish 中配置)
+  # API Key 通过环境变量 ANTHROPIC_API_KEY 注入 (在 ~/.fish.local.fish 中配置)
   # 注意：Anthropic 在 aichat 中的 provider 前缀是 claude:
   - type: claude
-  # API Key 通过环境变量 ZHIPUAI_API_KEY 注入 (在 config.local.fish 中配置)
+  # API Key 通过环境变量 ZHIPUAI_API_KEY 注入 (在 ~/.fish.local.fish 中配置)
   # 注意：智谱在 aichat 中的 provider 名为 zhipuai
   - type: openai-compatible
     name: zhipuai
     api_base: https://open.bigmodel.cn/api/paas/v4
-  # API Key 通过环境变量 MINIMAX_API_KEY 注入 (在 config.local.fish 中配置)
+  # API Key 通过环境变量 MINIMAX_API_KEY 注入 (在 ~/.fish.local.fish 中配置)
   - type: openai-compatible
     name: minimax
     api_base: https://api.minimax.chat/v1
-  # API Key 通过环境变量 QIANWEN_API_KEY 注入 (在 config.local.fish 中配置)
+  # API Key 通过环境变量 QIANWEN_API_KEY 注入 (在 ~/.fish.local.fish 中配置)
   # 注意：Qwen 在 aichat 中的 provider 名为 qianwen
   - type: openai-compatible
     name: qianwen
     api_base: https://dashscope.aliyuncs.com/compatible-mode/v1
-  # API Key 通过环境变量 MOONSHOT_API_KEY 注入 (在 config.local.fish 中配置)
+  # API Key 通过环境变量 MOONSHOT_API_KEY 注入 (在 ~/.fish.local.fish 中配置)
   - type: openai-compatible
     name: moonshot
     api_base: https://api.moonshot.cn/v1

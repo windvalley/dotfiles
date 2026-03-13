@@ -64,8 +64,8 @@
 - **禁止硬编码**：**绝对禁止**将系统级密码、API Keys（如 `OPENAI_API_KEY`, `GITHUB_TOKEN`）、个人的全名、真实邮箱或公司内部的敏感域名和内网信息硬编码在仓库中并提交。
 - **私有隔离配置**：所有的隐私信息必须通过 `local/` 目录下的 `.example` 模板机制进行分离：
   - Git 用户相关隐私配置在 `~/.gitconfig.local` 或 `~/.gitconfig.work` 中进行重写。
-  - Fish 环境下的私密环境变量、特定系统的 alias 均配置在 `~/.config/fish/config.local.fish` 文件内。
-- 上述由模板生成的 `.local` 文件和后缀名已被项目根目录的 `.gitignore` 与全局的 `~/.config/git/ignore` 彻底忽略，保证了配置上云时的隐私安全。
+  - Fish 环境下的私密环境变量、特定系统的 alias 均写入由 `local/config.local.fish.example` 生成的 `~/.fish.local.fish`。
+- 上述由模板生成的本地私有文件位于 `$HOME` 目录、物理上独立于仓库工作树；仓库内仅保留对应的 `.example` 模板，避免私密信息随 Git 提交。
 
 ### 5. 开发环境与工具版本管理 (Mise)
 - **禁止全局污染**：**绝对禁止**在安装脚本、Makefile 或是命令别名中使用 `npm install -g`, `pip install`, `go install` 等方式全局安装工具。
