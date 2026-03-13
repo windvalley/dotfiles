@@ -1,3 +1,83 @@
+function __aipr_sample_text -d "对传入文本做头尾保留式截断，避免中后段完全丢失"
+    set -l max_chars $argv[1]
+    set -e argv[1]
+    set -l content (string join '' -- $argv)
+    if test -z "$content"
+        return 0
+    end
+
+    set -l content_length (string length -- "$content")
+    if test $content_length -le $max_chars
+        printf '%s' "$content"
+        return 0
+    end
+
+    # 对超长文本保留头尾两端，避免单纯截前缀导致后半段关键信息永久消失。
+    set -l truncation_marker "
+
+# ... middle section omitted to keep context balanced ...
+
+"
+    set -l marker_length (string length -- "$truncation_marker")
+    if test $max_chars -le $marker_length
+        string sub --start 1 --length $max_chars -- "$content"
+        return 0
+    end
+
+    set -l head_length (math "floor(($max_chars - $marker_length) / 2)")
+    set -l tail_length (math "$max_chars - $marker_length - $head_length")
+    set -l tail_start (math "$content_length - $tail_length + 1")
+    if test $tail_start -lt 1
+        set tail_start 1
+    end
+
+    set -l content_head (string sub --start 1 --length $head_length -- "$content")
+    set -l content_tail (string sub --start $tail_start --length $tail_length -- "$content")
+    printf '%s%s%s' "$content_head" "$truncation_marker" "$content_tail"
+end
+
+function __aipr_build_balanced_diff -a range_spec max_chars -d "按文件均衡抽样 diff，避免上下文被文件顺序主导"
+    set -l changed_files (git diff --name-only $range_spec)
+    if test (count $changed_files) -eq 0
+        return 0
+    end
+
+    set -l file_count (count $changed_files)
+    set -l per_file_budget (math "floor($max_chars / $file_count)")
+
+    # 文件数过多时，改用结构化 diff 骨架，优先保留所有文件与 hunk 位置信息。
+    if test $per_file_budget -lt 240
+        set -l structural_diff (git diff --unified=0 $range_spec \
+            | command grep -E '^(diff --git|@@|new file mode|deleted file mode|similarity index|rename from|rename to|Binary files)' \
+            | string collect)
+
+        if test -z "$structural_diff"
+            set structural_diff (git diff --stat $range_spec | string collect)
+        end
+
+        __aipr_sample_text $max_chars "$structural_diff"
+        return 0
+    end
+
+    set -l diff_excerpts
+    for file in $changed_files
+        set -l file_diff (git diff --unified=1 $range_spec -- "$file" | string collect)
+        if test -z "$file_diff"
+            continue
+        end
+
+        set -l excerpt (__aipr_sample_text $per_file_budget "$file_diff")
+        set diff_excerpts $diff_excerpts "$excerpt"
+    end
+
+    if test (count $diff_excerpts) -eq 0
+        return 0
+    end
+
+    set -l combined_diff (string join "\n\n" -- $diff_excerpts)
+    __aipr_sample_text $max_chars "$combined_diff"
+end
+
 function aipr -d "根据分支变更自动生成 Pull Request 描述"
     if test (count $argv) -gt 0; and contains -- $argv[1] -h --help
         echo "AI-Powered PR Description Tool"
@@ -64,15 +144,26 @@ function aipr -d "根据分支变更自动生成 Pull Request 描述"
     # 收集 diff stat（文件级变更概览）
     set -l diff_stat (git diff --stat $merge_base..$current_branch | string collect)
 
-    # 收集完整 diff（限制大小，避免超出 AI token 限制）
+    # 收集完整 diff；超长时改为按文件均衡抽样，避免只截前缀导致后半段信息丢失。
+    set -l max_diff_chars 30000
     set -l diff_content (git diff $merge_base..$current_branch | string collect)
     set -l diff_length (string length -- "$diff_content")
+    set -l changed_files (git diff --name-only $merge_base..$current_branch)
 
-    # 如果 diff 过大（>30000 字符），只使用 stat 和 commit 摘要
     set -l diff_truncated 0
-    if test $diff_length -gt 30000
-        set diff_content (echo "$diff_content" | head -c 30000 | string collect)
+    set -l diff_context_note "以下为完整 diff。"
+    if test $diff_length -gt $max_diff_chars
+        set -l changed_file_count (count $changed_files)
+        set -l per_file_budget (math "floor($max_diff_chars / $changed_file_count)")
+
+        set diff_content (__aipr_build_balanced_diff "$merge_base..$current_branch" $max_diff_chars)
         set diff_truncated 1
+
+        if test $per_file_budget -lt 240
+            set diff_context_note "以下为结构化 diff 骨架，覆盖全部文件和 hunk 位置，避免超长分支只偏向前半段文件。"
+        else
+            set diff_context_note "以下为按文件均衡抽样的 diff 摘要，每个变更文件都会保留片段，且单文件同时保留头尾两端。"
+        end
     end
 
     # 显示变更概览
@@ -110,7 +201,7 @@ function aipr -d "根据分支变更自动生成 Pull Request 描述"
     while test "$loop_active" = true
         if test -z "$msg_tmpfile"
             # 每次循环重新构建 Prompt，以便语言选项发生变化时能生效
-        set -l prompt_text "根据以下 Git 分支变更信息，生成一份结构化的 Pull Request 描述。
+            set -l prompt_text "根据以下 Git 分支变更信息，生成一份结构化的 Pull Request 描述。
 
 格式要求:
 1. 第一行是 PR 标题，格式: type(scope): description （简洁准确，限制在 72 字符内）
@@ -137,20 +228,20 @@ $diff_stat
 - 禁止使用外层的 Markdown 代码块 (\`\`\`)包裹整个输出。
 - 第一行必须直接是 PR 标题！"
 
-        if test $diff_truncated -eq 1
-            set prompt_text "$prompt_text
+            if test $diff_truncated -eq 1
+                set prompt_text "$prompt_text
 
-（注：diff 内容较大，以下仅展示前 30000 字符）"
-        end
+（注：diff 内容较大，$diff_context_note）"
+            end
 
-        if test -n "$supplementary_info"
-            set prompt_text "$prompt_text
+            if test -n "$supplementary_info"
+                set prompt_text "$prompt_text
 
 【强烈注意】用户提供了以下补充说明，请务必将其融入到生成的内容中：
 $supplementary_info"
-        end
+            end
 
-        set prompt_text "$prompt_text
+            set prompt_text "$prompt_text
 
 <diff>
 $diff_content
