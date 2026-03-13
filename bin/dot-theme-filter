@@ -51,6 +51,7 @@ case "$file" in
         ;;
     *git/config)
         "$SED_BIN" -E '/^\[delta\]/,/^\[/ {
+            s/^(\s+)light\s*=\s*.*/\1light = false/
             s/^(\s+)syntax-theme\s*=\s*.+/\1syntax-theme = Dracula/
             /^\s+features\s*=.*/d
         }'

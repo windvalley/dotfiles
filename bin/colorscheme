@@ -201,6 +201,17 @@ get_delta_display_theme() {
     fi
 }
 
+delta_prefers_light_mode() {
+    case "$1" in
+        gruvbox-light)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
 bat_has_theme() {
     local theme="$1"
     if ! command -v bat &>/dev/null; then
@@ -542,6 +553,7 @@ delta_cs_change() {
     local new_theme=""
     local syntax_theme=""
     local delta_feature=""
+    local delta_light="false"
     if [ ! -f "$gitconfig" ]; then
         error "gitconfig not found: $gitconfig"
         return 1
@@ -552,6 +564,10 @@ delta_cs_change() {
     if [ "$syntax_theme" = "-" ]; then
         print_unchanged_warning "Delta theme" "$old_theme" "preset unsupported"
         return 0
+    fi
+
+    if delta_prefers_light_mode "$colorscheme"; then
+        delta_light="true"
     fi
 
     case "$colorscheme" in
@@ -592,6 +608,7 @@ delta_cs_change() {
     esac
 
     "$SED_BIN" -i -E '/^\[delta\]/,/^\[/ s/^(\s+)syntax-theme\s*=.*/\1syntax-theme = '"$syntax_theme"'/' "$gitconfig"
+    "$SED_BIN" -i -E '/^\[delta\]/,/^\[/ s/^(\s+)light\s*=.*/\1light = '"$delta_light"'/' "$gitconfig"
 
     if [ -n "$delta_feature" ]; then
         git config --file="$gitconfig" delta.features "$delta_feature"
