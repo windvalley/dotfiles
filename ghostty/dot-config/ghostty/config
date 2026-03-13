@@ -851,7 +851,7 @@ background-blur = 25
 #   - < 1                        - 淡化未聚焦窗口
 #
 # 默认值: 0.7
-unfocused-split-opacity = 0.3
+unfocused-split-opacity = 0.6
 
 # unfocused-split-fill
 # 未聚焦分割窗口的淡化颜色
@@ -2448,5 +2448,5 @@ gtk-custom-css =
 desktop-notifications = true
 
 # 加载本地私有配置 (如敏感的快捷键、机器特定设置)
-# 该文件已被 .gitignore 忽略，不会提交到 Git
-config-file = config.local
+# 该文件位于 $HOME 根目录，独立于 dotfiles 仓库
+config-file = ?~/.ghostty.local

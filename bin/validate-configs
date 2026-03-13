@@ -165,7 +165,7 @@ def validate_file(path, visited, stack, errors):
         if not include_path:
             continue
 
-        nested = Path(include_path)
+        nested = Path(include_path).expanduser()
         if not nested.is_absolute():
             nested = (resolved.parent / nested).resolve()
 

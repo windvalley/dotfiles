@@ -51,7 +51,7 @@ EOF
 
 Optional local LLM:
   - Pull at least one Ollama model, for example: ollama pull llama3.2
-  - Set ~/.config/fish/config.local.fish:
+  - Set ~/.fish.local.fish:
       set -gx AICHAT_MODEL "local-llm:llama3.2"
 EOF
   fi
@@ -59,8 +59,8 @@ EOF
   cat <<'EOF'
 
 Manual follow-up:
-  - Edit ~/.config/fish/config.local.fish for private ENVs and API keys.
-  - Edit ~/.config/ghostty/config.local for machine-specific shortcuts or overrides.
+  - Edit ~/.fish.local.fish for private ENVs and API keys.
+  - Edit ~/.ghostty.local for machine-specific shortcuts or overrides.
   - Edit ~/.gitconfig.local and ~/.gitconfig.work for Git identity.
   - macOS: Allow Ghostty in 'System Settings > Privacy & Security > Accessibility'.
 EOF
@@ -371,7 +371,7 @@ else
 fi
 
 # --- 3. Fish 私有环境变量模板 ---
-FISH_LOCAL_CONF="$HOME/.config/fish/config.local.fish"
+FISH_LOCAL_CONF="$HOME/.fish.local.fish"
 if [ ! -f "$FISH_LOCAL_CONF" ]; then
   cp "$DOTFILES_DIR/local/config.local.fish.example" "$FISH_LOCAL_CONF"
   info "  -> Created $FISH_LOCAL_CONF (For private API keys and aliases)"
@@ -380,9 +380,8 @@ else
 fi
 
 # --- 4. Ghostty 私有配置模板 ---
-GHOSTTY_LOCAL_CONF="$HOME/.config/ghostty/config.local"
+GHOSTTY_LOCAL_CONF="$HOME/.ghostty.local"
 if [ ! -f "$GHOSTTY_LOCAL_CONF" ]; then
-  mkdir -p "$HOME/.config/ghostty"
   cp "$DOTFILES_DIR/local/ghostty.config.local.example" "$GHOSTTY_LOCAL_CONF"
   info "  -> Created $GHOSTTY_LOCAL_CONF (For private shortcuts and overrides)"
 else

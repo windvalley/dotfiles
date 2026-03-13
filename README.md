@@ -138,7 +138,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 | `t <text>` | 智能翻译 | 自动识别：英文单词→词典释义（音标+中英解释）；中文短词→英文候选；段落→互译 |
 | `aip` | 指令库 | 交互式选择常用 AI 编程指挥语，支持 fzf 多选、按编号/关键词筛选，自动复制到剪贴板 |
 
-**配置**：在 `~/.config/fish/config.local.fish` 中设置模型与 API Key，详见 [4.8 配置 AIChat](#48-配置-aichat)。
+**配置**：在 `~/.fish.local.fish` 中设置模型与 API Key，详见 [4.8 配置 AIChat](#48-配置-aichat)。
 
 
 ## 3. 安装步骤
@@ -155,7 +155,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 5. **AI 模型同步**：自动执行 `aichat --sync-models`，将默认配置引用的模型同步到本地索引。
 6. **本地模型后端（可选）**：交互安装时会**询问是否安装并启动** `Ollama`；非交互模式默认跳过，可通过 `--with-ollama` 显式开启。脚本不会自动拉取任何本地模型。
 7. **运行时安装**：通过 **Mise** 安装核心语言运行时（Go, Node, Bun, Python, Rust）及开箱即用的基础 CLI 工具（gh, bat, eza, fd, ripgrep, glow, shellcheck 等），LSP 等工具链可稍后按需安装。
-8. **隐私配置模板**：自动在用户目录创建 Git 信息模板（`.gitconfig.local`/`.work`）、私密环境变量模板（`config.local.fish`）和 Ghostty 私有配置模板（`config.local`）。
+8. **隐私配置模板**：自动在用户目录创建 Git 信息模板（`.gitconfig.local`/`.work`）、Fish 私密环境变量模板（`.fish.local.fish`）和 Ghostty 私有配置模板（`.ghostty.local`）。
 9. **Shell 初始化**：将 **Fish** 设为默认 Shell，并**自动迁移原 Zsh 的 PATH 环境变量**到 Fish 中。
 10. **插件配置**：安装 **Fisher** 插件管理器并同步所有 Fish 插件。
 11. **系统优化**：提示是否应用 **macOS 常用系统偏好设置**（通过 `macos.sh`）。
@@ -364,11 +364,11 @@ fish_add_path ~/.local/bin
 
 1. 将本仓库中的示例模板复制到对应目录并去除 `.example` 后缀：
    ```fish
-   cp ~/dotfiles/local/config.local.fish.example ~/.config/fish/config.local.fish
+   cp ~/dotfiles/local/config.local.fish.example ~/.fish.local.fish
    ```
 2. 将你所有的私密配置写入新生成的文件（下例中的模型名、API Key 和命令仅为占位示例，请替换为你自己的值，且不要把真实凭证提交回仓库）：
    ```fish
-   # ~/.config/fish/config.local.fish
+   # ~/.fish.local.fish
    # set -gx AICHAT_MODEL "gemini:gemini-3-flash-preview"
    # set -gx OPENAI_API_KEY "sk-xxxxxxxxx"
    # abbr -a -g work-vpn "sudo launchctl restart com.corp.vpn"
@@ -378,11 +378,11 @@ fish_add_path ~/.local/bin
 
 1. 将本仓库中的示例模板复制到对应目录并去除 `.example` 后缀：
    ```bash
-   cp ~/dotfiles/local/ghostty.config.local.example ~/.config/ghostty/config.local
+   cp ~/dotfiles/local/ghostty.config.local.example ~/.ghostty.local
    ```
 2. 在新生成的文件中添加你的私密或特定机器配置（如快捷键、字体等）：
    ```ini
-   # ~/.config/ghostty/config.local
+   # ~/.ghostty.local
    # 示例：按下 ctrl+backspace 自动输入占位文本并回车
    keybind = ctrl+backspace=text:<your-secret>\r
    ```
@@ -403,7 +403,7 @@ fish_add_path ~/.local/bin
    ```
 
 > [!NOTE]
-> `config.local.fish` 以及 `*.local` 均已被 `.gitignore` 忽略，你可以安全地在本地使用它们，不用担心通过 `stow` 软链后被意外 `git push` 给共享出去。
+> Fish 与 Ghostty 的本地私有文件现在直接放在 `$HOME` 根目录（`~/.fish.local.fish`、`~/.ghostty.local`），物理上独立于 dotfiles 仓库，不会随着 Stow 软链写回仓库工作树。
 
 ### 4.4 配置 fisher
 
@@ -512,14 +512,14 @@ echo "*.log" >> ~/.config/git/ignore
 **2. 在本地私有文件中注入模型与密钥（推荐）**
 
 ```fish
-# ~/.config/fish/config.local.fish
+# ~/.fish.local.fish
 # provider 前缀示例：claude: / qianwen: / zhipuai: / moonshot: / openai: / gemini: / local-llm:
 set -gx AICHAT_MODEL "gemini:gemini-3-flash-preview"
 set -gx GEMINI_API_KEY "YOUR_API_KEY_HERE"
 ```
 
 > [!IMPORTANT]
-> 不要把任何 API Key 直接写入仓库中的 `aichat/dot-config/aichat/config.yaml`。私密信息只放 `~/.config/fish/config.local.fish`。
+> 不要把任何 API Key 直接写入仓库中的 `aichat/dot-config/aichat/config.yaml`。私密信息只放 `~/.fish.local.fish`。
 
 **3. 使用 Ollama 作为本地后端（可选）**
 
@@ -539,7 +539,7 @@ ollama pull llama3.2
 ```
 
 ```fish
-# ~/.config/fish/config.local.fish
+# ~/.fish.local.fish
 # 本地 Ollama 无需 API Key
 set -gx AICHAT_MODEL "local-llm:llama3.2"
 ```
@@ -1139,7 +1139,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
 **Q: 使用 `aichat` 的快捷键或者命令时，提示找不到模型或网络超时？**
 > **A:** 请检查两点：
-> 1. 请确认您在 `~/.config/fish/config.local.fish` 中正确配置了模型名称（如 `AICHAT_MODEL`）和对应的 API Key。配置后务必执行 `exec fish` 重新加载环境或重启终端。
+> 1. 请确认您在 `~/.fish.local.fish` 中正确配置了模型名称（如 `AICHAT_MODEL`）和对应的 API Key。配置后务必执行 `exec fish` 重新加载环境或重启终端。
 > 2. 如果您使用的是本地 Ollama，请确认 `ollama serve` 已启动、目标模型已通过 `ollama pull <model>` 下载，且模型名已包含在 `~/.config/aichat/config.yaml` 的 `local-llm.models` 列表中。
 > 3. 如果您使用的模型 API 访问受限（如访问 OpenAI），您可能需要在终端开启全局代理。本配置内置了 `proxy` 和 `unproxy` 快捷指令来帮助你一键开关终端代理。
 

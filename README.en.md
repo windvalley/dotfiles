@@ -135,7 +135,7 @@ This project consolidates AI large-model capabilities into the **command-line ed
 | `t <text>` | Smart translation | Auto-detects input type: English word → dictionary definition (phonetics + bilingual explanation); Chinese phrase → English candidates; paragraph → two-way translation |
 | `aip` | Prompt library | Interactively selects commonly used AI programming prompts, supports multi-select with fzf plus filtering by number/keyword, and copies the result to the clipboard automatically |
 
-**Configuration**: Set your model and API key in `~/.config/fish/config.local.fish`. See [4.8 Configure AIChat](#48-configure-aichat).
+**Configuration**: Set your model and API key in `~/.fish.local.fish`. See [4.8 Configure AIChat](#48-configure-aichat).
 
 ## 3. Installation
 
@@ -151,7 +151,7 @@ The repository root provides an `install.sh` script that automates almost the en
 5. **AI model sync**: Automatically runs `aichat --sync-models` to synchronize the default model catalog into the local index.
 6. **Local model backend (optional)**: In interactive installs, the script **asks whether to install and start** `Ollama`; in non-interactive mode it is skipped by default unless you pass `--with-ollama`. The script does not pull any local model automatically.
 7. **Runtime installation**: Installs core language runtimes via **Mise** (Go, Node, Bun, Python, Rust) along with out-of-the-box CLI tools (gh, bat, eza, fd, ripgrep, glow, shellcheck, etc.). LSP and other toolchains can be installed on demand later.
-8. **Privacy template setup**: Automatically creates Git identity templates (`.gitconfig.local` / `.work`), private environment variable templates (`config.local.fish`), and a Ghostty private config template (`config.local`) in the user's home directory.
+8. **Privacy template setup**: Automatically creates Git identity templates (`.gitconfig.local` / `.work`), a Fish private environment template (`.fish.local.fish`), and a Ghostty private config template (`.ghostty.local`) in the user's home directory.
 9. **Shell initialization**: Sets **Fish** as the default shell and **automatically migrates PATH variables from your old Zsh setup** into Fish.
 10. **Plugin setup**: Installs the **Fisher** plugin manager and syncs all Fish plugins.
 11. **System optimization**: Prompts whether to apply **common macOS system preference tweaks** via `macos.sh`.
@@ -363,11 +363,11 @@ To prevent those values from being tracked by Git and leaked into a public repos
 
 1. Copy the example template from this repository to the target location and remove the `.example` suffix:
    ```fish
-   cp ~/dotfiles/local/config.local.fish.example ~/.config/fish/config.local.fish
+   cp ~/dotfiles/local/config.local.fish.example ~/.fish.local.fish
    ```
 2. Put all your private settings into the newly created file. The model name, API key, and command below are placeholders only, so replace them with your own values and never commit real credentials back to the repository:
    ```fish
-   # ~/.config/fish/config.local.fish
+   # ~/.fish.local.fish
    # set -gx AICHAT_MODEL "gemini:gemini-3-flash-preview"
    # set -gx OPENAI_API_KEY "sk-xxxxxxxxx"
    # abbr -a -g work-vpn "sudo launchctl restart com.corp.vpn"
@@ -377,11 +377,11 @@ To prevent those values from being tracked by Git and leaked into a public repos
 
 1. Copy the example template from this repository to the target location and remove the `.example` suffix:
    ```bash
-   cp ~/dotfiles/local/ghostty.config.local.example ~/.config/ghostty/config.local
+   cp ~/dotfiles/local/ghostty.config.local.example ~/.ghostty.local
    ```
 2. Add your private or machine-specific config in the new file, such as keybindings or fonts:
    ```ini
-   # ~/.config/ghostty/config.local
+   # ~/.ghostty.local
    # Example: press ctrl+backspace to auto-type placeholder text and hit Enter
    keybind = ctrl+backspace=text:<your-secret>\r
    ```
@@ -402,7 +402,7 @@ This project's Git configuration adopts a "base + local override" pattern, suppo
    ```
 
 > [!NOTE]
-> `config.local.fish` and all `*.local` files are ignored by `.gitignore`. You can safely use them locally without worrying about accidentally `git push`-ing them after Stow symlinks them into place.
+> Fish and Ghostty private local files now live directly under `$HOME` (`~/.fish.local.fish`, `~/.ghostty.local`), physically outside the dotfiles repository, so Stow no longer writes them back into the repo worktree.
 
 ### 4.4 Configure Fisher
 
@@ -511,14 +511,14 @@ This project already includes an AIChat config package. After Stow, it maps to `
 **2. Inject model and secret locally through a private file (recommended)**
 
 ```fish
-# ~/.config/fish/config.local.fish
+# ~/.fish.local.fish
 # Provider prefix examples: claude: / qianwen: / zhipuai: / moonshot: / openai: / gemini: / local-llm:
 set -gx AICHAT_MODEL "gemini:gemini-3-flash-preview"
 set -gx GEMINI_API_KEY "YOUR_API_KEY_HERE"
 ```
 
 > [!IMPORTANT]
-> Do not write any API key directly into `aichat/dot-config/aichat/config.yaml` in the repository. Secrets belong only in `~/.config/fish/config.local.fish`.
+> Do not write any API key directly into `aichat/dot-config/aichat/config.yaml` in the repository. Secrets belong only in `~/.fish.local.fish`.
 
 **3. Use Ollama as the local backend (optional)**
 
@@ -538,7 +538,7 @@ ollama pull llama3.2
 ```
 
 ```fish
-# ~/.config/fish/config.local.fish
+# ~/.fish.local.fish
 # Local Ollama does not require an API key
 set -gx AICHAT_MODEL "local-llm:llama3.2"
 ```
@@ -1140,7 +1140,7 @@ If you encounter issues during installation or usage, please first refer to the 
 
 **Q: When using `aichat` shortcuts or commands, it prompts that the model cannot be found or network timeout?**
 > **A:** Please check two things:
-> 1. Ensure you have correctly configured the model name (e.g., `AICHAT_MODEL`) and the corresponding API Key in `~/.config/fish/config.local.fish`. After configuring, be sure to run `exec fish` to reload the environment or restart the terminal.
+> 1. Ensure you have correctly configured the model name (e.g., `AICHAT_MODEL`) and the corresponding API Key in `~/.fish.local.fish`. After configuring, be sure to run `exec fish` to reload the environment or restart the terminal.
 > 2. If you are using local Ollama, make sure `ollama serve` is running, the target model has been downloaded with `ollama pull <model>`, and the model name is included in `local-llm.models` inside `~/.config/aichat/config.yaml`.
 > 3. If the API of the model you are using is access-restricted (e.g., accessing OpenAI from certain regions), you may need to enable a global proxy in your terminal. This configuration has built-in `proxy` and `unproxy` shortcuts to help you toggle the terminal proxy with one click.
 

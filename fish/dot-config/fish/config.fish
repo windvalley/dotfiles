@@ -5,7 +5,7 @@
 # - ⚡️ 按需加载 (Autoload): 任何自定义功能函数必须独立存放在 `functions/` 目录下 (如 d.fish, nh.fish)。
 #             ✅ 优势 1：大幅提升终端每次新建 Tab 的启动速度。
 #             ✅ 优势 2：修改函数内容后开箱即用，无需执行 source 命令重载配置。
-# - 🔒 私密环境: 不想提交进 Git 的私有凭证或机器特定变量放在本地 `config.local.fish`。
+# - 🔒 私密环境: 不想提交进 Git 的私有凭证或机器特定变量放在本机 `~/.fish.local.fish`。
 # - 🧩 第三方隔离: Fisher 第三方插件被硬路由到 `~/.local/share/fisher`，确保配置目录干爽纯洁。
 # - 🎨 主题隔离: Fish 自身保持默认 ANSI 配色，无需配置 theme。颜色渲染统一交由外层终端
 #             (Ghostty) 管理全局调色板。确保全量工具的主题体验绝对一致。
@@ -192,8 +192,8 @@ end
 # 加载本地忽略的私有配置 (API Keys, 机器特定别名等)
 #
 # 任何不应被提交到 GitHub 的变量请写在下面这个文件中:
-# touch ~/.config/fish/config.local.fish
+# touch ~/.fish.local.fish
 # ============================================================
-if test -f ~/.config/fish/config.local.fish
-    source ~/.config/fish/config.local.fish
+if test -f ~/.fish.local.fish
+    source ~/.fish.local.fish
 end

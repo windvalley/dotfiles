@@ -6,7 +6,7 @@
 # 此文件已被 .gitignore 忽略，非常安全。
 #
 # 使用方法：
-# cp config.local.fish.example ~/.config/fish/config.local.fish
+# cp config.local.fish.example ~/.fish.local.fish
 # 执行 exec fish 即可生效。
 # ============================================================
 
