@@ -88,6 +88,52 @@ YAML.load_file(ARGV[0])
     return 0
 }
 
+strip_ansi_escapes() {
+    perl -pe 's/\e\[[0-9;]*[[:alpha:]]//g'
+}
+
+helix_health_has_external_tools() {
+    awk '
+        /Configured language servers:/ { section="lsp"; next }
+        /Configured formatter:/ { section="formatter"; next }
+        /Configured debug adapter:/ { section=""; next }
+        /Tree-sitter parser:/ { exit }
+        section == "" { next }
+        {
+            line = $0
+            sub(/^[[:space:]]*/, "", line)
+            if (line != "" && line != "None") {
+                found = 1
+                exit
+            }
+        }
+        END { exit(found ? 0 : 1) }
+    '
+}
+
+helix_health_missing_dependencies() {
+    awk '
+        /Configured language servers:/ { section="LSP"; next }
+        /Configured formatter:/ { section="Formatter"; next }
+        /Configured debug adapter:/ { section=""; next }
+        /Tree-sitter parser:/ { exit }
+        section == "" { next }
+        {
+            line = $0
+            sub(/^[[:space:]]*/, "", line)
+            if (line ~ /^✘[[:space:]]+/) {
+                sub(/^✘[[:space:]]+/, "", line)
+                issues = issues ? issues "; " section ": " line : section ": " line
+            }
+        }
+        END {
+            if (issues != "") {
+                print issues
+            }
+        }
+    '
+}
+
 validate_ghostty_file_static() {
     local ghostty_file="$1"
 
@@ -255,11 +301,32 @@ validate_git() {
 # 验证 Zellij 配置
 validate_zellij() {
     info "验证 Zellij 配置..."
-    local zellij_config="$DOTFILES_DIR/zellij/dot-config/zellij/config.kdl"
+    local zellij_config_dir="$DOTFILES_DIR/zellij/dot-config/zellij"
+    local zellij_config="$zellij_config_dir/config.kdl"
+    local layout_dir="$zellij_config_dir/layouts"
+    local layout_file=""
+    local layout_name=""
+    local layout_files=()
+    local layout_failures=0
+    local parse_output=""
 
     if [ ! -f "$zellij_config" ]; then
         error "Zellij 配置文件不存在: $zellij_config"
         return 1
+    fi
+
+    if [ ! -d "$layout_dir" ]; then
+        record_error "Zellij 布局目录不存在: $layout_dir"
+        return 0
+    fi
+
+    shopt -s nullglob
+    layout_files=("$layout_dir"/*.kdl)
+    shopt -u nullglob
+
+    if [ "${#layout_files[@]}" -eq 0 ]; then
+        record_error "Zellij 布局目录为空: $layout_dir"
+        return 0
     fi
 
     # Zellij 配置语义依赖其自身 KDL 解析器；缺失 CLI 时不能把“未验证”当成“通过”。
@@ -268,13 +335,30 @@ validate_zellij() {
         return 0
     fi
 
-    local parse_output
     if parse_output=$(zellij --config "$zellij_config" setup --check 2>&1 >/dev/null); then
         success "Zellij 配置语法正确 (KDL)"
     else
         error "Zellij 配置 KDL 语法错误:"
         echo "$parse_output" | sed 's/^/    /'
         ERRORS=$((ERRORS + 1))
+    fi
+
+    for layout_file in "${layout_files[@]}"; do
+        layout_name="$(basename "$layout_file" .kdl)"
+
+        if parse_output=$(zellij --config-dir "$zellij_config_dir" setup --dump-layout "$layout_name" 2>&1 >/dev/null); then
+            success "Zellij 布局语法正确: $layout_name"
+        else
+            error "Zellij 布局语法错误: $layout_file"
+            if [ -n "$parse_output" ]; then
+                echo "$parse_output" | sed 's/^/    /'
+            fi
+            layout_failures=$((layout_failures + 1))
+        fi
+    done
+
+    if [ "$layout_failures" -gt 0 ]; then
+        ERRORS=$((ERRORS + layout_failures))
     fi
 }
 
@@ -283,6 +367,14 @@ validate_helix() {
     info "验证 Helix 配置..."
     local helix_config="$DOTFILES_DIR/helix/dot-config/helix/config.toml"
     local helix_languages="$DOTFILES_DIR/helix/dot-config/helix/languages.toml"
+    local clipboard_output=""
+    local clipboard_provider=""
+    local health_output=""
+    local language_name=""
+    local missing_dependencies=""
+    local healthy_language_count=0
+    local checked_language_count=0
+    local missing_language_count=0
     
     # 检查配置文件是否存在
     if [ ! -f "$helix_config" ]; then
@@ -310,9 +402,50 @@ validate_helix() {
     
     # 如果 helix 已安装，运行健康检查
     if command -v hx &>/dev/null; then
-        info "Helix 健康状态:"
-        warn "如果输出中出现 'Runtime directory does not exist'，通常只是可选用户 runtime 目录缺失，不影响当前配置通过验证。"
-        hx --health 2>/dev/null | head -20 || true
+        info "Helix 健康摘要:"
+
+        if clipboard_output=$(hx -c "$helix_config" --health clipboard 2>/dev/null | strip_ansi_escapes); then
+            clipboard_provider="$(printf '%s\n' "$clipboard_output" | sed -n '1p')"
+            if [ -n "$clipboard_provider" ]; then
+                success "$clipboard_provider"
+            fi
+        else
+            warn "无法获取 Helix 剪贴板状态"
+        fi
+
+        if [ -f "$helix_languages" ]; then
+            while IFS= read -r language_name; do
+                [ -n "$language_name" ] || continue
+
+                if ! health_output=$(hx -c "$helix_config" --health "$language_name" 2>/dev/null | strip_ansi_escapes); then
+                    warn "无法获取 Helix 语言健康状态: $language_name"
+                    continue
+                fi
+
+                if ! printf '%s\n' "$health_output" | helix_health_has_external_tools; then
+                    continue
+                fi
+
+                checked_language_count=$((checked_language_count + 1))
+                missing_dependencies="$(printf '%s\n' "$health_output" | helix_health_missing_dependencies)"
+
+                if [ -n "$missing_dependencies" ]; then
+                    warn "Helix 外部工具缺失 ($language_name): $missing_dependencies"
+                    missing_language_count=$((missing_language_count + 1))
+                else
+                    healthy_language_count=$((healthy_language_count + 1))
+                fi
+            done < <(awk -F'"' '/^[[:space:]]*name[[:space:]]*=[[:space:]]*"/ { print $2 }' "$helix_languages")
+        fi
+
+        if [ "$checked_language_count" -eq 0 ]; then
+            warn "未发现需要外部工具的 Helix 自定义语言"
+        elif [ "$missing_language_count" -eq 0 ]; then
+            success "Helix 外部工具检查通过: $checked_language_count 个自定义语言"
+        else
+            warn "Helix 外部工具部分缺失: $healthy_language_count/$checked_language_count 个自定义语言可用"
+            info "如需单语言详情，可执行: hx -c $helix_config --health <language>"
+        fi
     else
         warn "Helix 未安装，跳过健康检查"
     fi
