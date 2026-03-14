@@ -1,9 +1,4 @@
 function ai_diag_last -d "将上一条失败命令及其输出交给 AI 诊断"
-    if not command -sq aichat
-        echo "❌ 未找到 aichat，请先安装并配置"
-        return 127
-    end
-
     if not set -q __AI_LAST_CMDLINE; or not set -q __AI_LAST_STATUS
         echo "⚠️ 未捕获到上一条命令上下文（需要交互式 fish 会话）。"
         return 1
@@ -95,11 +90,16 @@ function ai_diag_last -d "将上一条失败命令及其输出交给 AI 诊断"
         printf '\n⌛ Diagnosing...\n' >&2
     end
 
-    # aichat needs an input message to avoid entering REPL
-    set -l result (aichat --no-stream --prompt "$prompt" -- "$cmd" | string collect)
+    set -l result (_ai_complete --prompt "$prompt" --input "$cmd" | string collect)
+    set -l ai_exit_status $pipestatus[1]
+    set result (_ai_strip_think "$result" | string collect)
 
     if test "$show_status_line" = true
         printf '\033[1A\033[2K\r' >&2
+    end
+
+    if test $ai_exit_status -ne 0
+        return 1
     end
 
     if status --is-interactive; and command -sq bat

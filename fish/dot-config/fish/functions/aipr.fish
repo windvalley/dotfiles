@@ -91,11 +91,6 @@ function aipr -d "根据分支变更自动生成 Pull Request 描述"
     echo -e "\n🚀 [\e[1maipr\e[0m] \e[36mAI-Powered PR Description Tool\e[0m"
     echo -e "   \e[90mWorkflow: Analyze Branch Diff -> AI Gen PR Description -> Copy / Create PR\e[0m\n"
 
-    if not command -sq aichat
-        echo "❌ 未找到 aichat，请先安装并配置"
-        return 127
-    end
-
     # 检查是否在 git 仓库中
     if not git rev-parse --is-inside-work-tree >/dev/null 2>&1
         echo "❌ 当前目录不是 Git 仓库"
@@ -247,9 +242,8 @@ $supplementary_info"
 $diff_content
 </diff>"
 
-        # 调用 aichat 生成内容
         set msg_tmpfile (mktemp)
-        aichat --no-stream "$prompt_text" >$msg_tmpfile
+        _ai_complete_to_file $msg_tmpfile --raw "$prompt_text"
         set -l ai_exit_status $status
 
         # 捕捉在 AI 生成过程中被 Ctrl+C 中断的情况或者命令执行失败
@@ -277,9 +271,17 @@ $diff_content
             return 1
         end
 
-        # 清理响应: 移除模型思考与外层 Markdown 块标记
-        sed -i '' -e '/^<think>/,/^<\/think>/d' $msg_tmpfile
+        # 统一清理模型思考块，兼容单行 <think>...</think> 输出
+        set -l cleaned_msg (_ai_strip_think (cat $msg_tmpfile | string collect) | string collect)
+        printf '%s' "$cleaned_msg" > $msg_tmpfile
         sed -i '' -e '/^```\(markdown\|md\|text\)/d' -e '/^```$/d' $msg_tmpfile
+
+        if not test -s $msg_tmpfile
+            rm -f $msg_tmpfile
+            echo ""
+            echo "❌ AI 生成失败 (清理思考输出后内容为空)"
+            return 1
+        end
         end
 
         echo ""

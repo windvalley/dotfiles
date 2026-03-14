@@ -1,8 +1,4 @@
 function _aichat_fish_candidates -d "Generate candidate shell commands for _aichat_fish"
-    if not command -sq aichat
-        return 127
-    end
-
     set -l input ""
     if test (count $argv) -gt 0
         set input (string join " " -- $argv)
@@ -200,7 +196,11 @@ Format rules:
 - No numbering, no bullets, no explanations, no code fences'
     set -l base_prompt "$env$rules"
 
-    set -l raw (aichat --no-stream --prompt "$base_prompt" -- "$input")
+    set -l raw (_ai_complete --prompt "$base_prompt" --input "$input" | string collect)
+    if test $pipestatus[1] -ne 0
+        return 1
+    end
+    set raw (_ai_strip_think "$raw" | string collect)
 
     # Robust split: even if the model prints everything on one line,
     # insert a newline before each "CMD:" occurrence.
@@ -253,7 +253,11 @@ Format rules:
     if test (count $out) -eq 0; and test (count $errors) -gt 0
         set -l errors_text (string join "\n" -- $errors)
         set -l fix_prompt "You fix shell commands to be valid in fish shell and compatible with macOS/BSD when OS is macOS (Darwin).\nReturn exactly 5 candidates, format: CMD:<command> per line.\nInput request: $input\nEnvironment: OS=$platform_desc, Shell=$shell_name\nPreviously invalid candidates (do not repeat as-is):\n$errors_text"
-        set raw (aichat --no-stream --prompt "$fix_prompt" -- "$input")
+        set raw (_ai_complete --prompt "$fix_prompt" --input "$input" | string collect)
+        if test $pipestatus[1] -ne 0
+            return 1
+        end
+        set raw (_ai_strip_think "$raw" | string collect)
         set raw (string replace -a 'CMD:' '\nCMD:' -- "$raw")
 
         set -l extracted2
@@ -313,12 +317,33 @@ Format rules:
         return 0
     end
 
-    # Final fallback: ask aichat for a single executable command
-    set -l generated (aichat --no-stream -e -- "$input")
+    # Final fallback: ask the current AI backend for a single executable command.
+    set -l single_cmd_rules 'You output ONLY one shell command compatible with fish shell.
+Constraints:
+- If OS is macOS (Darwin), prefer BSD options (avoid GNU-only long options).
+- Avoid bash-only syntax: export VAR=, source, $(...), [[ ]], function f(){}, process substitution.
+Format rules:
+- Return a single command only
+- No numbering, no bullets, no explanations, no code fences'
+    set -l single_cmd_prompt "$env$single_cmd_rules"
+    set -l generated (_ai_complete --prompt "$single_cmd_prompt" --input "$input" | string collect)
+    if test $pipestatus[1] -ne 0
+        return 1
+    end
+
+    set generated (_ai_strip_think "$generated" | string collect)
+    set generated (string trim -- "$generated")
+    set generated (string replace -r '^CMD:\s*' '' -- "$generated")
     set generated (_aichat_fish__sanitize "$generated")
-    if test -n "$generated"; and _aichat_fish__is_fish_parse_ok "$generated"
-        echo "$generated"
-        return 0
+    if test -n "$generated"
+        if not _aichat_fish__is_platform_incompatible "$generated"
+            if not _aichat_fish__is_obviously_bash "$generated"
+                if _aichat_fish__is_fish_parse_ok "$generated"
+                    echo "$generated"
+                    return 0
+                end
+            end
+        end
     end
 
     return 1

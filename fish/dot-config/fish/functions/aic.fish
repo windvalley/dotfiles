@@ -11,11 +11,6 @@ function aic -d "根据代码变更自动生成 Git Commit 信息"
     echo -e "\n🚀 [\e[1maic\e[0m] \e[36mAI-Powered Commit Tool\e[0m"
     echo -e "   \e[90mWorkflow: Analyze Staged Changes -> AI Gen Commit Message -> Commit\e[0m\n"
 
-    if not command -sq aichat
-        echo "❌ 未找到 aichat，请先安装并配置"
-        return 127
-    end
-    
     # 检查是否在 git 仓库中
     if not git rev-parse --is-inside-work-tree >/dev/null 2>&1
         echo "❌ 当前目录不是 Git 仓库"
@@ -85,9 +80,8 @@ $supplementary_info"
 $diff
 </diff>"
 
-        # 调用 aichat 生成内容
         set -l msg_tmpfile (mktemp)
-        aichat --no-stream "$prompt_text" > $msg_tmpfile
+        _ai_complete_to_file $msg_tmpfile --raw "$prompt_text"
         set -l ai_exit_status $status
         
         # 捕捉在 AI 生成过程中被 Ctrl+C 中断的情况或者命令执行失败
@@ -116,9 +110,17 @@ $diff
             return 1
         end
         
-        # 清理响应: 移除模型思考与 Markdown 块标记
-        sed -i '' -e '/^<think>/,/^<\/think>/d' $msg_tmpfile
+        # 统一清理模型思考块，兼容单行 <think>...</think> 输出
+        set -l cleaned_msg (_ai_strip_think (cat $msg_tmpfile | string collect) | string collect)
+        printf '%s' "$cleaned_msg" > $msg_tmpfile
         sed -i '' -e '/^```\(commit\|text\)/d' -e '/^```$/d' $msg_tmpfile
+
+        if not test -s $msg_tmpfile
+            rm -f $msg_tmpfile
+            echo ""
+            echo "❌ AI 生成失败 (清理思考输出后内容为空)"
+            return 1
+        end
         
         # 兜底防御：大模型有时仍会输出思考过程或废话。
         # 这里使用 awk 截取从标准的 Conventional Commit 起始的所有内容，抛弃前面的废话

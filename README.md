@@ -114,7 +114,12 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 
 ## 2. AI 能力
 
-本项目将 AI 大模型能力收敛到 **命令行编辑区**、**Git 工作流** 与 **日常效率工具**，形成统一入口和可复用的工具链（而不是零散 alias）。底座为 [AIChat](https://github.com/sigoden/aichat)，支持 OpenAI / Claude / Gemini / 通义千问 / 智谱 / Moonshot 等主流模型，也支持通过 Ollama 接入本地模型。
+本项目将 AI 大模型能力收敛到 **命令行编辑区**、**Git 工作流** 与 **日常效率工具**，形成统一入口和可复用的工具链（而不是零散 alias）。当前同时提供：
+
+- `q`：直接走 Ollama 原生 CLI 的本地模型入口，默认关闭 thinking 输出
+- 统一 AI 调度层：`Ctrl+y`、`?`、`??`、`aic`、`aipr`、`ait`、`t` 等工作流会按照 `~/.fish.local.fish` 中 `AI_CHAT_BACKENDS` 的顺序选择后端（例如 `q,aichat` 或 `aichat,q`）
+
+AIChat 仍然负责 provider 聚合，支持 OpenAI / Claude / Gemini / 通义千问 / 智谱 / Moonshot 等主流模型；如果你愿意，也可以把它配置为通过 Ollama 的 `local-llm:` provider 使用本地模型。
 
 **命令行智能体**：
 
@@ -122,8 +127,9 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 |------|------|------|
 | `Ctrl+y` | 命令解释 | 输入命令后按下，bat 分页展示解释（仅解释不执行） |
 | `# <描述>` + `Ctrl+y` | 命令生成 | 自然语言描述意图，生成多条候选命令，fzf 选择后写回命令行 |
-| `?` | 快速生成 | 将自然语言交给 `aichat -e` 直接生成可执行命令 |
-| `??` | 故障诊断 | 自动捕获上一条失败命令及终端输出，交给 AI 诊断并给出修复建议（依赖 Zellij dump-screen） |
+| `?` | 快速生成 | 将自然语言交给统一 AI 调度层生成一条可执行命令（默认 `q -> aichat`） |
+| `??` | 故障诊断 | 自动捕获上一条失败命令及终端输出，交给统一 AI 调度层诊断并给出修复建议（依赖 Zellij dump-screen） |
+| `q [prompt]` | 本地直连 | 直接通过 Ollama 调用本地模型；默认模型来自 `AI_LOCAL_MODEL`，thinking 默认遵循 `AI_LOCAL_THINK`（未设置时为 `false`） |
 
 **Git 工作流**：
 
@@ -140,7 +146,7 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 | `t <text>` | 智能翻译 | 自动识别：英文单词→词典释义（音标+中英解释）；中文短词→英文候选；段落→互译 |
 | `aip` | 指令库 | 交互式选择常用 AI 编程指挥语，支持 fzf 多选、按编号/关键词筛选，自动复制到剪贴板 |
 
-**配置**：在 `~/.fish.local.fish` 中设置模型与 API Key，详见 [4.8 配置 AIChat](#48-配置-aichat)。
+**配置**：在 `~/.fish.local.fish` 中设置 `AI_CHAT_BACKENDS`、`AI_LOCAL_MODEL`、`AI_LOCAL_THINK`、`AICHAT_MODEL` 及 API Key，详见 [4.8 配置 AIChat](#48-配置-aichat)。
 
 
 ## 3. 安装步骤
@@ -521,6 +527,15 @@ echo "*.log" >> ~/.config/git/ignore
 
 ```fish
 # ~/.fish.local.fish
+# 共享 AI 工作流默认优先顺序：本地 q -> aichat
+set -gx AI_CHAT_BACKENDS "q,aichat"
+
+# q 命令默认使用的本地 Ollama 模型
+set -gx AI_LOCAL_MODEL "qwen3.5:35b"
+
+# 本地 q / 本地优先工作流默认关闭 thinking；支持 false / true / low / medium / high
+set -gx AI_LOCAL_THINK "false"
+
 # provider 前缀示例：claude: / qianwen: / zhipuai: / moonshot: / openai: / gemini: / local-llm:
 set -gx AICHAT_MODEL "gemini:gemini-3-flash-preview"
 set -gx GEMINI_API_KEY "YOUR_API_KEY_HERE"
@@ -531,7 +546,11 @@ set -gx GEMINI_API_KEY "YOUR_API_KEY_HERE"
 
 **3. 使用 Ollama 作为本地后端（可选）**
 
-仓库默认把 Ollama 映射为 `local-llm:` provider，仍然统一走 `aichat` 入口，因此 `?`、`??`、`aic`、`aipr`、`ait` 等工作流无需额外改动。
+仓库现在同时提供 `q` 公共命令和统一 AI 调度层：
+
+- `q` 直接走 Ollama 原生 CLI，适合你明确要本地模型且希望稳定关闭 thinking 的场景
+- `Ctrl+y`、`?`、`??`、`aic`、`aipr`、`ait`、`t` 等共享工作流默认按 `AI_CHAT_BACKENDS` 指定的顺序尝试（默认推荐 `q,aichat`）
+- 如果你希望 `aichat` 本身也使用某个本地 Ollama 模型，可以把 `AICHAT_MODEL` 设为 `local-llm:<model>`
 
 ```bash
 # 交互安装时脚本会询问是否启用 Ollama；
@@ -549,10 +568,14 @@ ollama pull llama3.2
 ```fish
 # ~/.fish.local.fish
 # 本地 Ollama 无需 API Key
+set -gx AI_CHAT_BACKENDS "q,aichat"
+set -gx AI_LOCAL_MODEL "llama3.2"
+
+# 可选：让 aichat 本身也使用某个本地 Ollama 模型
 set -gx AICHAT_MODEL "local-llm:llama3.2"
 ```
 
-如果你拉取的是其他模型，请先执行 `ollama list` 查看准确名称；若模型名不在仓库内置的 `local-llm.models` 列表中，请按相同格式追加到 `~/.config/aichat/config.yaml`。
+如果你拉取的是其他模型，请先执行 `ollama list` 查看准确名称。只有当你希望 `aichat` 也能识别并使用该本地模型时，才需要确认模型名是否包含在 `~/.config/aichat/config.yaml` 的 `local-llm.models` 列表中；若不在，请按相同格式追加。
 
 **4. 验证配置是否生效**
 
@@ -563,6 +586,11 @@ exec fish
 # 检查 AIChat 目录与数据隔离路径（由 fish/config.fish 统一设置）
 aichat --info
 
+# 如果启用了本地 Ollama，再检查 q 命令解析到的模型并直接调用
+# 如果你只使用云端 aichat，可以跳过这一步
+q --list-models
+q hi
+
 # 手动刷新官方模型索引
 aichat --sync-models
 
@@ -572,7 +600,7 @@ aichat --list-models
 # 如果使用本地 Ollama，顺手确认本地服务与模型状态
 ollama list
 
-# 检查是否可用
+# 检查 aichat 本身是否可用
 aichat hi
 ```
 
@@ -689,10 +717,11 @@ aichat hi
 | `copy [file]` | 将文件内容或前一个命令的标准输出(`\| copy`)极速复制到 Mac 剪贴板 |
 | `f [query]` | 搜索文件并使用 Helix 打开。若关键字匹配唯一结果则直接打开 |
 | `t <text>` | 智能翻译/释义：中文转英文；英文单词返回美式音标与中英释义；英文短文翻译成中文 |
-| `aic` | 根据代码变更自动生成 Git 提交信息。底座为 `aichat`，支持重写/微调 |
+| `aic` | 根据代码变更自动生成 Git 提交信息。底座为统一 AI 调度层，支持重写/微调 |
 | `aipr` | 根据分支变更自动生成 Pull Request 描述。使用大模型分析 commit 和 diff |
 | `ait` | 自动根据 Git 变更历史生成 Changelog 并提交打 Tag |
 | `aip` | AI 即插即用指令库。交互式选择常用开发指挥语并自动复制到剪贴板 |
+| `q [prompt]` | 直接通过 Ollama 运行 `AI_LOCAL_MODEL` 指定的本地模型；thinking 默认遵循 `AI_LOCAL_THINK`（未设置时为 `false`）；不带参数时进入交互会话 |
 | `b [query]` | 搜索文件并使用 bat 查看。若关键字匹配唯一结果则直接打开 |
 | `p [query]` | 基于 fzf 预览和搜索 macOS 剪贴板历史，支持终端原生渲染图片与富文本。若关键字匹配唯一结果则直接拷贝 (依赖 Maccy 与 chafa) |
 | `s [query]` | 从 `~/.ssh/config` 中解析 Host 列表，通过 fzf 交互选择并建立 SSH 连接 |
@@ -720,7 +749,7 @@ aichat hi
 | `vi` / `vim` / `h` | `hx` | 统一唤起 Helix 现代文本编辑器 |
 | `r` | `exec fish` | 重新加载当前 Fish 会话，快速使配置变更生效 |
 | `cs`... | `colorscheme`... | 详情见自定义命令 `colorscheme`/`font-size`/`opacity`/`audio-volume` |
-| `?` / `??` | `aichat -e` / `ai_diag_last` | 自然语言快速转命令 / 诊断上一条失败命令（依赖 Zellij dump-screen 捕获输出） |
+| `?` / `??` | `__ai_cmd` / `ai_diag_last` | 自然语言快速转命令（默认 `q -> aichat`） / 诊断上一条失败命令（依赖 Zellij dump-screen 捕获输出） |
 | `g` | `git` | Git 基础命令调用入口 |
 | `lg` | `lazygit` | 开启 `lazygit` 终端交互式管理器 |
 | `ga` / `gs` | `git add` / `git_status_stats` | 添加文件到暂存区 / 查看状态并附带暂存区与未暂存区增删统计 |

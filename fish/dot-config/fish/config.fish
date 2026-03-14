@@ -162,7 +162,7 @@ if status is-interactive
 
     # AI 相关命令
     abbr -a -g -- '??' ai_diag_last # AI: 诊断上一条失败命令
-    abbr -a -g -- '?' 'aichat -e' # AI: 将自然语言快速转为可执行命令
+    abbr -a -g -- '?' __ai_cmd # AI: 通过统一 AI 调度层将自然语言快速转为可执行命令
 
     # 目录跳转
     abbr -a -g ... ../.. # 极速向父级两层目录跳转

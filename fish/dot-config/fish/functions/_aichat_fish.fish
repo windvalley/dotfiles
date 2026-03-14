@@ -1,9 +1,4 @@
-function _aichat_fish -d "通过 aichat 基于当前命令行生成命令"
-    if not command -sq aichat
-        echo "❌ 未找到 aichat，请先安装并配置"
-        return 127
-    end
-
+function _aichat_fish -d "通过当前可用 AI 后端基于命令行解释或生成命令"
     # 优先使用参数（方便手动调用/测试）；否则读取当前命令行缓冲区
     set -l input ""
     if test (count $argv) -gt 0
@@ -74,11 +69,20 @@ function _aichat_fish -d "通过 aichat 基于当前命令行生成命令"
             printf '\n⌛ Explaining...\n' >&2
         end
 
-        set -l explanation_body (aichat --no-stream --prompt "$explain_prompt" -- "$input" | string collect)
+        set -l explanation_body (_ai_complete --prompt "$explain_prompt" --input "$input" | string collect)
+        set -l ai_exit_status $pipestatus[1]
+        set explanation_body (_ai_strip_think "$explanation_body" | string collect)
 
         if test "$show_status_line" = true
             # 回到状态行并清掉，让解释内容的第一行就是“被解释的命令行”
             printf '\033[1A\033[2K\r' >&2
+        end
+
+        if test $ai_exit_status -ne 0
+            if status --is-interactive
+                commandline -f repaint
+            end
+            return 1
         end
 
         # 第一行必须是被解释的命令行
@@ -132,5 +136,5 @@ function _aichat_fish -d "通过 aichat 基于当前命令行生成命令"
         return
     end
 
-    aichat --no-stream -e -- "$input"
+    return 1
 end

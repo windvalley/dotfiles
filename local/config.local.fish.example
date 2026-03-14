@@ -3,25 +3,33 @@
 #
 # 任何包含密码、API密钥、或仅存在于当前电脑上的宿主网络别名，
 # 都不应该写进公开的 config.fish 中，而应该放在这里。
-# 此文件已被 .gitignore 忽略，非常安全。
 #
 # 使用方法：
 # cp config.local.fish.example ~/.fish.local.fish
 # 执行 exec fish 即可生效。
 # ============================================================
 
-# --- 敏感环境变量 ---
-# 例如：设置 aichat (sigoden/aichat) 使用的全局 Model 及 API 密钥
-# 参阅：https://github.com/sigoden/aichat/wiki/Environment-Variables
-# ChatAI Model:
-# provider 前缀提示：OpenAI 用 openai:，Gemini 用 gemini:，Anthropic 用 claude:，Qwen 用 qianwen:，智谱用 zhipuai:，MiniMax 用 minimax:，Moonshot 用 moonshot:，本地 Ollama（本仓库默认别名）用 local-llm:
+# --- AI 路由顺序 ---
+# AI相关工作流使用的默认后端顺序：本地 q 优先，失败后回退到 aichat
+# set -gx AI_CHAT_BACKENDS "q,aichat"
+#
+# 如果你仍希望优先走 aichat，可切换为：
+# set -gx AI_CHAT_BACKENDS "aichat,q"
+
+# --- q命令：使用 Ollama 部署的本地模型 ---
+# q 命令默认使用的本地 Ollama 模型, 请以 `ollama list` 的 NAME 列为准
+# set -gx AI_LOCAL_MODEL "qwen3.5:35b"
+#
+# 本地 q 命令默认关闭 thinking（速度快）；支持 false / true / low / medium / high
+# set -gx AI_LOCAL_THINK "false"
+
+# --- aichat：云端模型 & 本地模型 ---
+# provider 前缀提示：OpenAI 用 openai:，Gemini 用 gemini:，Anthropic 用 claude:，
+#   Qwen 用 qianwen:，智谱用 zhipuai:，MiniMax 用 minimax:，Moonshot 用 moonshot:，
+#   本地 Ollama 用 local-llm:
 # set -gx AICHAT_MODEL "gemini:gemini-3-flash-preview"
-# 如果使用本地 Ollama（无需 API Key）：
-# 1) 安装并启动 Ollama 服务（交互安装时可由 ./install.sh 按提示启用；或手动执行 brew install ollama && brew services start ollama）
-# 2) 拉取一个本地模型（ollama pull llama3.2）
-# 3) 若使用自定义模型名，请以 `ollama list` 的 NAME 列为准，并同步更新 ~/.config/aichat/config.yaml 中 local-llm.models 列表
-# set -gx AICHAT_MODEL "local-llm:llama3.2"
-# ChatAI APIKEY:
+
+# --- aichat: 云端 API Key (如果使用本地 Ollama 无需 API Key ---
 # set -gx OPENAI_API_KEY "sk-xxxxxxxxx"
 # set -gx GEMINI_API_KEY "AIzaSy..."
 # set -gx ANTHROPIC_API_KEY "sk-ant-..."
@@ -30,15 +38,7 @@
 # set -gx QIANWEN_API_KEY "sk-xxxxxxxx"
 # set -gx MOONSHOT_API_KEY "sk-xxxxxxxx"
 
+# --- github token ---
 # 强烈建议配置，用于提升 mise/Homebrew 等工具调用 GitHub API 的频率限制
-# 同时可作为 aichat 的 GitHub Models API 密钥
 # 获取方式：https://github.com/settings/tokens (申请 Classic Token，无需勾选任何权限即可)
 # set -gx GITHUB_TOKEN "ghp_xxxxxxxx"
-
-# --- 机器特定别名 (Aliases) ---
-# 例如：某些只存在于这台 Mac 上的启动守护进程命令 / 脚本快捷方式
-# abbr -a -g restart-work-vpn "sudo launchctl restart com.corp.vpn"
-
-# --- 本机特有路径注入 ---
-# 例如：公司内网 SDK 或手动解压的第三方工具，无法通过 mise/brew 管理的私有二进制
-# test -d "/opt/company-sdk/bin"; and fish_add_path --path "/opt/company-sdk/bin"

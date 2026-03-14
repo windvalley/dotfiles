@@ -11,11 +11,6 @@ function ait -d "自动更新 Changelog 并提交打 Tag 发版 (AI Release)"
     echo -e "\n🚀 [\e[1mait\e[0m] \e[36mAI-Powered Release Tool\e[0m"
     echo -e "   \e[90mWorkflow: Analyze Commits -> AI Gen Changelog -> Commit CHANGELOG.md -> Tag\e[0m\n"
 
-    if not command -sq aichat
-        echo "❌ 未找到 aichat，请先安装并配置"
-        return 127
-    end
-
     # 1. 环境自检
     if not git rev-parse --is-inside-work-tree >/dev/null 2>&1
         echo "❌ 当前目录不是 Git 仓库"
@@ -110,7 +105,7 @@ $commit_logs
 $supplementary_info"
         end
 
-        set -l ai_output (aichat --no-stream "$prompt" | string collect)
+        set -l ai_output (_ai_complete --raw "$prompt" | string collect)
         set -l ai_exit_status $pipestatus[1]
         if test $ai_exit_status -ne 0
             echo ""
@@ -118,8 +113,8 @@ $supplementary_info"
             return 1
         end
 
-        # 清理模型思考块（某些模型会输出 <think>...</think>）
-        set ai_output (string replace -ar '(?s)<think>.*?</think>\s*' '' -- "$ai_output")
+        # 统一清理模型思考块，兼容单行 <think>...</think> 输出
+        set ai_output (_ai_strip_think "$ai_output" | string collect)
 
         # 拆分版本号和内容
         set -l split_token "---VERSION_SPLIT---"

@@ -113,14 +113,22 @@ This repository contains the following config packages and core files:
 
 This project consolidates AI large-model capabilities into the **command-line editing area**, **Git workflow**, and **daily productivity tools**, forming a unified entry point and reusable toolchain rather than scattered aliases. The foundation is [AIChat](https://github.com/sigoden/aichat), supporting mainstream models such as OpenAI, Claude, Gemini, Tongyi Qianwen, Zhipu, and Moonshot, and also local models through Ollama.
 
+This repository now exposes two AI layers:
+
+- `q`: a direct local-model entrypoint built on the native Ollama CLI, with thinking disabled by default
+- A shared AI routing layer: workflows such as `Ctrl+y`, `?`, `??`, `aic`, `aipr`, `ait`, and `t` follow the backend order declared by `AI_CHAT_BACKENDS` in `~/.fish.local.fish` (for example `q,aichat` or `aichat,q`)
+
+AIChat remains the provider aggregator for OpenAI / Claude / Gemini / Qwen / Zhipu / Moonshot; if you want, you can also point it at a local model through Ollama's `local-llm:` provider.
+
 **Command-line agent:**
 
 | Entry | Function | Description |
 |------|------|------|
 | `Ctrl+y` | Command explanation | Press after typing a command; explanation is shown through bat pagination and is never executed |
 | `# <description>` + `Ctrl+y` | Command generation | Describe intent in natural language, generate multiple candidate commands, pick one with fzf, and write it back to the command line |
-| `?` | Quick generation | Send natural language directly to `aichat -e` to generate an executable command |
-| `??` | Troubleshooting | Automatically captures the last failed command plus terminal output, sends them to AI for diagnosis, and returns repair suggestions (depends on Zellij dump-screen) |
+| `?` | Quick generation | Send natural language to the shared AI router and generate one executable command (`q -> aichat` by default) |
+| `??` | Troubleshooting | Automatically captures the last failed command plus terminal output, sends them to the shared AI router for diagnosis, and returns repair suggestions (depends on Zellij dump-screen) |
+| `q [prompt]` | Local direct mode | Call a local Ollama model directly; the default model comes from `AI_LOCAL_MODEL`, and thinking follows `AI_LOCAL_THINK` (defaults to `false` when unset) |
 
 **Git workflow:**
 
@@ -137,7 +145,7 @@ This project consolidates AI large-model capabilities into the **command-line ed
 | `t <text>` | Smart translation | Auto-detects input type: English word → dictionary definition (phonetics + bilingual explanation); Chinese phrase → English candidates; paragraph → two-way translation |
 | `aip` | Prompt library | Interactively selects commonly used AI programming prompts, supports multi-select with fzf plus filtering by number/keyword, and copies the result to the clipboard automatically |
 
-**Configuration**: Set your model and API key in `~/.fish.local.fish`. See [4.8 Configure AIChat](#48-configure-aichat).
+**Configuration**: Set `AI_CHAT_BACKENDS`, `AI_LOCAL_MODEL`, `AI_LOCAL_THINK`, `AICHAT_MODEL`, and API keys in `~/.fish.local.fish`. See [4.8 Configure AIChat](#48-configure-aichat).
 
 ## 3. Installation
 
@@ -520,6 +528,15 @@ This project already includes an AIChat config package. After Stow, it maps to `
 
 ```fish
 # ~/.fish.local.fish
+# Shared AI workflow priority: local q first, then aichat fallback
+set -gx AI_CHAT_BACKENDS "q,aichat"
+
+# Default Ollama model used by q
+set -gx AI_LOCAL_MODEL "qwen3.5:35b"
+
+# Thinking mode for q / local-first workflows: false / true / low / medium / high
+set -gx AI_LOCAL_THINK "false"
+
 # Provider prefix examples: claude: / qianwen: / zhipuai: / moonshot: / openai: / gemini: / local-llm:
 set -gx AICHAT_MODEL "gemini:gemini-3-flash-preview"
 set -gx GEMINI_API_KEY "YOUR_API_KEY_HERE"
@@ -530,7 +547,11 @@ set -gx GEMINI_API_KEY "YOUR_API_KEY_HERE"
 
 **3. Use Ollama as the local backend (optional)**
 
-This repository exposes Ollama as the `local-llm:` provider while still routing everything through `aichat`, so workflows such as `?`, `??`, `aic`, `aipr`, and `ait` do not need a separate command path.
+This repository now exposes both the public `q` command and a shared AI routing layer:
+
+- `q` talks to the native Ollama CLI directly, which is the most reliable path when you explicitly want a local model with thinking disabled
+- Shared workflows such as `Ctrl+y`, `?`, `??`, `aic`, `aipr`, `ait`, and `t` follow the order declared in `AI_CHAT_BACKENDS` (recommended default: `q,aichat`)
+- If you want `aichat` itself to use a local Ollama model as well, set `AICHAT_MODEL` to `local-llm:<model>`
 
 ```bash
 # In interactive installs the script asks whether to enable Ollama;
@@ -548,10 +569,14 @@ ollama pull llama3.2
 ```fish
 # ~/.fish.local.fish
 # Local Ollama does not require an API key
+set -gx AI_CHAT_BACKENDS "q,aichat"
+set -gx AI_LOCAL_MODEL "llama3.2"
+
+# Optional: point aichat itself at a local Ollama model
 set -gx AICHAT_MODEL "local-llm:llama3.2"
 ```
 
-If you pull a different model, run `ollama list` first to get the exact name. If that model is not included in the repository's built-in `local-llm.models` list, append it to `~/.config/aichat/config.yaml` using the same format.
+If you pull a different model, run `ollama list` first to get the exact name. You only need to update the built-in `local-llm.models` list inside `~/.config/aichat/config.yaml` when you also want `aichat` itself to recognize and use that local model.
 
 **4. Verify that the configuration is active**
 
@@ -563,6 +588,11 @@ exec fish
 # (set centrally by fish/config.fish)
 aichat --info
 
+# If you enabled local Ollama, verify the local q command and resolved model
+# If you only use cloud aichat, you can skip this step
+q --list-models
+q hi
+
 # Refresh the official model catalog manually
 aichat --sync-models
 
@@ -572,7 +602,7 @@ aichat --list-models
 # If you use local Ollama, also verify the local service and pulled models
 ollama list
 
-# Check whether it works
+# Check whether aichat itself works
 aichat hi
 ```
 
@@ -689,10 +719,11 @@ aichat hi
 | `copy [file]` | Copy a file's contents or the previous command's stdout (`\| copy`) to the macOS clipboard instantly |
 | `f [query]` | Search for a file and open it with Helix. Opens directly if the query matches a single result |
 | `t <text>` | Smart translation / explanation: Chinese to English; English words return US phonetics plus bilingual definitions; English passages are translated into Chinese |
-| `aic` | Auto-generate Git commit messages from code changes. Built on `aichat`, with rewrite/refine support |
+| `aic` | Auto-generate Git commit messages from code changes. Built on the shared AI router, with rewrite/refine support |
 | `aipr` | Auto-generate Pull Request descriptions from branch changes. Uses a large model to analyze commits and diff |
 | `ait` | Auto-generate a changelog from Git history and create a tag |
 | `aip` | Plug-and-play AI prompt library. Interactively pick common development prompts and copy them to the clipboard automatically |
+| `q [prompt]` | Run the local model declared by `AI_LOCAL_MODEL` directly through Ollama; thinking follows `AI_LOCAL_THINK` (defaults to `false` when unset); without arguments it starts an interactive session |
 | `b [query]` | Search for a file and preview it with bat. Opens directly if the query matches a single result |
 | `p [query]` | Preview and search macOS clipboard history via fzf, with native terminal image and text rendering. Auto-copies if the query matches a single result (depends on Maccy and chafa) |
 | `s [query]` | Parse hosts from `~/.ssh/config`, choose one via fzf, then establish the SSH connection |
@@ -720,7 +751,7 @@ Abbreviations **expand automatically** when you press space after typing them.
 | `vi` / `vim` / `h` | `hx` | Always launch the modern Helix editor |
 | `r` | `exec fish` | Reload the current Fish session so config changes take effect quickly |
 | `cs`... | `colorscheme`... | See the custom commands `colorscheme` / `font-size` / `opacity` / `audio-volume` |
-| `?` / `??` | `aichat -e` / `ai_diag_last` | Natural-language to command generation / diagnose the previous failed command (depends on Zellij dump-screen capture) |
+| `?` / `??` | `__ai_cmd` / `ai_diag_last` | Natural-language to command generation (default `q -> aichat`) / diagnose the previous failed command (depends on Zellij dump-screen capture) |
 | `g` | `git` | Entry point for basic Git commands |
 | `lg` | `lazygit` | Launch `lazygit` terminal UI |
 | `ga` / `gs` | `git add` / `git_status_stats` | Stage files / show status with staged and unstaged line-count stats |

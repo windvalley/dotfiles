@@ -1,9 +1,4 @@
 function t -d "按输入类型执行翻译或英文释义"
-    if not command -sq aichat
-        echo "❌ 未找到 aichat，请先安装并配置"
-        return 127
-    end
-
     if test (count $argv) -eq 0
         echo "用法: t <英文单词|中文单词|英文短文|中文短文>"
         return 1
@@ -72,13 +67,14 @@ English: ...
 3. 不同候选词不要重复，尽量覆盖不同但贴切的常见表达（口语、书面、文学等不同语域）。
 4. 只输出逗号分隔的单词列表本身，不要输出编号、解释、音标、Markdown 代码块或任何其他文字。"
 
-        set -l list_output (aichat --no-stream --prompt "$list_prompt" -- "$input_text" | string collect)
-        if test $pipestatus[1] -ne 0 -o -z "$list_output"
+        set -l list_output (_ai_complete --prompt "$list_prompt" --input "$input_text" | string collect)
+        set -l ai_exit_status $pipestatus[1]
+        if test $ai_exit_status -ne 0 -o -z "$list_output"
             echo "❌ 获取候选词列表失败"
             return 1
         end
 
-        set list_output (string replace -ar '(?s)<think>.*?</think>\s*' '' -- "$list_output" | string collect)
+        set list_output (_ai_strip_think "$list_output" | string collect)
         set list_output (string replace -ar '(?m)^```[[:alnum:]_-]*\s*$' '' -- "$list_output" | string collect)
         set list_output (string replace -ar '(?m)^```\s*$' '' -- "$list_output" | string collect)
         set list_output (string trim -- "$list_output" | string collect)
@@ -137,12 +133,13 @@ English: ...
 
         set -l item_index 0
         for en_word in $candidate_words
-            set -l dict_output (aichat --no-stream --prompt "$dict_prompt" -- "$en_word" | string collect)
-            if test $pipestatus[1] -ne 0 -o -z "$dict_output"
+            set -l dict_output (_ai_complete --prompt "$dict_prompt" --input "$en_word" | string collect)
+            set -l ai_exit_status $pipestatus[1]
+            if test $ai_exit_status -ne 0 -o -z "$dict_output"
                 continue
             end
 
-            set dict_output (string replace -ar '(?s)<think>.*?</think>\s*' '' -- "$dict_output" | string collect)
+            set dict_output (_ai_strip_think "$dict_output" | string collect)
             set dict_output (string replace -ar '(?m)^```[[:alnum:]_-]*\s*$' '' -- "$dict_output" | string collect)
             set dict_output (string replace -ar '(?m)^```\s*$' '' -- "$dict_output" | string collect)
             set dict_output (string replace -ar '\x1b\[[0-9;?]*[ -/]*[@-~]' '' -- "$dict_output" | string collect)
@@ -215,14 +212,14 @@ English: ...
     # ────────────────────────────────────────────────────────────
     # 其他模式：中译英、英译中、英文单词词典
     # ────────────────────────────────────────────────────────────
-    set -l output_text (aichat --no-stream --prompt "$prompt_text" -- "$input_text" | string collect)
+    set -l output_text (_ai_complete --prompt "$prompt_text" --input "$input_text" | string collect)
     set -l ai_exit_status $pipestatus[1]
     if test $ai_exit_status -ne 0
-        echo "❌ 处理失败，请检查 aichat 配置或模型状态"
+        echo "❌ 处理失败，请检查本地 q / aichat 配置或模型状态"
         return 1
     end
 
-    set output_text (string replace -ar '(?s)<think>.*?</think>\s*' '' -- "$output_text" | string collect)
+    set output_text (_ai_strip_think "$output_text" | string collect)
     set output_text (string replace -ar '(?m)^```[[:alnum:]_-]*\s*$' '' -- "$output_text" | string collect)
     set output_text (string replace -ar '(?m)^```\s*$' '' -- "$output_text" | string collect)
     set output_text (string replace -ar '\x1b\[[0-9;?]*[ -/]*[@-~]' '' -- "$output_text" | string collect)
