@@ -117,6 +117,7 @@ if status is-interactive
     abbr -a -g vi hx # 统一唤起 Helix 现代文本编辑器
     abbr -a -g vim hx # 统一唤起 Helix 现代文本编辑器
     abbr -a -g h hx # 统一唤起 Helix 现代文本编辑器
+    abbr -a -g r 'exec fish' # 重新加载当前 Fish 会话，快速使配置变更生效
 
     # Git 缩写
     abbr -a -g g git # Git 基础命令调用入口

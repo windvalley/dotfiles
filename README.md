@@ -63,6 +63,7 @@
   - [6.4 Fish Shell 行为与键位](#64-fish-shell-%E8%A1%8C%E4%B8%BA%E4%B8%8E%E9%94%AE%E4%BD%8D)
   - [6.5 Helix 编辑器键位与显示](#65-helix-%E7%BC%96%E8%BE%91%E5%99%A8%E9%94%AE%E4%BD%8D%E4%B8%8E%E6%98%BE%E7%A4%BA)
   - [6.6 Git 工作流增强](#66-git-%E5%B7%A5%E4%BD%9C%E6%B5%81%E5%A2%9E%E5%BC%BA)
+  - [6.7 macOS 系统偏好与触控板手势](#67-macos-%E7%B3%BB%E7%BB%9F%E5%81%8F%E5%A5%BD%E4%B8%8E%E8%A7%A6%E6%8E%A7%E6%9D%BF%E6%89%8B%E5%8A%BF)
 - [7. 常用维护命令 (Makefile)](#7-%E5%B8%B8%E7%94%A8%E7%BB%B4%E6%8A%A4%E5%91%BD%E4%BB%A4-makefile)
 - [8. 常见问题 (FAQ / Troubleshooting)](#8-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98-faq--troubleshooting)
 - [9. 致谢 (Acknowledgments)](#9-%E8%87%B4%E8%B0%A2-acknowledgments)
@@ -450,7 +451,7 @@ tide configure
 
 - **键盘体验**：设置极速的键盘重复率（KeyRepeat），禁用长按显示特殊字符。
 - **访达 (Finder)**：显示所有文件扩展名、状态栏、路径栏，按名称排序时文件夹置顶，禁用 `.DS_Store` 在网络/USB驱动器上的生成。
-- **触控板/鼠标**：开启“轻点来点按”。
+- **触控板/鼠标**：开启“轻点来点按”，关闭“用力点按”，并启用“三指拖移”（可用于文本选择与窗口拖动）。
 - **程序坞 (Dock)**：开启自动隐藏，不显示最近使用的应用程序。
 
 你可以随时通过运行以下命令来应用或重新应用这些设置：
@@ -711,6 +712,7 @@ aichat hi
 | `ls` / `ll` | `eza` / `eza -l` | 现代版的文件列表显示 / 附带详细权限尺寸等信息 |
 | `...` / `....` | `../..` / `../../..` | 极速向上跳转两层、三层父级目录 |
 | `vi` / `vim` / `h` | `hx` | 统一唤起 Helix 现代文本编辑器 |
+| `r` | `exec fish` | 重新加载当前 Fish 会话，快速使配置变更生效 |
 | `cs`... | `colorscheme`... | 详情见自定义命令 `colorscheme`/`font-size`/`opacity`/`audio-volume` |
 | `?` / `??` | `aichat -e` / `ai_diag_last` | 自然语言快速转命令 / 诊断上一条失败命令（依赖 Zellij dump-screen 捕获输出） |
 | `g` | `git` | Git 基础命令调用入口 |
@@ -1096,6 +1098,14 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | 重用冲突解决 | 关闭 | `rerere.enabled = true` | 自动记忆冲突解决方案 |
 | 用户信息 | 硬编码在配置中 | 通过 `include` 引入本地文件 | 防止敏感信息入库 |
 | 主题解耦 | 切换配色会导致仓库变脏 | 使用 Git Clean Filter 自动处理 | 确保 local 配色变更不产生 unstaged changes |
+
+### 6.7 macOS 系统偏好与触控板手势
+
+| 改动 | 官方默认 | 本项目 | 原因 |
+|------|----------|--------|------|
+| 轻点来点按 | 默认关闭，需要按下触控板才算点击 | 开启 | 降低点击负担，让交互更轻量 |
+| 用力点按与触感反馈 | 默认开启 | 关闭 | 避免误触查词/预览等系统动作，统一为轻点交互 |
+| 三指拖移 | 默认关闭 | 开启 | 文本选择与应用窗口拖动更顺手，减少按压拖拽带来的手指负担 |
 
 ---
 

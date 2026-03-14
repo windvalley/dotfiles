@@ -62,6 +62,7 @@ Core stack: Ghostty (terminal) + Zellij (multiplexer) + Fish (shell) + Helix (ed
   - [6.4 Fish Shell Behavior and Keybindings](#64-fish-shell-behavior-and-keybindings)
   - [6.5 Helix Editor Keybindings and Display](#65-helix-editor-keybindings-and-display)
   - [6.6 Git Workflow Enhancements](#66-git-workflow-enhancements)
+  - [6.7 macOS System Preferences and Trackpad Gestures](#67-macos-system-preferences-and-trackpad-gestures)
 - [7. Common Maintenance Commands (Makefile)](#7-common-maintenance-commands-makefile)
 - [8. FAQ / Troubleshooting](#8-faq--troubleshooting)
 - [9. Acknowledgments](#9-acknowledgments)
@@ -449,7 +450,7 @@ The repository root includes a `macos.sh` script that uses `defaults write` to a
 
 - **Keyboard experience**: Sets a very fast key repeat rate and disables “press and hold for special characters”.
 - **Finder**: Shows all filename extensions, status bar, and path bar; keeps folders on top when sorting by name; disables `.DS_Store` creation on network and USB drives.
-- **Trackpad / mouse**: Enables tap-to-click.
+- **Trackpad / mouse**: Enables tap-to-click, disables Force Click, and turns on three-finger drag for both text selection and window dragging.
 - **Dock**: Enables auto-hide and hides recent applications.
 
 You can apply or reapply these preferences at any time with:
@@ -711,6 +712,7 @@ Abbreviations **expand automatically** when you press space after typing them.
 | `ls` / `ll` | `eza` / `eza -l` | Modern file listing / with detailed permissions and sizes |
 | `...` / `....` | `../..` / `../../..` | Jump up two or three parent directories quickly |
 | `vi` / `vim` / `h` | `hx` | Always launch the modern Helix editor |
+| `r` | `exec fish` | Reload the current Fish session so config changes take effect quickly |
 | `cs`... | `colorscheme`... | See the custom commands `colorscheme` / `font-size` / `opacity` / `audio-volume` |
 | `?` / `??` | `aichat -e` / `ai_diag_last` | Natural-language to command generation / diagnose the previous failed command (depends on Zellij dump-screen capture) |
 | `g` | `git` | Entry point for basic Git commands |
@@ -1097,6 +1099,14 @@ This project makes a series of intentional customizations on top of the default 
 | Reuse recorded conflict resolution | Disabled | `rerere.enabled = true` | Remember conflict resolutions automatically |
 | User identity | Hardcoded in config | Injected via `include` local files | Prevent sensitive identity data from entering the repo |
 | Theme decoupling | Changing themes dirties the repo | Handled through Git Clean Filter automatically | Ensure local theme switches do not produce unstaged changes |
+
+### 6.7 macOS System Preferences and Trackpad Gestures
+
+| Change | Official default | This project | Why |
+|------|----------|--------|------|
+| Tap-to-click | Disabled by default; a physical press is required to click | Enabled | Reduces finger strain and makes pointer interaction lighter |
+| Force Click and haptic feedback | Enabled by default | Disabled | Avoids accidental lookup/preview actions and keeps interaction consistently tap-first |
+| Three-finger drag | Disabled by default | Enabled | Makes text selection and app-window dragging easier without having to press down while dragging |
 
 ---
 
