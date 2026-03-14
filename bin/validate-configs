@@ -158,6 +158,74 @@ run_helix_health() {
     hx -c "$helix_config" "$@"
 }
 
+aichat_config_declares_local_llm() {
+    local aichat_config="$1"
+    grep -Eq '^[[:space:]]*name:[[:space:]]*local-llm[[:space:]]*$' "$aichat_config"
+}
+
+aichat_config_local_model_count() {
+    local aichat_config="$1"
+
+    awk '
+        /^[[:space:]]*-[[:space:]]*type:/ {
+            if (matched && in_models) {
+                in_models = 0
+            }
+            next
+        }
+        /^[[:space:]]*name:[[:space:]]*local-llm[[:space:]]*$/ {
+            matched = 1
+            next
+        }
+        matched && /^[[:space:]]*models:[[:space:]]*$/ {
+            in_models = 1
+            next
+        }
+        matched && in_models && /^[[:space:]]*-[[:space:]]*name:[[:space:]]*/ {
+            count++
+            next
+        }
+        matched && in_models && /^[[:space:]]*[A-Za-z_-]+:/ {
+            in_models = 0
+        }
+        END {
+            print count + 0
+        }
+    ' "$aichat_config"
+}
+
+local_ai_expectation_summary() {
+    local -a reasons=()
+    local joined=""
+    local reason=""
+
+    case ",${AI_CHAT_BACKENDS:-}," in
+        *,q,*)
+            reasons+=("AI_CHAT_BACKENDS 包含 q")
+            ;;
+    esac
+
+    if [[ "${AICHAT_MODEL:-}" == local-llm:* ]]; then
+        reasons+=("AICHAT_MODEL 使用 local-llm")
+    fi
+
+    if [ -n "${AI_LOCAL_MODEL:-}" ]; then
+        reasons+=("已设置 AI_LOCAL_MODEL")
+    fi
+
+    [ "${#reasons[@]}" -gt 0 ] || return 1
+
+    for reason in "${reasons[@]}"; do
+        if [ -n "$joined" ]; then
+            joined="${joined}；${reason}"
+        else
+            joined="$reason"
+        fi
+    done
+
+    printf '%s\n' "$joined"
+}
+
 validate_ghostty_file_static() {
     local ghostty_file="$1"
 
@@ -601,7 +669,14 @@ validate_aichat() {
     info "验证 AIChat 配置..."
     local aichat_dir="$DOTFILES_DIR/aichat/dot-config/aichat"
     local aichat_config="$aichat_dir/config.yaml"
+    local aichat_runtime_env=()
+    local local_ai_expectation=""
+    local local_llm_declared=false
+    local local_llm_config_model_count=0
+    local local_llm_index_count=0
     local model_list=""
+    local ollama_model_count=0
+    local ollama_list_output=""
     local yaml_status=0
 
     if [ ! -f "$aichat_config" ]; then
@@ -622,8 +697,15 @@ validate_aichat() {
         return 0
     fi
 
+    aichat_runtime_env=(env -u AICHAT_MODEL -u AICHAT_CONFIG_DIR AICHAT_CONFIG_DIR="$aichat_dir")
+    local_ai_expectation="$(local_ai_expectation_summary || true)"
+    if aichat_config_declares_local_llm "$aichat_config"; then
+        local_llm_declared=true
+        local_llm_config_model_count="$(aichat_config_local_model_count "$aichat_config")"
+    fi
+
     if command -v aichat &>/dev/null; then
-        if env -u AICHAT_MODEL -u AICHAT_CONFIG_DIR AICHAT_CONFIG_DIR="$aichat_dir" aichat --info >/dev/null 2>&1; then
+        if "${aichat_runtime_env[@]}" aichat --info >/dev/null 2>&1; then
             success "AIChat 配置可正常读取"
         else
             error "AIChat 配置读取失败"
@@ -631,11 +713,14 @@ validate_aichat() {
             return 1
         fi
 
-        if model_list=$(env -u AICHAT_MODEL -u AICHAT_CONFIG_DIR AICHAT_CONFIG_DIR="$aichat_dir" aichat --list-models 2>/dev/null); then
-            if printf '%s\n' "$model_list" | grep -q '^local-llm:'; then
-                success "AIChat 已注册本地 Ollama provider (local-llm)"
+        if model_list=$("${aichat_runtime_env[@]}" aichat --list-models 2>/dev/null); then
+            local_llm_index_count="$(printf '%s\n' "$model_list" | grep -c '^local-llm:' || true)"
+            if [ "$local_llm_index_count" -gt 0 ]; then
+                success "AIChat 已注册本地 Ollama provider (local-llm，索引中 $local_llm_index_count 个模型)"
+            elif [ "$local_llm_declared" = true ]; then
+                warn "AIChat 已声明 local-llm client，但当前模型索引中未注册本地模型；可执行 'aichat --sync-models'"
             else
-                warn "AIChat 模型列表中未检测到 local-llm provider"
+                info "AIChat 当前未注册 local-llm provider"
             fi
         else
             warn "无法读取 AIChat 模型列表"
@@ -646,13 +731,32 @@ validate_aichat() {
     fi
 
     if command -v ollama &>/dev/null; then
-        if ollama list >/dev/null 2>&1; then
-            success "Ollama 本地服务可访问"
+        if ollama_list_output=$(ollama list 2>/dev/null); then
+            ollama_model_count="$(printf '%s\n' "$ollama_list_output" | awk 'NR > 1 && NF > 0 { count++ } END { print count + 0 }')"
+            if [ "$ollama_model_count" -gt 0 ]; then
+                success "Ollama 本地服务可访问 (已下载 $ollama_model_count 个模型)"
+            elif [ -n "$local_ai_expectation" ]; then
+                warn "Ollama 本地服务可访问，但尚未下载任何模型；当前环境启用了本地 AI 工作流（$local_ai_expectation）"
+            else
+                info "Ollama 本地服务可访问，但尚未下载任何模型"
+            fi
         else
-            warn "检测到 Ollama 已安装，但本地服务不可访问；如需本地模型，请执行 'brew services start ollama' 或手动运行 'ollama serve'"
+            if [ -n "$local_ai_expectation" ]; then
+                warn "Ollama 已安装，但本地服务不可访问；当前环境启用了本地 AI 工作流（$local_ai_expectation）"
+            elif [ "$local_llm_index_count" -gt 0 ] || [ "$local_llm_config_model_count" -gt 0 ]; then
+                info "Ollama 已安装，但本地服务当前未运行；AIChat 已配置 local-llm，可按需执行 'brew services start ollama' 或手动运行 'ollama serve'"
+            else
+                info "Ollama 已安装，但本地服务当前未运行"
+            fi
         fi
     else
-        warn "Ollama 未安装；如需本地模型，请先安装并启动 Ollama"
+        if [ -n "$local_ai_expectation" ]; then
+            warn "Ollama 未安装；当前环境启用了本地 AI 工作流（$local_ai_expectation）"
+        elif [ "$local_llm_index_count" -gt 0 ] || [ "$local_llm_config_model_count" -gt 0 ]; then
+            info "Ollama 未安装；AIChat 已预留 local-llm 配置，若需本地模型可后续按需安装"
+        else
+            info "Ollama 未安装；本地模型后端当前处于未启用状态"
+        fi
     fi
 }
 
