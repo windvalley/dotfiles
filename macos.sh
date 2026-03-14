@@ -67,11 +67,27 @@ defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
 # 触控板、鼠标、键盘、蓝牙配件及输入法                                        #
 ###############################################################################
 
-# 触控板：为当前用户和登录屏幕启用轻点点击
-# 默认值：false（0，需要用力点击才能点击）
+# 触控板：为内建/蓝牙触控板启用轻点点击，避免必须按下实体点击
+# 默认值：false（0，需要按下触控板才算点击）
+defaults write com.apple.AppleMultitouchTrackpad Clicking -bool true
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
 defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+
+# 触控板：关闭用力点按与触感反馈，统一改为轻点交互
+# 默认值：true（启用用力点按与触感反馈）
+defaults write NSGlobalDomain com.apple.trackpad.forceClick -bool false
+defaults write com.apple.AppleMultitouchTrackpad ActuateDetents -bool false
+defaults write com.apple.AppleMultitouchTrackpad ForceSuppressed -bool true
+
+# 触控板：启用三指拖移，可直接用于文本选择与应用窗口拖动
+# 默认值：false（需要先按下再拖动）
+# 某些 macOS 版本会额外从 currentHost 的全局手势开关读取该选项，
+# 只写 TrackpadThreeFingerDrag 可能出现“配置已写入但手势仍不生效”的情况。
+# 注意：系统同步器要求该键是 BOOL，写成整数会被直接忽略。
+defaults -currentHost write NSGlobalDomain com.apple.trackpad.threeFingerDragGesture -bool true
+defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerDrag -bool true
 
 ###############################################################################
 # Finder（访达）                                                              #
@@ -172,6 +188,12 @@ defaults write com.apple.SoftwareUpdate CriticalUpdateInstall -int 1
 ###############################################################################
 # 重启受影响的应用                                                          #
 ###############################################################################
+
+# 最佳努力：将已写入的偏好立即同步到 HID 设备层。
+# 触控板这类设置有时只写入 plist 还不够，系统需要额外激活一次才能立刻生效。
+if [[ -x /System/Library/PrivateFrameworks/SystemAdministration.framework/Versions/A/Resources/activateSettings ]]; then
+	/System/Library/PrivateFrameworks/SystemAdministration.framework/Versions/A/Resources/activateSettings -userContext -forcePrefUpdate > /dev/null 2>&1 || true
+fi
 
 for app in "Activity Monitor" \
 	"Dock" \
