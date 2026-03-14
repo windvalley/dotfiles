@@ -8,6 +8,23 @@
 
 ## [Unreleased]
 
+## [0.24.0] - 2026-03-14
+
+### Added
+- 新增 Shottr 截图工具支持，并集成至全局快捷键体系
+- 为 Karabiner-Element 添加右 Command 键截图快捷操作
+- 为 macOS 环境添加触控板手势配置及多设备同步功能
+
+### Changed
+- 重构 Delta 主题配置，将主题文件拆分为独立配置文件
+- 更新 mise 安装源为 GitHub Backend
+- 优化 macOS 偏好设置与 Fish 别名配置
+- 完善开发者 Agent 的编码标准与规则文档
+
+### Fixed
+- 修复 Fish Shell 中缺失 asciinema 依赖导致的录制功能异常
+
+
 ## [0.23.0] - 2026-03-13
 
 ### Added
