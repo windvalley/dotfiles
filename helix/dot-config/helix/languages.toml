@@ -32,6 +32,7 @@
 #    mise use -g npm:bash-language-server@latest
 #    mise use -g npm:dockerfile-language-server-nodejs@latest
 #    mise use -g npm:sql-language-server@latest
+#    mise use -g shfmt@latest
 #    mise use -g github:astral-sh/ruff@latest
 #    mise use -g npm:pyright@latest
 #    mise use -g cargo:taplo-cli@latest
@@ -39,7 +40,6 @@
 #    # ---- 仍建议用 Homebrew 的工具（平台相关 / 更稳定）----
 #    brew install llvm            # clangd / clang-format
 #    brew install rust-analyzer   # Rust LSP
-#    brew install shfmt           # Shell formatter
 #    brew install golangci-lint   # Go lint engine
 #    brew install buf             # Protobuf 工具链
 #

@@ -91,6 +91,7 @@ rust = "latest"
 # 3. 必须通过 macOS 的系统级包管理器获取 Apple 专属的预编译二进制包：`brew install llvm`。
 
 # --- Shell / 基础设施 / 数据库 ---
+shfmt = "latest" # Shell Formatter
 "npm:bash-language-server" = "latest"
 "npm:fish-lsp" = "latest"
 "npm:@microsoft/compose-language-service" = "latest"

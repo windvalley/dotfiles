@@ -177,7 +177,7 @@ cd "$HOME/dotfiles"
 ```
 
 > [!TIP]
-> **非交互模式**：如果在自动化环境（如 CI/CD 等）中执行，可追加 `-y` 或 `--unattended` 标志跳过所有确认自动安装：`./install.sh -y`
+> **非交互模式**：如果在自动化环境（如 CI/CD 等）中执行，可追加 `-y` 或 `--unattended` 标志跳过所有确认，并自动采用每个提示的默认答案：`./install.sh -y`
 >
 > 如需在非交互模式下同时安装本地模型后端，可显式追加 `--with-ollama`：`./install.sh -y --with-ollama`
 >
@@ -185,6 +185,7 @@ cd "$HOME/dotfiles"
 
 **安装过程说明：**
 - 如果系统未安装 Homebrew，脚本默认会**询问是否安装**
+- 在 `-y` 模式下，默认值为 `y` 的步骤（如 Homebrew 安装）会自动执行，默认值为 `n` 的可选项（如扩展字体、`macos.sh`、Ollama）会自动跳过
 - 如需手动安装 Homebrew，请访问 https://brew.sh
 - 脚本会自动检测并迁移 zsh 的 PATH 设置到 fish
 

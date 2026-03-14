@@ -175,7 +175,7 @@ cd "$HOME/dotfiles"
 ```
 
 > [!TIP]
-> **Non-interactive mode**: In automation environments such as CI/CD, append `-y` or `--unattended` to skip all confirmations and install automatically: `./install.sh -y`
+> **Non-interactive mode**: In automation environments such as CI/CD, append `-y` or `--unattended` to skip all confirmations and automatically use each prompt's default answer: `./install.sh -y`
 >
 > If you also want the local-model backend in non-interactive mode, append `--with-ollama`: `./install.sh -y --with-ollama`
 >
@@ -183,6 +183,7 @@ cd "$HOME/dotfiles"
 
 **Installation notes:**
 - If Homebrew is missing, the script **asks whether to install it**.
+- In `-y` mode, steps whose default is `y` (such as installing Homebrew) run automatically, while optional prompts whose default is `n` (such as extra fonts, `macos.sh`, or Ollama) are skipped automatically.
 - If you prefer to install Homebrew manually, visit https://brew.sh
 - The script automatically detects and migrates your Zsh PATH setup into Fish.
 

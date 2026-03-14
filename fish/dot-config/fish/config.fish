@@ -29,9 +29,22 @@ end
 # -----------------------------
 
 # Homebrew: 兼容 Apple Silicon (/opt/homebrew) 和 Intel Mac (/usr/local)
+# 不使用 `brew shellenv`，因为它的输出会受父进程 SHELL 影响；在 zsh -> fish 等链路下
+# 可能吐出 POSIX/zsh 语法并污染 Fish 启动。这里直接显式设置必要环境变量，更稳定也更快。
 for brew_prefix in /opt/homebrew /usr/local
     if test -x $brew_prefix/bin/brew
-        eval ($brew_prefix/bin/brew shellenv)
+        set -gx HOMEBREW_PREFIX $brew_prefix
+        set -gx HOMEBREW_CELLAR $brew_prefix/Cellar
+        set -gx HOMEBREW_REPOSITORY $brew_prefix
+        fish_add_path --move --path $brew_prefix/bin $brew_prefix/sbin
+
+        if test -d $brew_prefix/share/info
+            if set -q INFOPATH
+                set -gx INFOPATH $brew_prefix/share/info $INFOPATH
+            else
+                set -gx INFOPATH $brew_prefix/share/info
+            end
+        end
         break
     end
 end
@@ -90,12 +103,10 @@ if status is-interactive
     # Tide: 确保 vi_mode 组件出现在 prompt 左侧
     set -g tide_left_prompt_items vi_mode os pwd git newline character
 
-    # Tide: vi_mode 提示符 (自动纠正 Universal 变量，一劳永逸)
+    # Tide: vi_mode 提示符
     # Tide 默认用 Fish 内部模式名首字母 (default→D)，这里纠正为 Vim 社区通用的 N (Normal)
-    # 使用 set -U 直接写入持久化的 Universal 变量，仅在值不符合预期时才写入，避免每次启动都触发磁盘 IO
-    if test "$tide_vi_mode_icon_default" != N
-        set -U tide_vi_mode_icon_default N
-    end
+    # 直接使用全局变量即可：配置已由 dotfiles 持久化，无需在启动阶段再写 Universal 变量
+    set -g tide_vi_mode_icon_default N
 
     # =========================================================================
     # 2. 【操作捷径重写层】：所有的 alias 和 abbr 大军在此集结

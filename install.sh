@@ -22,7 +22,7 @@ Usage:
   $0 [options]
 
 Options:
-  -y, --yes, --unattended    Run in non-interactive mode without prompting
+  -y, --yes, --unattended    Run in non-interactive mode using each prompt's default answer
   --with-ollama              Install Ollama and start its background service
   -h, --help                 Show this help message
 EOF
@@ -128,8 +128,11 @@ ask_yes_no() {
   esac
 
   if [ "$NON_INTERACTIVE" = true ]; then
-    info "${prompt} ${prompt_suffix} (auto-yes)"
-    return 0
+    info "${prompt} ${prompt_suffix} (auto-$default_answer)"
+    if [ "$default_answer" = "y" ]; then
+      return 0
+    fi
+    return 1
   fi
 
   while true; do
