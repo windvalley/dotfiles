@@ -86,7 +86,7 @@ helix_config="$config_home/helix/config.toml"
 zellij_config="$config_home/zellij/config.kdl"
 btop_config="$config_home/btop/btop.conf"
 bat_config="$config_home/bat/config"
-gitconfig="$config_home/git/config"
+git_delta_theme_config="$config_home/git/delta-theme.conf"
 dotfiles_repo_root=""
 error_output_mode="usage"
 script_path=""
@@ -184,7 +184,7 @@ get_bat_theme() {
 }
 
 get_delta_theme() {
-    if [ -f "$gitconfig" ]; then
+    if [ -f "$git_delta_theme_config" ]; then
         awk '
             $0 == "[delta]" { in_delta=1; next }
             /^\[/ { in_delta=0 }
@@ -193,12 +193,12 @@ get_delta_theme() {
                 print
                 exit
             }
-        ' "$gitconfig"
+        ' "$git_delta_theme_config"
     fi
 }
 
 get_delta_feature() {
-    if [ -f "$gitconfig" ]; then
+    if [ -f "$git_delta_theme_config" ]; then
         awk '
             $0 == "[delta]" { in_delta=1; next }
             /^\[/ { in_delta=0 }
@@ -207,7 +207,7 @@ get_delta_feature() {
                 print
                 exit
             }
-        ' "$gitconfig"
+        ' "$git_delta_theme_config"
     fi
 }
 
@@ -746,8 +746,8 @@ delta_cs_change() {
     local syntax_theme=""
     local delta_feature=""
     local delta_light="false"
-    if [ ! -f "$gitconfig" ]; then
-        error "gitconfig not found: $gitconfig"
+    if [ ! -f "$git_delta_theme_config" ]; then
+        error "delta git theme config not found: $git_delta_theme_config"
         return 1
     fi
 
@@ -813,14 +813,14 @@ delta_cs_change() {
             ;;
     esac
 
-    "$SED_BIN" -i -E '/^\[delta\]/,/^\[/ s/^(\s+)syntax-theme\s*=.*/\1syntax-theme = '"$syntax_theme"'/' "$gitconfig"
-    "$SED_BIN" -i -E '/^\[delta\]/,/^\[/ s/^(\s+)light\s*=.*/\1light = '"$delta_light"'/' "$gitconfig"
+    "$SED_BIN" -i -E '/^\[delta\]/,/^\[/ s/^(\s+)syntax-theme\s*=.*/\1syntax-theme = '"$syntax_theme"'/' "$git_delta_theme_config"
+    "$SED_BIN" -i -E '/^\[delta\]/,/^\[/ s/^(\s+)light\s*=.*/\1light = '"$delta_light"'/' "$git_delta_theme_config"
 
     if [ -n "$delta_feature" ]; then
-        git config --file="$gitconfig" delta.features "$delta_feature"
+        git config --file="$git_delta_theme_config" delta.features "$delta_feature"
         new_theme="$delta_feature"
     else
-        git config --file="$gitconfig" --unset-all delta.features >/dev/null 2>&1 || true
+        git config --file="$git_delta_theme_config" --unset-all delta.features >/dev/null 2>&1 || true
         new_theme="$syntax_theme"
     fi
 
@@ -835,7 +835,7 @@ sync_theme_clean_filter() {
             zellij/dot-config/zellij/config.kdl \
             btop/dot-config/btop/btop.conf \
             bat/dot-config/bat/config \
-            git/dot-config/git/config 2>/dev/null || true
+            git/dot-config/git/delta-theme.conf 2>/dev/null || true
     fi
 }
 

@@ -883,11 +883,12 @@ mise use npm:@vtsls/language-server@1.0.0
 > For Git bootstrap configuration such as user identity and multi-account isolation, see [4.7 Configure Git](#47-configure-git).
 
 **Config files**:
-- `~/.config/git/config`: core config (XDG standard location)
+- `~/.config/git/config`: core behavior config (XDG standard location)
+- `~/.config/git/delta-theme.conf`: Delta visual theme config, managed uniformly by `colorscheme`
 - `~/.config/git/ignore`: global ignore file (XDG standard location)
 
 **Core features**:
-- **Delta integration**: Uses `git-delta` for syntax-highlighted diffs with line numbers, side-by-side display, and color optimization; `syntax-theme` is managed uniformly by the `colorscheme` script.
+- **Delta integration**: Uses `git-delta` for syntax-highlighted diffs with line numbers, side-by-side display, and color optimization; `syntax-theme` and Delta feature toggles are split into a standalone `delta-theme.conf` managed uniformly by the `colorscheme` script.
 - **Smart defaults**:
   - `pull.rebase = true`: keep commit history linear and tidy.
   - `push.autoSetupRemote = true`: associate remote tracking branches automatically.

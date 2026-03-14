@@ -4,4 +4,4 @@ helix/dot-config/helix/config.toml filter=dot-theme
 zellij/dot-config/zellij/config.kdl filter=dot-theme
 btop/dot-config/btop/btop.conf filter=dot-theme
 bat/dot-config/bat/config filter=dot-theme
-git/dot-config/git/config filter=dot-theme
+git/dot-config/git/delta-theme.conf filter=dot-theme

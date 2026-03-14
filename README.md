@@ -883,11 +883,12 @@ mise use npm:@vtsls/language-server@1.0.0
 > Git 初始配置（用户信息、多账号隔离等）请参见 [4.7 配置 Git](#47-配置-git)。
 
 **配置文件**：
-- `~/.config/git/config`: 核心配置（XDG 标准位置）
+- `~/.config/git/config`: 核心行为配置（XDG 标准位置）
+- `~/.config/git/delta-theme.conf`: Delta 视觉主题配置，由 `colorscheme` 统一维护
 - `~/.config/git/ignore`: 全局忽略文件（XDG 标准位置）
 
 **核心特性**：
-- **Delta 集成**：使用 `git-delta` 进行 Diff 语法高亮，支持行号、并排显示和颜色优化；`syntax-theme` 由 `colorscheme` 脚本统一管理。
+- **Delta 集成**：使用 `git-delta` 进行 Diff 语法高亮，支持行号、并排显示和颜色优化；`syntax-theme` 与 Delta feature 已拆分到独立的 `delta-theme.conf` 中，由 `colorscheme` 脚本统一管理。
 - **智能默认值**：
   - `pull.rebase = true`: 保持提交历史线性整洁。
   - `push.autoSetupRemote = true`: 自动关联远程分支。

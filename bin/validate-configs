@@ -283,9 +283,16 @@ validate_fish() {
 validate_git() {
     info "验证 Git 配置..."
     local git_config="$DOTFILES_DIR/git/dot-config/git/config"
+    local git_delta_theme="$DOTFILES_DIR/git/dot-config/git/delta-theme.conf"
+    local validate_home=""
     
     if [ ! -f "$git_config" ]; then
         error "Git 配置文件不存在: $git_config"
+        return 1
+    fi
+
+    if [ ! -f "$git_delta_theme" ]; then
+        error "Git Delta 主题配置文件不存在: $git_delta_theme"
         return 1
     fi
     
@@ -296,6 +303,23 @@ validate_git() {
         error "Git 配置存在格式错误"
         ERRORS=$((ERRORS + 1))
     fi
+
+    if git config --file="$git_delta_theme" --list &>/dev/null; then
+        success "Git Delta 主题配置格式正确"
+    else
+        error "Git Delta 主题配置存在格式错误"
+        ERRORS=$((ERRORS + 1))
+    fi
+
+    # 使用临时 HOME 隔离本地私有配置，只验证仓库内主配置能否正确 include Delta 主题文件。
+    validate_home="$(mktemp -d "${TMPDIR:-/tmp}/validate-git.XXXXXX")"
+    if HOME="$validate_home" git config --includes --file="$git_config" --get delta.syntax-theme &>/dev/null; then
+        success "Git 主配置可正确 include Delta 主题配置"
+    else
+        error "Git 主配置无法正确 include Delta 主题配置"
+        ERRORS=$((ERRORS + 1))
+    fi
+    rm -rf "$validate_home"
 }
 
 # 验证 Zellij 配置

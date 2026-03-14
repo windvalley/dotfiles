@@ -49,7 +49,7 @@ case "$file" in
     *bat/config)
         "$SED_BIN" -E 's/^--theme=.*/--theme="Dracula"/'
         ;;
-    *git/config)
+    *git/config|*git/delta-theme.conf)
         "$SED_BIN" -E '/^\[delta\]/,/^\[/ {
             s/^(\s+)light\s*=\s*.*/\1light = false/
             s/^(\s+)syntax-theme\s*=\s*.+/\1syntax-theme = Dracula/
