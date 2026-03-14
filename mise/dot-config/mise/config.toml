@@ -63,8 +63,9 @@ rust = "latest"
 "go:github.com/golangci/golangci-lint/cmd/golangci-lint" = "latest"
 
 # --- Python 生态 ---
-# ruff: 默认 aqua backend 无法正确解析 @latest，改用 pipx 通过 PyPI 获取
-"pipx:ruff" = "latest"   # Linter/Formatter/LSP
+# ruff: 默认 aqua backend 无法正确解析 @latest，改用 github backend 直接获取官方 Release，
+# 避免 `mise install` 还需要额外预装 pipx 这类前置命令。
+"github:astral-sh/ruff" = "latest" # Linter/Formatter/LSP
 "npm:pyright" = "latest" # Type Checker LSP
 
 # --- Web 生态 (TS/JS/CSS/HTML/JSON) ---
