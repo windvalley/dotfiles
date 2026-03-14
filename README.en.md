@@ -57,12 +57,13 @@ Core stack: Ghostty (terminal) + Zellij (multiplexer) + Fish (shell) + Helix (ed
   - [5.9 OrbStack (Optional)](#59-orbstack-optional)
 - [6. Key Differences from Official Defaults](#6-key-differences-from-official-defaults)
   - [6.1 Karabiner Global Key Remapping](#61-karabiner-global-key-remapping)
-  - [6.2 Ghostty Terminal Behavior and Keybindings](#62-ghostty-terminal-behavior-and-keybindings)
-  - [6.3 Zellij Shortcuts and Session Architecture](#63-zellij-shortcuts-and-session-architecture)
-  - [6.4 Fish Shell Behavior and Keybindings](#64-fish-shell-behavior-and-keybindings)
-  - [6.5 Helix Editor Keybindings and Display](#65-helix-editor-keybindings-and-display)
-  - [6.6 Git Workflow Enhancements](#66-git-workflow-enhancements)
-  - [6.7 macOS System Preferences and Trackpad Gestures](#67-macos-system-preferences-and-trackpad-gestures)
+  - [6.2 Shottr Integration Notes](#62-shottr-integration-notes)
+  - [6.3 Ghostty Terminal Behavior and Keybindings](#63-ghostty-terminal-behavior-and-keybindings)
+  - [6.4 Zellij Shortcuts and Session Architecture](#64-zellij-shortcuts-and-session-architecture)
+  - [6.5 Fish Shell Behavior and Keybindings](#65-fish-shell-behavior-and-keybindings)
+  - [6.6 Helix Editor Keybindings and Display](#66-helix-editor-keybindings-and-display)
+  - [6.7 Git Workflow Enhancements](#67-git-workflow-enhancements)
+  - [6.8 macOS System Preferences and Trackpad Gestures](#68-macos-system-preferences-and-trackpad-gestures)
 - [7. Common Maintenance Commands (Makefile)](#7-common-maintenance-commands-makefile)
 - [8. FAQ / Troubleshooting](#8-faq--troubleshooting)
 - [9. Acknowledgments](#9-acknowledgments)
@@ -146,16 +147,17 @@ The repository root provides an `install.sh` script that automates almost the en
 
 **The script performs the following:**
 1. **Environment preparation**: Checks for and installs **Homebrew** automatically if it is not already installed.
-2. **Core dependencies**: Reads `Brewfile` and installs all CLI tools (stow, zellij, fish, helix, mise, fzf, chafa, etc.) and GUI apps (Ghostty, OrbStack, Maccy, JetBrains Mono font, etc.).
+2. **Core dependencies**: Reads `Brewfile` and installs all CLI tools (stow, zellij, fish, helix, mise, fzf, chafa, etc.) and GUI apps (Ghostty, OrbStack, Maccy, Shottr, JetBrains Mono font, etc.).
 3. **Font installation**: JetBrains Mono is installed through Brew by default, and the script **asks whether to install** other extended fonts (Maple Mono, Geist Mono).
-4. **Symlink setup**: Detects existing configs, backs them up automatically, then uses `stow` to symlink all configs, including the `bin` scripts, into the correct system locations.
-5. **AI model sync**: Automatically runs `aichat --sync-models` to synchronize the default model catalog into the local index.
-6. **Local model backend (optional)**: In interactive installs, the script **asks whether to install and start** `Ollama`; in non-interactive mode it is skipped by default unless you pass `--with-ollama`. The script does not pull any local model automatically.
-7. **Runtime installation**: Installs core language runtimes via **Mise** (Go, Node, Bun, Python, Rust) along with out-of-the-box CLI tools (gh, bat, eza, fd, ripgrep, glow, shellcheck, etc.). LSP and other toolchains can be installed on demand later.
-8. **Privacy template setup**: Automatically creates Git identity templates (`.gitconfig.local` / `.work`), a Fish private environment template (`.fish.local.fish`), and a Ghostty private config template (`.ghostty.local`) in the user's home directory.
-9. **Shell initialization**: Sets **Fish** as the default shell and **automatically migrates PATH variables from your old Zsh setup** into Fish.
-10. **Plugin setup**: Installs the **Fisher** plugin manager and syncs all Fish plugins.
-11. **System optimization**: Prompts whether to apply **common macOS system preference tweaks** via `macos.sh`.
+4. **Shottr hotkeys (optional)**: If `Shottr` is installed, the script **asks whether to write** the recommended global capture shortcuts `Shift + Cmd + 1/2/A/S` so it never silently overwrites your existing hotkey habits.
+5. **Symlink setup**: Detects existing configs, backs them up automatically, then uses `stow` to symlink all configs, including the `bin` scripts, into the correct system locations.
+6. **AI model sync**: Automatically runs `aichat --sync-models` to synchronize the default model catalog into the local index.
+7. **Local model backend (optional)**: In interactive installs, the script **asks whether to install and start** `Ollama`; in non-interactive mode it is skipped by default unless you pass `--with-ollama`. The script does not pull any local model automatically.
+8. **Runtime installation**: Installs core language runtimes via **Mise** (Go, Node, Bun, Python, Rust) along with out-of-the-box CLI tools (gh, bat, eza, fd, ripgrep, glow, shellcheck, etc.). LSP and other toolchains can be installed on demand later.
+9. **Privacy template setup**: Automatically creates Git identity templates (`.gitconfig.local` / `.work`), a Fish private environment template (`.fish.local.fish`), and a Ghostty private config template (`.ghostty.local`) in the user's home directory.
+10. **Shell initialization**: Sets **Fish** as the default shell and **automatically migrates PATH variables from your old Zsh setup** into Fish.
+11. **Plugin setup**: Installs the **Fisher** plugin manager and syncs all Fish plugins.
+12. **System optimization**: Prompts whether to apply **common macOS system preference tweaks** via `macos.sh`.
 
 **Usage:**
 ```sh
@@ -215,6 +217,9 @@ brew install btop
 # Clipboard history manager
 brew install --cask maccy
 
+# Lightweight macOS screenshot annotation tool
+brew install --cask shottr
+
 # Global key remapping tool
 brew install --cask karabiner-elements
 
@@ -235,6 +240,7 @@ brew install switchaudio-osx
 - `switchaudio-osx`: Provides `SwitchAudioSource`, used by `audio-volume`.
 - `grc`: Generic Colouriser. Combined with Fish plugins, it adds colored output enhancements to commands like `ping`, `ls`, `docker`, and `diff`.
 - `chafa`: Terminal character image rendering utility, used for high-res image previews in the `p` (clipboard history) command.
+- `shottr`: The default macOS screenshot annotation tool in this setup. It is its own capture-and-annotation workflow, with support for scrolling captures, OCR, and pinned overlays. Personal use is free; confirm licensing separately for commercial use. If you want to apply the repository's recommended global hotkeys in one shot after cloning, run `"$HOME/dotfiles/bin/configure-shottr-hotkeys" --force`
 
 #### 3.2.2 Clone the Repository
 
@@ -1004,7 +1010,15 @@ This project makes a series of intentional customizations on top of the default 
 - To change the save location, disable the floating thumbnail, or adjust the timer, open the toolbar with `Right Command + r` and use `Options`.
 - After a recording stops, macOS shows a similar thumbnail. Click it to preview, trim, or share; otherwise the `.mov` file is saved automatically.
 
-### 6.2 Ghostty Terminal Behavior and Keybindings
+### 6.2 Shottr Integration Notes
+
+- This repository installs `Shottr` by default through Homebrew as the default integrated screenshot annotation tool.
+- If you want scrolling captures, OCR, pinned overlays, or a unified annotation UI, use `Shottr` directly through its own global shortcuts.
+- Because Shottr global hotkeys intercept system-wide key events, the installer never silently overwrites your existing Shottr setup. Instead, it explicitly asks before writing the recommended values `Shift + Cmd + 1/2/A/S`. If you want to apply them later, run `"$HOME/dotfiles/bin/configure-shottr-hotkeys" --force`
+- If macOS shows permission prompts the first time you launch `Shottr` or trigger its hotkeys, grant the requested permissions and then test the capture / OCR flow again.
+- If you use it for work, confirm `Shottr`'s commercial licensing terms yourself.
+
+### 6.3 Ghostty Terminal Behavior and Keybindings
 
 **Keybinding changes:**
 | Change | Official default | This project | Why |
@@ -1022,7 +1036,7 @@ This project makes a series of intentional customizations on top of the default 
 | Unfocused split opacity | `0.7` | `unfocused-split-opacity = 0.3` | More obvious distinction between focused and unfocused panes |
 | Environment variable | None | `env = GHOSTTY_RUNTIME=1` | Lets Fish detect whether it is running inside Ghostty |
 
-### 6.3 Zellij Shortcuts and Session Architecture
+### 6.4 Zellij Shortcuts and Session Architecture
 
 **Architecture changes:**
 | Change | Official default | This project | Why |
@@ -1040,7 +1054,7 @@ This project makes a series of intentional customizations on top of the default 
 | Add `h/j/k/l` navigation in all modes | Panes, tabs, resize, move, and scroll all support Vim-style navigation |
 | `Ctrl + a` enters tmux compatibility mode | Gives tmux users a muscle-memory compatibility layer |
 
-### 6.4 Fish Shell Behavior and Keybindings
+### 6.5 Fish Shell Behavior and Keybindings
 
 **Behavior changes:**
 | Change | Official default | This project | Why |
@@ -1062,7 +1076,7 @@ This project makes a series of intentional customizations on top of the default 
 | Vi cursor shapes | `normal=block`, `insert=line`, `replace=underscore` |
 | Tide `vi_mode` indicator | `D` → `N` to align with Vim community usage of `N` for Normal |
 
-### 6.5 Helix Editor Keybindings and Display
+### 6.6 Helix Editor Keybindings and Display
 
 **Keybinding changes:**
 | Change | Official default | This project | Why |
@@ -1087,7 +1101,7 @@ This project makes a series of intentional customizations on top of the default 
 | Cleanup on save | Both disabled | `trim-final-newlines` / `trim-trailing-whitespace = true` | Keep files tidy |
 | Soft wrap | Disabled | `soft-wrap.enable = true` | Automatically wrap long lines |
 
-### 6.6 Git Workflow Enhancements
+### 6.7 Git Workflow Enhancements
 
 | Change | Official default | This project | Why |
 |------|----------|--------|------|
@@ -1101,7 +1115,7 @@ This project makes a series of intentional customizations on top of the default 
 | User identity | Hardcoded in config | Injected via `include` local files | Prevent sensitive identity data from entering the repo |
 | Theme decoupling | Changing themes dirties the repo | Handled through Git Clean Filter automatically | Ensure local theme switches do not produce unstaged changes |
 
-### 6.7 macOS System Preferences and Trackpad Gestures
+### 6.8 macOS System Preferences and Trackpad Gestures
 
 | Change | Official default | This project | Why |
 |------|----------|--------|------|

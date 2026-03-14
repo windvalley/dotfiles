@@ -117,7 +117,9 @@ restow: ## 重新创建所有软链接
 			stow --restow --target=$(HOME_DIR) --dir=$(DOTFILES_DIR) $(STOW_IGNORE) --dotfiles $$pkg; \
 		fi \
 	done
+	@echo "  restow $(FISH_PACKAGE)..."
 	@stow --restow --target=$(HOME_DIR) --dir=$(DOTFILES_DIR) $(STOW_IGNORE) --dotfiles $(FISH_PACKAGE)
+	@echo "  restow $(BIN_PACKAGE)..."
 	@mkdir -p $(BIN_DIR)
 	@stow --restow --target=$(BIN_DIR) --dir=$(DOTFILES_DIR) $(STOW_IGNORE) $(BIN_PACKAGE)
 	@echo "$(GREEN)✅ 所有配置已更新$(NC)"

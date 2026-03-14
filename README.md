@@ -58,12 +58,13 @@
   - [5.9 OrbStack（可选）](#59-orbstack%E5%8F%AF%E9%80%89)
 - [6. 与官方默认的关键差异](#6-%E4%B8%8E%E5%AE%98%E6%96%B9%E9%BB%98%E8%AE%A4%E7%9A%84%E5%85%B3%E9%94%AE%E5%B7%AE%E5%BC%82)
   - [6.1 Karabiner 全局键位改造](#61-karabiner-%E5%85%A8%E5%B1%80%E9%94%AE%E4%BD%8D%E6%94%B9%E9%80%A0)
-  - [6.2 Ghostty 终端行为与键位](#62-ghostty-%E7%BB%88%E7%AB%AF%E8%A1%8C%E4%B8%BA%E4%B8%8E%E9%94%AE%E4%BD%8D)
-  - [6.3 Zellij 快捷键与会话架构](#63-zellij-%E5%BF%AB%E6%8D%B7%E9%94%AE%E4%B8%8E%E4%BC%9A%E8%AF%9D%E6%9E%B6%E6%9E%84)
-  - [6.4 Fish Shell 行为与键位](#64-fish-shell-%E8%A1%8C%E4%B8%BA%E4%B8%8E%E9%94%AE%E4%BD%8D)
-  - [6.5 Helix 编辑器键位与显示](#65-helix-%E7%BC%96%E8%BE%91%E5%99%A8%E9%94%AE%E4%BD%8D%E4%B8%8E%E6%98%BE%E7%A4%BA)
-  - [6.6 Git 工作流增强](#66-git-%E5%B7%A5%E4%BD%9C%E6%B5%81%E5%A2%9E%E5%BC%BA)
-  - [6.7 macOS 系统偏好与触控板手势](#67-macos-%E7%B3%BB%E7%BB%9F%E5%81%8F%E5%A5%BD%E4%B8%8E%E8%A7%A6%E6%8E%A7%E6%9D%BF%E6%89%8B%E5%8A%BF)
+  - [6.2 Shottr 集成说明](#62-shottr-%E9%9B%86%E6%88%90%E8%AF%B4%E6%98%8E)
+  - [6.3 Ghostty 终端行为与键位](#63-ghostty-%E7%BB%88%E7%AB%AF%E8%A1%8C%E4%B8%BA%E4%B8%8E%E9%94%AE%E4%BD%8D)
+  - [6.4 Zellij 快捷键与会话架构](#64-zellij-%E5%BF%AB%E6%8D%B7%E9%94%AE%E4%B8%8E%E4%BC%9A%E8%AF%9D%E6%9E%B6%E6%9E%84)
+  - [6.5 Fish Shell 行为与键位](#65-fish-shell-%E8%A1%8C%E4%B8%BA%E4%B8%8E%E9%94%AE%E4%BD%8D)
+  - [6.6 Helix 编辑器键位与显示](#66-helix-%E7%BC%96%E8%BE%91%E5%99%A8%E9%94%AE%E4%BD%8D%E4%B8%8E%E6%98%BE%E7%A4%BA)
+  - [6.7 Git 工作流增强](#67-git-%E5%B7%A5%E4%BD%9C%E6%B5%81%E5%A2%9E%E5%BC%BA)
+  - [6.8 macOS 系统偏好与触控板手势](#68-macos-%E7%B3%BB%E7%BB%9F%E5%81%8F%E5%A5%BD%E4%B8%8E%E8%A7%A6%E6%8E%A7%E6%9D%BF%E6%89%8B%E5%8A%BF)
 - [7. 常用维护命令 (Makefile)](#7-%E5%B8%B8%E7%94%A8%E7%BB%B4%E6%8A%A4%E5%91%BD%E4%BB%A4-makefile)
 - [8. 常见问题 (FAQ / Troubleshooting)](#8-%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98-faq--troubleshooting)
 - [9. 致谢 (Acknowledgments)](#9-%E8%87%B4%E8%B0%A2-acknowledgments)
@@ -150,16 +151,17 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/windvalley/dotfiles/main
 
 **该脚本将执行以下操作：**
 1. **环境准备**：检查并自动安装 **Homebrew**（如果尚未安装）。
-2. **核心依赖**：读取 `Brewfile`，安装所有 CLI 工具（stow, zellij, fish, helix, mise, fzf, chafa 等）与 GUI 应用（Ghostty, OrbStack, Maccy, JetBrains Mono 字体等）。
+2. **核心依赖**：读取 `Brewfile`，安装所有 CLI 工具（stow, zellij, fish, helix, mise, fzf, chafa 等）与 GUI 应用（Ghostty, OrbStack, Maccy, Shottr, JetBrains Mono 字体等）。
 3. **字体安装**：默认已通过 Brew 安装 JetBrains Mono，并**询问是否安装**其他扩展字体（Maple Mono, Geist Mono）。
-4. **软链配置**：自动识别已存在的配置并备份，然后使用 `stow` 将所有配置（含 `bin` 脚本）软链到对应的系统目录。
-5. **AI 模型同步**：自动执行 `aichat --sync-models`，将默认配置引用的模型同步到本地索引。
-6. **本地模型后端（可选）**：交互安装时会**询问是否安装并启动** `Ollama`；非交互模式默认跳过，可通过 `--with-ollama` 显式开启。脚本不会自动拉取任何本地模型。
-7. **运行时安装**：通过 **Mise** 安装核心语言运行时（Go, Node, Bun, Python, Rust）及开箱即用的基础 CLI 工具（gh, bat, eza, fd, ripgrep, glow, shellcheck 等），LSP 等工具链可稍后按需安装。
-8. **隐私配置模板**：自动在用户目录创建 Git 信息模板（`.gitconfig.local`/`.work`）、Fish 私密环境变量模板（`.fish.local.fish`）和 Ghostty 私有配置模板（`.ghostty.local`）。
-9. **Shell 初始化**：将 **Fish** 设为默认 Shell，并**自动迁移原 Zsh 的 PATH 环境变量**到 Fish 中。
-10. **插件配置**：安装 **Fisher** 插件管理器并同步所有 Fish 插件。
-11. **系统优化**：提示是否应用 **macOS 常用系统偏好设置**（通过 `macos.sh`）。
+4. **Shottr 快捷键（可选）**：如果检测到 `Shottr`，安装脚本会**询问是否写入**推荐的全局截图热键 `Shift + Cmd + 1/2/A/S`，避免静默覆盖你已有的快捷键习惯。
+5. **软链配置**：自动识别已存在的配置并备份，然后使用 `stow` 将所有配置（含 `bin` 脚本）软链到对应的系统目录。
+6. **AI 模型同步**：自动执行 `aichat --sync-models`，将默认配置引用的模型同步到本地索引。
+7. **本地模型后端（可选）**：交互安装时会**询问是否安装并启动** `Ollama`；非交互模式默认跳过，可通过 `--with-ollama` 显式开启。脚本不会自动拉取任何本地模型。
+8. **运行时安装**：通过 **Mise** 安装核心语言运行时（Go, Node, Bun, Python, Rust）及开箱即用的基础 CLI 工具（gh, bat, eza, fd, ripgrep, glow, shellcheck 等），LSP 等工具链可稍后按需安装。
+9. **隐私配置模板**：自动在用户目录创建 Git 信息模板（`.gitconfig.local`/`.work`）、Fish 私密环境变量模板（`.fish.local.fish`）和 Ghostty 私有配置模板（`.ghostty.local`）。
+10. **Shell 初始化**：将 **Fish** 设为默认 Shell，并**自动迁移原 Zsh 的 PATH 环境变量**到 Fish 中。
+11. **插件配置**：安装 **Fisher** 插件管理器并同步所有 Fish 插件。
+12. **系统优化**：提示是否应用 **macOS 常用系统偏好设置**（通过 `macos.sh`）。
 
 **使用方法：**
 ```sh
@@ -220,6 +222,9 @@ brew install btop
 # 剪贴板历史管理工具
 brew install --cask maccy
 
+# 轻量级 macOS 截图标注工具
+brew install --cask shottr
+
 # 全局键位映射工具
 brew install --cask karabiner-elements
 
@@ -240,6 +245,7 @@ brew install switchaudio-osx
 - `switchaudio-osx`: 提供 `SwitchAudioSource`，用于 `audio-volume`。
 - `grc`: 通用彩色输出查看器 (Generic Colouriser)，配合 fish 插件为 `ping` / `ls` / `docker` / `diff` 等命令提供彩色输出增强。
 - `chafa`: 终端图像字符渲染工具，用于 `p` (剪贴板历史) 命令中的高清图片预览。
+- `shottr`: 默认集成的 macOS 截图标注工具，本身就是一套独立的截图与标注工作流，支持长截图、OCR 与贴图固定；个人可免费使用，商用需自行确认许可证。若想一键写入仓库建议的全局热键，可在拉取仓库后执行：`"$HOME/dotfiles/bin/configure-shottr-hotkeys" --force`
 
 #### 3.2.2 拉取仓库
 
@@ -1003,7 +1009,15 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 - 想改保存位置、关闭缩略图预览或调整计时器，直接按 `Right Command + r` 打开工具栏，再进入 `选项` 调整即可。
 - 录屏停止后，右下角同样会出现缩略图。点进去可以预览、裁剪或分享；如果不点，系统会自动保存为 `.mov` 文件。
 
-### 6.2 Ghostty 终端行为与键位
+### 6.2 Shottr 集成说明
+
+- 本仓库会通过 Homebrew 默认安装 `Shottr`，作为默认集成的截图标注工具。
+- 如果你需要长截图、OCR、贴图固定，或者想统一使用 `Shottr` 自己的标注界面，可以直接使用它自己的全局快捷键。
+- 出于全局快捷键会抢占按键事件的考虑，安装脚本不会静默覆盖你现有的 `Shottr` 设置，而是显式询问是否写入推荐值 `Shift + Cmd + 1/2/A/S`。如果想事后补上，也可以手动执行：`"$HOME/dotfiles/bin/configure-shottr-hotkeys" --force`
+- 如果首次启动或首次触发热键时遇到 macOS 权限弹窗，按系统提示授予 `Shottr` 所需权限后，再重新测试截图或 OCR 流程即可。
+- 如果用于工作场景，请自行确认 `Shottr` 的商用授权要求。
+
+### 6.3 Ghostty 终端行为与键位
 
 **键位变更：**
 | 改动 | 官方默认 | 本项目 | 原因 |
@@ -1021,7 +1035,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | 未聚焦分屏不透明度 | `0.7` | `unfocused-split-opacity = 0.3` | 更明显区分聚焦/非聚焦面板 |
 | 环境变量 | 无 | `env = GHOSTTY_RUNTIME=1` | 供 Fish 判断是否在 Ghostty 中运行 |
 
-### 6.3 Zellij 快捷键与会话架构
+### 6.4 Zellij 快捷键与会话架构
 
 **架构变更：**
 | 改动 | 官方默认 | 本项目 | 原因 |
@@ -1039,7 +1053,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | 所有模式添加 `h/j/k/l` 导航 | 面板/标签页/调整大小/移动/滚动均支持 Vim 风格 |
 | `Ctrl + a` 进入 tmux 兼容模式 | 为 tmux 用户提供肌肉记忆兼容层 |
 
-### 6.4 Fish Shell 行为与键位
+### 6.5 Fish Shell 行为与键位
 
 **行为变更：**
 | 改动 | 官方默认 | 本项目 | 原因 |
@@ -1061,7 +1075,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | Vi 光标形状 | normal=block, insert=line, replace=underscore |
 | Tide vi_mode 标识 | `D` → `N`（对齐 Vim 社区的 Normal 缩写习惯） |
 
-### 6.5 Helix 编辑器键位与显示
+### 6.6 Helix 编辑器键位与显示
 
 **键位变更：**
 | 改动 | 官方默认 | 本项目 | 原因 |
@@ -1086,7 +1100,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | 保存时清理 | 均关闭 | `trim-final-newlines` / `trim-trailing-whitespace = true` | 保持文件整洁 |
 | 软换行 | 关闭 | `soft-wrap.enable = true` | 长行自动换行 |
 
-### 6.6 Git 工作流增强
+### 6.7 Git 工作流增强
 
 | 改动 | 官方默认 | 本项目 | 原因 |
 |------|----------|--------|------|
@@ -1100,7 +1114,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | 用户信息 | 硬编码在配置中 | 通过 `include` 引入本地文件 | 防止敏感信息入库 |
 | 主题解耦 | 切换配色会导致仓库变脏 | 使用 Git Clean Filter 自动处理 | 确保 local 配色变更不产生 unstaged changes |
 
-### 6.7 macOS 系统偏好与触控板手势
+### 6.8 macOS 系统偏好与触控板手势
 
 | 改动 | 官方默认 | 本项目 | 原因 |
 |------|----------|--------|------|

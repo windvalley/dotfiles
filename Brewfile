@@ -53,5 +53,7 @@ cask "font-jetbrains-mono-nerd-font"
 cask "orbstack"
 # 剪贴板历史管理工具
 cask "maccy"
+# 轻量级 macOS 截图标注工具
+cask "shottr"
 # 全局键位映射工具
 cask "karabiner-elements"

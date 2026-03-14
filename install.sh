@@ -217,6 +217,37 @@ install_optional_ollama() {
   fi
 }
 
+configure_shottr_hotkeys() {
+  local shottr_hotkeys_script="$DOTFILES_DIR/bin/configure-shottr-hotkeys"
+
+  if ! brew list --cask shottr >/dev/null 2>&1; then
+    info "Shottr is not installed, skipping Shottr hotkey setup."
+    return 0
+  fi
+
+  if [ ! -x "$shottr_hotkeys_script" ]; then
+    warn "Shottr hotkey helper not found at $shottr_hotkeys_script, skipping."
+    return 0
+  fi
+
+  if [ "$NON_INTERACTIVE" = true ]; then
+    info "Non-interactive mode detected, skipping optional Shottr hotkey setup."
+    return 0
+  fi
+
+  # Shottr 的全局热键会抢占系统级按键事件，因此只在用户显式确认后写入。
+  if ask_yes_no "Do you want to apply the recommended Shottr hotkeys (Shift+Cmd+1/2/A/S)?" "n"; then
+    info "Configuring Shottr hotkeys..."
+    if "$shottr_hotkeys_script" --force; then
+      success "Shottr hotkeys configured."
+    else
+      warn "Shottr hotkey configuration had issues. You can rerun manually: $shottr_hotkeys_script --force"
+    fi
+  else
+    info "Skipping Shottr hotkeys. You can rerun manually later: $shottr_hotkeys_script --force"
+  fi
+}
+
 if [ "$(uname -s)" != "Darwin" ]; then
   error "This dotfiles setup is only supported on macOS."
   exit 1
@@ -299,6 +330,7 @@ fi
 
 resolve_ollama_install_plan
 install_optional_ollama
+configure_shottr_hotkeys
 
 info "Linking configuration files with stow..."
 
