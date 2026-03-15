@@ -1,0 +1,325 @@
+#!/bin/bash
+# path-audit
+#
+# 审计 zsh -> fish 的 PATH 迁移覆盖率：
+# 1. zsh 登录链路 (`zsh -l`)
+# 2. zsh 交互登录链路 (`zsh -il`)
+# 3. fish 登录链路 (`fish -l`)
+#
+# 用途：
+# - 确认 install.sh 的自动迁移是否覆盖了 zsh 登录 PATH
+# - 找出只存在于 .zshrc / 交互插件链中的 PATH
+# - 生成可追加到 ~/.fish.local.fish 的建议片段
+
+set -euo pipefail
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+info() { echo -e "${BLUE}[INFO]${NC} $1"; }
+success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
+warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
+error() { echo -e "${RED}[ERROR]${NC} $1"; }
+
+PATH_BLOCK_BEGIN="__DOTFILES_PATH_BEGIN__"
+PATH_BLOCK_END="__DOTFILES_PATH_END__"
+verbose_output=false
+
+show_usage() {
+  cat <<'EOF'
+Usage:
+  path-audit [--verbose]
+  path-audit --help
+
+Options:
+  -v, --verbose  输出三条完整 PATH 链路
+  -h, --help     显示帮助信息
+
+What it checks:
+  1. zsh login PATH        (`zsh -l`)
+  2. zsh interactive PATH  (`zsh -il`)
+  3. fish login PATH       (`fish -l`)
+
+Interpretation:
+  - install.sh 当前只自动迁移 zsh login PATH
+  - 若某条路径只出现在 zsh interactive PATH，通常意味着它来自 .zshrc 或交互插件链
+EOF
+}
+
+normalize_path_list() {
+  awk 'NF && !seen[$0]++'
+}
+
+extract_path_block() {
+  local raw_file="$1"
+  local out_file="$2"
+
+  if ! grep -Fxq "$PATH_BLOCK_BEGIN" "$raw_file"; then
+    return 1
+  fi
+
+  awk -v begin="$PATH_BLOCK_BEGIN" -v end="$PATH_BLOCK_END" '
+    $0 == begin { in_block = 1; next }
+    $0 == end { in_block = 0; exit }
+    in_block { print }
+  ' "$raw_file" | normalize_path_list >"$out_file"
+}
+
+capture_zsh_login_path() {
+  local out_file="$1"
+  local raw_file="$2"
+
+  /bin/zsh -lc '
+    print -r -- "__DOTFILES_PATH_BEGIN__"
+    print -l -- ${(ps/:/)PATH}
+    print -r -- "__DOTFILES_PATH_END__"
+  ' >"$raw_file" 2>/dev/null
+
+  extract_path_block "$raw_file" "$out_file"
+}
+
+capture_zsh_interactive_path() {
+  local out_file="$1"
+  local raw_file="$2"
+
+  /bin/zsh -lic '
+    print -r -- "__DOTFILES_PATH_BEGIN__"
+    print -l -- ${(ps/:/)PATH}
+    print -r -- "__DOTFILES_PATH_END__"
+  ' >"$raw_file" 2>/dev/null
+
+  extract_path_block "$raw_file" "$out_file"
+}
+
+capture_fish_login_path() {
+  local out_file="$1"
+  local raw_file="$2"
+  local fish_bin=""
+
+  fish_bin="$(command -v fish)"
+
+  "$fish_bin" -lc '
+    printf "%s\n" "__DOTFILES_PATH_BEGIN__"
+    printf "%s\n" $PATH
+    printf "%s\n" "__DOTFILES_PATH_END__"
+  ' >"$raw_file" 2>/dev/null
+
+  extract_path_block "$raw_file" "$out_file"
+}
+
+diff_paths() {
+  local source_file="$1"
+  local target_file="$2"
+  local out_file="$3"
+
+  awk 'NR == FNR { seen[$0] = 1; next } NF && !seen[$0] { print }' "$target_file" "$source_file" >"$out_file"
+}
+
+count_lines() {
+  local file="$1"
+  wc -l <"$file" | tr -d ' '
+}
+
+display_path() {
+  local path_value="$1"
+
+  if [ "$path_value" = "$HOME" ]; then
+    printf '~\n'
+  elif [[ "$path_value" == "$HOME/"* ]]; then
+    printf '%s/%s\n' '~' "${path_value#"$HOME/"}"
+  else
+    printf '%s\n' "$path_value"
+  fi
+}
+
+path_literal_for_fish() {
+  local path_value="$1"
+
+  if [ "$path_value" = "$HOME" ]; then
+    printf '"$HOME"\n'
+  elif [[ "$path_value" == "$HOME/"* ]]; then
+    printf '"$HOME/%s"\n' "${path_value#"$HOME/"}"
+  else
+    printf '"%s"\n' "$path_value"
+  fi
+}
+
+print_path_list() {
+  local file="$1"
+  local line=""
+  local rendered=""
+
+  if [ ! -s "$file" ]; then
+    printf '  (无)\n'
+    return 0
+  fi
+
+  while IFS= read -r line; do
+    rendered="$(display_path "$line")"
+    if [ -d "$line" ]; then
+      printf '  - %s\n' "$rendered"
+    else
+      printf '  - %s [目录不存在]\n' "$rendered"
+    fi
+  done <"$file"
+}
+
+print_suggested_snippet() {
+  local file="$1"
+  local line=""
+  local literal=""
+  local printed=0
+
+  while IFS= read -r line; do
+    [ -d "$line" ] || continue
+    literal="$(path_literal_for_fish "$line")"
+    printf 'test -d %s; and fish_add_path --append --path %s\n' "$literal" "$literal"
+    printed=1
+  done <"$file"
+
+  if [ "$printed" -eq 0 ]; then
+    return 1
+  fi
+}
+
+print_verbose_list() {
+  local title="$1"
+  local file="$2"
+
+  printf '\n%s\n' "$title"
+  print_path_list "$file"
+}
+
+main() {
+  local temp_dir=""
+  local zsh_login_file=""
+  local zsh_login_raw=""
+  local zsh_interactive_file=""
+  local zsh_interactive_raw=""
+  local fish_login_file=""
+  local fish_login_raw=""
+  local interactive_only_file=""
+  local login_missing_in_fish_file=""
+  local interactive_missing_in_fish_file=""
+  local fish_extra_file=""
+
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      -v|--verbose) verbose_output=true ;;
+      -h|--help)
+        show_usage
+        exit 0
+        ;;
+      *)
+        error "Unknown parameter: $1"
+        show_usage
+        exit 1
+        ;;
+    esac
+    shift
+  done
+
+  if ! command -v /bin/zsh >/dev/null 2>&1; then
+    error "未找到 /bin/zsh，无法审计 zsh PATH"
+    exit 1
+  fi
+
+  if ! command -v fish >/dev/null 2>&1; then
+    error "未找到 fish，无法审计 fish PATH"
+    exit 1
+  fi
+
+  temp_dir="$(mktemp -d "${TMPDIR:-/tmp}/path-audit.XXXXXX")"
+  trap 'if [ -n "${temp_dir:-}" ]; then rm -rf "${temp_dir:-}"; fi' EXIT
+
+  zsh_login_file="$temp_dir/zsh-login.txt"
+  zsh_login_raw="$temp_dir/zsh-login.raw"
+  zsh_interactive_file="$temp_dir/zsh-interactive.txt"
+  zsh_interactive_raw="$temp_dir/zsh-interactive.raw"
+  fish_login_file="$temp_dir/fish-login.txt"
+  fish_login_raw="$temp_dir/fish-login.raw"
+  interactive_only_file="$temp_dir/interactive-only.txt"
+  login_missing_in_fish_file="$temp_dir/login-missing-in-fish.txt"
+  interactive_missing_in_fish_file="$temp_dir/interactive-missing-in-fish.txt"
+  fish_extra_file="$temp_dir/fish-extra.txt"
+
+  info "Capturing zsh/fish PATH snapshots..."
+
+  if capture_zsh_login_path "$zsh_login_file" "$zsh_login_raw"; then
+    success "已捕获 zsh 登录 PATH ($(count_lines "$zsh_login_file") 条)"
+  else
+    error "无法解析 zsh 登录 PATH"
+    exit 1
+  fi
+
+  if capture_zsh_interactive_path "$zsh_interactive_file" "$zsh_interactive_raw"; then
+    success "已捕获 zsh 交互登录 PATH ($(count_lines "$zsh_interactive_file") 条)"
+  else
+    error "无法解析 zsh 交互登录 PATH"
+    exit 1
+  fi
+
+  if capture_fish_login_path "$fish_login_file" "$fish_login_raw"; then
+    success "已捕获 fish 登录 PATH ($(count_lines "$fish_login_file") 条)"
+  else
+    error "无法解析 fish 登录 PATH"
+    exit 1
+  fi
+
+  diff_paths "$zsh_interactive_file" "$zsh_login_file" "$interactive_only_file"
+  diff_paths "$zsh_login_file" "$fish_login_file" "$login_missing_in_fish_file"
+  diff_paths "$zsh_interactive_file" "$fish_login_file" "$interactive_missing_in_fish_file"
+  diff_paths "$fish_login_file" "$zsh_interactive_file" "$fish_extra_file"
+
+  printf '\n迁移结论\n'
+
+  if [ -s "$login_missing_in_fish_file" ]; then
+    warn "Fish 当前缺少 $(count_lines "$login_missing_in_fish_file") 条 zsh 登录 PATH；这部分原本应被 install.sh 自动覆盖。"
+  else
+    success "install.sh 自动迁移范围内的 zsh 登录 PATH 已被 fish 覆盖。"
+  fi
+
+  if [ -s "$interactive_only_file" ]; then
+    warn "发现 $(count_lines "$interactive_only_file") 条仅存在于 zsh 交互链路的 PATH；它们通常来自 .zshrc 或交互插件链，install.sh 当前不会自动迁移。"
+  else
+    success "zsh 交互链路没有额外 PATH；当前迁移模型基本可以覆盖全部 zsh PATH。"
+  fi
+
+  if [ "$verbose_output" = true ]; then
+    print_verbose_list "zsh 登录 PATH" "$zsh_login_file"
+    print_verbose_list "zsh 交互登录 PATH" "$zsh_interactive_file"
+    print_verbose_list "fish 登录 PATH" "$fish_login_file"
+  fi
+
+  if [ -s "$interactive_only_file" ]; then
+    printf '\n仅存在于 zsh 交互链路的 PATH\n'
+    print_path_list "$interactive_only_file"
+  fi
+
+  if [ -s "$login_missing_in_fish_file" ]; then
+    printf '\nFish 缺少的 zsh 登录 PATH\n'
+    print_path_list "$login_missing_in_fish_file"
+  fi
+
+  if [ -s "$interactive_missing_in_fish_file" ]; then
+    printf '\nFish 缺少的 zsh 交互 PATH\n'
+    print_path_list "$interactive_missing_in_fish_file"
+  fi
+
+  if [ -s "$fish_extra_file" ] && [ "$verbose_output" = true ]; then
+    printf '\n仅存在于 fish 登录链路的 PATH\n'
+    print_path_list "$fish_extra_file"
+  fi
+
+  if [ -s "$interactive_missing_in_fish_file" ]; then
+    printf '\n建议追加到 ~/.fish.local.fish 的片段\n'
+    if ! print_suggested_snippet "$interactive_missing_in_fish_file"; then
+      printf '# 当前缺失项都不是现存目录，暂无可直接追加的片段。\n'
+    fi
+  fi
+}
+
+main "$@"

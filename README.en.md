@@ -163,7 +163,7 @@ The repository root provides an `install.sh` script that automates almost the en
 7. **Local model backend (optional)**: In interactive installs, the script **asks whether to install and start** `Ollama`; in non-interactive mode it is skipped by default unless you pass `--with-ollama`. The script does not pull any local model automatically.
 8. **Runtime installation**: Installs core language runtimes via **Mise** (Go, Node, Bun, Python, Rust) along with out-of-the-box CLI tools (gh, bat, eza, fd, ripgrep, glow, shellcheck, etc.). LSP and other toolchains can be installed on demand later.
 9. **Privacy template setup**: Automatically creates Git identity templates (`.gitconfig.local` / `.work`), a Fish private environment template (`.fish.local.fish`), and a Ghostty private config template (`.ghostty.local`) in the user's home directory.
-10. **Shell initialization**: Sets **Fish** as the default shell and **automatically migrates PATH variables from your old Zsh setup** into Fish.
+10. **Shell initialization**: Sets **Fish** as the default shell and, when clear Zsh usage signals are detected, optionally migrates PATH variables from the old Zsh setup into Fish.
 11. **Plugin setup**: Installs the **Fisher** plugin manager and syncs all Fish plugins.
 12. **System optimization**: Prompts whether to apply **common macOS system preference tweaks** via `macos.sh`.
 
@@ -357,7 +357,11 @@ fish_config theme choose dracula
 > [!IMPORTANT]
 > After switching from Zsh to Fish, PATH entries from Zsh config files such as `~/.zshrc` and `~/.zprofile` are not inherited automatically. That can make installed commands suddenly disappear from your shell.
 
-**Automatic migration (recommended)**: `install.sh` detects extra PATH entries from Zsh and writes the missing ones into a managed block inside `~/.fish.local.fish`. That keeps the source of truth visible and editable instead of hiding it in out-of-repo `fish_user_paths` state.
+**Automatic migration (recommended)**: `install.sh` first checks for clear Zsh usage signals, such as the current shell being Zsh or non-empty `~/.zshenv` / `~/.zprofile` / `~/.zshrc` / `~/.zlogin` files. Only when those signals exist will it prompt you to write extra Zsh PATH entries into a managed block inside `~/.fish.local.fish`.
+
+If you are already a long-time Fish user, the installer now defaults to skipping this step. That keeps the source of truth visible and editable without hiding anything in out-of-repo `fish_user_paths` state.
+
+If you want to audit the actual migration coverage afterwards, run `make path-audit` (or `path-audit` directly once `bin/` has been linked into `~/.local/bin`). The tool compares `zsh -l`, `zsh -il`, and `fish -l` side by side, so you can see which paths exist only in `.zshrc` or interactive plugin chains and therefore will not be migrated automatically by `install.sh`.
 
 **Manual migration**: If you want to add paths by hand, prefer putting them in `~/.fish.local.fish` as well:
 

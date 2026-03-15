@@ -126,6 +126,87 @@ update_fish_local_path_block() {
   mv "$tmp_file" "$fish_local_conf"
 }
 
+zsh_config_has_user_content() {
+  local config_file="$1"
+
+  [ -f "$config_file" ] || return 1
+
+  awk '
+    /^[[:space:]]*#/ { next }
+    NF {
+      found = 1
+      exit
+    }
+    END {
+      exit(found ? 0 : 1)
+    }
+  ' "$config_file"
+}
+
+zsh_usage_signal_summary() {
+  local summary=""
+  local config_file=""
+  local config_name=""
+  local -a zsh_config_files=(
+    "$HOME/.zshenv"
+    "$HOME/.zprofile"
+    "$HOME/.zshrc"
+    "$HOME/.zlogin"
+  )
+
+  if [[ "${SHELL:-}" == *"/zsh" ]]; then
+    summary="当前 SHELL 为 zsh"
+  fi
+
+  for config_file in "${zsh_config_files[@]}"; do
+    if zsh_config_has_user_content "$config_file"; then
+      config_name="$(basename "$config_file")"
+      if [ -n "$summary" ]; then
+        summary="${summary}；检测到非空 ${config_name}"
+      else
+        summary="检测到非空 ${config_name}"
+      fi
+    fi
+  done
+
+  [ -n "$summary" ] || return 1
+  printf '%s\n' "$summary"
+}
+
+should_migrate_zsh_path() {
+  local signal_summary=""
+  local prompt=""
+  local default_answer="y"
+
+  if ! command -v zsh &>/dev/null; then
+    info "zsh not found, skipping PATH migration."
+    return 1
+  fi
+
+  if ! signal_summary="$(zsh_usage_signal_summary)"; then
+    info "No explicit zsh usage detected, skipping zsh PATH migration."
+    return 1
+  fi
+
+  info "Detected zsh usage signals: $signal_summary"
+
+  if [[ "${SHELL:-}" == *"/fish" ]]; then
+    info "Current shell is already fish; zsh PATH migration defaults to skip."
+    prompt="Legacy zsh configuration detected. Do you want to migrate extra zsh PATH into ~/.fish.local.fish?"
+    default_answer="n"
+  else
+    prompt="Do you want to migrate extra zsh PATH into ~/.fish.local.fish?"
+    default_answer="y"
+  fi
+
+  if ask_yes_no "$prompt" "$default_answer"; then
+    return 0
+  fi
+
+  info "Skipping zsh PATH migration."
+  return 1
+}
+
 # Parse arguments
 NON_INTERACTIVE=false
 INSTALL_OLLAMA=false
@@ -528,7 +609,7 @@ else
 fi
 
 # Migrate PATH from zsh to fish (for users switching from zsh)
-if command -v zsh &>/dev/null; then
+if should_migrate_zsh_path; then
   info "Migrating PATH from zsh to ~/.fish.local.fish (with 5-second timeout protection)..."
 
   if command -v perl &>/dev/null; then
@@ -569,8 +650,6 @@ if command -v zsh &>/dev/null; then
       success "No additional PATH entries to migrate from zsh."
     fi
   fi
-else
-  info "zsh not found, skipping PATH migration."
 fi
 
 if [[ "$(uname)" == "Darwin" ]]; then

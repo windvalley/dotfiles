@@ -1,4 +1,4 @@
-.PHONY: help install stow unstow restow test clean validate fish plugins update lint docs
+.PHONY: help install stow unstow restow test clean validate fish plugins update lint docs path-audit
 
 # 默认目标
 .DEFAULT_GOAL := help
@@ -46,6 +46,7 @@ help: ## 显示帮助信息
 	@echo "  $(YELLOW)make macos$(NC)      配置 macOS 系统偏好设置"
 	@echo ""
 	@echo "$(GREEN)维护:$(NC)"
+	@echo "  $(YELLOW)make path-audit$(NC) 审计 zsh -> fish 的 PATH 迁移覆盖率"
 	@echo "  $(YELLOW)make test$(NC)       运行 lint + validate"
 	@echo "  $(YELLOW)make validate$(NC)   验证所有配置文件语法"
 	@echo "  $(YELLOW)make lint$(NC)       运行 shellcheck + Bash 基线检查"
@@ -171,6 +172,9 @@ plugins: ## 安装/更新 Fisher 插件
 	@echo "$(GREEN)✅ Fisher 插件已更新$(NC)"
 
 test: lint validate ## 运行仓库级验证
+
+path-audit: ## 审计 zsh -> fish 的 PATH 迁移覆盖率
+	@./bin/path-audit
 
 validate: ## 验证所有配置文件语法
 	@echo "$(BLUE)🔍 运行工具验证...$(NC)"
