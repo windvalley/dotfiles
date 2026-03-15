@@ -23,12 +23,13 @@ if [ -z "$file" ]; then
     exit 1
 fi
 
-# Check for gsed (GNU sed) - macOS default sed doesn't support some -E features uniformly
-if command -v gsed &>/dev/null; then
-    SED_BIN="gsed"
-else
-    SED_BIN="sed"
+# dot-theme-filter 依赖 GNU sed；项目安装链路会默认提供 gsed。
+# 这里显式失败，避免静默回退到 BSD sed 后让过滤规则失效。
+if ! command -v gsed &>/dev/null; then
+    error "gsed is required but not found. Please install gnu-sed."
+    exit 1
 fi
+SED_BIN="gsed"
 
 case "$file" in
     *ghostty/config)

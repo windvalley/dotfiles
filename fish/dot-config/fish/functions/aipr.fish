@@ -319,11 +319,21 @@ $diff_content
                 set loop_active false
 
             case E e
-                set -l editor hx
-                if set -q EDITOR
-                    set editor $EDITOR
+                set -l editor_argv hx
+                if set -q EDITOR; and test -n "$EDITOR"
+                    # 将环境变量拆成 argv 直接执行，避免通过 eval 二次解析。
+                    set editor_argv (string match -ra '\S+' -- $EDITOR)
                 end
-                eval $editor $msg_tmpfile
+
+                if test (count $editor_argv) -eq 0
+                    set editor_argv hx
+                end
+
+                if not command -sq -- $editor_argv[1]
+                    echo "❌ 编辑器不可用: $editor_argv[1]"
+                    continue
+                end
+                $editor_argv $msg_tmpfile
 
                 echo "✅ 修改已保存"
 
