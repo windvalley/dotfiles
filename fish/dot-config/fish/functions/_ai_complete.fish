@@ -1,3 +1,58 @@
+function _ai_complete__format_error -d "将后端 stderr 归一为单行摘要" --argument-names backend raw_error
+    set -l err_text (string replace -a "\r" '' -- "$raw_error" | string collect)
+    set err_text (string replace -ar '\x1b\[[0-9;?]*[ -/]*[@-~]' '' -- "$err_text" | string collect)
+    set err_text (string replace -ar '[\x00-\x08\x0b-\x1f\x7f]' '' -- "$err_text" | string collect)
+    set err_text (string trim -- "$err_text" | string collect)
+
+    if test -z "$err_text"
+        printf "❌ AI backend '%s' 调用失败。" "$backend"
+        return 0
+    end
+
+    # 优先抽取 provider 返回的 message 字段，避免把整段内部堆栈直接暴露给终端用户。
+    set -l provider_message (string match -rg '"message":"([^"]+)"' -- "$err_text" | string collect)
+    if test -n "$provider_message"
+        set -l status_code (string match -rg '\(status: ([0-9]+)\)' -- "$err_text" | string collect)
+        if test -n "$status_code"
+            printf "❌ AI backend '%s' 调用失败：%s (HTTP %s)" "$backend" "$provider_message" "$status_code"
+        else
+            printf "❌ AI backend '%s' 调用失败：%s" "$backend" "$provider_message"
+        end
+        return 0
+    end
+
+    set -l summary_lines
+    for line in (string split \n -- "$err_text")
+        set -l trimmed_line (string trim -- "$line")
+        if test -z "$trimmed_line"
+            continue
+        end
+
+        if string match -qr '^Caused by:$' -- "$trimmed_line"
+            continue
+        end
+
+        set trimmed_line (string replace -r '^Error:\s*' '' -- "$trimmed_line")
+        set trimmed_line (string replace -r '^Invalid response data:\s*' '' -- "$trimmed_line")
+
+        if test -n "$trimmed_line"; and not contains -- "$trimmed_line" $summary_lines
+            set -a summary_lines "$trimmed_line"
+        end
+    end
+
+    if test (count $summary_lines) -eq 0
+        printf "❌ AI backend '%s' 调用失败。" "$backend"
+        return 0
+    end
+
+    set -l summary (string join ' | ' -- $summary_lines | string collect)
+    if test (string length -- "$summary") -gt 220
+        set summary (string sub -s 1 -l 217 -- "$summary")"..."
+    end
+
+    printf "❌ AI backend '%s' 调用失败：%s" "$backend" "$summary"
+end
+
 function _ai_complete -d "按优先级在 q 与 aichat 之间执行一次 AI 请求"
     set -l raw_text ""
     set -l system_prompt ""
@@ -108,7 +163,7 @@ function _ai_complete -d "按优先级在 q 与 aichat 之间执行一次 AI 请
                 end
 
                 if test -n "$err_text"
-                    set last_error (printf "❌ AI backend 'q' 调用失败：%s" (string trim -- "$err_text"))
+                    set last_error (_ai_complete__format_error q "$err_text" | string collect)
                 else
                     set last_error "❌ AI backend 'q' 调用失败。"
                 end
@@ -147,7 +202,7 @@ function _ai_complete -d "按优先级在 q 与 aichat 之间执行一次 AI 请
                 end
 
                 if test -n "$err_text"
-                    set last_error (printf "❌ AI backend 'aichat' 调用失败：%s" (string trim -- "$err_text"))
+                    set last_error (_ai_complete__format_error aichat "$err_text" | string collect)
                 else
                     set last_error "❌ AI backend 'aichat' 调用失败。"
                 end
