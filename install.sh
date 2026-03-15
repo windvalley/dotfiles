@@ -83,6 +83,49 @@ fish_plugins_args() {
   printf '%s\n' "${plugins[@]}"
 }
 
+update_fish_local_path_block() {
+  local fish_local_conf="$1"
+  shift || true
+  local begin_marker="# >>> dotfiles auto-migrated zsh PATH >>>"
+  local end_marker="# <<< dotfiles auto-migrated zsh PATH <<<"
+  local tmp_file=""
+  local escaped_path=""
+  local path_entry=""
+
+  tmp_file=$(mktemp)
+
+  if [ -f "$fish_local_conf" ]; then
+    awk -v begin="$begin_marker" -v end="$end_marker" '
+      $0 == begin { skip = 1; next }
+      $0 == end { skip = 0; next }
+      !skip { print }
+    ' "$fish_local_conf" >"$tmp_file"
+  fi
+
+  if [ "$#" -gt 0 ]; then
+    if [ -s "$tmp_file" ]; then
+      printf '\n' >>"$tmp_file"
+    fi
+
+    printf '%s\n' "$begin_marker" >>"$tmp_file"
+    printf '%s\n' "# 从旧 zsh 配置中检测出的自定义 PATH；集中写入本地文件，避免污染 fish_user_paths universal state。" >>"$tmp_file"
+
+    for path_entry in "$@"; do
+      escaped_path="${path_entry//\\/\\\\}"
+      escaped_path="${escaped_path//\"/\\\"}"
+      escaped_path="${escaped_path//\$/\\$}"
+
+      printf '%s\n' "if test -d \"$escaped_path\"" >>"$tmp_file"
+      printf '%s\n' "    fish_add_path --append --path \"$escaped_path\"" >>"$tmp_file"
+      printf '%s\n' "end" >>"$tmp_file"
+    done
+
+    printf '%s\n' "$end_marker" >>"$tmp_file"
+  fi
+
+  mv "$tmp_file" "$fish_local_conf"
+}
+
 # Parse arguments
 NON_INTERACTIVE=false
 INSTALL_OLLAMA=false
@@ -484,12 +527,9 @@ else
   warn "fish_plugins not found at $DOTFILES_DIR/fish/dot-config/fish/fish_plugins, skipping plugin installation."
 fi
 
-info "Configuring Fish Homebrew PATH..."
-fish -c "fish_add_path (brew --prefix)/bin" 2>/dev/null || true
-
 # Migrate PATH from zsh to fish (for users switching from zsh)
 if command -v zsh &>/dev/null; then
-  info "Migrating PATH from zsh to fish (with 5-second timeout protection)..."
+  info "Migrating PATH from zsh to ~/.fish.local.fish (with 5-second timeout protection)..."
 
   if command -v perl &>/dev/null; then
     ZSH_PATHS=$(perl -e 'alarm 5; exec @ARGV' /bin/zsh -l -c 'echo "$PATH"' 2>/dev/null | tr ':' '\n' || true)
@@ -501,6 +541,7 @@ if command -v zsh &>/dev/null; then
     warn "Could not read legacy zsh PATH or timed out. Skipping migration."
   else
     FISH_PATHS=$(fish -l -c 'string join \n $PATH' 2>/dev/null)
+    MIGRATED_PATHS=()
 
     MIGRATED=0
     while IFS= read -r p; do
@@ -514,15 +555,17 @@ if command -v zsh &>/dev/null; then
 
       # Check if path is already in fish
       if ! echo "$FISH_PATHS" | grep -qxF "$p"; then
-        fish -c "fish_add_path --append '$p'" 2>/dev/null || true
-        info "  Added: $p"
+        MIGRATED_PATHS+=("$p")
+        info "  Queued: $p"
         MIGRATED=$((MIGRATED + 1))
       fi
     done <<<"$ZSH_PATHS"
 
     if [ "$MIGRATED" -gt 0 ]; then
-      success "Migrated $MIGRATED PATH entries from zsh to fish."
+      update_fish_local_path_block "$FISH_LOCAL_CONF" "${MIGRATED_PATHS[@]}"
+      success "Migrated $MIGRATED PATH entries into $FISH_LOCAL_CONF."
     else
+      update_fish_local_path_block "$FISH_LOCAL_CONF"
       success "No additional PATH entries to migrate from zsh."
     fi
   fi

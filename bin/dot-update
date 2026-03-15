@@ -27,11 +27,23 @@ if command -v brew &> /dev/null; then
     if [ -z "$OUTDATED" ]; then
         success "Homebrew: 所有包已是最新版本。"
     else
+        confirm=""
+
         printf '\n'
         info "以下 Homebrew 包将被升级："
         printf '%s\n' "$OUTDATED" | sed 's/^/  /'
         printf '\n'
-        read -r -p "确认升级以上包？[y/N] " confirm
+
+        # 直接从 /dev/tty 读取确认，避免在 CI、管道或其他非交互场景中因为 stdin 不可读而提前退出。
+        if [ -r /dev/tty ]; then
+            if ! read -r -p "确认升级以上包？[y/N] " confirm </dev/tty; then
+                info "终端输入已取消，默认跳过 Homebrew 升级。"
+                confirm=""
+            fi
+        else
+            info "检测到非交互环境，默认跳过 Homebrew 升级。"
+        fi
+
         if [[ "$confirm" =~ ^[Yy]$ ]]; then
             brew upgrade
             success "Homebrew updated."

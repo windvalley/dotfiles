@@ -341,9 +341,6 @@ chsh -s $(which fish)
 # 检查是否已经切换成功
 echo $SHELL
 
-# 让 fish 识别 Homebrew 安装的程序
-fish_add_path (brew --prefix)/bin
-
 # 生成命令补全（自动从 man 页面解析）
 fish_update_completions
 
@@ -351,22 +348,26 @@ fish_update_completions
 fish_config theme choose dracula
 ```
 
+> [!TIP]
+> Homebrew 的 `bin/sbin` 路径已由仓库中的 `config.fish` 自动处理，通常不需要再手动执行 `fish_add_path (brew --prefix)/bin`。
+
 ### 4.2 从 zsh 迁移
 
 > [!IMPORTANT]
 > 从 zsh 切换到 fish 后，zsh 配置文件（`~/.zshrc`、`~/.zprofile` 等）中的 PATH 不会自动继承，可能导致已安装软件的命令找不到。
 
-**自动迁移（推荐）**：`install.sh` 会自动检测 zsh 的 PATH 并将缺失的路径添加到 fish，无需手动操作。
+**自动迁移（推荐）**：`install.sh` 会自动检测 zsh 中额外的 PATH，并把缺失项写入 `~/.fish.local.fish` 的托管区块里。这样路径来源是可见、可编辑的，不会落到 `fish_user_paths` 这种仓库外的隐式 state。
 
-**手动迁移**：如需手动添加路径，使用 `fish_add_path`：
+**手动迁移**：如需手动添加路径，建议也写进 `~/.fish.local.fish`：
 
 ```fish
-fish_add_path ~/.cargo/bin
-fish_add_path ~/.local/bin
+# ~/.fish.local.fish
+test -d "$HOME/.cargo/bin"; and fish_add_path --append --path "$HOME/.cargo/bin"
+test -d "$HOME/.local/bin"; and fish_add_path --append --path "$HOME/.local/bin"
 ```
 
 > [!TIP]
-> `fish_add_path` 是持久化的（写入 universal 变量），只需执行一次，重启后仍然生效。
+> 配置更新后执行 `exec fish -l` 即可生效。
 > 可用 `printf '%s\n' $PATH` 查看当前所有路径。
 
 ### 4.3 本地私有配置 (不入库)

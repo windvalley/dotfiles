@@ -342,9 +342,6 @@ After restarting the terminal (or running `exec fish -l`), execute the following
 # Verify the shell switch
 echo $SHELL
 
-# Let Fish discover Homebrew-installed programs
-fish_add_path (brew --prefix)/bin
-
 # Generate completions automatically from man pages
 fish_update_completions
 
@@ -352,22 +349,26 @@ fish_update_completions
 fish_config theme choose dracula
 ```
 
+> [!TIP]
+> Homebrew `bin/sbin` paths are already handled by the repo's `config.fish`, so you usually do not need to run `fish_add_path (brew --prefix)/bin` manually.
+
 ### 4.2 Migrate from Zsh
 
 > [!IMPORTANT]
 > After switching from Zsh to Fish, PATH entries from Zsh config files such as `~/.zshrc` and `~/.zprofile` are not inherited automatically. That can make installed commands suddenly disappear from your shell.
 
-**Automatic migration (recommended)**: `install.sh` automatically detects your Zsh PATH entries and adds any missing paths into Fish, so no manual steps are needed.
+**Automatic migration (recommended)**: `install.sh` detects extra PATH entries from Zsh and writes the missing ones into a managed block inside `~/.fish.local.fish`. That keeps the source of truth visible and editable instead of hiding it in out-of-repo `fish_user_paths` state.
 
-**Manual migration**: If you want to add paths by hand, use `fish_add_path`:
+**Manual migration**: If you want to add paths by hand, prefer putting them in `~/.fish.local.fish` as well:
 
 ```fish
-fish_add_path ~/.cargo/bin
-fish_add_path ~/.local/bin
+# ~/.fish.local.fish
+test -d "$HOME/.cargo/bin"; and fish_add_path --append --path "$HOME/.cargo/bin"
+test -d "$HOME/.local/bin"; and fish_add_path --append --path "$HOME/.local/bin"
 ```
 
 > [!TIP]
-> `fish_add_path` is persistent because it writes to universal variables. You only need to run it once.
+> Run `exec fish -l` after updating the file.
 > Use `printf '%s\n' $PATH` to inspect the current path list.
 
 ### 4.3 Local Private Configurations (Not Committed)

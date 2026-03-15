@@ -46,6 +46,7 @@ help: ## 显示帮助信息
 	@echo "  $(YELLOW)make macos$(NC)      配置 macOS 系统偏好设置"
 	@echo ""
 	@echo "$(GREEN)维护:$(NC)"
+	@echo "  $(YELLOW)make test$(NC)       运行 lint + validate"
 	@echo "  $(YELLOW)make validate$(NC)   验证所有配置文件语法"
 	@echo "  $(YELLOW)make lint$(NC)       运行 shellcheck + Bash 基线检查"
 	@echo "  $(YELLOW)make docs$(NC)       生成或更新 README 的目录 (TOC)"
@@ -149,19 +150,27 @@ plugins: ## 安装/更新 Fisher 插件
 		echo "$(RED)  ❌ Fish 未安装$(NC)"; \
 		exit 1; \
 	fi
-	@if ! fish -c "type -q fisher" 2>/dev/null; then \
-		echo "  安装 Fisher..."; \
-		tmp=$$(mktemp); \
-		curl -fsSL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish -o "$$tmp" && \
-		fish -c "source '$$tmp' && fisher install jorgebucaran/fisher"; \
-		rm -f "$$tmp"; \
-	fi
 	@echo "  清理残留插件缓存..."
 	@rm -rf $(HOME)/.local/share/fisher
+	@echo "  安装 Fisher..."
+	@tmp=$$(mktemp); \
+	if ! curl -fsSL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish -o "$$tmp"; then \
+		rm -f "$$tmp"; \
+		echo "$(RED)  ❌ Fisher 下载失败$(NC)"; \
+		exit 1; \
+	fi; \
+	if ! fish -c "source '$$tmp' && fisher install jorgebucaran/fisher"; then \
+		rm -f "$$tmp"; \
+		echo "$(RED)  ❌ Fisher 安装失败$(NC)"; \
+		exit 1; \
+	fi; \
+	rm -f "$$tmp"
 	@if [ -f fish/dot-config/fish/fish_plugins ]; then \
 		fish -c "fisher install (cat fish/dot-config/fish/fish_plugins)"; \
 	fi
 	@echo "$(GREEN)✅ Fisher 插件已更新$(NC)"
+
+test: lint validate ## 运行仓库级验证
 
 validate: ## 验证所有配置文件语法
 	@echo "$(BLUE)🔍 运行工具验证...$(NC)"
