@@ -249,7 +249,7 @@ brew install switchaudio-osx
 - `switchaudio-osx`: Provides `SwitchAudioSource`, used by `audio-volume`.
 - `grc`: Generic Colouriser. Combined with Fish plugins, it adds colored output enhancements to commands like `ping`, `ls`, `docker`, and `diff`.
 - `chafa`: Terminal character image rendering utility, used for high-res image previews in the `p` (clipboard history) command.
-- `shottr`: The default macOS screenshot annotation tool in this setup. It is its own capture-and-annotation workflow, with support for scrolling captures, OCR, and pinned overlays. Personal use is free; confirm licensing separately for commercial use. If you want to apply the repository's recommended global hotkeys in one shot after cloning, run `"$HOME/dotfiles/bin/configure-shottr-hotkeys" --force`
+- `shottr`: The default macOS screenshot annotation tool in this setup. It is its own capture-and-annotation workflow, with support for scrolling captures, OCR, and pinned overlays. Under Shottr's current licensing terms, personal use is free and commercial use requires a paid license. If you want to apply the repository's recommended global hotkeys in one shot after cloning, run `"$HOME/dotfiles/bin/configure-shottr-hotkeys" --force`
 
 #### 3.2.2 Clone the Repository
 
@@ -1053,7 +1053,7 @@ This project makes a series of intentional customizations on top of the default 
 - If you want scrolling captures, OCR, pinned overlays, or a unified annotation UI, use `Shottr` directly through its own global shortcuts.
 - Because Shottr global hotkeys intercept system-wide key events, the installer never silently overwrites your existing Shottr setup. Instead, it explicitly asks before writing the recommended values `Shift + Cmd + 1/2/A/S`. If you want to apply them later, run `"$HOME/dotfiles/bin/configure-shottr-hotkeys" --force`
 - If macOS shows permission prompts the first time you launch `Shottr` or trigger its hotkeys, grant the requested permissions and then test the capture / OCR flow again.
-- If you use it for work, confirm `Shottr`'s commercial licensing terms yourself.
+- Under Shottr's current licensing terms, personal use is free and commercial use requires a paid license.
 
 ### 6.3 Ghostty Terminal Behavior and Keybindings
 

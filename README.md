@@ -252,7 +252,7 @@ brew install switchaudio-osx
 - `switchaudio-osx`: 提供 `SwitchAudioSource`，用于 `audio-volume`。
 - `grc`: 通用彩色输出查看器 (Generic Colouriser)，配合 fish 插件为 `ping` / `ls` / `docker` / `diff` 等命令提供彩色输出增强。
 - `chafa`: 终端图像字符渲染工具，用于 `p` (剪贴板历史) 命令中的高清图片预览。
-- `shottr`: 默认集成的 macOS 截图标注工具，本身就是一套独立的截图与标注工作流，支持长截图、OCR 与贴图固定；个人可免费使用，商用需自行确认许可证。若想一键写入仓库建议的全局热键，可在拉取仓库后执行：`"$HOME/dotfiles/bin/configure-shottr-hotkeys" --force`
+- `shottr`: 默认集成的 macOS 截图标注工具，本身就是一套独立的截图与标注工作流，支持长截图、OCR 与贴图固定；根据 `Shottr` 官方当前授权条款，个人用途免费，商业用途需购买许可证。若想一键写入仓库建议的全局热键，可在拉取仓库后执行：`"$HOME/dotfiles/bin/configure-shottr-hotkeys" --force`
 
 #### 3.2.2 拉取仓库
 
@@ -1050,7 +1050,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 - 如果你需要长截图、OCR、贴图固定，或者想统一使用 `Shottr` 自己的标注界面，可以直接使用它自己的全局快捷键。
 - 出于全局快捷键会抢占按键事件的考虑，安装脚本不会静默覆盖你现有的 `Shottr` 设置，而是显式询问是否写入推荐值 `Shift + Cmd + 1/2/A/S`。如果想事后补上，也可以手动执行：`"$HOME/dotfiles/bin/configure-shottr-hotkeys" --force`
 - 如果首次启动或首次触发热键时遇到 macOS 权限弹窗，按系统提示授予 `Shottr` 所需权限后，再重新测试截图或 OCR 流程即可。
-- 如果用于工作场景，请自行确认 `Shottr` 的商用授权要求。
+- 根据 `Shottr` 官方当前授权条款，个人用途免费，商业用途需购买许可证。
 
 ### 6.3 Ghostty 终端行为与键位
 

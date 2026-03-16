@@ -210,7 +210,9 @@ function s -d "SSH 主机管理与快速连接 (基于 fzf)"
             if test -z "$h"; continue; end
 
             for entry in $entries
-                if string match -r "^$h \[.*" "$entry" >/dev/null
+                # Host alias 可能包含 "." 等正则元字符，这里只比较条目的首字段，避免误匹配。
+                set -l entry_host (string split -m 1 ' ' -- "$entry")[1]
+                if test "$entry_host" = "$h"
                     # Extract count from history line "count hostname"
                     set -l count (string split ' ' -- (string trim "$line"))[1]
                     set -l starred_entry "⭐$count $entry"
