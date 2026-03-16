@@ -687,7 +687,7 @@ aichat hi
 **Layout**:
 - **Default layout**: `dev-workspace` (defined at `~/.config/zellij/layouts/dev-workspace.kdl`), path-agnostic by default, so all panes inherit the current directory used to launch Zellij.
 - **Built-in language-specific layouts**: Includes specialized workspace layouts such as `layout-go`, `layout-rust`, `layout-python`, `layout-node`, `layout-cpp`, and `layout-fullstack`, providing out-of-the-box tailored pane splits and functional tabs.
-- **Smart Launcher**: Use the custom `zj` command to launch Zellij from any directory. It auto-detects the project structure and smartly selects a tailored layout. The command is **terminal-aware**: in a **bare terminal**, it starts directly; if run from **inside an active Zellij session**, it automatically **opens a new Ghostty window** via AppleScript to create or reattach to the session, elegantly avoiding nesting restrictions. Multiple Ghostty windows/sessions created this way can be quickly toggled using the `Ctrl + \`` shortcut.
+- **Smart Launcher**: Use the custom `zj` command to launch Zellij from any directory. It auto-detects the project structure and smartly selects a tailored layout, while generating a stable session name from the current working context: inside a Git repository, it automatically collapses to a repository-level session; in ordinary directories, it distinguishes sessions by the current directory. The command is **terminal-aware**: in a **bare terminal**, it starts directly; if run from **inside an active Zellij session**, it automatically **opens a new Ghostty window** via AppleScript to create or reattach to the session, elegantly avoiding nesting restrictions. Multiple Ghostty windows/sessions created this way can be quickly toggled using the `Ctrl + \`` shortcut.
 - **Load layout manually**: `zellij --layout <layout_name>` (e.g., `zellij --layout layout-go`)
 
 ---
@@ -737,7 +737,7 @@ aichat hi
 | `gtd <tag>` | Delete a Git tag locally and remotely in one command |
 | `gdoctor` | Git repository health diagnostic tool: detects interrupted operations, working tree status, remote sync, stale branches, loose objects, and data integrity, with actionable fix suggestions |
 | `lg` | Launch `lazygit` terminal UI |
-| `zj` | Smart project-aware Zellij launcher. Unified behavior to "prepare a session for the current directory". Automatically opens a new window if run inside Zellij to avoid nesting conflicts |
+| `zj` | Smart project-aware Zellij launcher. Generates a stable session name from the current working context: Git projects collapse to a repository-level session, while ordinary directories are distinguished by the current directory. Automatically opens a new window if run inside Zellij to avoid nesting conflicts |
 
 > [!TIP]
 > **FZF Performance Boost**: This project integrates `fd` as the default search backend for `fzf`. This means interactive commands like `zi` are not only lightning fast but also automatically respect `.gitignore` rules.
