@@ -45,6 +45,11 @@
     # pull 时默认使用 rebase 而非 merge（保持提交历史线性整洁）
     rebase = true
 
+[rebase]
+    # pull --rebase / git rebase 遇到已跟踪文件的本地改动时，先自动 stash，完成后再自动恢复
+    # 这样日常 `git pull` 不需要因为工作区有零散改动而频繁手动 stash
+    autoStash = true
+
 [push]
     # 自动关联远程同名分支（无需每次 git push --set-upstream origin ...）
     autoSetupRemote = true
