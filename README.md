@@ -1178,7 +1178,6 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 | `make lint` | 静态分析仓库中的 Shell 脚本（含 `bootstrap.sh`、`install.sh`、`macos.sh` 和 `bin/*`） |
 | `make docs` | 生成或更新 README 的目录 (TOC) |
 | `make update` | 拉取远程代码并更新所有核心工具链体系 (`dot-update`) |
-| `make clean` | 清理临时文件 (`.bak`, `.tmp` 等) |
 
 ## 8. 常见问题 (FAQ / Troubleshooting)
 

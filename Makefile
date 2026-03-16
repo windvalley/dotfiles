@@ -1,4 +1,4 @@
-.PHONY: help install stow unstow restow test clean validate fish plugins update lint docs path-audit
+.PHONY: help install stow unstow restow test validate fish plugins update lint docs path-audit
 
 # 默认目标
 .DEFAULT_GOAL := help
@@ -52,7 +52,6 @@ help: ## 显示帮助信息
 	@echo "  $(YELLOW)make lint$(NC)       运行 shellcheck + Bash 基线检查"
 	@echo "  $(YELLOW)make docs$(NC)       生成或更新 README 的目录 (TOC)"
 	@echo "  $(YELLOW)make update$(NC)     更新 dotfiles 仓库与所有工具链"
-	@echo "  $(YELLOW)make clean$(NC)      清理临时文件"
 	@echo ""
 
 install: ## 运行安装脚本
@@ -222,10 +221,3 @@ update: ## 更新 dotfiles 仓库与所有工具链
 	@./bin/dot-update
 	@echo "$(GREEN)✅ 更新完成$(NC)"
 	@echo "  $(YELLOW)提示:$(NC) 运行 'make restow' 应用最新配置"
-
-clean: ## 清理临时文件
-	@echo "$(BLUE)🧹 清理临时文件...$(NC)"
-	@find . -type f -name '*.bak' -delete
-	@find . -type f -name '*.tmp' -delete
-	@find . -type f -name '*~' -delete
-	@echo "$(GREEN)✅ 清理完成$(NC)"

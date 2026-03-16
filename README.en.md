@@ -1181,7 +1181,6 @@ This project introduces a `Makefile` to standardize daily maintenance tasks and 
 | `make lint` | Run shellcheck on repository Shell scripts, including `bootstrap.sh`, `install.sh`, `macos.sh`, and `bin/*` |
 | `make docs` | Generate or update the README TOC |
 | `make update` | Pull remote code and update the entire core toolchain stack via `dot-update` |
-| `make clean` | Clean temporary files such as `.bak` and `.tmp` |e switches do not produce unstaged changes |
 
 ## 8. FAQ / Troubleshooting
 
