@@ -16,13 +16,76 @@ function aic -d "根据代码变更自动生成 Git Commit 信息"
         echo "❌ 当前目录不是 Git 仓库"
         return 1
     end
-    
-    # 使用 string collect 可以保留完整的换行符和 diff 格式
-    set -l diff (git diff --cached | string collect)
-    if test -z "$diff"
+
+    set -l diff_tmpfile (mktemp)
+    command git diff --cached >"$diff_tmpfile"
+    if test $status -ne 0
+        rm -f "$diff_tmpfile"
+        echo "❌ 无法读取暂存区 diff"
+        return 1
+    end
+
+    if not test -s "$diff_tmpfile"
+        rm -f "$diff_tmpfile"
         echo "❌ 没有暂存的更改，请先 git add"
         return 1
     end
+
+    # 超大 diff 或超长单行会让 Fish 的 string collect 明显卡顿，这里先做 fail-fast。
+    set -l max_diff_bytes 200000
+    if set -q AIC_MAX_DIFF_BYTES
+        set -l configured_max_diff_bytes (string trim -- "$AIC_MAX_DIFF_BYTES")
+        if string match -qr '^[0-9]+$' -- "$configured_max_diff_bytes"
+            set max_diff_bytes "$configured_max_diff_bytes"
+        end
+    end
+
+    set -l max_diff_line_bytes 50000
+    if set -q AIC_MAX_DIFF_LINE_BYTES
+        set -l configured_max_diff_line_bytes (string trim -- "$AIC_MAX_DIFF_LINE_BYTES")
+        if string match -qr '^[0-9]+$' -- "$configured_max_diff_line_bytes"
+            set max_diff_line_bytes "$configured_max_diff_line_bytes"
+        end
+    end
+
+    set -l diff_bytes (wc -c <"$diff_tmpfile" | string trim)
+    set -l diff_max_line_bytes (command awk 'max < length { max = length } END { print max + 0 }' "$diff_tmpfile" | string trim)
+
+    if test "$diff_bytes" -gt "$max_diff_bytes" -o "$diff_max_line_bytes" -gt "$max_diff_line_bytes"
+        set -l large_file_hints (begin
+            for file in (command git diff --cached --name-only)
+                set -l file_diff_bytes (command git diff --cached -- "$file" | wc -c | string trim)
+                if test -n "$file_diff_bytes"; and test "$file_diff_bytes" -gt "$max_diff_line_bytes"
+                    printf '%s\t%s\n' "$file_diff_bytes" "$file"
+                end
+            end
+        end | sort -nr | head -n 5)
+
+        echo "❌ 暂存区 diff 过大，已停止调用 AI，避免终端卡住"
+        echo "   总大小: $diff_bytes bytes (阈值: $max_diff_bytes)"
+        echo "   最长单行: $diff_max_line_bytes bytes (阈值: $max_diff_line_bytes)"
+
+        if test -n "$large_file_hints"
+            echo "   疑似大文件:"
+            for hint in (string split \n -- "$large_file_hints")
+                if test -z "$hint"
+                    continue
+                end
+                set -l hint_parts (string split \t -- "$hint")
+                if test (count $hint_parts) -ge 2
+                    echo "   - $hint_parts[2] ($hint_parts[1] bytes)"
+                end
+            end
+        end
+
+        echo "   建议: 将 SQL dump / 快照 / 生成文件移出暂存区，拆分提交后重试，或直接手写提交信息。"
+        rm -f "$diff_tmpfile"
+        return 1
+    end
+
+    # 通过体积检查后，再使用 string collect 保留完整的换行符和 diff 格式。
+    set -l diff (cat "$diff_tmpfile" | string collect)
+    rm -f "$diff_tmpfile"
 
     # 交互式语言选择
     set -l is_chinese 0
