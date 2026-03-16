@@ -49,8 +49,37 @@ end tell
 
     # 以下是裸终端中的正常创建/attach 逻辑
 
-    # 生成当前基于目录的会话名 (移除非字母数字_-字符以防格式问题)
-    set -l session_name (basename $PWD | string replace -a -r '[^a-zA-Z0-9_-]' '_')
+    # 会话名直接使用完整路径上下文：
+    # 1. 仓库内优先使用 Git 根目录作为项目锚点，保证在任意子目录执行 zj 都会附着到同一个项目会话。
+    # 2. 家目录内使用相对 $HOME 的路径，避免把固定的 Users_xg 前缀带进会话名。
+    # 3. 路径段之间用双下划线连接，读起来仍然直观，同时比只取父目录更不容易撞名。
+    set -l session_dir (pwd -P)
+    set -l session_anchor_dir "$session_dir"
+    if git rev-parse --show-toplevel >/dev/null 2>&1
+        set session_anchor_dir (git rev-parse --show-toplevel 2>/dev/null)
+    end
+
+    set -l session_label_source "$session_anchor_dir"
+    if string match -q "$HOME/*" -- "$session_anchor_dir"
+        set session_label_source (string replace -r "^$HOME/" '' -- "$session_anchor_dir")
+    else
+        set session_label_source (string replace -r '^/' '' -- "$session_anchor_dir")
+    end
+
+    set -l session_label_parts
+    for part in (string split "/" -- "$session_label_source")
+        set -l sanitized_part (string replace -a -r '[^a-zA-Z0-9_-]' '_' -- "$part" | string trim -c '_')
+        if test -n "$sanitized_part"
+            set -a session_label_parts "$sanitized_part"
+        end
+    end
+
+    set -l session_label "workspace"
+    if test (count $session_label_parts) -gt 0
+        set session_label (string join "__" -- $session_label_parts)
+    end
+
+    set -l session_name "$session_label"
 
     # 检查会话是否已存在，如果存在直接 Attach，不再重新应用 Layout
     if zellij list-sessions -s 2>/dev/null | string match -q "$session_name"
