@@ -626,6 +626,7 @@ aichat hi
 | `Cmd + Shift + ,` | Reload config after editing |
 | `Cmd + ;` | Open Quick Terminal (custom shortcut) |
 | `Cmd + n` | Open a new window (plain Fish terminal, skips Zellij auto-start) |
+| `Cmd + click` | Open a URL shown on screen in bare Ghostty (without entering Zellij) |
 
 > [!NOTE]
 > It is recommended to use Zellij tabs and panes instead of Ghostty's native tabs and splits, so you get more flexible layout control and cross-session persistence.
@@ -683,6 +684,7 @@ aichat hi
 | Shortcut | Function |
 |--------|------|
 | `Cmd + 1-9` | Switch to a specific tab |
+| `Shift + Cmd + click` | Open a URL shown on screen inside a Zellij session (`Shift` hands the mouse click back to the terminal) |
 
 **Layout**:
 - **Default layout**: `dev-workspace` (defined at `~/.config/zellij/layouts/dev-workspace.kdl`), path-agnostic by default, so all panes inherit the current directory used to launch Zellij.

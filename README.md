@@ -624,6 +624,7 @@ aichat hi
 | `Cmd + Shift + ,` | 重载配置（修改配置文件后按此快捷键生效） |
 | `Cmd + ;` | 打开 Quick Terminal（自定义快捷键）|
 | `Cmd + n` | 新建窗口（纯 Fish 裸终端，不触发 Zellij 自动启动） |
+| `Cmd + 点击` | 在裸 Ghostty（未进入 Zellij）中打开屏幕上的 URL |
 
 > [!NOTE]
 > 建议使用 Zellij 的标签页和面板功能替代 Ghostty 原生标签页和分屏功能，以获得更灵活的布局控制和跨会话保持能力。
@@ -681,6 +682,7 @@ aichat hi
 | 快捷键 | 功能 |
 |--------|------|
 | `Cmd + 1-9` | 切换到指定标签页 |
+| `Shift + Cmd + 点击` | 在 Zellij 会话中打开屏幕上的 URL（`Shift` 将鼠标点击交还给终端） |
 
 **布局**：
 - **默认布局**：`dev-workspace`（定义于 `~/.config/zellij/layouts/dev-workspace.kdl`），不绑定固定仓库路径，所有 pane 默认继承启动 Zellij 时的当前目录。
