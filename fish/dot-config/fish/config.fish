@@ -155,6 +155,14 @@ if status is-interactive
     abbr -a -g gcl 'git clean -fd' # 清理未跟踪文件和目录（危险操作，请确认后使用）
     abbr -a -g gsw 'git switch' # 切换分支 (推荐的现代分支方式)
     abbr -a -g gswc 'git switch -c' # 创建并切换分支
+    abbr -a -g gwt 'git worktree' # Git 多工作树入口：同仓库并行检出多个分支
+    abbr -a -g gwtl 'git worktree list' # 查看所有 worktree 及其对应分支
+    abbr -a -g gwtlv 'git worktree list -v' # 查看 worktree 详细状态（含锁定/可清理标记）
+    abbr -a -g gwta 'git worktree add' # 新建 worktree；省略分支时默认按目录名创建分支
+    abbr -a -g gwtad 'git worktree add --detach' # 新建脱离分支的临时 worktree，适合试验或排查
+    abbr -a -g gwtr 'git worktree remove' # 移除已完成的 linked worktree（要求工作区干净）
+    abbr -a -g gwtp 'git worktree prune -v' # 清理手工删除目录后残留的 worktree 元数据
+    abbr -a -g gwtpn 'git worktree prune -n -v' # 预演将要清理的失效 worktree 元数据
     abbr -a -g gr 'git reset' # 重置暂存区或 HEAD 状态
     abbr -a -g grh 'git reset HEAD' # 仅重置暂存区 (撤销 add)
     abbr -a -g gro 'git restore' # 撤销工作区修改 (推荐的现代重置方式)
