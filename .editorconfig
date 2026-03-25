@@ -66,9 +66,13 @@ indent_size = unset      # 让编辑器显示用户偏好的 Tab 宽度
 indent_size = 4
 max_line_length = 88     # 匹配 Black 格式化工具默认
 
-# JavaScript/TypeScript/JSON/YAML：社区主流（2空格）
+# JavaScript/TypeScript/JSON：社区主流（2空格）
 # Prettier 默认也是 2 空格
-[*.{js,ts,jsx,tsx,json,yml,yaml}]
+[*.{js,ts,jsx,tsx,json}]
+indent_size = 2
+
+# YAML 配置文件
+[*.{yml,yaml}]
 indent_size = 2
 
 # Ruby：社区规范（2空格）
@@ -90,6 +94,7 @@ indent_size = 2
 # KDL（Zellij 配置）
 [*.kdl]
 indent_size = 2
+max_line_length = off
 
 # Fish 脚本：官方推荐 2 空格
 [*.fish]
