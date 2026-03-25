@@ -31,8 +31,6 @@ brew "aichat"
 brew "git-delta"
 # 通用日志/输出着色器
 brew "grc"
-# 终端高清晰度图像查看器 (支持 kitty protocol, 用于 fzf 预览)
-brew "chafa"
 
 # --- System Utilities (系统工具) ---
 # GNU 版本的 awk, sed, grep (macOS 自带的是 BSD 版本，功能较弱)
@@ -51,8 +49,6 @@ cask "ghostty@tip"
 cask "font-jetbrains-mono-nerd-font"
 # 轻量级 Docker 容器与 Linux 虚拟机管理工具 (替代 Docker Desktop)
 cask "orbstack"
-# 剪贴板历史管理工具
-cask "maccy"
 # 轻量级 macOS 截图标注工具
 cask "shottr"
 # 全局键位映射工具

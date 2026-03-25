@@ -155,7 +155,7 @@ The repository root provides an `install.sh` script that automates almost the en
 
 **The script performs the following:**
 1. **Environment preparation**: Checks for and installs **Homebrew** automatically if it is not already installed.
-2. **Core dependencies**: Reads `Brewfile` and installs all CLI tools (stow, zellij, fish, helix, mise, fzf, chafa, etc.) and GUI apps (Ghostty, OrbStack, Maccy, Shottr, JetBrains Mono font, etc.).
+2. **Core dependencies**: Reads `Brewfile` and installs all CLI tools (stow, zellij, fish, helix, mise, fzf, etc.) and GUI apps (Ghostty, OrbStack, Shottr, JetBrains Mono font, etc.).
 3. **Font installation**: JetBrains Mono is installed through Brew by default, and the script **asks whether to install** other extended fonts (Maple Mono, Geist Mono).
 4. **Shottr hotkeys (optional)**: If `Shottr` is installed, the script **asks whether to write** the recommended global capture shortcuts `Shift + Cmd + 1/2/A/S` so it never silently overwrites your existing hotkey habits.
 5. **Symlink setup**: Detects existing configs, backs them up automatically, then uses `stow` to symlink all configs, including the `bin` scripts, into the correct system locations.
@@ -223,9 +223,6 @@ brew install aichat
 # Modern cross-platform system resource monitor
 brew install btop
 
-# Clipboard history manager
-brew install --cask maccy
-
 # Lightweight macOS screenshot annotation tool
 brew install --cask shottr
 
@@ -236,7 +233,7 @@ brew install --cask karabiner-elements
 brew install --cask font-jetbrains-mono-nerd-font
 
 # Common tools
-brew install fzf zoxide grc gawk gnu-sed grep chafa
+brew install fzf zoxide grc gawk gnu-sed grep
 
 # Volume control
 brew install switchaudio-osx
@@ -248,7 +245,6 @@ brew install switchaudio-osx
 - `gnu-sed`: Provides `gsed`, used by scripts such as `colorscheme`, `font-size`, and `opacity`.
 - `switchaudio-osx`: Provides `SwitchAudioSource`, used by `audio-volume`.
 - `grc`: Generic Colouriser. Combined with Fish plugins, it adds colored output enhancements to commands like `ping`, `ls`, `docker`, and `diff`.
-- `chafa`: Terminal character image rendering utility, used for high-res image previews in the `p` (clipboard history) command.
 - `shottr`: The default macOS screenshot annotation tool in this setup. It is its own capture-and-annotation workflow, with support for scrolling captures, OCR, and pinned overlays. Under Shottr's current licensing terms, personal use is free and commercial use requires a paid license. If you want to apply the repository's recommended global hotkeys in one shot after cloning, run `"$HOME/dotfiles/bin/configure-shottr-hotkeys" --force`
 
 #### 3.2.2 Clone the Repository
@@ -733,7 +729,6 @@ aichat hi
 | `aip` | Plug-and-play AI prompt library. Interactively pick common development prompts and copy them to the clipboard automatically |
 | `q [prompt]` | Run the local model declared by `AI_LOCAL_MODEL` directly through Ollama; thinking follows `AI_LOCAL_THINK` (defaults to `false` when unset); without arguments it starts an interactive session |
 | `b [query]` | Search for a file and preview it with bat. Opens directly if the query matches a single result |
-| `p [query]` | Preview and search macOS clipboard history via fzf, with native terminal image and text rendering. Auto-copies if the query matches a single result (depends on Maccy and chafa) |
 | `s [query]` | Parse hosts from `~/.ssh/config`, choose one via fzf, then establish the SSH connection |
 | `rec [name]` | Minimal terminal screencast tool based on asciinema, supporting record, replay (`rec play`), and web upload (`rec upload`) |
 | `gtd <tag>` | Delete a Git tag locally and remotely in one command |
@@ -743,9 +738,6 @@ aichat hi
 
 > [!TIP]
 > **FZF Performance Boost**: This project integrates `fd` as the default search backend for `fzf`. This means interactive commands like `zi` are not only lightning fast but also automatically respect `.gitignore` rules.
-
-> [!TIP]
-> In non-terminal environments (e.g., browsers, messaging apps, IDEs), you can use Maccy's global shortcut `Cmd + Shift + C` to open the clipboard selection panel directly, without entering the terminal. The `p` command is an enhanced TUI version designed specifically for terminal power users.
 
 **Built-in Abbreviations**:
 
