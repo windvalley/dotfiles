@@ -100,7 +100,7 @@ This repository contains the following config packages and core files:
 - `helix/`: [Helix](https://helix-editor.com/) (/ˈhiː.lɪks/, helix) modern modal editor config (Rust-based, ultra-responsive, built-in LSP support)
 - `karabiner/`: [Karabiner-Elements](https://karabiner-elements.pqrs.org/) (/ˌkær.əˈbiː.nər/, German for carabiner) keyboard mapping (swaps Caps Lock and Left Control)
 - `git/`: Git base configuration (includes high-frequency aliases, Delta modern diff styling, global ignores, and a multi-account isolation architecture)
-- `mise/`: [Mise](https://mise.jdx.dev/) (/miːz/, from French mise en place) tool version manager config (Unified management of Go, Node, Python, and Rust runtimes along with LSPs)
+- `mise/`: [Mise](https://mise.jdx.dev/) (/miːz/, from French mise en place) tool version manager config (Unified management of Go, Node, Bun, Python, Lua, and Rust runtimes together with LSP / formatter toolchains)
 - `aichat/`: [AIChat](https://github.com/sigoden/aichat) terminal AI client (Integrates multiple models, command generation/troubleshooting, and workflow enhancements)
 - `bat/`: [bat](https://github.com/sharkdp/bat) custom theme assets for the syntax-highlighting pager, used by `colorscheme` to keep Bat / Delta syntect themes in sync.
 - `btop/`: [btop](https://github.com/aristocratos/btop) modern system resource monitoring config.
@@ -161,7 +161,7 @@ The repository root provides an `install.sh` script that automates almost the en
 5. **Symlink setup**: Detects existing configs, backs them up automatically, then uses `stow` to symlink all configs, including the `bin` scripts, into the correct system locations.
 6. **AI model sync**: Automatically runs `aichat --sync-models` to synchronize the default model catalog into the local index.
 7. **Local model backend (optional)**: In interactive installs, the script **asks whether to install and start** `Ollama`; in non-interactive mode it is skipped by default unless you pass `--with-ollama`. The script does not pull any local model automatically.
-8. **Runtime installation**: Installs core language runtimes via **Mise** (Go, Node, Bun, Python, Rust) along with out-of-the-box CLI tools (gh, bat, eza, fd, ripgrep, glow, shellcheck, etc.). LSP and other toolchains can be installed on demand later.
+8. **Runtime installation**: Installs core language runtimes via **Mise** (Go, Node, Bun, Python, Lua, Rust), common language servers and formatters (such as `gopls`, `pyright`, `lua-language-server`, `stylua`, and `vtsls`), plus out-of-the-box CLI tools (gh, bat, eza, fd, ripgrep, glow, shellcheck, etc.).
 9. **Privacy template setup**: Automatically creates Git identity templates (`.gitconfig.local` / `.work`), a Fish private environment template (`.fish.local.fish`), and a Ghostty private config template (`.ghostty.local`) in the user's home directory.
 10. **Shell initialization**: Sets **Fish** as the default shell and, when clear Zsh usage signals are detected, optionally migrates PATH variables from the old Zsh setup into Fish.
 11. **Plugin setup**: Installs the **Fisher** plugin manager and syncs all Fish plugins.
@@ -878,8 +878,8 @@ Enter Vi normal mode: press `Esc` or `Ctrl+[`.
 
 **Core idea:**
 Abandon the traditional mess caused by global installs such as `npm i -g`, `pip install`, and `go install`, which pollute the system and create version conflicts.
-This configuration unifies **all runtime stacks (Node/Python/Go)** and **language servers (LSPs)** under Mise management, achieving elegant isolation on two levels:
-1. **Global disaster-proof baseline**: The global config (`~/.config/mise/config.toml`) declares **latest (`@latest`) LSP toolchains** for major languages, so opening an editor in any normal directory still gives you strong completion and language intelligence.
+This configuration unifies **common runtimes (Go/Node/Bun/Python/Lua/Rust)** together with **language servers, formatters, and related developer toolchains** under Mise management, achieving elegant isolation on two levels:
+1. **Global disaster-proof baseline**: The global config (`~/.config/mise/config.toml`) declares fallback runtimes for common languages plus LSP / formatter toolchains that are mostly tracked at `@latest`, so opening an editor in any normal directory still gives you strong completion and formatting support.
 2. **Clean project-level sandbox**: Inside a specific project, `mise use` can generate a directory-local `.mise.toml` for precise isolation.
     - **For runtimes**: strongly recommended to pin exact versions such as `node@16` for consistent team builds.
     - **For LSPs**: it is usually recommended to stay on `@latest` for the newest syntax highlighting, hints, and performance optimizations. Only pin older LSP versions when a very old project breaks on the latest release.

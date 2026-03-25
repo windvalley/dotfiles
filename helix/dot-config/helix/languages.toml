@@ -35,6 +35,9 @@
 #    mise use -g shfmt@latest
 #    mise use -g github:astral-sh/ruff@latest
 #    mise use -g npm:pyright@latest
+#    mise use -g lua@5.4
+#    mise use -g lua-language-server@latest
+#    mise use -g stylua@latest
 #    mise use -g cargo:taplo-cli@latest
 #
 #    # ---- 仍建议用 Homebrew 的工具（平台相关 / 更稳定）----
@@ -295,6 +298,25 @@ language-servers = ["fish-lsp"]
 [language-server.fish-lsp]
 command = "fish-lsp"
 args = ["start"]
+
+# ============================================================
+# Lua
+# ============================================================
+[[language]]
+name = "lua"
+auto-format = true
+language-servers = ["lua-language-server"]
+formatter = { command = "stylua", args = ["--stdin-filepath", "%{buffer_name}", "-"] }
+
+[language-server.lua-language-server]
+command = "lua-language-server"
+
+[language-server.lua-language-server.config.Lua]
+# 统一交给 StyLua 处理格式化，避免 LSP 与外部 formatter 产出不一致。
+format = { enable = false }
+runtime = { version = "Lua 5.4" }
+# 普通 Lua 项目默认不自动注入第三方库定义；需要时让项目自己通过 `.luarc.json` 显式声明。
+workspace = { checkThirdParty = "Disable" }
 
 # ============================================================
 # Markdown

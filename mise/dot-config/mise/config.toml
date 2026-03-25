@@ -50,6 +50,26 @@ go = "latest"
 node = "lts"
 bun = "latest"
 python = "latest"
+# LuaLS 当前运行时枚举只覆盖到 Lua 5.4；全局 fallback 环境先固定在 5.4 主线，避免语义提示与实际运行时漂移。
+# luacheck 官方主流分发仍以 LuaRocks 为主；mise 当前没有原生 `luacheck` backend，
+# 因此借助 tool-level postinstall 在 `mise install` 后自动补齐 CLI。
+# 这里显式使用 `MISE_TOOL_INSTALL_PATH` 下的 LuaRocks，可避免误命中 `/usr/local/bin/luarocks`。
+lua = { version = "5.4", postinstall = """
+set -l lr "$MISE_TOOL_INSTALL_PATH/luarocks/bin/luarocks"
+if not test -x "$lr"
+  echo "lua postinstall: luarocks not found at $lr" >&2
+  exit 1
+end
+if not $lr show argparse >/dev/null 2>&1
+  $lr install argparse
+end
+if not $lr show luafilesystem >/dev/null 2>&1
+  $lr install luafilesystem
+end
+if not $lr show luacheck >/dev/null 2>&1
+  $lr install luacheck
+end
+""" }
 rust = "latest"
 
 # === 语言服务器与配套工具链 (用于支持 Helix/Neovim) ===
@@ -67,6 +87,10 @@ rust = "latest"
 # 避免 `mise install` 还需要额外预装 pipx 这类前置命令。
 "github:astral-sh/ruff" = "latest" # Linter/Formatter/LSP
 "npm:pyright" = "latest" # Type Checker LSP
+
+# --- Lua 生态 ---
+lua-language-server = "latest" # LSP
+stylua = "latest" # Formatter
 
 # --- Web 生态 (TS/JS/CSS/HTML/JSON) ---
 "npm:@vtsls/language-server" = "latest"
