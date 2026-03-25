@@ -220,4 +220,5 @@ update: ## 更新 dotfiles 仓库与所有工具链
 	@git pull --rebase
 	@./bin/dot-update
 	@echo "$(GREEN)✅ 更新完成$(NC)"
-	@echo "  $(YELLOW)提示:$(NC) 运行 'make restow' 应用最新配置"
+	@echo "  $(YELLOW)提示:$(NC) 若仅更新已存在软链文件的内容，通常无需运行 'make restow'"
+	@echo "  $(YELLOW)      $(NC) 如涉及新增/删除/重命名文件、包结构变更或软链接异常，再执行 'make restow'"

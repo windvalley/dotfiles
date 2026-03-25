@@ -44,6 +44,10 @@ validate_toml_file() {
     if [ ! -f "$file" ]; then
         return 0
     fi
+
+    if ! command -v python3 &>/dev/null; then
+        return 2
+    fi
     
     python3 -c "
 import sys
@@ -502,6 +506,7 @@ validate_helix() {
     local healthy_language_count=0
     local checked_language_count=0
     local missing_language_count=0
+    local toml_status=0
     
     # 检查配置文件是否存在
     if [ ! -f "$helix_config" ]; then
@@ -512,7 +517,12 @@ validate_helix() {
         if validate_toml_file "$helix_config"; then
             success "Helix 主配置语法正确 (TOML)"
         else
-            error "Helix 主配置语法错误"
+            toml_status=$?
+            if [ "$toml_status" -eq 2 ]; then
+                error "缺少 python3，无法执行 Helix 主配置 TOML 静态校验"
+            else
+                error "Helix 主配置语法错误"
+            fi
             ERRORS=$((ERRORS + 1))
         fi
     fi
@@ -522,7 +532,12 @@ validate_helix() {
         if validate_toml_file "$helix_languages"; then
             success "Helix 语言配置语法正确 (TOML)"
         else
-            error "Helix 语言配置语法错误"
+            toml_status=$?
+            if [ "$toml_status" -eq 2 ]; then
+                error "缺少 python3，无法执行 Helix 语言配置 TOML 静态校验"
+            else
+                error "Helix 语言配置语法错误"
+            fi
             ERRORS=$((ERRORS + 1))
         fi
     fi
@@ -582,6 +597,7 @@ validate_helix() {
 validate_mise() {
     info "验证 Mise 配置..."
     local mise_config="$DOTFILES_DIR/mise/dot-config/mise/config.toml"
+    local toml_status=0
     
     if [ ! -f "$mise_config" ]; then
         error "Mise 配置文件不存在: $mise_config"
@@ -592,7 +608,12 @@ validate_mise() {
     if validate_toml_file "$mise_config"; then
         success "Mise 配置语法正确 (TOML)"
     else
-        error "Mise 配置语法错误"
+        toml_status=$?
+        if [ "$toml_status" -eq 2 ]; then
+            error "缺少 python3，无法执行 Mise TOML 静态校验"
+        else
+            error "Mise 配置语法错误"
+        fi
         ERRORS=$((ERRORS + 1))
     fi
     
@@ -653,6 +674,11 @@ validate_karabiner() {
     if [ ! -f "$karabiner_config" ]; then
         error "Karabiner 配置文件不存在: $karabiner_config"
         return 1
+    fi
+
+    if ! command -v python3 &>/dev/null; then
+        record_error "缺少 python3，无法执行 Karabiner JSON 静态校验"
+        return 0
     fi
 
     # JSON 语法验证
