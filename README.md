@@ -434,7 +434,7 @@ rm -rf ~/.local/share/fisher
 curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
 
 # 安装插件 (将从 dotfiles 配置列表中同步安装)
-fisher install (cat ~/.config/fish/fish_plugins)
+fisher install (string trim < ~/.config/fish/fish_plugins | string match -rv '^(#|$)')
 ```
 
 更多见：`fish/dot-config/fish/README.md`

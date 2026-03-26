@@ -435,7 +435,7 @@ rm -rf ~/.local/share/fisher
 curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
 
 # Install plugins (synced from the dotfiles plugin list)
-fisher install (cat ~/.config/fish/fish_plugins)
+fisher install (string trim < ~/.config/fish/fish_plugins | string match -rv '^(#|$)')
 ```
 
 For more, see `fish/dot-config/fish/README.md`.

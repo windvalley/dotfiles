@@ -166,7 +166,7 @@ plugins: ## 安装/更新 Fisher 插件
 	fi; \
 	rm -f "$$tmp"
 	@if [ -f fish/dot-config/fish/fish_plugins ]; then \
-		fish -c "fisher install (cat fish/dot-config/fish/fish_plugins)"; \
+		fish -c "set -l plugins (string trim < fish/dot-config/fish/fish_plugins | string match -rv '^(#|$$)'); test (count \$$plugins) -gt 0; and fisher install \$$plugins"; \
 	fi
 	@echo "$(GREEN)✅ Fisher 插件已更新$(NC)"
 
