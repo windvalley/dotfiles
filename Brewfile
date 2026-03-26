@@ -37,6 +37,8 @@ brew "grc"
 brew "gawk"
 brew "gnu-sed"
 brew "grep"
+# 网络文件下载工具
+brew "wget"
 # 命令行音频设备切换工具
 brew "switchaudio-osx"
 # 现代、跨平台的系统资源监控工具

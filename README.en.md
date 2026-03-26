@@ -1220,6 +1220,13 @@ If you encounter issues during installation or usage, please first refer to the 
 > 2. If you are using local Ollama, make sure `ollama serve` is running, the target model has been downloaded with `ollama pull <model>`, and the model name is included in `local-llm.models` inside `~/.config/aichat/config.yaml`.
 > 3. If the API of the model you are using is access-restricted (e.g., accessing OpenAI from certain regions), you may need to enable a global proxy in your terminal. This configuration has built-in `proxy` and `unproxy` shortcuts to help you toggle the terminal proxy with one click.
 
+**Q: Why does Fish wait for a moment before showing the next prompt after a command finishes?**
+> **A:** This usually is not Fish itself being slow. More often, `mise` auto-activation is refreshing the environment for the current directory. If `~/.config/mise/config.toml` or the current project's `.mise.toml` declares tools that are not installed yet, `mise` may become noticeably slow while checking them during the prompt phase.
+> - First run `mise current` to see which tools and versions are active in the current directory. If you see messages like `is specified ... but not installed`, missing tools are usually the cause.
+> - Then run `mise install` to install the missing tools declared by the current directory and global config, and use `mise ls` to verify the installed state afterward.
+> - If you only want to confirm whether `mise` is the trigger, temporarily run `env MISE_FISH_AUTO_ACTIVATE=0 fish` to start a new shell without `mise` auto-activation. If the lag disappears, inspect your `mise` config next.
+> - If the cause is still unclear, run `mise doctor` to continue checking activation state and environment configuration.
+
 **Q: While writing code in the Helix editor, why is there no syntax hinting or code checking?**
 > **A:** Helix relies on Language Servers (LSP) to provide intelligent completion capabilities. This project centrally manages LSPs via `mise`:
 > - Make sure you have run `mise install` in the terminal to fetch the latest LSP toolchain.

@@ -1217,6 +1217,13 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 > 2. 如果您使用的是本地 Ollama，请确认 `ollama serve` 已启动、目标模型已通过 `ollama pull <model>` 下载，且模型名已包含在 `~/.config/aichat/config.yaml` 的 `local-llm.models` 列表中。
 > 3. 如果您使用的模型 API 访问受限（如访问 OpenAI），您可能需要在终端开启全局代理。本配置内置了 `proxy` 和 `unproxy` 快捷指令来帮助你一键开关终端代理。
 
+**Q: 为什么在 Fish 中执行完命令后，还要等一会儿下一个 prompt 才出现？**
+> **A:** 这通常不是 Fish 本身卡顿，而是 `mise` 的自动激活在刷新当前目录环境。若 `~/.config/mise/config.toml` 或当前项目里的 `.mise.toml` 声明了未安装工具，`mise` 在 prompt 阶段检查这些工具时就可能明显变慢。
+> - 先执行 `mise current` 查看当前目录实际生效的工具来源与版本；如果看到 `is specified ... but not installed` 一类提示，通常就是缺失工具导致。
+> - 再执行 `mise install` 安装当前目录与全局配置中声明的缺失工具，然后用 `mise ls` 复查安装状态。
+> - 如果只想快速确认是否由 `mise` 触发，可临时运行 `env MISE_FISH_AUTO_ACTIVATE=0 fish` 启动一个不自动激活 `mise` 的新 Shell；如果卡顿消失，再回头检查 `mise` 配置。
+> - 若问题仍未定位，可继续执行 `mise doctor` 检查激活状态与环境配置。
+
 **Q: 在 Helix 编辑器里写代码时，为什么没有语法提示或代码检查？**
 > **A:** Helix 依赖各种语言服务器（LSP）来提供智能补全能力。本项目通过 `mise` 统一管理 LSP：
 > - 请确保在终端里执行过 `mise install` 获取最新版本的 LSP 工具链。
