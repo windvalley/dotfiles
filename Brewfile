@@ -53,5 +53,7 @@ cask "font-jetbrains-mono-nerd-font"
 cask "orbstack"
 # 轻量级 macOS 截图标注工具
 cask "shottr"
+# macOS 菜单栏管理工具（固定使用 beta 轨道）
+cask "jordanbaird-ice@beta"
 # 全局键位映射工具
 cask "karabiner-elements"
