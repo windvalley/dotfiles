@@ -1,0 +1,188 @@
+#!/bin/bash
+# git-code-stats
+#
+# 统计当前 Git 仓库今天 / 本周 / 本月的已提交代码量。
+# 作为 Git 外部子命令使用：stow 到 ~/.local/bin 后可直接执行 `git code-stats`。
+
+set -euo pipefail
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+info() { echo -e "${BLUE}[INFO]${NC} $1"; }
+success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
+warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
+error() { echo -e "${RED}[ERROR]${NC} $1" >&2; }
+
+usage() {
+    cat <<'EOF'
+用法:
+  git code-stats [today|week|month|all]
+
+说明:
+  默认输出今天、本周、本月三段统计。
+  统计基于当前 HEAD 可达的已提交历史，不包含未提交工作区改动。
+  本周按周一 00:00 起算，本月按自然月 1 日 00:00 起算。
+EOF
+}
+
+ensure_git_repo() {
+    git rev-parse --show-toplevel 2>/dev/null || return 1
+}
+
+has_head_commit() {
+    local repo_root="$1"
+
+    git -C "$repo_root" rev-parse --verify HEAD >/dev/null 2>&1
+}
+
+start_of_day() {
+    date -v0H -v0M -v0S '+%Y-%m-%d %H:%M:%S'
+}
+
+start_of_week() {
+    date -v-mon -v0H -v0M -v0S '+%Y-%m-%d %H:%M:%S'
+}
+
+start_of_month() {
+    date -v1d -v0H -v0M -v0S '+%Y-%m-%d %H:%M:%S'
+}
+
+current_time() {
+    date '+%Y-%m-%d %H:%M:%S'
+}
+
+calculate_stats() {
+    local repo_root="$1"
+    local start_time="$2"
+    local end_time="$3"
+
+    if ! has_head_commit "$repo_root"; then
+        printf '0\t0\t0\t0\n'
+        return 0
+    fi
+
+    # 这里明确只看 HEAD 可达提交，避免把其他本地分支或远程分支的历史混进来，
+    # 否则“当前仓库”的统计会被无关分支放大，和用户当前上下文不一致。
+    git -C "$repo_root" log HEAD \
+        --since="$start_time" \
+        --until="$end_time" \
+        --numstat \
+        --format='commit %H' \
+        | awk '
+            BEGIN {
+                commits = 0
+                file_changes = 0
+                insertions = 0
+                deletions = 0
+            }
+            $1 == "commit" {
+                commits++
+                next
+            }
+            NF == 3 {
+                file_changes++
+                if ($1 != "-") {
+                    insertions += $1
+                }
+                if ($2 != "-") {
+                    deletions += $2
+                }
+            }
+            END {
+                printf "%d\t%d\t%d\t%d\n", commits, file_changes, insertions, deletions
+            }
+        '
+}
+
+print_period_stats() {
+    local repo_root="$1"
+    local title="$2"
+    local start_time="$3"
+    local end_time="$4"
+    local stats=""
+    local commits=0
+    local file_changes=0
+    local insertions=0
+    local deletions=0
+    local net=0
+    local net_display=""
+
+    stats="$(calculate_stats "$repo_root" "$start_time" "$end_time")"
+    IFS=$'\t' read -r commits file_changes insertions deletions <<<"$stats"
+
+    net=$((insertions - deletions))
+    if [ "$net" -gt 0 ]; then
+        net_display="+$net"
+    else
+        net_display="$net"
+    fi
+
+    printf '%s (%s -> %s)\n' "$title" "$start_time" "$end_time"
+    printf '  提交数: %s\n' "$commits"
+    printf '  文件变更: %s\n' "$file_changes"
+    printf '  新增行数: %s\n' "$insertions"
+    printf '  删除行数: %s\n' "$deletions"
+    printf '  净增行数: %s\n' "$net_display"
+}
+
+main() {
+    local repo_root=""
+    local end_time=""
+    local period="${1:-all}"
+    local periods=()
+    local index=0
+
+    case "$period" in
+        today|week|month)
+            periods=("$period")
+            ;;
+        all|"")
+            periods=("today" "week" "month")
+            ;;
+        -h|--help|help)
+            usage
+            exit 0
+            ;;
+        *)
+            error "不支持的范围: $period"
+            usage
+            exit 1
+            ;;
+    esac
+
+    if ! repo_root="$(ensure_git_repo)"; then
+        error "当前目录不是 Git 仓库，无法统计代码量。"
+        exit 1
+    fi
+
+    end_time="$(current_time)"
+
+    printf '当前仓库代码量统计\n'
+    printf '仓库路径: %s\n' "$repo_root"
+    printf '统计口径: 基于当前 HEAD 可达的已提交历史，不含未提交改动\n'
+    printf '\n'
+
+    for index in "${!periods[@]}"; do
+        case "${periods[$index]}" in
+            today)
+                print_period_stats "$repo_root" "今天" "$(start_of_day)" "$end_time"
+                ;;
+            week)
+                print_period_stats "$repo_root" "本周" "$(start_of_week)" "$end_time"
+                ;;
+            month)
+                print_period_stats "$repo_root" "本月" "$(start_of_month)" "$end_time"
+                ;;
+        esac
+
+        if [ "$index" -lt $((${#periods[@]} - 1)) ]; then
+            printf '\n'
+        fi
+    done
+}
+
+main "$@"

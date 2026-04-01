@@ -758,6 +758,7 @@ Abbreviations **expand automatically** when you press space after typing them.
 | `?` / `??` | `__ai_cmd` / `ai_diag_last` | Natural-language to command generation (default `q -> aichat`) / diagnose the previous failed command (depends on Zellij dump-screen capture) |
 | `g` | `git` | Entry point for basic Git commands |
 | `lg` | `lazygit` | Launch `lazygit` terminal UI |
+| `gcs` | `git code-stats` | Show today's / this week's / this month's committed code volume for the current repository |
 | `ga` / `gs` | `git add` / `git_status_stats` | Stage files / show status with staged and unstaged line-count stats |
 | `gd` / `gds` | `git diff` / `git diff --staged` | Show unstaged changes / show staged but uncommitted changes |
 | `gb` / `gba` / `gbd` | `git branch`... | Show local branches / show all branches including remotes / force-delete a branch |
@@ -971,6 +972,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 These commands appear in `~/.local/bin` after the `bin` package is stowed:
 
 - `colorscheme [name]`: Switch themes for Ghostty, Helix, Zellij, Btop, Bat, and Delta together. Without arguments, it shows the current theme and all available themes. Fourteen presets are built in (`dracula`, `catppuccin`, `catppuccin-latte`, `rose-pine`, `tokyonight`, `gruvbox`, `gruvbox-light`, `kanagawa`, `nord`, `solarized`, `one-dark`, `everforest`, `everforest-light`, `dayfox`); `catppuccin` is mapped consistently to the `Macchiato` variant, `catppuccin-latte` maps to the `Latte` variant, `rose-pine`, `kanagawa`, `one-dark`, `everforest`, `everforest-light`, and `dayfox` all use repo-bundled theme assets for Bat / Delta, `tokyonight` uses a repo-bundled custom syntect theme for Bat plus the official Tokyo Night Delta feature, and the `solarized` preset maps to the corresponding dark Solarized variant for each tool. Additional options include `-i` / `--interactive` (requires `fzf`, starts on the current preset, applies the highlighted theme immediately, and exits on Enter or `Esc`), `--current`, `--list`, and `--help`. **With the Git Clean Filter, switching themes does not dirty the repository.**
+- `git-code-stats [today|week|month|all]`: Show today's / this week's / this month's committed code volume for the current repository, including commit count, file-change count, insertions, deletions, and net lines
 - `dot-theme-filter`: **Git internal filter, not for direct execution**. Used with `.gitattributes` to automatically restore theme settings, Ghostty font size, Ghostty background opacity, and other local visual preferences to defaults during `git add`, decoupling those UI choices from tracked config state.
 - `font-size <1-200>`: Set Ghostty font size; with the Git Clean Filter this does not dirty the dotfiles repository
 - `opacity <0.0-1.0>`: Set Ghostty background opacity; with the Git Clean Filter this does not dirty the dotfiles repository
