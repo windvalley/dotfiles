@@ -39,6 +39,8 @@ brew "gnu-sed"
 brew "grep"
 # 网络文件下载工具
 brew "wget"
+# 传统网络连通性测试工具，便于快速探测 TCP 服务端口
+brew "telnet"
 # 命令行音频设备切换工具
 brew "switchaudio-osx"
 # 现代、跨平台的系统资源监控工具

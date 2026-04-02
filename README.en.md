@@ -155,7 +155,7 @@ The repository root provides an `install.sh` script that automates almost the en
 
 **The script performs the following:**
 1. **Environment preparation**: Checks for and installs **Homebrew** automatically if it is not already installed.
-2. **Core dependencies**: Reads `Brewfile` and installs all CLI tools (stow, zellij, fish, helix, mise, fzf, etc.) and GUI apps (Ghostty, OrbStack, Shottr, Ice beta, JetBrains Mono font, etc.).
+2. **Core dependencies**: Reads `Brewfile` and installs all CLI tools (stow, zellij, fish, helix, mise, fzf, telnet, etc.) and GUI apps (Ghostty, OrbStack, Shottr, Ice beta, JetBrains Mono font, etc.).
 3. **Font installation**: JetBrains Mono is installed through Brew by default, and the script **asks whether to install** other extended fonts (Maple Mono, Geist Mono).
 4. **Shottr hotkeys (optional)**: If `Shottr` is installed, the script **asks whether to write** the recommended global capture shortcuts `Shift + Cmd + 1/2/A/S` so it never silently overwrites your existing hotkey habits.
 5. **Symlink setup**: Detects existing configs, backs them up automatically, then uses `stow` to symlink all configs, including the `bin` scripts, into the correct system locations.
@@ -236,7 +236,7 @@ brew install --cask karabiner-elements
 brew install --cask font-jetbrains-mono-nerd-font
 
 # Common tools
-brew install fzf zoxide grc gawk gnu-sed grep
+brew install fzf zoxide grc gawk gnu-sed grep telnet
 
 # Volume control
 brew install switchaudio-osx
@@ -246,6 +246,7 @@ brew install switchaudio-osx
 - `aichat`: A native terminal client for large language models, supporting multimodal and local/cloud models. This config provides `Ctrl+y` for one-key command explanation/generation. A leading `#` means “describe intent -> generate command”.
 - `zoxide`: Smart directory jumping, a modern replacement for `cd`. Usage: `z <keyword>` to jump directly, `zi <keyword>` for interactive selection (requires `fzf`).
 - `gnu-sed`: Provides `gsed`, used by scripts such as `colorscheme`, `font-size`, and `opacity`.
+- `telnet`: Provides the classic TCP connectivity test command for quickly checking whether a target host and port are reachable.
 - `switchaudio-osx`: Provides `SwitchAudioSource`, used by `audio-volume`.
 - `grc`: Generic Colouriser. Combined with Fish plugins, it adds colored output enhancements to commands like `ping`, `ls`, `docker`, and `diff`.
 - `shottr`: The default macOS screenshot annotation tool in this setup. It is its own capture-and-annotation workflow, with support for scrolling captures, OCR, and pinned overlays. Under Shottr's current licensing terms, personal use is free and commercial use requires a paid license. If you want to apply the repository's recommended global hotkeys in one shot after cloning, run `"$HOME/dotfiles/bin/configure-shottr-hotkeys" --force`
