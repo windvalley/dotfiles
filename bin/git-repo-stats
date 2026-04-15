@@ -1,0 +1,1166 @@
+#!/bin/bash
+# git-repo-stats
+#
+# 全面查看当前 Git 仓库的数据概览。
+# 作为 Git 外部子命令使用：stow 到 ~/.local/bin 后可直接执行 `git repo-stats`。
+
+set -euo pipefail
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+info() { echo -e "${BLUE}[INFO]${NC} $1"; }
+success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
+warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
+error() { echo -e "${RED}[ERROR]${NC} $1" >&2; }
+
+COMMAND="summary"
+SCOPE="default"
+TOP_N=5
+SINCE_INPUT="30d"
+OUTPUT_FORMAT="text"
+CONTRIBUTOR_SORT_BY="commits"
+SINCE_WAS_SET=0
+
+EFFECTIVE_SCOPE=""
+SCOPE_REF=""
+SCOPE_LABEL=""
+SCOPE_NOTE=""
+
+usage() {
+  cat <<'EOF'
+用法:
+  git repo-stats [summary|activity|contributors|refs|storage] [options]
+
+说明:
+  默认输出当前仓库的一屏全景统计，包括仓库概览、历史规模、近期活跃度、
+  贡献者排行、目录热点和对象库存储体量。
+
+子命令:
+  summary         输出完整总览（默认）
+  activity        仅输出活跃度统计
+  contributors    仅输出贡献者排行
+  refs            仅输出分支 / 标签 / 最近活跃引用
+  storage         仅输出 .git 对象库与磁盘体量
+
+选项:
+  --scope <head|default|all>   统计口径，默认 default
+  --top <N>                    contributors / refs / 热点目录输出条数，默认 5
+  --since <duration>           activity / contributors 的时间窗口
+  --by <commits|lines>         contributors 子命令排序维度，默认 commits
+  --json                       输出 JSON，方便管道和 AI 工具继续处理
+  -h, --help                   显示帮助
+
+时间窗口简写:
+  7d / 30d / 12w / 6m / 1y
+
+示例:
+  git repo-stats
+  git repo-stats --scope all
+  git repo-stats activity --since 90d
+  git repo-stats contributors --by lines --top 10
+  git repo-stats refs --json
+EOF
+}
+
+ensure_git_repo() {
+  git rev-parse --show-toplevel 2>/dev/null || return 1
+}
+
+has_head_commit() {
+  local repo_root="$1"
+
+  git -C "$repo_root" rev-parse --verify HEAD >/dev/null 2>&1
+}
+
+normalize_since() {
+  local raw_value="$1"
+
+  if [[ "$raw_value" =~ ^([0-9]+)([dwmy])$ ]]; then
+    case "${BASH_REMATCH[2]}" in
+      d)
+        printf '%s days ago\n' "${BASH_REMATCH[1]}"
+        ;;
+      w)
+        printf '%s weeks ago\n' "${BASH_REMATCH[1]}"
+        ;;
+      m)
+        printf '%s months ago\n' "${BASH_REMATCH[1]}"
+        ;;
+      y)
+        printf '%s years ago\n' "${BASH_REMATCH[1]}"
+        ;;
+    esac
+  else
+    printf '%s\n' "$raw_value"
+  fi
+}
+
+window_days_from_input() {
+  local raw_value="$1"
+
+  if [[ "$raw_value" =~ ^([0-9]+)d$ ]]; then
+    printf '%s\n' "${BASH_REMATCH[1]}"
+    return 0
+  fi
+
+  if [[ "$raw_value" =~ ^([0-9]+)w$ ]]; then
+    printf '%s\n' "$((BASH_REMATCH[1] * 7))"
+    return 0
+  fi
+
+  if [[ "$raw_value" =~ ^([0-9]+)m$ ]]; then
+    printf '%s\n' "$((BASH_REMATCH[1] * 30))"
+    return 0
+  fi
+
+  if [[ "$raw_value" =~ ^([0-9]+)y$ ]]; then
+    printf '%s\n' "$((BASH_REMATCH[1] * 365))"
+    return 0
+  fi
+
+  printf '0\n'
+}
+
+date_to_epoch() {
+  local value="$1"
+
+  if [ -z "$value" ] || [ "$value" = "-" ]; then
+    printf '0\n'
+    return 0
+  fi
+
+  date -j -f '%Y-%m-%d' "$value" '+%s' 2>/dev/null || printf '0\n'
+}
+
+calculate_day_span() {
+  local start_date="$1"
+  local end_date="$2"
+  local start_epoch=0
+  local end_epoch=0
+
+  start_epoch="$(date_to_epoch "$start_date")"
+  end_epoch="$(date_to_epoch "$end_date")"
+
+  if [ "$start_epoch" -eq 0 ] || [ "$end_epoch" -eq 0 ] || [ "$end_epoch" -lt "$start_epoch" ]; then
+    printf '0\n'
+    return 0
+  fi
+
+  printf '%s\n' "$((((end_epoch - start_epoch) / 86400) + 1))"
+}
+
+json_escape() {
+  local value="$1"
+
+  value="${value//\\/\\\\}"
+  value="${value//\"/\\\"}"
+  value="${value//$'\n'/\\n}"
+  value="${value//$'\r'/\\r}"
+  value="${value//$'\t'/\\t}"
+
+  printf '%s' "$value"
+}
+
+resolve_default_branch_ref() {
+  local repo_root="$1"
+
+  git -C "$repo_root" symbolic-ref refs/remotes/origin/HEAD 2>/dev/null || true
+}
+
+resolve_default_branch_name() {
+  local repo_root="$1"
+  local default_ref=""
+
+  default_ref="$(resolve_default_branch_ref "$repo_root")"
+  if [ -n "$default_ref" ]; then
+    printf '%s\n' "${default_ref#refs/remotes/}"
+  else
+    printf '%s\n' "-"
+  fi
+}
+
+resolve_remote_url() {
+  local repo_root="$1"
+  local remote_name=""
+
+  remote_name="$(git -C "$repo_root" remote | head -n 1)"
+  if [ -n "$remote_name" ]; then
+    git -C "$repo_root" remote get-url "$remote_name" 2>/dev/null || printf '%s\n' "-"
+  else
+    printf '%s\n' "-"
+  fi
+}
+
+resolve_current_branch() {
+  local repo_root="$1"
+  local branch_name=""
+
+  branch_name="$(git -C "$repo_root" branch --show-current)"
+  if [ -n "$branch_name" ]; then
+    printf '%s\n' "$branch_name"
+  else
+    printf '%s\n' "(detached HEAD)"
+  fi
+}
+
+resolve_scope() {
+  local repo_root="$1"
+  local default_ref=""
+
+  case "$SCOPE" in
+    head)
+      EFFECTIVE_SCOPE="head"
+      SCOPE_REF="HEAD"
+      SCOPE_LABEL="head (HEAD)"
+      SCOPE_NOTE=""
+      ;;
+    default)
+      default_ref="$(resolve_default_branch_ref "$repo_root")"
+      if [ -n "$default_ref" ] && git -C "$repo_root" rev-parse --verify "$default_ref" >/dev/null 2>&1; then
+        EFFECTIVE_SCOPE="default"
+        SCOPE_REF="$default_ref"
+        SCOPE_LABEL="default (${default_ref#refs/remotes/})"
+        SCOPE_NOTE=""
+      else
+        EFFECTIVE_SCOPE="head"
+        SCOPE_REF="HEAD"
+        SCOPE_LABEL="default (fallback to HEAD)"
+        SCOPE_NOTE="未检测到 origin/HEAD，已回退到当前 HEAD 口径。"
+      fi
+      ;;
+    all)
+      EFFECTIVE_SCOPE="all"
+      SCOPE_REF=""
+      SCOPE_LABEL="all (--all)"
+      SCOPE_NOTE=""
+      ;;
+    *)
+      error "不支持的 scope: $SCOPE"
+      usage
+      exit 1
+      ;;
+  esac
+}
+
+run_scoped_log() {
+  local repo_root="$1"
+  shift
+
+  if [ "$EFFECTIVE_SCOPE" = "all" ]; then
+    git -C "$repo_root" log "$@" --all
+  else
+    git -C "$repo_root" log "$@" "$SCOPE_REF"
+  fi
+}
+
+run_scoped_rev_list() {
+  local repo_root="$1"
+  shift
+
+  if [ "$EFFECTIVE_SCOPE" = "all" ]; then
+    git -C "$repo_root" rev-list "$@" --all
+  else
+    git -C "$repo_root" rev-list "$@" "$SCOPE_REF"
+  fi
+}
+
+get_repo_dates() {
+  local repo_root="$1"
+  local first_commit="-"
+  local last_commit="-"
+  local active_days=0
+  local age_days=0
+
+  if ! has_head_commit "$repo_root"; then
+    printf '%s\t%s\t%s\t%s\n' "$first_commit" "$last_commit" "$active_days" "$age_days"
+    return 0
+  fi
+
+  first_commit="$(run_scoped_log "$repo_root" --format=%ad --date=short | sed '/^$/d' | tail -n 1)"
+  last_commit="$(run_scoped_log "$repo_root" --max-count=1 --format=%ad --date=short | sed -n '1p')"
+  active_days="$(run_scoped_log "$repo_root" --format=%ad --date=short | sed '/^$/d' | sort -u | wc -l | tr -d ' ')"
+  age_days="$(calculate_day_span "$first_commit" "$last_commit")"
+
+  printf '%s\t%s\t%s\t%s\n' "$first_commit" "$last_commit" "$active_days" "$age_days"
+}
+
+get_commit_total() {
+  local repo_root="$1"
+
+  if ! has_head_commit "$repo_root"; then
+    printf '0\n'
+    return 0
+  fi
+
+  run_scoped_rev_list "$repo_root" --count
+}
+
+get_merge_total() {
+  local repo_root="$1"
+
+  if ! has_head_commit "$repo_root"; then
+    printf '0\n'
+    return 0
+  fi
+
+  run_scoped_rev_list "$repo_root" --count --merges
+}
+
+get_author_count() {
+  local repo_root="$1"
+
+  if ! has_head_commit "$repo_root"; then
+    printf '0\n'
+    return 0
+  fi
+
+  run_scoped_log "$repo_root" --format=%aN \
+    | sed '/^$/d' \
+    | sort -u \
+    | wc -l \
+    | tr -d ' '
+}
+
+get_tag_count() {
+  local repo_root="$1"
+
+  git -C "$repo_root" tag --list | wc -l | tr -d ' '
+}
+
+get_local_branch_count() {
+  local repo_root="$1"
+
+  git -C "$repo_root" for-each-ref --format='%(refname)' refs/heads | wc -l | tr -d ' '
+}
+
+get_remote_branch_count() {
+  local repo_root="$1"
+
+  git -C "$repo_root" for-each-ref --format='%(refname)' refs/remotes \
+    | awk '$0 !~ /\/HEAD$/ { count++ } END { print count + 0 }'
+}
+
+get_tracked_file_count() {
+  local repo_root="$1"
+
+  git -C "$repo_root" ls-files | wc -l | tr -d ' '
+}
+
+calculate_period_stats() {
+  local repo_root="$1"
+  local since_value="$2"
+
+  if ! has_head_commit "$repo_root"; then
+    printf '0\t0\t0\t0\t0\n'
+    return 0
+  fi
+
+  run_scoped_log "$repo_root" --since="$since_value" --numstat --format='commit %H' \
+    | awk '
+        BEGIN {
+          commits = 0
+          file_changes = 0
+          insertions = 0
+          deletions = 0
+        }
+        $1 == "commit" {
+          commits++
+          next
+        }
+        NF == 3 {
+          file_changes++
+          if ($1 != "-") {
+            insertions += $1
+          }
+          if ($2 != "-") {
+            deletions += $2
+          }
+        }
+        END {
+          printf "%d\t%d\t%d\t%d\t%d\n", commits, file_changes, insertions, deletions, insertions - deletions
+        }
+      '
+}
+
+get_contributors_lines() {
+  local repo_root="$1"
+  local top_n="$2"
+
+  if ! has_head_commit "$repo_root"; then
+    return 0
+  fi
+
+  run_scoped_log "$repo_root" --format=%aN \
+    | sed '/^$/d' \
+    | sort \
+    | uniq -c \
+    | sort -nr \
+    | awk -v limit="$top_n" '
+        NR <= limit {
+          count = $1
+          $1 = ""
+          sub(/^ +/, "", $0)
+          printf "%s\t%s\n", count, $0
+        }
+      '
+}
+
+get_contributor_stats_lines() {
+  local repo_root="$1"
+  local top_n="$2"
+  local sort_by="$3"
+  local normalized_since=""
+  local tab_char=$'\t'
+  local -a log_args=()
+
+  if ! has_head_commit "$repo_root"; then
+    return 0
+  fi
+
+  log_args=(--numstat --format='author%x09%aN')
+  if [ "$SINCE_WAS_SET" -eq 1 ]; then
+    normalized_since="$(normalize_since "$SINCE_INPUT")"
+    log_args=(--since="$normalized_since" "${log_args[@]}")
+  fi
+
+  case "$sort_by" in
+    commits)
+      run_scoped_log "$repo_root" "${log_args[@]}" \
+        | awk '
+            BEGIN {
+              author = ""
+            }
+            $1 == "author" {
+              author = substr($0, 8)
+              authors[author] = 1
+              commits[author]++
+              next
+            }
+            NF == 3 && author != "" {
+              files[author]++
+              if ($1 != "-") {
+                insertions[author] += $1
+              }
+              if ($2 != "-") {
+                deletions[author] += $2
+              }
+            }
+            END {
+              for (name in authors) {
+                changed_lines = insertions[name] + deletions[name]
+                net = insertions[name] - deletions[name]
+                printf "%s\t%d\t%d\t%d\t%d\t%d\t%d\n", name, commits[name] + 0, files[name] + 0, changed_lines + 0, insertions[name] + 0, deletions[name] + 0, net + 0
+              }
+            }
+          ' \
+        | sort -t "$tab_char" -k2,2nr -k4,4nr -k1,1 \
+        | awk -v limit="$top_n" 'NR <= limit'
+      ;;
+    lines)
+      run_scoped_log "$repo_root" "${log_args[@]}" \
+        | awk '
+            BEGIN {
+              author = ""
+            }
+            $1 == "author" {
+              author = substr($0, 8)
+              authors[author] = 1
+              commits[author]++
+              next
+            }
+            NF == 3 && author != "" {
+              files[author]++
+              if ($1 != "-") {
+                insertions[author] += $1
+              }
+              if ($2 != "-") {
+                deletions[author] += $2
+              }
+            }
+            END {
+              for (name in authors) {
+                changed_lines = insertions[name] + deletions[name]
+                net = insertions[name] - deletions[name]
+                printf "%s\t%d\t%d\t%d\t%d\t%d\t%d\n", name, commits[name] + 0, files[name] + 0, changed_lines + 0, insertions[name] + 0, deletions[name] + 0, net + 0
+              }
+            }
+          ' \
+        | sort -t "$tab_char" -k4,4nr -k2,2nr -k1,1 \
+        | awk -v limit="$top_n" 'NR <= limit'
+      ;;
+  esac
+}
+
+contributors_since_label() {
+  if [ "$SINCE_WAS_SET" -eq 1 ]; then
+    printf '%s\n' "$SINCE_INPUT"
+  else
+    printf 'all\n'
+  fi
+}
+
+contributors_sort_label() {
+  case "$CONTRIBUTOR_SORT_BY" in
+    commits)
+      printf 'commits\n'
+      ;;
+    lines)
+      printf 'lines (insertions + deletions)\n'
+      ;;
+  esac
+}
+
+get_hot_paths_lines() {
+  local repo_root="$1"
+  local top_n="$2"
+
+  if ! has_head_commit "$repo_root"; then
+    return 0
+  fi
+
+  run_scoped_log "$repo_root" --since='90 days ago' --name-only --format='' \
+    | awk '
+        NF == 0 {
+          next
+        }
+        {
+          key = "(repo root)"
+          if (index($0, "/") > 0) {
+            split($0, parts, "/")
+            key = parts[1] "/"
+          }
+          count[key]++
+        }
+        END {
+          for (item in count) {
+            printf "%d\t%s\n", count[item], item
+          }
+        }
+      ' \
+    | sort -nr \
+    | awk -v limit="$top_n" 'NR <= limit'
+}
+
+get_recent_refs_lines() {
+  local repo_root="$1"
+  local top_n="$2"
+
+  git -C "$repo_root" for-each-ref \
+    --sort=-committerdate \
+    --format='%(refname)|%(committerdate:short)|%(objectname:short)' \
+    refs/heads refs/remotes refs/tags \
+    | awk -F'|' '
+        $1 ~ /^refs\/remotes\/.*\/HEAD$/ {
+          next
+        }
+        {
+          ref_name = $1
+          sub(/^refs\/heads\//, "", ref_name)
+          sub(/^refs\/remotes\//, "", ref_name)
+          sub(/^refs\/tags\//, "tag:", ref_name)
+          printf "%s\t%s\t%s\n", ref_name, $2, $3
+        }
+      ' \
+    | head -n "$top_n"
+}
+
+get_git_dir_size() {
+  local repo_root="$1"
+
+  du -sh "$repo_root/.git" 2>/dev/null | awk '{print $1}' || printf '0B\n'
+}
+
+get_count_objects_value() {
+  local repo_root="$1"
+  local key="$2"
+
+  git -C "$repo_root" count-objects -vH 2>/dev/null \
+    | awk -F': ' -v wanted_key="$key" '$1 == wanted_key {print $2}'
+}
+
+print_section() {
+  printf '%b%s%b\n' "$CYAN" "$1" "$NC"
+}
+
+print_kv() {
+  printf '  %-14s %s\n' "$1" "$2"
+}
+
+print_activity_row() {
+  local repo_root="$1"
+  local label="$2"
+  local since_value="$3"
+  local stats=""
+  local commits=0
+  local file_changes=0
+  local insertions=0
+  local deletions=0
+  local net=0
+
+  stats="$(calculate_period_stats "$repo_root" "$since_value")"
+  IFS=$'\t' read -r commits file_changes insertions deletions net <<<"$stats"
+
+  printf '  %-4s commits %-6s files %-6s +%-7s -%-7s net %s\n' \
+    "$label" "$commits" "$file_changes" "$insertions" "$deletions" "$net"
+}
+
+print_json_pairs_array() {
+  local lines="$1"
+  local number_key="$2"
+  local string_key="$3"
+  local first=1
+  local left_value=""
+  local right_value=""
+
+  printf '['
+  if [ -n "$lines" ]; then
+    while IFS=$'\t' read -r left_value right_value; do
+      [ -z "$left_value" ] && continue
+      if [ "$first" -eq 0 ]; then
+        printf ','
+      fi
+      first=0
+      printf '{"%s":%s,"%s":"%s"}' \
+        "$number_key" \
+        "$left_value" \
+        "$string_key" \
+        "$(json_escape "$right_value")"
+    done <<<"$lines"
+  fi
+  printf ']'
+}
+
+print_json_recent_refs() {
+  local lines="$1"
+  local first=1
+  local ref_name=""
+  local commit_date=""
+  local short_hash=""
+
+  printf '['
+  if [ -n "$lines" ]; then
+    while IFS=$'\t' read -r ref_name commit_date short_hash; do
+      [ -z "$ref_name" ] && continue
+      if [ "$first" -eq 0 ]; then
+        printf ','
+      fi
+      first=0
+      printf '{"name":"%s","date":"%s","commit":"%s"}' \
+        "$(json_escape "$ref_name")" \
+        "$(json_escape "$commit_date")" \
+        "$(json_escape "$short_hash")"
+    done <<<"$lines"
+  fi
+  printf ']'
+}
+
+print_json_contributor_stats() {
+  local lines="$1"
+  local first=1
+  local name=""
+  local commits=0
+  local files=0
+  local changed_lines=0
+  local insertions=0
+  local deletions=0
+  local net=0
+
+  printf '['
+  if [ -n "$lines" ]; then
+    while IFS=$'\t' read -r name commits files changed_lines insertions deletions net; do
+      [ -z "$name" ] && continue
+      if [ "$first" -eq 0 ]; then
+        printf ','
+      fi
+      first=0
+      printf '{"name":"%s","commits":%s,"files":%s,"lines":%s,"insertions":%s,"deletions":%s,"net":%s}' \
+        "$(json_escape "$name")" \
+        "$commits" \
+        "$files" \
+        "$changed_lines" \
+        "$insertions" \
+        "$deletions" \
+        "$net"
+    done <<<"$lines"
+  fi
+  printf ']'
+}
+
+print_summary_text() {
+  local repo_root="$1"
+  local repo_name=""
+  local current_branch=""
+  local default_branch=""
+  local remote_url=""
+  local first_commit="-"
+  local last_commit="-"
+  local active_days=0
+  local age_days=0
+  local dates=""
+  local contributors_lines=""
+  local hot_paths_lines=""
+
+  repo_name="$(basename "$repo_root")"
+  current_branch="$(resolve_current_branch "$repo_root")"
+  default_branch="$(resolve_default_branch_name "$repo_root")"
+  remote_url="$(resolve_remote_url "$repo_root")"
+  dates="$(get_repo_dates "$repo_root")"
+  IFS=$'\t' read -r first_commit last_commit active_days age_days <<<"$dates"
+  contributors_lines="$(get_contributor_stats_lines "$repo_root" "$TOP_N" 'commits')"
+  hot_paths_lines="$(get_hot_paths_lines "$repo_root" "$TOP_N")"
+
+  printf 'Git Repo Stats\n'
+  printf '\n'
+
+  print_section '仓库概览'
+  print_kv '仓库' "$repo_name"
+  print_kv '路径' "$repo_root"
+  print_kv '统计口径' "$SCOPE_LABEL"
+  print_kv '当前分支' "$current_branch"
+  print_kv '默认分支' "$default_branch"
+  print_kv '远程地址' "$remote_url"
+  print_kv '首个提交' "$first_commit"
+  print_kv '最近提交' "$last_commit"
+  print_kv '仓库年龄' "${age_days} 天"
+  print_kv '活跃天数' "${active_days} 天"
+  if [ -n "$SCOPE_NOTE" ]; then
+    warn "$SCOPE_NOTE"
+  fi
+  printf '\n'
+
+  print_section '历史规模'
+  print_kv '提交总数' "$(get_commit_total "$repo_root")"
+  print_kv '作者数' "$(get_author_count "$repo_root")"
+  print_kv 'Merge 提交' "$(get_merge_total "$repo_root")"
+  print_kv '标签数' "$(get_tag_count "$repo_root")"
+  print_kv '本地分支' "$(get_local_branch_count "$repo_root")"
+  print_kv '远程分支' "$(get_remote_branch_count "$repo_root")"
+  print_kv '跟踪文件' "$(get_tracked_file_count "$repo_root")"
+  printf '\n'
+
+  print_section '近期活跃度'
+  print_activity_row "$repo_root" '7d' '7 days ago'
+  print_activity_row "$repo_root" '30d' '30 days ago'
+  print_activity_row "$repo_root" '90d' '90 days ago'
+  printf '\n'
+
+  print_section "贡献者 Top ${TOP_N}"
+  if [ -n "$contributors_lines" ]; then
+    awk -F'\t' '
+      {
+        net = $7 + 0
+        net_display = (net > 0 ? "+" net : net)
+        printf "  %d. %-20s commits %-5s files %-5s lines %-7s +%-7s -%-7s net %s\n", NR, $1, $2, $3, $4, $5, $6, net_display
+      }
+    ' <<<"$contributors_lines"
+  else
+    printf '  暂无提交数据\n'
+  fi
+  printf '\n'
+
+  print_section "热点目录 Top ${TOP_N}（90d）"
+  if [ -n "$hot_paths_lines" ]; then
+    awk -F'\t' '{printf "  %d. %-20s %s changes\n", NR, $2, $1}' <<<"$hot_paths_lines"
+  else
+    printf '  暂无目录热点数据\n'
+  fi
+  printf '\n'
+
+  print_section '对象库存储'
+  print_kv '.git 大小' "$(get_git_dir_size "$repo_root")"
+  print_kv 'Loose objects' "$(get_count_objects_value "$repo_root" 'count')"
+  print_kv 'In-pack objects' "$(get_count_objects_value "$repo_root" 'in-pack')"
+  print_kv 'Packs' "$(get_count_objects_value "$repo_root" 'packs')"
+  print_kv 'Pack size' "$(get_count_objects_value "$repo_root" 'size-pack')"
+  print_kv 'Garbage' "$(get_count_objects_value "$repo_root" 'garbage')"
+}
+
+print_activity_text() {
+  local repo_root="$1"
+  local normalized_since=""
+  local stats=""
+  local commits=0
+  local file_changes=0
+  local insertions=0
+  local deletions=0
+  local net=0
+  local avg_days=0
+  local avg_commits="0.0"
+
+  normalized_since="$(normalize_since "$SINCE_INPUT")"
+  stats="$(calculate_period_stats "$repo_root" "$normalized_since")"
+  IFS=$'\t' read -r commits file_changes insertions deletions net <<<"$stats"
+  avg_days="$(window_days_from_input "$SINCE_INPUT")"
+  if [ "$avg_days" -gt 0 ]; then
+    avg_commits="$(awk -v commits="$commits" -v days="$avg_days" 'BEGIN { printf "%.1f", commits / days }')"
+  fi
+
+  printf 'Git Repo Activity\n'
+  printf '\n'
+  print_kv '路径' "$repo_root"
+  print_kv '统计口径' "$SCOPE_LABEL"
+  print_kv '时间窗口' "$SINCE_INPUT"
+  print_kv '提交数' "$commits"
+  print_kv '文件变更' "$file_changes"
+  print_kv '新增行数' "$insertions"
+  print_kv '删除行数' "$deletions"
+  print_kv '净增行数' "$net"
+  if [ "$avg_days" -gt 0 ]; then
+    print_kv '日均提交' "$avg_commits"
+  fi
+  if [ -n "$SCOPE_NOTE" ]; then
+    warn "$SCOPE_NOTE"
+  fi
+}
+
+print_contributors_text() {
+  local repo_root="$1"
+  local contributors_lines=""
+
+  contributors_lines="$(get_contributor_stats_lines "$repo_root" "$TOP_N" "$CONTRIBUTOR_SORT_BY")"
+
+  printf 'Git Repo Contributors\n'
+  printf '\n'
+  print_kv '路径' "$repo_root"
+  print_kv '统计口径' "$SCOPE_LABEL"
+  print_kv '时间窗口' "$(contributors_since_label)"
+  print_kv '排序方式' "$(contributors_sort_label)"
+  print_kv '展示条数' "$TOP_N"
+  printf '\n'
+
+  if [ -n "$contributors_lines" ]; then
+    awk -F'\t' '
+      {
+        net = $7 + 0
+        net_display = (net > 0 ? "+" net : net)
+        printf "  %d. %-20s commits %-5s files %-5s lines %-7s +%-7s -%-7s net %s\n", NR, $1, $2, $3, $4, $5, $6, net_display
+      }
+    ' <<<"$contributors_lines"
+  else
+    printf '  暂无贡献者数据\n'
+  fi
+
+  if [ -n "$SCOPE_NOTE" ]; then
+    printf '\n'
+    warn "$SCOPE_NOTE"
+  fi
+}
+
+print_refs_text() {
+  local repo_root="$1"
+  local recent_refs_lines=""
+
+  recent_refs_lines="$(get_recent_refs_lines "$repo_root" "$TOP_N")"
+
+  printf 'Git Repo Refs\n'
+  printf '\n'
+  print_kv '路径' "$repo_root"
+  print_kv '本地分支' "$(get_local_branch_count "$repo_root")"
+  print_kv '远程分支' "$(get_remote_branch_count "$repo_root")"
+  print_kv '标签数' "$(get_tag_count "$repo_root")"
+  printf '\n'
+
+  print_section "最近活跃引用 Top ${TOP_N}"
+  if [ -n "$recent_refs_lines" ]; then
+    awk -F'\t' '{printf "  %d. %-24s %s (%s)\n", NR, $1, $2, $3}' <<<"$recent_refs_lines"
+  else
+    printf '  暂无引用数据\n'
+  fi
+}
+
+print_storage_text() {
+  local repo_root="$1"
+
+  printf 'Git Repo Storage\n'
+  printf '\n'
+  print_kv '路径' "$repo_root"
+  print_kv '.git 大小' "$(get_git_dir_size "$repo_root")"
+  print_kv 'Loose objects' "$(get_count_objects_value "$repo_root" 'count')"
+  print_kv 'Loose size' "$(get_count_objects_value "$repo_root" 'size')"
+  print_kv 'In-pack objects' "$(get_count_objects_value "$repo_root" 'in-pack')"
+  print_kv 'Packs' "$(get_count_objects_value "$repo_root" 'packs')"
+  print_kv 'Pack size' "$(get_count_objects_value "$repo_root" 'size-pack')"
+  print_kv 'Prune-packable' "$(get_count_objects_value "$repo_root" 'prune-packable')"
+  print_kv 'Garbage' "$(get_count_objects_value "$repo_root" 'garbage')"
+  print_kv 'Garbage size' "$(get_count_objects_value "$repo_root" 'size-garbage')"
+}
+
+print_summary_json() {
+  local repo_root="$1"
+  local repo_name=""
+  local current_branch=""
+  local default_branch=""
+  local remote_url=""
+  local first_commit="-"
+  local last_commit="-"
+  local active_days=0
+  local age_days=0
+  local dates=""
+  local stats_7d=""
+  local stats_30d=""
+  local stats_90d=""
+  local contributors_lines=""
+  local hot_paths_lines=""
+
+  repo_name="$(basename "$repo_root")"
+  current_branch="$(resolve_current_branch "$repo_root")"
+  default_branch="$(resolve_default_branch_name "$repo_root")"
+  remote_url="$(resolve_remote_url "$repo_root")"
+  dates="$(get_repo_dates "$repo_root")"
+  IFS=$'\t' read -r first_commit last_commit active_days age_days <<<"$dates"
+  stats_7d="$(calculate_period_stats "$repo_root" '7 days ago')"
+  stats_30d="$(calculate_period_stats "$repo_root" '30 days ago')"
+  stats_90d="$(calculate_period_stats "$repo_root" '90 days ago')"
+  contributors_lines="$(get_contributor_stats_lines "$repo_root" "$TOP_N" 'commits')"
+  hot_paths_lines="$(get_hot_paths_lines "$repo_root" "$TOP_N")"
+
+  printf '{'
+  printf '"repo":{"name":"%s","path":"%s","scope":"%s","scope_note":"%s","current_branch":"%s","default_branch":"%s","remote_url":"%s","first_commit":"%s","last_commit":"%s","age_days":%s,"active_days":%s},' \
+    "$(json_escape "$repo_name")" \
+    "$(json_escape "$repo_root")" \
+    "$(json_escape "$SCOPE_LABEL")" \
+    "$(json_escape "$SCOPE_NOTE")" \
+    "$(json_escape "$current_branch")" \
+    "$(json_escape "$default_branch")" \
+    "$(json_escape "$remote_url")" \
+    "$(json_escape "$first_commit")" \
+    "$(json_escape "$last_commit")" \
+    "$age_days" \
+    "$active_days"
+  printf '"history":{"commits":%s,"authors":%s,"merges":%s,"tags":%s,"local_branches":%s,"remote_branches":%s,"tracked_files":%s},' \
+    "$(get_commit_total "$repo_root")" \
+    "$(get_author_count "$repo_root")" \
+    "$(get_merge_total "$repo_root")" \
+    "$(get_tag_count "$repo_root")" \
+    "$(get_local_branch_count "$repo_root")" \
+    "$(get_remote_branch_count "$repo_root")" \
+    "$(get_tracked_file_count "$repo_root")"
+  printf '"activity":{"7d":{"commits":%s,"files":%s,"insertions":%s,"deletions":%s,"net":%s},' \
+    "$(cut -f1 <<<"$stats_7d")" "$(cut -f2 <<<"$stats_7d")" "$(cut -f3 <<<"$stats_7d")" "$(cut -f4 <<<"$stats_7d")" "$(cut -f5 <<<"$stats_7d")"
+  printf '"30d":{"commits":%s,"files":%s,"insertions":%s,"deletions":%s,"net":%s},' \
+    "$(cut -f1 <<<"$stats_30d")" "$(cut -f2 <<<"$stats_30d")" "$(cut -f3 <<<"$stats_30d")" "$(cut -f4 <<<"$stats_30d")" "$(cut -f5 <<<"$stats_30d")"
+  printf '"90d":{"commits":%s,"files":%s,"insertions":%s,"deletions":%s,"net":%s}},' \
+    "$(cut -f1 <<<"$stats_90d")" "$(cut -f2 <<<"$stats_90d")" "$(cut -f3 <<<"$stats_90d")" "$(cut -f4 <<<"$stats_90d")" "$(cut -f5 <<<"$stats_90d")"
+  printf '"contributors":'
+  print_json_contributor_stats "$contributors_lines"
+  printf ','
+  printf '"hot_paths":'
+  print_json_pairs_array "$hot_paths_lines" "changes" "path"
+  printf ','
+  printf '"storage":{"git_dir_size":"%s","loose_objects":"%s","in_pack_objects":"%s","packs":"%s","pack_size":"%s","garbage":"%s"}' \
+    "$(json_escape "$(get_git_dir_size "$repo_root")")" \
+    "$(json_escape "$(get_count_objects_value "$repo_root" 'count')")" \
+    "$(json_escape "$(get_count_objects_value "$repo_root" 'in-pack')")" \
+    "$(json_escape "$(get_count_objects_value "$repo_root" 'packs')")" \
+    "$(json_escape "$(get_count_objects_value "$repo_root" 'size-pack')")" \
+    "$(json_escape "$(get_count_objects_value "$repo_root" 'garbage')")"
+  printf '}\n'
+}
+
+print_activity_json() {
+  local repo_root="$1"
+  local normalized_since=""
+  local stats=""
+
+  normalized_since="$(normalize_since "$SINCE_INPUT")"
+  stats="$(calculate_period_stats "$repo_root" "$normalized_since")"
+
+  printf '{'
+  printf '"path":"%s","scope":"%s","scope_note":"%s","since":"%s",' \
+    "$(json_escape "$repo_root")" \
+    "$(json_escape "$SCOPE_LABEL")" \
+    "$(json_escape "$SCOPE_NOTE")" \
+    "$(json_escape "$SINCE_INPUT")"
+  printf '"commits":%s,"files":%s,"insertions":%s,"deletions":%s,"net":%s' \
+    "$(cut -f1 <<<"$stats")" "$(cut -f2 <<<"$stats")" "$(cut -f3 <<<"$stats")" "$(cut -f4 <<<"$stats")" "$(cut -f5 <<<"$stats")"
+  printf '}\n'
+}
+
+print_contributors_json() {
+  local repo_root="$1"
+  local contributors_lines=""
+
+  contributors_lines="$(get_contributor_stats_lines "$repo_root" "$TOP_N" "$CONTRIBUTOR_SORT_BY")"
+
+  printf '{'
+  printf '"path":"%s","scope":"%s","scope_note":"%s","since":"%s","by":"%s","top":%s,' \
+    "$(json_escape "$repo_root")" \
+    "$(json_escape "$SCOPE_LABEL")" \
+    "$(json_escape "$SCOPE_NOTE")" \
+    "$(json_escape "$(contributors_since_label)")" \
+    "$(json_escape "$CONTRIBUTOR_SORT_BY")" \
+    "$TOP_N"
+  printf '"contributors":'
+  print_json_contributor_stats "$contributors_lines"
+  printf '}\n'
+}
+
+print_refs_json() {
+  local repo_root="$1"
+  local recent_refs_lines=""
+
+  recent_refs_lines="$(get_recent_refs_lines "$repo_root" "$TOP_N")"
+
+  printf '{'
+  printf '"path":"%s","local_branches":%s,"remote_branches":%s,"tags":%s,' \
+    "$(json_escape "$repo_root")" \
+    "$(get_local_branch_count "$repo_root")" \
+    "$(get_remote_branch_count "$repo_root")" \
+    "$(get_tag_count "$repo_root")"
+  printf '"recent_refs":'
+  print_json_recent_refs "$recent_refs_lines"
+  printf '}\n'
+}
+
+print_storage_json() {
+  local repo_root="$1"
+
+  printf '{'
+  printf '"path":"%s","git_dir_size":"%s","loose_objects":"%s","loose_size":"%s","in_pack_objects":"%s","packs":"%s","pack_size":"%s","prune_packable":"%s","garbage":"%s","garbage_size":"%s"}\n' \
+    "$(json_escape "$repo_root")" \
+    "$(json_escape "$(get_git_dir_size "$repo_root")")" \
+    "$(json_escape "$(get_count_objects_value "$repo_root" 'count')")" \
+    "$(json_escape "$(get_count_objects_value "$repo_root" 'size')")" \
+    "$(json_escape "$(get_count_objects_value "$repo_root" 'in-pack')")" \
+    "$(json_escape "$(get_count_objects_value "$repo_root" 'packs')")" \
+    "$(json_escape "$(get_count_objects_value "$repo_root" 'size-pack')")" \
+    "$(json_escape "$(get_count_objects_value "$repo_root" 'prune-packable')")" \
+    "$(json_escape "$(get_count_objects_value "$repo_root" 'garbage')")" \
+    "$(json_escape "$(get_count_objects_value "$repo_root" 'size-garbage')")"
+}
+
+parse_args() {
+  if [ "${1:-}" = "summary" ] || [ "${1:-}" = "activity" ] || [ "${1:-}" = "contributors" ] || [ "${1:-}" = "refs" ] || [ "${1:-}" = "storage" ]; then
+    COMMAND="$1"
+    shift
+  fi
+
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --scope)
+        SCOPE="${2:-}"
+        shift 2
+        ;;
+      --scope=*)
+        SCOPE="${1#*=}"
+        shift
+        ;;
+      --top)
+        TOP_N="${2:-}"
+        shift 2
+        ;;
+      --top=*)
+        TOP_N="${1#*=}"
+        shift
+        ;;
+      --since)
+        SINCE_INPUT="${2:-}"
+        SINCE_WAS_SET=1
+        shift 2
+        ;;
+      --since=*)
+        SINCE_INPUT="${1#*=}"
+        SINCE_WAS_SET=1
+        shift
+        ;;
+      --by)
+        CONTRIBUTOR_SORT_BY="${2:-}"
+        shift 2
+        ;;
+      --by=*)
+        CONTRIBUTOR_SORT_BY="${1#*=}"
+        shift
+        ;;
+      --json)
+        OUTPUT_FORMAT="json"
+        shift
+        ;;
+      -h|--help|help)
+        usage
+        exit 0
+        ;;
+      *)
+        error "不支持的参数: $1"
+        usage
+        exit 1
+        ;;
+    esac
+  done
+
+  if ! [[ "$TOP_N" =~ ^[1-9][0-9]*$ ]]; then
+    error "--top 必须是大于 0 的整数"
+    exit 1
+  fi
+
+  if [ -z "$SINCE_INPUT" ]; then
+    error "--since 不能为空"
+    exit 1
+  fi
+
+  case "$CONTRIBUTOR_SORT_BY" in
+    commits|lines)
+      ;;
+    *)
+      error "--by 仅支持 commits 或 lines"
+      exit 1
+      ;;
+  esac
+}
+
+main() {
+  local repo_root=""
+
+  parse_args "$@"
+
+  if ! repo_root="$(ensure_git_repo)"; then
+    error "当前目录不是 Git 仓库，无法统计仓库数据。"
+    exit 1
+  fi
+
+  resolve_scope "$repo_root"
+
+  case "$COMMAND" in
+    summary)
+      if [ "$OUTPUT_FORMAT" = "json" ]; then
+        print_summary_json "$repo_root"
+      else
+        print_summary_text "$repo_root"
+      fi
+      ;;
+    activity)
+      if [ "$OUTPUT_FORMAT" = "json" ]; then
+        print_activity_json "$repo_root"
+      else
+        print_activity_text "$repo_root"
+      fi
+      ;;
+    contributors)
+      if [ "$OUTPUT_FORMAT" = "json" ]; then
+        print_contributors_json "$repo_root"
+      else
+        print_contributors_text "$repo_root"
+      fi
+      ;;
+    refs)
+      if [ "$OUTPUT_FORMAT" = "json" ]; then
+        print_refs_json "$repo_root"
+      else
+        print_refs_text "$repo_root"
+      fi
+      ;;
+    storage)
+      if [ "$OUTPUT_FORMAT" = "json" ]; then
+        print_storage_json "$repo_root"
+      else
+        print_storage_text "$repo_root"
+      fi
+      ;;
+  esac
+}
+
+main "$@"

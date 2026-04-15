@@ -758,6 +758,7 @@ aichat hi
 | `g` | `git` | Git 基础命令调用入口 |
 | `lg` | `lazygit` | 开启 `lazygit` 终端交互式管理器 |
 | `gcs` | `git code-stats` | 统计当前仓库今天 / 本周 / 本月的已提交代码量 |
+| `grs` | `git repo-stats` | 全面查看当前仓库的规模、活跃度、贡献者和对象库存储体量 |
 | `ga` / `gs` | `git add` / `git_status_stats` | 添加文件到暂存区 / 查看状态并附带暂存区与未暂存区增删统计 |
 | `gd` / `gds` | `git diff` / `git diff --staged` | 查看工作区尚未暂存的修改 / 查看暂存区里尚未提交的差异 |
 | `gb` / `gba` / `gbd` | `git branch`... | 查看本地分支 / 查看全部(含远程)分支 / 强制删除分支 |
@@ -972,6 +973,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 
 - `colorscheme [name]`: 同步切换 Ghostty、Helix、Zellij、Btop、Bat 和 Delta 主题。无参数时显示当前主题和可用主题列表，内置 14 个预设（dracula / catppuccin / catppuccin-latte / rose-pine / tokyonight / gruvbox / gruvbox-light / kanagawa / nord / solarized / one-dark / everforest / everforest-light / dayfox）；其中 `catppuccin` 统一映射到 `Macchiato` 变体，`catppuccin-latte` 统一映射到 `Latte` 变体，`rose-pine`、`kanagawa`、`one-dark`、`everforest`、`everforest-light` 与 `dayfox` 都会为 Bat / Delta 启用仓库内置主题资源；`tokyonight` 会为 Bat 使用仓库内置的自定义 syntect 主题，并为 Delta 启用官方 Tokyo Night feature；`solarized` 预设会统一映射到各工具对应的深色 Solarized 变体。额外支持 `-i` / `--interactive`（依赖 `fzf`，默认定位到当前预设，移动光标即可实时切换主题，按回车或 `Esc` 退出）、`--current`、`--list`、`--help`。**配合 Git Clean Filter，切换主题不会导致仓库变脏。**
 - `git-code-stats [today|week|month|all]`: 统计当前仓库今天 / 本周 / 本月的已提交代码量，输出提交数、文件变更数、新增行数、删除行数和净增行数
+- `git-repo-stats [summary|activity|contributors|refs|storage]`: 一屏总览当前仓库的规模、活跃度、贡献者排行、热点目录和 `.git` 对象库存储体量；其中 `contributors` 支持按提交数或总代码变更量排序，并展示提交数、文件数、新增/删除/净增行数；支持 `--scope head|default|all`、`--since 30d`、`--by commits|lines`、`--top 10` 与 `--json`
 - `dot-theme-filter`: **Git 内部过滤器（非直接执行）**。配合 `.gitattributes` 使用，在 `git add` 时自动将主题、Ghostty 字体大小、Ghostty 背景透明度等本地显示偏好还原为默认值，实现配置文件的“逻辑解耦”。
 - `font-size <1-200>`: 设置 Ghostty 字体大小；配合 Git Clean Filter 不会让 dotfiles 仓库变脏
 - `opacity <0.0-1.0>`: 设置 Ghostty 背景透明度；配合 Git Clean Filter 不会让 dotfiles 仓库变脏

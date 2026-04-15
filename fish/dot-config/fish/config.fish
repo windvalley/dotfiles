@@ -139,6 +139,7 @@ if status is-interactive
     abbr -a -g lg lazygit # 终端 Git 交互式管理器
     abbr -a -g ga 'git add' # 添加文件到暂存区
     abbr -a -g gcs 'git code-stats' # 统计当前仓库今天 / 本周 / 本月的已提交代码量
+    abbr -a -g grs 'git repo-stats' # 全面查看当前仓库的规模、活跃度、贡献者和对象库存储体量
     abbr -a -g gs git_status_stats # 查看状态并附带暂存区/未暂存区增删统计
     abbr -a -g gd 'git diff' # 查看工作区尚未暂存的修改
     abbr -a -g gds 'git diff --staged' # 查看暂存区里尚未提交的差异
