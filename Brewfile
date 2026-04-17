@@ -53,6 +53,8 @@ cask "ghostty@tip"
 cask "font-jetbrains-mono-nerd-font"
 # 轻量级 Docker 容器与 Linux 虚拟机管理工具 (替代 Docker Desktop)
 cask "orbstack"
+# Android 文件传输工具（供 android-mtp 命令与 OpenMTP GUI 使用）
+cask "openmtp"
 # 轻量级 macOS 截图标注工具
 cask "shottr"
 # macOS 菜单栏管理工具（固定使用 beta 轨道）

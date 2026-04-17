@@ -980,6 +980,7 @@ These commands appear in `~/.local/bin` after the `bin` package is stowed:
 - `font-size <1-200>`: Set Ghostty font size; with the Git Clean Filter this does not dirty the dotfiles repository
 - `opacity <0.0-1.0>`: Set Ghostty background opacity; with the Git Clean Filter this does not dirty the dotfiles repository
 - `audio-volume`: Volume control and output device switching (requires `switchaudio-osx`)
+- `android-mtp [gui|mtp-cli subcommand]`: Helper for Android MTP connections on macOS. It depends on Homebrew-installed `OpenMTP`, briefly suppresses `ptpcamerad`, which often steals the interface, and then delegates to OpenMTP's bundled `mtp-cli`. The recommended flow is `android-mtp gui` before using drag-and-drop in the GUI; command-line usage such as `android-mtp storage-list`, `android-mtp ls`, and `android-mtp get ...` is also supported
 - `preview-md <file>`: Preview a Markdown file in a floating Zellij pane (requires `glow`)
 - `colors-print`: Print the terminal 256-color palette
 - `print-256-hex-colors`: Print hexadecimal values for the 256 colors

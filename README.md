@@ -978,6 +978,7 @@ stow -nv --delete --target=$HOME --dir=$HOME/dotfiles --dotfiles ghostty
 - `font-size <1-200>`: 设置 Ghostty 字体大小；配合 Git Clean Filter 不会让 dotfiles 仓库变脏
 - `opacity <0.0-1.0>`: 设置 Ghostty 背景透明度；配合 Git Clean Filter 不会让 dotfiles 仓库变脏
 - `audio-volume`: 音量控制与输出设备切换（需要 `switchaudio-osx`）
+- `android-mtp [gui|mtp-cli 子命令]`: macOS 下的 Android MTP 连接辅助命令；依赖 Homebrew 安装的 `OpenMTP`。命令会先短暂压制会抢占接口的 `ptpcamerad`，再调用 OpenMTP 自带的 `mtp-cli`。推荐用法是 `android-mtp gui` 后再进行图形化拖拽；也支持直接执行 `android-mtp storage-list`、`android-mtp ls`、`android-mtp get ...` 等命令行操作
 - `preview-md <file>`: 在 Zellij 浮动窗口中预览 Markdown 文件（需要 `glow`）
 - `colors-print`: 打印终端 256 色板
 - `print-256-hex-colors`: 打印 256 色的十六进制色值

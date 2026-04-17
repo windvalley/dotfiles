@@ -1,0 +1,124 @@
+#!/bin/bash
+
+set -euo pipefail
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+info() { echo -e "${BLUE}[INFO]${NC} $1"; }
+success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
+warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
+error() { echo -e "${RED}[ERROR]${NC} $1"; }
+
+MTP_CLI="/Applications/OpenMTP.app/Contents/Resources/bin/mtp-cli"
+OPEN_MTP_APP="/Applications/OpenMTP.app"
+
+show_help() {
+  cat <<'EOF'
+Usage:
+  android-mtp gui
+  android-mtp
+  android-mtp <mtp-cli command>
+
+Examples:
+  android-mtp gui
+  android-mtp storage-list
+  android-mtp ls
+  android-mtp get "DCIM/Camera/IMG_0001.jpg" "$HOME/Downloads/IMG_0001.jpg"
+
+Description:
+  一个针对 macOS + Android MTP 的辅助包装器。
+  它会在连接前短暂压制会抢占接口的 ptpcamerad，再调用 OpenMTP 自带的 mtp-cli。
+EOF
+}
+
+check_dependencies() {
+  if [[ ! -x "$MTP_CLI" ]]; then
+    error "未找到 OpenMTP 自带的 mtp-cli: $MTP_CLI"
+    exit 1
+  fi
+}
+
+hold_ptpcamerad() {
+  local seconds="${1:-12}"
+  local end_time=$((SECONDS + seconds))
+
+  while (( SECONDS < end_time )); do
+    killall -9 ptpcamerad >/dev/null 2>&1 || true
+    sleep 0.3
+  done
+}
+
+claim_device() {
+  local retries=5
+  local current_try=1
+
+  while (( current_try <= retries )); do
+    killall -9 ptpcamerad >/dev/null 2>&1 || true
+    sleep 0.2
+
+    if printf 'storage-list\nquit\n' | "$MTP_CLI" -b >/dev/null 2>&1; then
+      return 0
+    fi
+
+    sleep 0.2
+    current_try=$((current_try + 1))
+  done
+
+  return 1
+}
+
+run_batch_command() {
+  local line="$*"
+  printf '%s\nquit\n' "$line" | "$MTP_CLI" -b
+}
+
+run_gui_mode() {
+  local guard_pid=""
+
+  if [[ ! -d "$OPEN_MTP_APP" ]]; then
+    error "未找到 OpenMTP: $OPEN_MTP_APP"
+    exit 1
+  fi
+
+  info "正在打开 OpenMTP，并临时释放 Android MTP 接口..."
+  hold_ptpcamerad 15 &
+  guard_pid=$!
+  open -a "$OPEN_MTP_APP"
+  wait "$guard_pid" || true
+  success "OpenMTP 已启动。若手机未出现，请保持解锁并确认 USB 模式为\"文件传输\"。"
+}
+
+main() {
+  check_dependencies
+
+  if [[ $# -gt 0 ]]; then
+    case "$1" in
+      -h|--help|help)
+        show_help
+        exit 0
+        ;;
+      gui)
+        shift
+        run_gui_mode
+        exit 0
+        ;;
+    esac
+  fi
+
+  if ! claim_device; then
+    error "无法接管 Android 的 MTP 接口。请保持手机解锁，并确认 USB 模式为\"文件传输\"。"
+    exit 2
+  fi
+
+  if [[ $# -eq 0 ]]; then
+    exec "$MTP_CLI" -i
+  fi
+
+  run_batch_command "$@"
+}
+
+main "$@"
