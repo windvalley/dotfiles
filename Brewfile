@@ -10,6 +10,10 @@ brew "git"
 # 语言/工具版本管理器 (替代 asdf/nvm/pyenv)
 brew "mise"
 
+# --- Extra Taps (附加 Tap 源) ---
+# go-musicfox 官方 Homebrew Tap
+tap "go-musicfox/go-musicfox"
+
 # --- Shell & Terminal (Shell 环境) ---
 # 现代化交互式 Shell
 brew "fish"
@@ -27,6 +31,8 @@ brew "helix"
 # === CLI Enhancements (命令行增强) ===
 # All-in-one LLM CLI tool (内建终端 AI 助手)
 brew "aichat"
+# 网易云音乐终端客户端（使用完整公式名，避免第三方 tap 在首次 bundle 时解析失败）
+brew "go-musicfox/go-musicfox/go-musicfox"
 # Git diff 语法高亮与美化工具
 brew "git-delta"
 # 通用日志/输出着色器

@@ -2,7 +2,7 @@
 # validate-configs
 #
 # 验证 dotfiles 配置文件的语法和完整性
-# 用法: validate-configs [fish|git|zellij|helix|mise|ghostty|karabiner|aichat|all]
+# 用法: validate-configs [fish|git|zellij|helix|mise|ghostty|karabiner|aichat|go-musicfox|all]
 
 set -euo pipefail
 
@@ -786,6 +786,29 @@ validate_aichat() {
     fi
 }
 
+# 验证 go-musicfox 模板配置
+validate_go_musicfox() {
+    info "验证 go-musicfox 配置模板..."
+    local musicfox_config="$DOTFILES_DIR/local/go-musicfox.config.toml.example"
+    local toml_status=0
+
+    if [ ! -f "$musicfox_config" ]; then
+        record_error "go-musicfox 配置模板不存在: $musicfox_config"
+        return 0
+    fi
+
+    if validate_toml_file "$musicfox_config"; then
+        success "go-musicfox 配置模板语法正确 (TOML)"
+    else
+        toml_status=$?
+        if [ "$toml_status" -eq 2 ]; then
+            record_error "Python3 不可用，无法验证 go-musicfox 配置模板"
+        else
+            record_error "go-musicfox 配置模板存在 TOML 语法错误"
+        fi
+    fi
+}
+
 # 验证自定义脚本
 validate_bin_scripts() {
     info "验证自定义脚本..."
@@ -840,6 +863,9 @@ main() {
         aichat)
             validate_aichat
             ;;
+        go-musicfox)
+            validate_go_musicfox
+            ;;
         all)
             validate_fish
             validate_git
@@ -849,10 +875,11 @@ main() {
             validate_ghostty
             validate_karabiner
             validate_aichat
+            validate_go_musicfox
             validate_bin_scripts
             ;;
         *)
-            echo "用法: validate-configs [fish|git|zellij|helix|mise|ghostty|karabiner|aichat|all]"
+            echo "用法: validate-configs [fish|git|zellij|helix|mise|ghostty|karabiner|aichat|go-musicfox|all]"
             exit 1
             ;;
     esac

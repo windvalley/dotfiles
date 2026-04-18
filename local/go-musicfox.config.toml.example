@@ -1,0 +1,56 @@
+# go-musicfox 本地配置模板
+#
+# 生效路径：
+#   ~/.local/share/go-musicfox/config.toml
+#
+# 设计说明：
+# 1. 该文件默认放在仓库外，是因为 go-musicfox 会把登录态、Cookie、缓存等状态写回配置目录。
+#    若直接将活跃配置通过 Stow 链接进仓库，后续登录很容易把私密信息写回 Git 工作树。
+# 2. 配置根目录由 Fish 中的 MUSICFOX_ROOT 统一固定为 ~/.local/share/go-musicfox。
+# 3. 如需重置，可对照本模板手动覆盖你的本地配置；不要把真实 Cookie 或账号信息提交回仓库。
+
+[startup]
+enable = true
+signIn = false
+checkUpdate = true
+
+[main]
+altScreen = true
+# Ghostty + Zellij 组合下默认关闭鼠标事件，避免滚轮和点击与终端复用器争抢输入。
+enableMouseEvent = false
+frameRate = 5
+
+[main.notification]
+enable = true
+albumCover = false
+
+[main.lyric]
+show = true
+showTranslation = true
+renderMode = "smooth"
+
+[main.account]
+# 首次登录后，go-musicfox 可能会将登录态写入这里。
+neteaseCookie = ""
+
+[theme]
+# 默认终端字体为等宽 Nerd Font，保留双栏布局体验更完整。
+doubleColumn = true
+primaryColor = "#ea403f"
+
+[storage]
+downloadDir = ""
+lyricDir = ""
+downloadSongWithLyric = false
+
+[player]
+# 在 macOS 上显式指定 osx 引擎，便于更稳定地接入系统媒体控制与播放状态同步。
+engine = "osx"
+songLevel = "higher"
+
+[keybindings]
+useDefaultKeyBindings = true
+
+[keybindings.global]
+
+[keybindings.app]

@@ -105,7 +105,7 @@ This repository contains the following config packages and core files:
 - `bat/`: [bat](https://github.com/sharkdp/bat) custom theme assets for the syntax-highlighting pager, used by `colorscheme` to keep Bat / Delta syntect themes in sync.
 - `btop/`: [btop](https://github.com/aristocratos/btop) modern system resource monitoring config.
 - `bin/`: High-frequency custom scripts (includes the `zj` project launcher, `gdoctor` diagnostic tool, `aic/aipr` AI-enhancement tools, etc., automatically linked to `~/.local/bin`)
-- `local/`: Private local config templates (for Fish environment variable redaction, Git multi-account isolation, and private Ghostty config)
+- `local/`: Private local config templates (for Fish environment variable redaction, Git multi-account isolation, private Ghostty overrides, and go-musicfox local bootstrap config)
 - `Makefile`: Automation for build and maintenance tasks
 - `.editorconfig`: Cross-editor formatting rules. It includes strict formatting controls such as indentation mode, forced LF line endings, and final newline protection to keep the codebase clean and avoid cross-platform/editor formatting issues.
 
@@ -155,14 +155,14 @@ The repository root provides an `install.sh` script that automates almost the en
 
 **The script performs the following:**
 1. **Environment preparation**: Checks for and installs **Homebrew** automatically if it is not already installed.
-2. **Core dependencies**: Reads `Brewfile` and installs all CLI tools (stow, zellij, fish, helix, mise, fzf, telnet, etc.) and GUI apps (Ghostty, OrbStack, Shottr, Ice beta, JetBrains Mono font, etc.).
+2. **Core dependencies**: Reads `Brewfile` and installs all CLI tools (stow, zellij, fish, helix, mise, aichat, go-musicfox, fzf, telnet, etc.) and GUI apps (Ghostty, OrbStack, Shottr, Ice beta, JetBrains Mono font, etc.).
 3. **Font installation**: JetBrains Mono is installed through Brew by default, and the script **asks whether to install** other extended fonts (Maple Mono, Geist Mono).
 4. **Shottr hotkeys (optional)**: If `Shottr` is installed, the script **asks whether to write** the recommended global capture shortcuts `Shift + Cmd + 1/2/A/S` so it never silently overwrites your existing hotkey habits.
 5. **Symlink setup**: Detects existing configs, backs them up automatically, then uses `stow` to symlink all configs, including the `bin` scripts, into the correct system locations.
 6. **AI model sync**: Automatically runs `aichat --sync-models` to synchronize the default model catalog into the local index.
 7. **Local model backend (optional)**: In interactive installs, the script **asks whether to install and start** `Ollama`; in non-interactive mode it is skipped by default unless you pass `--with-ollama`. The script does not pull any local model automatically.
 8. **Runtime installation**: Installs core language runtimes via **Mise** (Go, Node, Bun, Python, Lua, Rust), common language servers and formatters (such as `gopls`, `pyright`, `lua-language-server`, `stylua`, and `vtsls`), plus out-of-the-box CLI tools (`gh`, `bat`, `eza`, `fd`, `ripgrep`, `glow`, `shellcheck`, `codex`, `claude-code`, etc.).
-9. **Privacy template setup**: Automatically creates Git identity templates (`.gitconfig.local` / `.work`), a Fish private environment template (`.fish.local.fish`), and a Ghostty private config template (`.ghostty.local`) in the user's home directory.
+9. **Privacy template setup**: Automatically creates Git identity templates (`.gitconfig.local` / `.work`), a Fish private environment template (`.fish.local.fish`), a Ghostty private config template (`.ghostty.local`), and a go-musicfox local template (`~/.local/share/go-musicfox/config.toml`) in the user's home directory.
 10. **Shell initialization**: Sets **Fish** as the default shell and, when clear Zsh usage signals are detected, optionally migrates PATH variables from the old Zsh setup into Fish.
 11. **Plugin setup**: Installs the **Fisher** plugin manager and syncs all Fish plugins.
 12. **System optimization**: Prompts whether to apply **common macOS system preference tweaks** via `macos.sh`.
@@ -213,6 +213,12 @@ brew install helix
 
 # Tool version manager
 brew install mise
+
+# Official go-musicfox Tap
+brew tap go-musicfox/go-musicfox
+
+# NetEase Cloud Music terminal client
+brew install go-musicfox/go-musicfox/go-musicfox
 
 # Git beautifier (syntax-highlighted diffs)
 brew install git-delta
@@ -424,8 +430,21 @@ This project's Git configuration adopts a "base + local override" pattern, suppo
    # Edit ~/.gitconfig.work and fill in your company email; this config only applies to repositories inside ~/work/
    ```
 
+#### go-musicfox Local Config
+
+The active `go-musicfox` configuration is not a good fit for direct Stow management inside the repository, because the application may write login state, cookies, and cache-related state back into its config root while running. To keep those private values out of the Git worktree, this project integrates go-musicfox as “tracked template + out-of-repo live config”:
+
+1. Fish exports `MUSICFOX_ROOT="$HOME/.local/share/go-musicfox"` so go-musicfox always uses a private directory outside the repository for config, cache, and runtime state.
+2. `install.sh` copies `~/dotfiles/local/go-musicfox.config.toml.example` to `~/.local/share/go-musicfox/config.toml` on first install.
+3. After that, edit `~/.local/share/go-musicfox/config.toml` directly, and never commit real cookies or account state back into the repository.
+
+The template makes two conservative defaults on purpose:
+
+- It pins `player.engine = "osx"` for a more predictable macOS media-control path.
+- It disables `enableMouseEvent` by default to reduce input conflicts inside the Ghostty + Zellij combination.
+
 > [!NOTE]
-> Fish and Ghostty private local files now live directly under `$HOME` (`~/.fish.local.fish`, `~/.ghostty.local`), physically outside the dotfiles repository, so Stow no longer writes them back into the repo worktree.
+> Fish and Ghostty private local files now live directly under `$HOME` (`~/.fish.local.fish`, `~/.ghostty.local`); go-musicfox private config and runtime state live under `~/.local/share/go-musicfox/`. All of them stay physically outside the dotfiles repository, so Stow no longer writes them back into the repo worktree.
 
 ### 4.4 Configure Fisher
 
@@ -755,6 +774,7 @@ Abbreviations **expand automatically** when you press space after typing them.
 | `...` / `....` | `../..` / `../../..` | Jump up two or three parent directories quickly |
 | `vi` / `vim` / `h` | `hx` | Always launch the modern Helix editor |
 | `r` | `exec fish` | Reload the current Fish session so config changes take effect quickly |
+| `mfx` | `musicfox` | Launch the go-musicfox NetEase Cloud Music terminal client |
 | `cs`... | `colorscheme`... | See the custom commands `colorscheme` / `font-size` / `opacity` / `audio-volume` |
 | `?` / `??` | `__ai_cmd` / `ai_diag_last` | Natural-language to command generation (default `q -> aichat`) / diagnose the previous failed command (depends on Zellij dump-screen capture) |
 | `g` | `git` | Entry point for basic Git commands |
@@ -984,7 +1004,7 @@ These commands appear in `~/.local/bin` after the `bin` package is stowed:
 - `preview-md <file>`: Preview a Markdown file in a floating Zellij pane (requires `glow`)
 - `colors-print`: Print the terminal 256-color palette
 - `print-256-hex-colors`: Print hexadecimal values for the 256 colors
-- `validate-configs [tool|all]`: Validate config syntax and integrity (supports fish/git/zellij/helix/mise/ghostty/karabiner)
+- `validate-configs [tool|all]`: Validate config syntax and integrity (supports fish/git/zellij/helix/mise/ghostty/karabiner/aichat/go-musicfox)
 - `dot-update`: One-shot aggregated update for all core dependencies, including Homebrew, Mise toolchains, Fisher plugins, and Helix Tree-sitter grammars
 
 > [!TIP]

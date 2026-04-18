@@ -68,6 +68,11 @@ end
 # 使用环境变量而非 alias，因为 oh-my-fish/plugin-grc 内部使用 `command grc` 会跳过 alias
 set -gx PYTHONWARNINGS "ignore::DeprecationWarning"
 
+# --- go-musicfox Configuration ---
+# 将 go-musicfox 的配置、登录态与缓存剥离到仓库外的私有目录，
+# 避免应用运行后把网易云 Cookie 等状态写回被 Stow 管理的工作树。
+set -gx MUSICFOX_ROOT "$HOME/.local/share/go-musicfox"
+
 # --- AIChat Configuration ---
 # 强制 aichat 在 macOS 下也使用 ~/.config/aichat 作为配置目录
 set -gx AICHAT_CONFIG_DIR "$HOME/.config/aichat"
@@ -127,6 +132,7 @@ if status is-interactive
     abbr -a -g fs font-size # 调整 Ghostty 终端字体大小
     abbr -a -g o opacity # 调整 Ghostty 终端背景透明度
     abbr -a -g vol audio-volume # 调整系统输出音量，或切换音频输出设备
+    abbr -a -g mfx musicfox # 启动 go-musicfox 网易云音乐终端客户端
 
     # 用 hx 替代 vi/vim
     abbr -a -g vi hx # 统一唤起 Helix 现代文本编辑器

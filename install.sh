@@ -62,6 +62,7 @@ Manual follow-up:
   - Edit ~/.fish.local.fish for private ENVs and API keys.
   - Edit ~/.ghostty.local for machine-specific shortcuts or overrides.
   - Edit ~/.gitconfig.local and ~/.gitconfig.work for Git identity.
+  - Run 'musicfox' (or 'mfx' inside Fish) to log in; its private config lives at ~/.local/share/go-musicfox/config.toml.
   - macOS: Allow Ghostty in 'System Settings > Privacy & Security > Accessibility'.
 EOF
 }
@@ -278,6 +279,45 @@ ask_yes_no() {
   done
 }
 
+brewfile_declared_taps() {
+  local brewfile="$1"
+
+  sed -nE '
+    /^[[:space:]]*#/d
+    s/^[[:space:]]*tap[[:space:]]+"([^"]+)".*/\1/p
+  ' "$brewfile"
+}
+
+ensure_brewfile_taps() {
+  local brewfile="$1"
+  local tap_name=""
+  local -a declared_taps=()
+
+  while IFS= read -r tap_name; do
+    [ -n "$tap_name" ] || continue
+    declared_taps+=("$tap_name")
+  done < <(brewfile_declared_taps "$brewfile")
+
+  [ "${#declared_taps[@]}" -eq 0 ] && return 0
+
+  info "Preparing Homebrew taps declared in Brewfile..."
+
+  for tap_name in "${declared_taps[@]}"; do
+    if brew tap | grep -Fx -- "$tap_name" >/dev/null 2>&1; then
+      info "  -> Tap already available: $tap_name"
+      continue
+    fi
+
+    info "  -> Tapping $tap_name"
+    if brew tap "$tap_name"; then
+      success "  -> Tap ready: $tap_name"
+    else
+      error "Failed to tap Homebrew tap: $tap_name"
+      return 1
+    fi
+  done
+}
+
 resolve_ollama_install_plan() {
   if [ "$INSTALL_OLLAMA" = true ]; then
     info "Ollama optional install enabled via CLI flag."
@@ -414,6 +454,13 @@ if [ -f "$DOTFILES_DIR/Brewfile" ]; then
     warn "Skipping privileged casks for now: $SKIPPED_PRIVILEGED_CASKS"
   fi
 
+  # 先显式准备 Brewfile 中声明的 tap，避免首次安装时第三方 formula
+  # 在 `brew bundle install` 解析阶段尚未可见，导致整个依赖安装提前失败。
+  if ! ensure_brewfile_taps "$DOTFILES_DIR/Brewfile"; then
+    error "Failed to prepare Brew taps declared in Brewfile."
+    exit 1
+  fi
+
   if [ -n "$BREW_BUNDLE_CASK_SKIP" ]; then
     BREW_BUNDLE_CHECK_CMD=(env "HOMEBREW_BUNDLE_CASK_SKIP=$BREW_BUNDLE_CASK_SKIP" brew bundle check --file="$DOTFILES_DIR/Brewfile")
     BREW_BUNDLE_INSTALL_CMD=(env "HOMEBREW_BUNDLE_CASK_SKIP=$BREW_BUNDLE_CASK_SKIP" brew bundle install --file="$DOTFILES_DIR/Brewfile")
@@ -545,6 +592,17 @@ if [ ! -f "$GHOSTTY_LOCAL_CONF" ]; then
   info "  -> Created $GHOSTTY_LOCAL_CONF (For private shortcuts and overrides)"
 else
   success "  -> $GHOSTTY_LOCAL_CONF already exists, skipping."
+fi
+
+# --- 5. go-musicfox 私有配置模板 ---
+MUSICFOX_ROOT_DIR="$HOME/.local/share/go-musicfox"
+MUSICFOX_CONFIG="$MUSICFOX_ROOT_DIR/config.toml"
+mkdir -p "$MUSICFOX_ROOT_DIR"
+if [ ! -f "$MUSICFOX_CONFIG" ]; then
+  cp "$DOTFILES_DIR/local/go-musicfox.config.toml.example" "$MUSICFOX_CONFIG"
+  info "  -> Created $MUSICFOX_CONFIG (For go-musicfox private settings and login state)"
+else
+  success "  -> $MUSICFOX_CONFIG already exists, skipping."
 fi
 
 if [[ "$SHELL" != *"fish"* ]]; then
