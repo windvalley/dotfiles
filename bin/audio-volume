@@ -52,6 +52,10 @@ set_volume() {
     osascript -e "set volume output volume $volume_value"
 }
 
+get_current_volume() {
+    osascript -e "output volume of (get volume settings)"
+}
+
 print_audios() {
     SwitchAudioSource -a -f cli
 }
@@ -67,7 +71,11 @@ switch_next_audio() {
 
 main() {
     if [ "$#" -eq 0 ]; then
-        usage 1
+        local current_volume
+        current_volume=$(get_current_volume)
+        printf '%s\n' "Current output volume: ${current_volume}%"
+        echo
+        usage 0
     fi
 
     case "$value" in
