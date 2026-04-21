@@ -161,7 +161,7 @@ The repository root provides an `install.sh` script that automates almost the en
 5. **Symlink setup**: Detects existing configs, backs them up automatically, then uses `stow` to symlink all configs, including the `bin` scripts, into the correct system locations.
 6. **AI model sync**: Automatically runs `aichat --sync-models` to synchronize the default model catalog into the local index.
 7. **Local model backend (optional)**: In interactive installs, the script **asks whether to install and start** `Ollama`; in non-interactive mode it is skipped by default unless you pass `--with-ollama`. The script does not pull any local model automatically.
-8. **Runtime installation**: Installs core language runtimes via **Mise** (Go, Node, Bun, Python, Lua, Rust), common language servers and formatters (such as `gopls`, `pyright`, `lua-language-server`, `stylua`, and `vtsls`), plus out-of-the-box CLI tools (`gh`, `bat`, `eza`, `fd`, `ripgrep`, `glow`, `shellcheck`, `codex`, `claude-code`, etc.).
+8. **Runtime installation**: Installs core language runtimes via **Mise** (Go, Node, Bun, Python, Lua, Rust), common language servers and formatters (such as `gopls`, `pyright`, `lua-language-server`, `stylua`, and `vtsls`), plus out-of-the-box CLI tools (`gh`, `bat`, `eza`, `fd`, `ripgrep`, `glow`, `shellcheck`, `codex`, `kimi`, `claude-code`, etc.).
 9. **Privacy template setup**: Automatically creates Git identity templates (`.gitconfig.local` / `.work`), a Fish private environment template (`.fish.local.fish`), a Ghostty private config template (`.ghostty.local`), and a go-musicfox local template (`~/.local/share/go-musicfox/config.toml`) in the user's home directory.
 10. **Shell initialization**: Sets **Fish** as the default shell and, when clear Zsh usage signals are detected, optionally migrates PATH variables from the old Zsh setup into Fish.
 11. **Plugin setup**: Installs the **Fisher** plugin manager and syncs all Fish plugins.
@@ -307,7 +307,7 @@ stow --restow --target="$HOME/.local/bin" --dir="$HOME/dotfiles" bin
 
 #### 3.2.4 Install Runtimes and CLI Tools (Mise)
 
-Once configurations are linked, use `mise` to automatically fetch all configured toolchains, including runtimes, LSPs, and AI CLIs such as `codex`, `claude-code`, and `opencode`:
+Once configurations are linked, use `mise` to automatically fetch all configured toolchains, including runtimes, LSPs, and AI CLIs such as `codex`, `kimi`, `claude-code`, and `opencode`:
 
 ```sh
 # Automatically reads ~/.config/mise/config.toml and installs all tools
@@ -897,7 +897,7 @@ Enter Vi normal mode: press `Esc` or `Ctrl+[`.
 
 **Core idea:**
 Abandon the traditional mess caused by global installs such as `npm i -g`, `pip install`, and `go install`, which pollute the system and create version conflicts.
-This configuration unifies **common runtimes (Go/Node/Bun/Python/Lua/Rust)** together with **language servers, formatters, and related developer toolchains**, plus AI CLIs such as `codex`, `claude-code`, and `opencode`, under Mise management, achieving elegant isolation on two levels:
+This configuration unifies **common runtimes (Go/Node/Bun/Python/Lua/Rust)** together with **language servers, formatters, and related developer toolchains**, plus AI CLIs such as `codex`, `kimi`, `claude-code`, and `opencode`, under Mise management, achieving elegant isolation on two levels:
 1. **Global disaster-proof baseline**: The global config (`~/.config/mise/config.toml`) declares fallback runtimes for common languages plus LSP / formatter toolchains that are mostly tracked at `@latest`, so opening an editor in any normal directory still gives you strong completion and formatting support.
 2. **Clean project-level sandbox**: Inside a specific project, `mise use` can generate a directory-local `.mise.toml` for precise isolation.
     - **For runtimes**: strongly recommended to pin exact versions such as `node@16` for consistent team builds.
