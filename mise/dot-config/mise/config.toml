@@ -139,7 +139,8 @@ shellcheck = "latest"                 # Shell 脚本静态分析工具
 
 # --- AI 工具链 ---
 "npm:opencode-ai" = "latest"
-codex = "latest"
+# Codex's official npm package usually ships ahead of the mise/aqua registries; use the npm backend to stay in sync with upstream latest.
+"npm:@openai/codex" = "latest"
 # Kimi Code 官方 CLI。官方文档主推 uv/PyPI 安装，这里改用 GitHub backend 直接消费官方预编译 Release，
 # 避免额外耦合 Python/uv 依赖链，也更符合当前仓库对纯 CLI 的统一管理方式。
 "github:MoonshotAI/kimi-cli" = "latest"
