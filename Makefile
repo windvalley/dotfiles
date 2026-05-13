@@ -1,4 +1,4 @@
-.PHONY: help install stow unstow restow test validate fish plugins update lint docs path-audit
+.PHONY: help install stow unstow restow test validate fish plugins update lint docs path-audit clean
 
 # 默认目标
 .DEFAULT_GOAL := help
@@ -46,10 +46,11 @@ help: ## 显示帮助信息
 	@echo "  $(YELLOW)make macos$(NC)      配置 macOS 系统偏好设置"
 	@echo ""
 	@echo "$(GREEN)维护:$(NC)"
+	@echo "  $(YELLOW)make clean$(NC)      清理 Fish 写入中断的临时残留与 OS 临时文件"
 	@echo "  $(YELLOW)make path-audit$(NC) 审计 zsh -> fish 的 PATH 迁移覆盖率"
 	@echo "  $(YELLOW)make test$(NC)       运行 lint + validate"
 	@echo "  $(YELLOW)make validate$(NC)   验证所有配置文件语法"
-	@echo "  $(YELLOW)make lint$(NC)       运行 shellcheck + Bash 基线检查"
+	@echo "  $(YELLOW)make lint$(NC)       运行 shellcheck + Fish 静态检查 + Bash 基线检查"
 	@echo "  $(YELLOW)make docs$(NC)       生成或更新 README 的目录 (TOC)"
 	@echo "  $(YELLOW)make update$(NC)     更新 dotfiles 仓库与所有工具链"
 	@echo ""
@@ -180,7 +181,7 @@ validate: ## 验证所有配置文件语法
 	@./bin/validate-configs all 2>&1 || exit 1
 	@echo "$(GREEN)✅ 所有配置文件验证通过$(NC)"
 
-lint: ## 静态分析 Shell 脚本并检查 Bash 基线
+lint: ## 静态分析 Shell/Fish 脚本并检查 Bash 基线
 	@echo "$(BLUE)🔍 运行 shellcheck 静态分析...$(NC)"
 	@if ! command -v shellcheck > /dev/null 2>&1; then \
 		echo "$(RED)  ❌ shellcheck 未安装，请运行 'mise install shellcheck'$(NC)"; \
@@ -205,6 +206,39 @@ lint: ## 静态分析 Shell 脚本并检查 Bash 基线
 		exit 1; \
 	fi
 	@./bin/check-shell-baseline
+	@echo "$(BLUE)🐟 运行 Fish 静态检查 (fish --no-execute)...$(NC)"
+	@if ! command -v fish > /dev/null 2>&1; then \
+		echo "$(YELLOW)  ⚠ fish 未安装，跳过 Fish 静态检查$(NC)"; \
+	else \
+		fish_errors=0; \
+		fish_files=$$(find fish/dot-config/fish -type f -name '*.fish' | sort); \
+		for script in $$fish_files; do \
+			if fish --no-execute "$$script" 2>/dev/null; then \
+				echo "$(GREEN)  ✓$(NC) $$script"; \
+			else \
+				fish --no-execute "$$script"; \
+				fish_errors=$$((fish_errors + 1)); \
+			fi; \
+		done; \
+		if [ "$$fish_errors" -eq 0 ]; then \
+			echo "$(GREEN)✅ 所有 Fish 脚本通过 --no-execute 语法检查$(NC)"; \
+		else \
+			echo "$(RED)❌ $$fish_errors 个 Fish 脚本存在语法问题$(NC)"; \
+			exit 1; \
+		fi; \
+	fi
+
+clean: ## 清理 Fish 写入中断的临时残留与 OS 临时文件
+	@echo "$(BLUE)🧹 清理工作树临时残留...$(NC)"
+	@removed=0; \
+	fish_residue=$$(find fish/dot-config/fish -maxdepth 1 -type f -name 'fish_variables[A-Za-z0-9]*' ! -name 'fish_variables' 2>/dev/null); \
+	ds_files=$$(find . -name '.DS_Store' -not -path './.git/*' 2>/dev/null); \
+	for f in $$fish_residue $$ds_files; do \
+		echo "  删除 $$f"; \
+		rm -f "$$f"; \
+		removed=$$((removed + 1)); \
+	done; \
+	echo "$(GREEN)✅ 清理完成 (共 $$removed 个文件)$(NC)"
 
 docs: ## 生成或更新 README 文档目录 (中英文 TOC)
 	@echo "$(BLUE)📚 生成或更新 README 中英文目录结构...$(NC)"

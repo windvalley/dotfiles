@@ -14,15 +14,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install ShellCheck
-        run: sudo apt-get update && sudo apt-get install -y shellcheck
+      - name: Install ShellCheck and Fish
+        run: sudo apt-get update && sudo apt-get install -y shellcheck fish
 
       - name: Install Node.js (for doctoc)
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Run shell script linter (shellcheck)
+      - name: Run shell / fish linter (shellcheck + fish --no-execute)
         run: make lint
 
       - name: Verify README TOCs are up-to-date
