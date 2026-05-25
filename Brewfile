@@ -63,7 +63,7 @@ cask "orbstack"
 cask "openmtp"
 # 轻量级 macOS 截图标注工具
 cask "shottr"
-# macOS 菜单栏管理工具（固定使用 beta 轨道）
-cask "jordanbaird-ice@beta"
+# macOS 菜单栏管理工具（Thaw，Ice 在原作者停更后的官方接续 fork，仅支持 macOS 26+）
+cask "thaw"
 # 全局键位映射工具
 cask "karabiner-elements"
