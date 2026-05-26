@@ -147,3 +147,6 @@ shellcheck = "latest"                 # Shell 脚本静态分析工具
 # Anthropic 官方 CLI。mise 注册表同时支持 `claude` 与 `claude-code` 别名，
 # 这里显式使用 `claude-code`，语义更直观。
 "claude-code" = "latest"
+# pi-coding-agent: 通过 mise 的 npm backend 安装到独立目录，
+# 避免被绑定到某个具体 node 版本——否则切到锁定其它 node 版本的前端项目时会找不到 `pi`。
+"npm:@earendil-works/pi-coding-agent" = "latest"
