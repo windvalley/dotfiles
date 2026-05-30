@@ -128,8 +128,11 @@ shfmt = "latest"                                     # Shell Formatter
 lazygit = "latest" # 终端 Git 交互式管理器
 gh = "latest"      # GitHub 官方 CLI
 bat = "latest"     # 带语法高亮的 cat 替代品
-# asciinema: mise 默认注册表里没有该工具，这里显式使用 aqua 源以供 `rec` 录制/回放终端会话
-"aqua:asciinema/asciinema" = "latest"
+# asciinema: mise 默认注册表里没有该工具，用于 `rec` 录制/回放终端会话。
+# 不用 aqua 后端：其包定义带 `>= 3.0.0` 版本约束，且 `mise ls-remote` 枚举不到版本，
+# 导致 `@latest`/`@3` 等非精确写法解析失败报 "v3.0.0 or later is required"。
+# 改用 ubi 后端：直接消费官方 GitHub Release 单文件二进制，能正确跟随 latest 并规范命名为 asciinema。
+"ubi:asciinema/asciinema" = "latest"
 eza = "latest"                        # 现代化 ls 替代品
 ripgrep = "latest"                    # 极速正则搜索工具 (替代 grep)
 glow = "latest"                       # 终端 Markdown 阅读器

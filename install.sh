@@ -454,6 +454,17 @@ if [ -f "$DOTFILES_DIR/Brewfile" ]; then
     warn "Skipping privileged casks for now: $SKIPPED_PRIVILEGED_CASKS"
   fi
 
+  # 刷新 Homebrew 元数据缓存：本仓库在 fish 中默认设置 HOMEBREW_NO_AUTO_UPDATE=1
+  # （见 fish/dot-config/fish/config.fish），该变量会被 install.sh 继承，使得后续
+  # `brew bundle` 不再自动 update。一旦本地 cask API 缓存陈旧、与新版 Homebrew 的解析
+  # 逻辑发生 schema 错位，加载某些 cask（典型如 openmtp/shottr）时会崩溃并报
+  # `undefined method 'first' for nil`，导致整个 bundle 失败。故在安装前显式 update 一次。
+  # 网络抖动等导致的 update 失败不应中断安装，降级为告警后继续。
+  info "Refreshing Homebrew metadata (brew update)..."
+  if ! brew update; then
+    warn "brew update failed; continuing with possibly stale Homebrew metadata."
+  fi
+
   # 先显式准备 Brewfile 中声明的 tap，避免首次安装时第三方 formula
   # 在 `brew bundle install` 解析阶段尚未可见，导致整个依赖安装提前失败。
   if ! ensure_brewfile_taps "$DOTFILES_DIR/Brewfile"; then
