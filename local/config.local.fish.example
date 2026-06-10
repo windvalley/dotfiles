@@ -26,6 +26,7 @@
 # --- aichat：云端模型 & 本地模型 ---
 # provider 前缀提示：OpenAI 用 openai:，Gemini 用 gemini:，Anthropic 用 claude:，
 #   Qwen 用 qianwen:，智谱用 zhipuai:，MiniMax 用 minimax:，Moonshot 用 moonshot:，
+#   DeepSeek 用 deepseek:，
 #   本地 Ollama 用 local-llm:
 # set -gx AICHAT_MODEL "gemini:gemini-3-flash-preview"
 
@@ -37,6 +38,7 @@
 # set -gx MINIMAX_API_KEY "xxxxxxxx"
 # set -gx QIANWEN_API_KEY "sk-xxxxxxxx"
 # set -gx MOONSHOT_API_KEY "sk-xxxxxxxx"
+# set -gx DEEPSEEK_API_KEY "sk-xxxxxxxx"
 
 # --- github token ---
 # 强烈建议配置，用于提升 mise/Homebrew 等工具调用 GitHub API 的频率限制

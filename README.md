@@ -562,7 +562,7 @@ set -gx AI_LOCAL_MODEL "qwen3.5:35b"
 # 本地 q / 本地优先工作流默认关闭 thinking；支持 false / true / low / medium / high
 set -gx AI_LOCAL_THINK "false"
 
-# provider 前缀示例：claude: / qianwen: / zhipuai: / moonshot: / openai: / gemini: / local-llm:
+# provider 前缀示例：claude: / qianwen: / zhipuai: / moonshot: / deepseek: / openai: / gemini: / local-llm:
 set -gx AICHAT_MODEL "gemini:gemini-3-flash-preview"
 set -gx GEMINI_API_KEY "YOUR_API_KEY_HERE"
 ```

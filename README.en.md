@@ -563,7 +563,7 @@ set -gx AI_LOCAL_MODEL "qwen3.5:35b"
 # Thinking mode for q / local-first workflows: false / true / low / medium / high
 set -gx AI_LOCAL_THINK "false"
 
-# Provider prefix examples: claude: / qianwen: / zhipuai: / moonshot: / openai: / gemini: / local-llm:
+# Provider prefix examples: claude: / qianwen: / zhipuai: / moonshot: / deepseek: / openai: / gemini: / local-llm:
 set -gx AICHAT_MODEL "gemini:gemini-3-flash-preview"
 set -gx GEMINI_API_KEY "YOUR_API_KEY_HERE"
 ```
