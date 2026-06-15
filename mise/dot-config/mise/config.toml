@@ -80,7 +80,8 @@ rust = "latest"
 "go:golang.org/x/tools/cmd/goimports" = "latest"
 "go:github.com/go-delve/delve/cmd/dlv" = "latest"
 "go:github.com/nametake/golangci-lint-langserver" = "latest"
-"go:github.com/golangci/golangci-lint/cmd/golangci-lint" = "latest"
+# golangci-lint v2 起遵循 Go Modules 主版本规则，模块路径必须带 /v2 后缀，否则 go 解析不到该版本
+"go:github.com/golangci/golangci-lint/v2/cmd/golangci-lint" = "2.12.2"
 
 # --- Python 生态 ---
 # ruff: 默认 aqua backend 无法正确解析 @latest，改用 github backend 直接获取官方 Release，
@@ -144,9 +145,6 @@ shellcheck = "latest"                 # Shell 脚本静态分析工具
 "npm:opencode-ai" = "latest"
 # Codex's official npm package usually ships ahead of the mise/aqua registries; use the npm backend to stay in sync with upstream latest.
 "npm:@openai/codex" = "latest"
-# Kimi Code 官方 CLI。官方文档主推 uv/PyPI 安装，这里改用 GitHub backend 直接消费官方预编译 Release，
-# 避免额外耦合 Python/uv 依赖链，也更符合当前仓库对纯 CLI 的统一管理方式。
-"github:MoonshotAI/kimi-cli" = "latest"
 # Anthropic 官方 CLI。mise 注册表同时支持 `claude` 与 `claude-code` 别名，
 # 这里显式使用 `claude-code`，语义更直观。
 "claude-code" = "latest"
