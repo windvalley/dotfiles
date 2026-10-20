@@ -47,7 +47,7 @@ NPM_CONFIG_LOGLEVEL = "error"
 [tools]
 # --- 基础语言运行时 ---
 go = "latest"
-node = "lts"
+node = "24"
 bun = "latest"
 python = "latest"
 # LuaLS 当前运行时枚举只覆盖到 Lua 5.4；全局 fallback 环境先固定在 5.4 主线，避免语义提示与实际运行时漂移。

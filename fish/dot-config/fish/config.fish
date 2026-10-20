@@ -229,3 +229,10 @@ end
 if test -f ~/.fish.local.fish
     source ~/.fish.local.fish
 end
+
+# kimi-code
+fish_add_path -g "/Users/xg/.kimi-code/bin"
+
+# >>> grok installer >>>
+fish_add_path $HOME/.grok/bin
+# <<< grok installer <<<
