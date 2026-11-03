@@ -1,7 +1,7 @@
 #!/bin/bash
 # git-code-stats
 #
-# 统计当前 Git 仓库今天 / 本周 / 本月的已提交代码量。
+# 统计当前 Git 仓库今天 / 本周 / 本月 / 累计的已提交代码量。
 # 作为 Git 外部子命令使用：stow 到 ~/.local/bin 后可直接执行 `git code-stats`。
 
 set -euo pipefail
@@ -23,9 +23,10 @@ usage() {
   git code-stats [today|week|month|all]
 
 说明:
-  默认输出今天、本周、本月三段统计。
+  默认或指定 all 时输出今天、本周、本月、累计四段统计。
   统计基于当前 HEAD 可达的已提交历史，不包含未提交工作区改动。
   本周按周一 00:00 起算，本月按自然月 1 日 00:00 起算。
+  累计范围从最早提交时间起算，空仓库显示为暂无提交。
 EOF
 }
 
@@ -55,21 +56,46 @@ current_time() {
     date '+%Y-%m-%d %H:%M:%S'
 }
 
+start_of_history() {
+    local repo_root="$1"
+    local end_time="$2"
+    local first_commit_time=""
+
+    if has_head_commit "$repo_root"; then
+        # 提交时间可能不按拓扑顺序递增，取最小提交者时间以匹配 Git 的时间筛选口径。
+        first_commit_time="$(git -C "$repo_root" log HEAD --until="$end_time" --format='%ct' | awk '
+            NR == 1 || $1 < earliest { earliest = $1 }
+            END { print earliest }
+        ')"
+    fi
+
+    if [ -n "$first_commit_time" ]; then
+        date -r "$first_commit_time" '+%Y-%m-%d %H:%M:%S'
+    else
+        printf '暂无提交\n'
+    fi
+}
+
 calculate_stats() {
     local repo_root="$1"
     local start_time="$2"
     local end_time="$3"
+    local date_args=("--until=$end_time")
 
     if ! has_head_commit "$repo_root"; then
         printf '0\t0\t0\t0\n'
         return 0
     fi
 
+    # 累计统计不设置起始筛选，避免提交时间乱序时提前截断历史遍历。
+    if [ -n "$start_time" ]; then
+        date_args+=("--since=$start_time")
+    fi
+
     # 这里明确只看 HEAD 可达提交，避免把其他本地分支或远程分支的历史混进来，
     # 否则“当前仓库”的统计会被无关分支放大，和用户当前上下文不一致。
     git -C "$repo_root" log HEAD \
-        --since="$start_time" \
-        --until="$end_time" \
+        "${date_args[@]}" \
         --numstat \
         --format='commit %H' \
         | awk '
@@ -114,6 +140,10 @@ print_period_stats() {
     stats="$(calculate_stats "$repo_root" "$start_time" "$end_time")"
     IFS=$'\t' read -r commits file_changes insertions deletions <<<"$stats"
 
+    if [ -z "$start_time" ]; then
+        start_time="$(start_of_history "$repo_root" "$end_time")"
+    fi
+
     net=$((insertions - deletions))
     if [ "$net" -gt 0 ]; then
         net_display="+$net"
@@ -141,7 +171,7 @@ main() {
             periods=("$period")
             ;;
         all|"")
-            periods=("today" "week" "month")
+            periods=("today" "week" "month" "total")
             ;;
         -h|--help|help)
             usage
@@ -176,6 +206,9 @@ main() {
                 ;;
             month)
                 print_period_stats "$repo_root" "本月" "$(start_of_month)" "$end_time"
+                ;;
+            total)
+                print_period_stats "$repo_root" "累计" "" "$end_time"
                 ;;
         esac
 
