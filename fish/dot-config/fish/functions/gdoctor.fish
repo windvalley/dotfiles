@@ -197,8 +197,10 @@ function gdoctor -d "诊断并检查当前 Git 仓库的健康状态"
     end
     if test -n "$worktree_cmds"
         __gdoctor_warn "存在 "(count $worktree_cmds)" 个已合并但仍被 worktree 占用的分支"
-        for cmd in $worktree_cmds
-            __gdoctor_suggest "$cmd"
+        # 只打印一个"修复建议"标题，后续命令缩进 17 列（与首条命令左对齐），便于整段复制批量执行
+        __gdoctor_suggest "$worktree_cmds[1]"
+        for cmd in $worktree_cmds[2..-1]
+            printf "%17s%s\n" "" "$cmd"
         end
         set has_warnings 1
     end
