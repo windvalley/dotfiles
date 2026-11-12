@@ -170,7 +170,9 @@ function gdoctor -d "诊断并检查当前 Git 仓库的健康状态"
     if test -z "$main_branch"
         set main_branch main
     end
-    set -l merged_branches (git branch --merged $main_branch 2>/dev/null | string trim | string match -rv '^\*|^'$main_branch'$')
+    # 不解析 `git branch` 输出：被其他 worktree 检出的分支带 `+` 前缀，且无法 `branch -d` 删除；
+    # worktreepath 非空即表示被某个 worktree（含当前）占用，直接排除。
+    set -l merged_branches (git for-each-ref --merged=$main_branch --format='%(refname:short) %(worktreepath)' refs/heads 2>/dev/null | awk -v m=$main_branch 'NF == 1 && $1 != m {print $1}')
     if test -n "$merged_branches"
         set -l merged_count (count $merged_branches)
         __gdoctor_warn "存在 $merged_count 个已合并但未删除的本地分支"

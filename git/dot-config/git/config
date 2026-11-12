@@ -77,7 +77,7 @@
     last = log -1 HEAD
 
     # 清理已合并的本地分支（强迫症福音）
-    cleanup = "!git branch --merged | grep -v '\\*' | xargs -n 1 git branch -d"
+    cleanup = "!git branch --merged | grep -v '^[*+]' | xargs -n 1 git branch -d"
 
 # === Git Clean Filter: 主题解耦配置 ===
 # 该配置配合 .gitattributes 文件使用，用于解决 colorscheme 切换导致仓库变脏的问题。
