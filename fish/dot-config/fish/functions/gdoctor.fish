@@ -173,12 +173,36 @@ function gdoctor -d "诊断并检查当前 Git 仓库的健康状态"
     # 不解析 `git branch` 输出：被其他 worktree 检出的分支带 `+` 前缀，且无法 `branch -d` 删除；
     # worktreepath 非空即表示被某个 worktree（含当前）占用，直接排除。
     set -l merged_branches (git for-each-ref --merged=$main_branch --format='%(refname:short) %(worktreepath)' refs/heads 2>/dev/null | awk -v m=$main_branch 'NF == 1 && $1 != m {print $1}')
+
+    # 已合并但被其他 worktree 占用的分支：需先移除 worktree 才能删分支。
+    # 不带 --force，worktree 有未提交改动时 git 会拒绝，避免误删；主 worktree 与当前 worktree 不处理。
+    set -l main_worktree (git worktree list --porcelain 2>/dev/null | string replace -rf '^worktree ' '' | head -n 1)
+    set -l current_worktree (git rev-parse --show-toplevel 2>/dev/null)
+    set -l worktree_cmds
+    for line in (git for-each-ref --merged=$main_branch --format='%(refname:short)%09%(worktreepath)' refs/heads 2>/dev/null)
+        set -l parts (string split \t -- $line)
+        set -l wt_branch $parts[1]
+        set -l wt_path $parts[2]
+        if test -z "$wt_path" -o "$wt_branch" = "$main_branch" -o "$wt_path" = "$main_worktree" -o "$wt_path" = "$current_worktree"
+            continue
+        end
+        set -a worktree_cmds "git worktree remove "(string escape -- $wt_path)" && git branch -d $wt_branch"
+    end
+
     if test -n "$merged_branches"
         set -l merged_count (count $merged_branches)
         __gdoctor_warn "存在 $merged_count 个已合并但未删除的本地分支"
         __gdoctor_suggest "考虑清理 (git branch -d "(string join " " $merged_branches)")"
         set has_warnings 1
-    else
+    end
+    if test -n "$worktree_cmds"
+        __gdoctor_warn "存在 "(count $worktree_cmds)" 个已合并但仍被 worktree 占用的分支"
+        for cmd in $worktree_cmds
+            __gdoctor_suggest "$cmd"
+        end
+        set has_warnings 1
+    end
+    if test -z "$merged_branches" -a -z "$worktree_cmds"
         __gdoctor_success "无已合并的冗余本地分支"
     end
 
